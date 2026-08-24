@@ -64,6 +64,20 @@ section {
   background: #dc2626;
 }
 
+.badge.warn {
+  background: #d97706;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+#alerts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .badge.ok::after {
   content: " \25CF";
   color: #22c55e;

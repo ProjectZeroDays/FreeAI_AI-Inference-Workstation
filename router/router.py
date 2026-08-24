@@ -1,65 +1,249 @@
 #!/usr/bin/env python3
-import os
+"""Tokugawa Router — task classification + fallback routing.
 
-from flask import Flask, request, jsonify
-import requests
+Features:
+- Task classification with confidence score
+- Fallback chain across the model roster
+- Optional API-key auth (X-API-Key header when ROUTER_API_KEY is set)
+- Per-client token-bucket rate limiting
+- LRU response cache for repeated prompts
+- Prometheus-style /metrics snapshot
+- SSE streaming passthrough
+- Mock backend mode (MOCK_LLM=1) for dev/CI without a GPU
+"""
+import hashlib
+import json
+import os
+import threading
+import time
+from collections import OrderedDict
+
+from flask import Flask, Response, request, jsonify, stream_with_context
 
 from classifier import classify_task
-from switcher import select_model
+from switcher import select_chain
+from settings import load_config
+
+CFG = load_config().get("router", {})
+
+API_KEY = CFG.get("api_key", "")
+RATE_CAPACITY = int(CFG.get("rate_limit_capacity", 60))
+RATE_REFILL = float(CFG.get("rate_limit_refill_per_min", 60)) / 60.0
+CACHE_ENABLED = bool(CFG.get("cache_enabled", True))
+CACHE_SIZE = int(CFG.get("cache_size", 128))
+TIMEOUT = int(CFG.get("backend_timeout_s", 300))
+MOCK_LLM = bool(CFG.get("mock_llm", False))
 
 app = Flask(__name__)
 
-TIMEOUT = int(os.environ.get("BACKEND_TIMEOUT", "300"))
-ROUTER_PORT = int(os.environ.get("ROUTER_PORT", "8010"))
+# ---------------------------------------------------------------- metrics
+_METRICS_LOCK = threading.Lock()
+METRICS = {
+    "requests_total": 0,
+    "cache_hits": 0,
+    "errors_total": 0,
+    "by_task": {},
+    "by_model": {},
+    "latency_sum_ms": 0,
+    "latency_count": 0,
+}
+
+
+def metrics_incr(key, amount=1):
+    with _METRICS_LOCK:
+        METRICS[key] = METRICS.get(key, 0) + amount
+
+
+def metrics_task(task):
+    with _METRICS_LOCK:
+        METRICS["by_task"][task] = METRICS["by_task"].get(task, 0) + 1
+
+
+def metrics_model(model_key):
+    with _METRICS_LOCK:
+        METRICS["by_model"][model_key] = \
+            METRICS["by_model"].get(model_key, 0) + 1
+
+
+def metrics_latency(ms):
+    with _METRICS_LOCK:
+        METRICS["latency_sum_ms"] += ms
+        METRICS["latency_count"] += 1
+
+
+# ------------------------------------------------------------- rate limit
+_BUCKETS = {}
+_RATE_LOCK = threading.Lock()
+
+
+def allow_request(client_id):
+    now = time.monotonic()
+    with _RATE_LOCK:
+        tokens, last = _BUCKETS.get(client_id, (RATE_CAPACITY, now))
+        tokens = min(RATE_CAPACITY, tokens + (now - last) * RATE_REFILL)
+        if tokens < 1:
+            _BUCKETS[client_id] = (tokens, now)
+            return False
+        _BUCKETS[client_id] = (tokens - 1, now)
+        return True
+
+
+# ------------------------------------------------------------------ cache
+_CACHE = OrderedDict()
+_CACHE_LOCK = threading.Lock()
+
+
+def cache_get(key):
+    if not CACHE_ENABLED:
+        return None
+    with _CACHE_LOCK:
+        if key in _CACHE:
+            _CACHE.move_to_end(key)
+            return _CACHE[key]
+    return None
+
+
+def cache_put(key, value):
+    if not CACHE_ENABLED:
+        return
+    with _CACHE_LOCK:
+        _CACHE[key] = value
+        _CACHE.move_to_end(key)
+        while len(_CACHE) > CACHE_SIZE:
+            _CACHE.popitem(last=False)
+
+
+# ------------------------------------------------------------------- auth
+@app.before_request
+def guard():
+    if request.path == "/health":
+        return None
+    if API_KEY and request.headers.get("X-API-Key") != API_KEY:
+        return jsonify({"error": "unauthorized"}), 401
+    if not allow_request(request.remote_addr or "unknown"):
+        return jsonify({"error": "rate limited"}), 429
+    return None
+
+
+# ------------------------------------------------------------------ mock
+_MOCK_WORDS = ("As a mock response, this text confirms routing, "
+               "classification, caching, and agent plumbing work "
+               "without a GPU backend. " * 8)
+
+
+def mock_completion(payload):
+    n = max(1, min(int(payload.get("max_tokens", 64)), len(_MOCK_WORDS)))
+    return {"content": _MOCK_WORDS[:n], "mock": True}
+
+
+# ---------------------------------------------------------------- routes
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok", "mock": MOCK_LLM})
+
+
+@app.route("/models")
+def models():
+    from models import MODEL_REGISTRY
+    return jsonify({
+        key: {"name": m["name"], "role": m["role"],
+              "strengths": m["strengths"], "endpoint": m["endpoint"]}
+        for key, m in MODEL_REGISTRY.items()
+    })
+
+
+@app.route("/metrics")
+def metrics():
+    with _METRICS_LOCK:
+        snap = dict(METRICS)
+        snap["by_task"] = dict(METRICS["by_task"])
+        snap["by_model"] = dict(METRICS["by_model"])
+    if snap["latency_count"]:
+        snap["latency_avg_ms"] = round(
+            snap["latency_sum_ms"] / snap["latency_count"], 1)
+    else:
+        snap["latency_avg_ms"] = 0
+    snap.pop("latency_sum_ms", None)
+    return jsonify(snap)
 
 
 @app.route("/route", methods=["POST"])
 def route():
     data = request.get_json(silent=True) or {}
     prompt = data.get("prompt", "")
+    agent = data.get("agent")  # optional per-agent model override hint
     if not prompt:
         return jsonify({"error": "prompt is required"}), 400
 
-    # 1. classify task
-    task_type = classify_task(prompt)
+    metrics_incr("requests_total")
+    task_type, confidence = classify_task(prompt)
+    metrics_task(task_type)
 
-    # 2. select model
-    model = select_model(task_type)
+    cache_key = hashlib.sha256(
+        f"{task_type}:{agent}:{prompt}".encode()).hexdigest()
+    cached = cache_get(cache_key)
+    if cached is not None:
+        metrics_incr("cache_hits")
+        resp = jsonify(cached)
+        resp.headers["X-Cache"] = "HIT"
+        return resp
 
-    # 3. forward request to model endpoint
     payload = {
         "prompt": prompt,
         "max_tokens": data.get("max_tokens", 2048),
         "temperature": data.get("temperature", 0.2),
     }
 
-    try:
-        response = requests.post(model["endpoint"], json=payload,
-                                 timeout=TIMEOUT)
-        result = response.json()
-    except Exception as exc:
-        return jsonify({"error": str(exc), "model": model["name"]}), 502
+    started = time.monotonic()
+    if MOCK_LLM:
+        chain = select_chain(task_type, agent)
+        result = mock_completion(payload)
+        model_used = chain[0]
+        error = None
+    else:
+        import requests
+        result = None
+        model_used = None
+        error = None
+        for candidate in select_chain(task_type, agent):
+            from models import MODEL_REGISTRY
+            model = MODEL_REGISTRY[candidate]
+            try:
+                r = requests.post(model["endpoint"], json=payload,
+                                  timeout=TIMEOUT)
+                r.raise_for_status()
+                result = r.json()
+                model_used = model["name"]
+                metrics_model(candidate)
+                break
+            except Exception as exc:
+                error = str(exc)
+                continue
+        if result is None:
+            metrics_incr("errors_total")
+            return jsonify({
+                "error": error or "all backends failed",
+                "task_type": task_type,
+            }), 502
 
-    return jsonify({
-        "model_used": model["name"],
+    elapsed_ms = int((time.monotonic() - started) * 1000)
+    metrics_latency(elapsed_ms)
+
+    body = {
+        "model_used": model_used,
         "task_type": task_type,
+        "confidence": confidence,
+        "elapsed_ms": elapsed_ms,
         "response": result,
-    })
-
-
-@app.route("/models", methods=["GET"])
-def models():
-    from models import MODEL_REGISTRY
-    return jsonify({
-        key: {"name": m["name"], "role": m["role"], "strengths": m["strengths"]}
-        for key, m in MODEL_REGISTRY.items()
-    })
-
-
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify({"status": "ok"})
+    }
+    cache_put(cache_key, body)
+    resp = jsonify(body)
+    resp.headers["X-Cache"] = "MISS"
+    return resp
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=ROUTER_PORT, threaded=True)
+    app.run(host="0.0.0.0",
+            port=int(os.environ.get("ROUTER_PORT",
+                                    str(CFG.get("port", 8010)))),
+            threaded=True)

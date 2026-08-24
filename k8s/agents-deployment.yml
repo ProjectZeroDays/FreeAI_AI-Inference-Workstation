@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agents
+  namespace: tokugawa-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agents
+  template:
+    metadata:
+      labels:
+        app: agents
+    spec:
+      containers:
+        - name: agents
+          image: your-registry/agents:latest
+          ports:
+            - containerPort: 8020
+          env:
+            - name: ROUTER_URL
+              value: http://router:8010/route
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agents
+  namespace: tokugawa-stack
+spec:
+  selector:
+    app: agents
+  ports:
+    - port: 8020
+      targetPort: 8020

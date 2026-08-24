@@ -1,0 +1,12 @@
+site_name: Unified GPU Inference Stack
+site_description: Tokugawa Router, Agent API, Workflow Engine, Dashboard
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - API Reference: api.md
+  - Model Switching: model-switching.md
+  - Deployment: deployment.md
+  - Troubleshooting: troubleshooting.md
+use_directory_urls: false
+theme:
+  name: mkdocs

@@ -5,11 +5,13 @@ Production-grade, self-hosted environment for running GGUF coder models on NVIDI
 ## Overview
 
 - **GGUF inference** on NVIDIA GPUs (llama.cpp + CUDA)
-- **Tokugawa Router** — classifies each prompt and routes it to the right model
-- **Agent REST API** — project scaffolding, refactor, debug, analysis agents
-- **Workflow Engine** — chains agents into pipelines (sequential + parallel, retries, logging)
+- **Tokugawa Router** — classifies each prompt (with confidence) and routes it to the right model, with fallback chains, LRU caching, rate limiting, optional API-key auth, and a `/metrics` endpoint
+- **Agent REST API** — project scaffolding, refactor, debug, analysis, orchestrator + memory-backed chat; profiles: strict/balanced/creative/verbose/minimal
+- **Workflow Engine** — chains agents into pipelines (sequential + parallel, retries, validation, audit logs, export/import, inline execution)
 - **Tokugawa UI** — model presets, agent buttons, prompt/output console
-- **Tokugawa Dashboard** — live GPU stats and service health with charts
+- **Workflow Designer** — visual step editor (`workflow/ui/designer.html`) with JSON export
+- **Tokugawa Dashboard** — live GPU stats (util/mem/temp/power/clock), alerts panel, service health with charts
+- **tokugawa-cli** — status / models / route / workflows / run from your shell
 - **Desktop environment** — XFCE + TigerVNC + noVNC
 - **Self-healing** — supervisor loop plus health/recovery agents
 - **Docker Compose** — one command brings up every service
@@ -119,7 +121,47 @@ curl -X POST http://localhost:8040/workflow/run \
   }'
 ```
 
-Runs architecture → codegen → tests through the model-switching router. Features: sequential or parallel steps (`run_parallel`), 3-attempt retry per step, step logging, registry-based discovery (`GET /workflows`). Register new pipelines by adding a `Workflow` to `workflow/registry.py`.
+Runs architecture → codegen → tests through the model-switching router. Features: sequential or parallel steps (`run_parallel`), 3-attempt retry per step, validation warnings, JSONL audit log (`logs/workflow-audit.jsonl`), registry-based discovery (`GET /workflows`), export (`GET /workflow/export/{name}`), inline execution (`POST /workflow/run-inline`). Register new pipelines in `workflow/registry.py`.
+
+## Workflow Designer
+
+Open `workflow/ui/designer.html` in a browser (or `python3 -m http.server -d workflow/ui`): add steps, set name/agent/consumes, delete, and **Save Workflow** exports a definition JSON that `POST /workflow/run-inline` can execute.
+
+## CLI
+
+```bash
+python3 tokugawa.py status                 # health + router metrics
+python3 tokugawa.py models
+python3 tokugawa.py route "Build a REST API" --profile strict
+python3 tokugawa.py workflows
+python3 tokugawa.py run full_build --context '{"spec":"..."}'
+```
+
+## Configuration & profiles
+
+`config/config.json` is the single source of truth; every value is overridable by env (see `router/settings.py`). Docker Compose reads `.env` (copy `.env.example`). Dev without a GPU: `MOCK_LLM=1`.
+
+## Security
+
+- Router API keys: set `ROUTER_API_KEY`, send `X-API-Key`
+- Per-client token-bucket rate limiting (429 when exhausted)
+- Model servers stay on internal network; only router/dashboard/agents ports are published
+
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest          # offline suite: classifier, switcher, cache, rate limiter,
+                # router API (mock), agent profiles/memory, workflow engine
+```
+
+## Kubernetes
+
+```bash
+kubectl apply -f k8s/
+```
+
+Includes namespace, PVC for models, GPU nodeSelector/tolerations for llama & vLLM, deployments + services (llama, vLLM, router, agents, workflow), and HPAs for the CPU services. Images come from CI (`docker-publish.yml` pushes to GHCR on tags).
 
 ## Self-healing
 
@@ -140,19 +182,28 @@ CI runs on push/PR: Python compile, bash syntax, JSON validity, JS syntax checks
 ```
 unified-ai-stack/
 ├── install.sh · start.sh · validate.sh · supervisor.sh
-├── docker-compose.yml · requirements.txt
+├── docker-compose.yml · .env.example · tokugawa.py (CLI)
+├── config/config.json              # centralized config
 ├── llama/            launch-llama.sh, Dockerfile
 ├── vllm/             launch-vllm.sh, Dockerfile
-├── router/           router.py, classifier.py, switcher.py, models.py, Dockerfile
-├── agents/           api.py + 5 agent CLIs, health/recovery/gpu-warmup, run.sh, Dockerfile
-├── workflow/         engine.py, registry.py, api.py, workflows/full_build.py, Dockerfile
-├── dashboard/        backend.py, templates/, static/ (Chart.js GPU graph), Dockerfile
+├── router/           router.py, classifier.py, switcher.py, models.py,
+│                     settings.py, Dockerfile
+├── agents/           api.py + 5 agent CLIs, health/recovery/gpu-warmup,
+│                     run.sh, Dockerfile
+├── workflow/         engine.py, registry.py, api.py, ui/designer.*,
+│                     workflows/ (full_build, templates), Dockerfile
+├── dashboard/        backend.py, templates/, static/ (Chart.js), Dockerfile
 ├── ui/               tokugawa.html/.js, theme.css, presets.json
 ├── models/           auto-download-models.sh (+ downloaded GGUFs, gitignored)
 ├── registry/         registry.json
 ├── manifest/         mimocode/jcode/opencode model maps
-└── desktop/          start_xfce.sh, start_vnc.sh, start_novnc.sh
+├── tests/            pytest suite (offline)
+├── k8s/              namespace, PVC, deployments, services, HPAs
+├── docs/             MkDocs site sources + generate_docs.py
+└── .github/workflows/  ci · workflow-ci · docs · docker-publish · release
 ```
+
+See [ROADMAP.md](ROADMAP.md) for the implemented/planned feature matrix.
 
 ## Troubleshooting
 

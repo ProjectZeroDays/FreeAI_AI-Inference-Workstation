@@ -1,0 +1,29 @@
+{
+  "router": {
+    "port": 8010,
+    "api_key": "",
+    "rate_limit_capacity": 60,
+    "rate_limit_refill_per_min": 60,
+    "cache_enabled": true,
+    "cache_size": 128,
+    "backend_timeout_s": 300,
+    "mock_llm": false,
+    "model_overrides": {}
+  },
+  "agents": {
+    "port": 8020,
+    "default_profile": "balanced",
+    "memory_max_turns": 20
+  },
+  "workflow": {
+    "port": 8040,
+    "audit_log": "logs/workflow-audit.jsonl",
+    "step_retries": 3,
+    "retry_delay_s": 2
+  },
+  "dashboard": {
+    "port": 8030,
+    "gpu_temp_alert_c": 85,
+    "gpu_util_alert_pct": 90
+  }
+}

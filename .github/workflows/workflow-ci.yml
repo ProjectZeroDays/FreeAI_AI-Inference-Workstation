@@ -1,0 +1,53 @@
+name: Workflow CI
+
+on:
+  push:
+    paths:
+      - "workflow/**"
+      - "agents/**"
+      - "router/**"
+  pull_request:
+
+jobs:
+  test-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install fastapi uvicorn requests pydantic flask
+
+      - name: Lint workflow engine
+        run: python -m compileall workflow router agents
+
+      - name: Offline smoke test (no services required)
+        run: |
+          python - << 'EOF'
+          from workflow.registry import WORKFLOWS
+          assert "project_pipeline" in WORKFLOWS, "missing project_pipeline"
+          assert "full_build" in WORKFLOWS, "missing full_build"
+
+          from workflow.engine import _extract_text, Step, Workflow
+          assert _extract_text({"response": {"choices": [{"text": "hi"}]}}) == "hi"
+          assert _extract_text({"response": {"content": "yo"}}) == "yo"
+
+          step = Step("s", "orchestrate", lambda ctx: {"prompt": "x"})
+          wf = Workflow("wf", [step])
+          assert wf.name == "wf" and len(wf.steps) == 1
+
+          import sys
+          sys.path.insert(0, "router")
+          from classifier import classify_task
+          from switcher import select_model
+          t = classify_task("Build a production API service")
+          assert t == "full_project"
+          assert select_model(t)["role"] == "primary_coder"
+
+          print("Workflow smoke test OK")
+          EOF

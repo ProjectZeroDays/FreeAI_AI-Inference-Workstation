@@ -9,3 +9,5 @@ __pycache__/
 *.log
 .env
 .DS_Store
+
+docs/workflows.json

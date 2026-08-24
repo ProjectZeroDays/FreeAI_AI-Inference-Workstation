@@ -7,6 +7,7 @@ services:
     environment:
       - LLAMA_MODEL_PATH=/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf
       - LLAMA_PORT=9001
+      - N_GPU_LAYERS=${N_GPU_LAYERS:-80}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
@@ -19,13 +20,36 @@ services:
     ports:
       - "9001:9001"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:9001/health', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  gpu-warmup:
+    container_name: gpu_warmup
+    build:
+      context: ./agents
+      dockerfile: Dockerfile
+    profiles: ["warmup"]
+    environment:
+      - ROUTER_URL=http://router:8010/route
+    command: ["python3", "-c", "import os,urllib.request;req=urllib.request.Request(os.environ['ROUTER_URL'],data=b'{\"prompt\":\"warmup\",\"max_tokens\":32}',headers={'Content-Type':'application/json'});print(urllib.request.urlopen(req,timeout=300).status)"]
+    depends_on:
+      router:
+        condition: service_healthy
+      llama:
+        condition: service_healthy
+    restart: "no"
 
   vllm:
     container_name: vllm_server
     image: vllm/vllm-openai:latest
     profiles: ["vllm"]
     command: ["--host", "0.0.0.0", "--port", "9002",
-              "--model", "${VLLM_MODEL:-Qwen/Qwen2.5-7B-Instruct}"]
+              "--model", "${VLLM_MODEL:-Qwen/Qwen2.5-7B-Instruct}",
+              "--enable-prefix-caching"]
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
@@ -46,11 +70,20 @@ services:
     environment:
       - LLAMA_BASE=http://llama:9001
       - ROUTER_PORT=8010
+      - ROUTER_API_KEY=${ROUTER_API_KEY:-}
+      - MOCK_LLM=${MOCK_LLM:-0}
+      - RATE_LIMIT_CAPACITY=${RATE_LIMIT_CAPACITY:-60}
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
     ports:
       - "8010:8010"
     depends_on:
       - llama
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8010/health', timeout=5)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   agents:
     container_name: agent_api
@@ -62,8 +95,14 @@ services:
     ports:
       - "8020:8020"
     depends_on:
-      - router
+      router:
+        condition: service_healthy
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8020/health', timeout=5)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   workflow:
     container_name: workflow_engine
@@ -72,11 +111,20 @@ services:
       dockerfile: Dockerfile
     environment:
       - AGENT_API=http://agents:8020
+      - WORKFLOW_AUDIT_LOG=/workspace/logs/workflow-audit.jsonl
+    volumes:
+      - audit-logs:/workspace/logs
     ports:
       - "8040:8040"
     depends_on:
-      - agents
+      agents:
+        condition: service_healthy
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8040/health', timeout=5)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   dashboard:
     container_name: tokugawa_dashboard
@@ -103,6 +151,9 @@ services:
       - "5901:5901"
       - "6080:6080"
     restart: always
+
+volumes:
+  audit-logs:
 
 networks:
   default:

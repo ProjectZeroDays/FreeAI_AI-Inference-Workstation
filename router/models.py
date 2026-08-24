@@ -1,6 +1,10 @@
 import os
 
-LLAMA_BASE = os.environ.get("LLAMA_BASE", "http://localhost:9001")
+from settings import load_config
+
+_CFG = load_config()
+LLAMA_BASE = _CFG.get("router", {}).get(
+    "llama_base", os.environ.get("LLAMA_BASE", "http://localhost:9001"))
 LLAMA_COMPLETION = f"{LLAMA_BASE}/completion"
 
 MODEL_REGISTRY = {
@@ -36,4 +40,12 @@ MODEL_REGISTRY = {
         ],
         "endpoint": LLAMA_COMPLETION,
     },
+}
+
+# Fallback order per task: primary first, then alternates.
+FALLBACK_CHAIN = {
+    "full_project": ["qwen3.6-12b", "moe-13b", "qwen3.5-9b"],
+    "refactor": ["moe-13b", "qwen3.6-12b", "qwen3.5-9b"],
+    "analysis": ["qwen3.5-9b", "qwen3.6-12b", "moe-13b"],
+    "general_code": ["qwen3.6-12b", "moe-13b", "qwen3.5-9b"],
 }

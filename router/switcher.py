@@ -1,15 +1,34 @@
-from models import MODEL_REGISTRY
+from models import MODEL_REGISTRY, FALLBACK_CHAIN
 
 
 def select_model(task_type: str) -> dict:
-    if task_type == "full_project":
-        return MODEL_REGISTRY["qwen3.6-12b"]
+    """Primary model for a task type (kept for backward compatibility)."""
+    chain = FALLBACK_CHAIN.get(task_type, FALLBACK_CHAIN["general_code"])
+    return MODEL_REGISTRY[chain[0]]
 
-    if task_type == "refactor":
-        return MODEL_REGISTRY["moe-13b"]
 
-    if task_type == "analysis":
-        return MODEL_REGISTRY["qwen3.5-9b"]
+def select_chain(task_type: str, agent: str = None) -> list:
+    """Ordered candidate list for fallback routing.
 
-    # Default -> strongest coder
-    return MODEL_REGISTRY["qwen3.6-12b"]
+    Per-agent overrides (config router.model_overrides / env
+    AGENT_MODEL_OVERRIDES JSON) put the overridden model first.
+    """
+    chain = list(FALLBACK_CHAIN.get(task_type, FALLBACK_CHAIN["general_code"]))
+
+    override = None
+    if agent:
+        cfg = _load_overrides()
+        override = cfg.get(agent)
+    if override and override in MODEL_REGISTRY:
+        if override in chain:
+            chain.remove(override)
+        chain.insert(0, override)
+    return chain
+
+
+def _load_overrides() -> dict:
+    try:
+        from settings import load_config
+        return load_config().get("router", {}).get("model_overrides", {}) or {}
+    except Exception:
+        return {}

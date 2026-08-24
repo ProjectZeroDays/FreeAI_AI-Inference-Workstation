@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tokugawa Workflow Designer</title>
+  <link rel="stylesheet" href="designer.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Tokugawa Workflow Designer</h1>
+      <p>Visual editor for multi-agent workflows</p>
+    </header>
+
+    <section class="toolbar">
+      <button id="add-step">Add Step</button>
+      <button id="delete-step">Delete Selected</button>
+      <button id="save-workflow">Save Workflow</button>
+    </section>
+
+    <section class="canvas" id="canvas"></section>
+
+    <section class="config">
+      <h2>Selected Step</h2>
+      <div id="config-panel"></div>
+    </section>
+  </div>
+
+  <script src="designer.js"></script>
+</body>
+</html>

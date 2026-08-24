@@ -30,9 +30,28 @@ function updateChart(util) {
   gpuChart.update();
 }
 
+function renderAlerts(alerts) {
+  const list = document.getElementById("alerts-list");
+  if (!alerts || !alerts.length) {
+    list.innerHTML = '<li class="muted">No alerts.</li>';
+    return;
+  }
+  list.innerHTML = "";
+  alerts.forEach(a => {
+    const li = document.createElement("li");
+    const badge = document.createElement("span");
+    badge.className = "badge " + (a.level === "critical" ? "down" : "warn");
+    badge.textContent = a.level.toUpperCase();
+    li.appendChild(badge);
+    li.appendChild(document.createTextNode(" " + a.message));
+    list.appendChild(li);
+  });
+}
+
 async function fetchStatus() {
   const gpuUtil = document.getElementById("gpu-util");
   const gpuMem = document.getElementById("gpu-mem");
+  const gpuExtra = document.getElementById("gpu-extra");
   const servicesList = document.getElementById("services-list");
   const ts = document.getElementById("timestamp");
 
@@ -40,10 +59,15 @@ async function fetchStatus() {
     const res = await fetch("/api/status");
     const json = await res.json();
 
+    renderAlerts(json.alerts);
+
     gpuUtil.textContent = `Utilization: ${json.gpu.utilization}%`;
     updateChart(json.gpu.utilization);
     gpuMem.textContent =
       `Memory: ${json.gpu.memory_used} / ${json.gpu.memory_total} MiB`;
+    gpuExtra.textContent =
+      `Temp: ${json.gpu.temperature}C | Power: ${json.gpu.power_watts}W` +
+      ` | Clock: ${json.gpu.clock_mhz}MHz`;
 
     servicesList.innerHTML = "";
     Object.entries(json.services).forEach(([name, ok]) => {

@@ -1,0 +1,33 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bundle source
+        run: |
+          mkdir -p dist
+          tar --exclude='./.git' \
+              --exclude='./venv' \
+              --exclude='./llama.cpp' \
+              --exclude='./models/*.gguf' \
+              -czf "dist/unified-ai-stack-${GITHUB_REF_NAME}.tar.gz" .
+          ls -lh dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: dist/*.tar.gz
+
+      - name: Attach to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.tar.gz
