@@ -1,0 +1,7 @@
+{
+  "mimocode_models": [
+    { "id": "qwen3.6-12b", "context": 4096 },
+    { "id": "moe-13b", "context": 4096 },
+    { "id": "qwen3.5-9b", "context": 4096 }
+  ]
+}

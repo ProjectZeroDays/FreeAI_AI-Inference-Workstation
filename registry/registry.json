@@ -1,0 +1,37 @@
+{
+  "models": [
+    {
+      "key": "qwen3.6-12b",
+      "id": "qwen3.6-12b-iq-ultra-heretic-uncensored-thinking",
+      "name": "Qwen3.6 12B IQ Ultra Heretic Uncensored Thinking",
+      "role": "primary_coder",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf",
+      "context": 4096,
+      "strengths": ["architecture", "full_project", "production_code", "multi_file", "api_design", "microservices", "ci_cd", "infrastructure", "deep_reasoning"]
+    },
+    {
+      "key": "moe-13b",
+      "id": "l3.1-moe-2x8b-deepseek-deephermes-e32-uncensored-abliterated",
+      "name": "L3.1 MOE 2x8B DeepSeek DeepHermes e32 Abliterated",
+      "role": "fast_coder",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/L3.1-MOE-2X8B-Deepseek-DeepHermes-e32-uncensored-abliterated-13.7B-Q6_K.gguf",
+      "context": 4096,
+      "strengths": ["refactor", "debug", "fix_code", "patch", "optimize", "incremental", "fast_completion"]
+    },
+    {
+      "key": "qwen3.5-9b",
+      "id": "qwen3.5-9b-claude-highiq-heretic-uncensored",
+      "name": "Qwen3.5 9B Claude HighIQ Heretic Uncensored",
+      "role": "reasoning_specialist",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwen3.5-9B-Claude-4.6-HighIQ-INSTRUCT-HERETIC-UNCENSORED-Q6_K.gguf",
+      "context": 4096,
+      "strengths": ["analysis", "explain", "think_step_by_step", "planning", "decomposition", "logic"]
+    }
+  ]
+}

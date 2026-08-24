@@ -1,0 +1,109 @@
+services:
+  llama:
+    container_name: llama_cpp
+    build:
+      context: ./llama
+      dockerfile: Dockerfile
+    environment:
+      - LLAMA_MODEL_PATH=/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf
+      - LLAMA_PORT=9001
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9001:9001"
+    restart: always
+
+  vllm:
+    container_name: vllm_server
+    image: vllm/vllm-openai:latest
+    profiles: ["vllm"]
+    command: ["--host", "0.0.0.0", "--port", "9002",
+              "--model", "${VLLM_MODEL:-Qwen/Qwen2.5-7B-Instruct}"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9002:9002"
+    restart: always
+
+  router:
+    container_name: tokugawa_router
+    build:
+      context: ./router
+      dockerfile: Dockerfile
+    environment:
+      - LLAMA_BASE=http://llama:9001
+      - ROUTER_PORT=8010
+    ports:
+      - "8010:8010"
+    depends_on:
+      - llama
+    restart: always
+
+  agents:
+    container_name: agent_api
+    build:
+      context: ./agents
+      dockerfile: Dockerfile
+    environment:
+      - ROUTER_URL=http://router:8010/route
+    ports:
+      - "8020:8020"
+    depends_on:
+      - router
+    restart: always
+
+  workflow:
+    container_name: workflow_engine
+    build:
+      context: ./workflow
+      dockerfile: Dockerfile
+    environment:
+      - AGENT_API=http://agents:8020
+    ports:
+      - "8040:8040"
+    depends_on:
+      - agents
+    restart: always
+
+  dashboard:
+    container_name: tokugawa_dashboard
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "8030:8030"
+    depends_on:
+      - router
+      - llama
+      - agents
+    restart: always
+
+  desktop:
+    container_name: xfce_desktop
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    profiles: ["desktop"]
+    environment:
+      - USER=root
+      - PASSWORD=pass
+      - RESOLUTION=1920x1080
+    ports:
+      - "5901:5901"
+      - "6080:6080"
+    restart: always
+
+networks:
+  default:
+    driver: bridge

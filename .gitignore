@@ -1,0 +1,11 @@
+venv/
+llama.cpp/
+models/*
+!models/auto-download-models.sh
+logs/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.env
+.DS_Store

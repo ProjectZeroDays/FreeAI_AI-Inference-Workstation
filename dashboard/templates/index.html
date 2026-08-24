@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tokugawa Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Tokugawa Dashboard</h1>
+      <p>Unified GPU Inference Stack — Health &amp; Metrics</p>
+    </header>
+
+    <section class="gpu">
+      <h2>GPU</h2>
+      <div id="gpu-util">Loading…</div>
+      <div id="gpu-mem"></div>
+      <canvas id="gpuChart" width="400" height="150"></canvas>
+    </section>
+
+    <section class="services">
+      <h2>Services</h2>
+      <ul id="services-list"></ul>
+    </section>
+
+    <section class="meta">
+      <h2>Last Update</h2>
+      <div id="timestamp"></div>
+    </section>
+  </div>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>
