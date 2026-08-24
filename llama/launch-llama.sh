@@ -21,6 +21,8 @@ fi
 echo "[llama] Starting llama.cpp server on :$PORT"
 # --jinja activates the GGUF's embedded chat template; Qwen3/DeepSeek
 # reasoning models degrade into tag-soup/repetition loops without it.
+# Server-side sampling guards below are the anti-repetition backstop;
+# clients (agent profiles) still send their own temperature.
 # Pass extra flags via LLAMA_EXTRA_ARGS (e.g. draft model for spec dec).
 exec "$BIN" \
   -m "$MODEL" \
@@ -30,4 +32,6 @@ exec "$BIN" \
   --port "$PORT" \
   --threads "$(nproc)" \
   -ngl "${N_GPU_LAYERS:-80}" \
+  --repeat-penalty "${REPEAT_PENALTY:-1.05}" \
+  --repeat-last-n "${REPEAT_LAST_N:-64}" \
   ${LLAMA_EXTRA_ARGS:-}

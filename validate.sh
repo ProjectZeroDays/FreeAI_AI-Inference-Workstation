@@ -32,6 +32,18 @@ for f in mimocode-models.json jcode-models.json opencode-models.json; do
   fi
 done
 
+echo "[validate] Checking quantization sanity (Q4_K/Q5_K/Q6_K only)..."
+bad_quant=0
+for gguf in models/*.gguf; do
+  [ -e "$gguf" ] || continue
+  base="$(basename "$gguf")"
+  if ! echo "$base" | grep -Eqi 'Q[4-6]_K|Q8_0|BF16|F16|IQ4'; then
+    echo "WARN $base: aggressive quant (IQ2/IQ3?) hurts coherence"
+    bad_quant=1
+  fi
+done
+[ "$bad_quant" = "0" ] && echo "OK   all present models use sane quants"
+
 echo "[validate] Checking llama.cpp server binary..."
 if [ ! -x "llama.cpp/build/bin/llama-server" ] && ! command -v llama-server >/dev/null 2>&1; then
   echo "WARN llama-server not built yet (run ./install.sh)"

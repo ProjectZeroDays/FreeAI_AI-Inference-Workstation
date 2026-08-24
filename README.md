@@ -234,8 +234,12 @@ parts list (MPN-level SKUs), assembly guide, and a one-shot Ubuntu
 provisioner live in [`hardware/`](hardware/):
 
 - [hardware/parts-list.md](hardware/parts-list.md) — Center AI Workstation v1 (~$2.3–2.6k, RTX 4070 Ti Super 16G)
+- [hardware/LOCAL-DEPLOY.md](hardware/LOCAL-DEPLOY.md) — min requirements, build-vs-cloud economics
 - [hardware/BUILD.md](hardware/BUILD.md) — step-by-step assembly + Ubuntu 24.04
-- `sudo ./hardware/install-stack.sh` — drivers → CUDA → Docker → stack → systemd → UFW
+- `sudo ./hardware/install-stack.sh` — drivers → CUDA → Docker → stack → watchdogs/GPU-tune/optimizer systemd units → UFW
+- `./hardware/setup-remote-access.sh tailscale|cloudflare` — remote access
+- `sudo ./hardware/gpu-power-tune.sh apply` — undervolt-equivalent profile (−10..20°C)
+- `agents/resource_optimizer.py` — AI power-mode controller: watches GPU temp/utilization, shifts performance/balanced/eco automatically; mode shows on the dashboard
 
 ## Troubleshooting
 

@@ -4,6 +4,25 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
+# --update-llama: refresh llama.cpp to latest master and rebuild only
+if [ "${1:-}" = "--update-llama" ]; then
+  LLAMA_DIR="$ROOT/llama.cpp"
+  if [ ! -d "$LLAMA_DIR/.git" ]; then
+    echo "[update] no llama.cpp checkout — run a full ./install.sh first" >&2
+    exit 1
+  fi
+  echo "[update] pulling latest llama.cpp..."
+  git -C "$LLAMA_DIR" fetch --depth 1 origin master
+  git -C "$LLAMA_DIR" reset --hard FETCH_HEAD
+  echo "[update] rebuilding..."
+  CUDA_FLAGS=(-DGGML_CUDA=OFF)
+  command -v nvcc >/dev/null 2>&1 && CUDA_FLAGS=(-DGGML_CUDA=ON)
+  cmake -S "$LLAMA_DIR" -B "$LLAMA_DIR/build" "${CUDA_FLAGS[@]}"
+  cmake --build "$LLAMA_DIR/build" --config Release -j "$(nproc)"
+  echo "[update] done — restart the stack (systemctl restart tokugawa-stack)"
+  exit 0
+fi
+
 echo "[install] Updating system..."
 sudo apt-get update -y
 

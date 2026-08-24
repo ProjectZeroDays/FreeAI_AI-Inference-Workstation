@@ -66,6 +66,7 @@ async function fetchStatus() {
     gpuMem.textContent =
       `Memory: ${json.gpu.memory_used} / ${json.gpu.memory_total} MiB`;
     gpuExtra.textContent =
+      `Mode: ${json.power_mode || "balanced"} | ` +
       `Temp: ${json.gpu.temperature}C | Power: ${json.gpu.power_watts}W` +
       ` | Clock: ${json.gpu.clock_mhz}MHz`;
 

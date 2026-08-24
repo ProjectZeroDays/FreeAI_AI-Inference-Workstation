@@ -136,6 +136,36 @@ def mock_completion(payload):
     return {"content": _MOCK_WORDS[:n], "mock": True}
 
 
+# ----------------------------------------------------- degenerate guard
+def _text_of(result):
+    """Best-effort extraction of generated text from a backend payload."""
+    if not isinstance(result, dict):
+        return ""
+    choices = result.get("choices")
+    if choices:
+        choice = choices[0] or {}
+        msg = choice.get("message") or {}
+        return msg.get("content") or choice.get("text") or ""
+    return result.get("content") or ""
+
+
+def is_degenerate(text):
+    """Detect repetition loops: a short period repeated many times at
+    the tail of the output. Cheap heuristic, tuned for coder models."""
+    if not text or len(text) < 120:
+        return False
+    t = "".join(text.lower().split())
+    for period in range(4, 65):
+        reps = len(t) // period
+        if reps < 5:
+            break
+        unit = t[-period:]
+        tail = t[-(period * min(reps, 8)):]
+        if unit * (len(tail) // period) == tail:
+            return True
+    return False
+
+
 # ---------------------------------------------------------------- routes
 @app.route("/health")
 def health():
@@ -195,30 +225,45 @@ def route():
     }
 
     started = time.monotonic()
+    chain = select_chain(task_type, agent)
     if MOCK_LLM:
-        chain = select_chain(task_type, agent)
         result = mock_completion(payload)
         model_used = chain[0]
         error = None
+        degenerate_retries = 0
     else:
         import requests
+        from models import MODEL_REGISTRY
         result = None
         model_used = None
         error = None
-        for candidate in select_chain(task_type, agent):
-            from models import MODEL_REGISTRY
+        degenerate_retries = 0
+        best_effort = None          # (payload, name) if all answers loop
+        candidates = list(chain)
+        while candidates:
+            candidate = candidates.pop(0)
             model = MODEL_REGISTRY[candidate]
             try:
                 r = requests.post(model["endpoint"], json=payload,
                                   timeout=TIMEOUT)
                 r.raise_for_status()
-                result = r.json()
-                model_used = model["name"]
+                attempt = r.json()
+                if is_degenerate(_text_of(attempt)) and candidates \
+                        and best_effort is None:
+                    # looks like a repetition loop — try next backend,
+                    # but keep this as a last-resort answer
+                    best_effort = (attempt, model["name"])
+                    metrics_incr("degenerate_skips")
+                    degenerate_retries += 1
+                    continue
+                result, model_used = attempt, model["name"]
                 metrics_model(candidate)
                 break
             except Exception as exc:
                 error = str(exc)
                 continue
+        if result is None and best_effort is not None:
+            result, model_used = best_effort
         if result is None:
             metrics_incr("errors_total")
             return jsonify({
@@ -239,6 +284,8 @@ def route():
     cache_put(cache_key, body)
     resp = jsonify(body)
     resp.headers["X-Cache"] = "MISS"
+    if degenerate_retries:
+        resp.headers["X-Coherence-Retries"] = str(degenerate_retries)
     return resp
 
 

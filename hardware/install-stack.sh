@@ -51,6 +51,9 @@ $SUDO apt-get install -y \
 # ------------------------------------------------------- 2. NVIDIA driver
 if command -v nvidia-smi >/dev/null 2>&1; then
   log "NVIDIA driver present: $(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n1)"
+  # persistence daemon: stops driver state reloads between CUDA procs
+  $SUDO systemctl enable --now nvidia-persistenced 2>/dev/null \
+    || log "nvidia-persistenced not available (non-fatal)"
 else
   log "Installing NVIDIA driver ${DRIVER_VERSION}..."
   $SUDO apt-get install -y "nvidia-driver-${DRIVER_VERSION}" \
@@ -122,6 +125,21 @@ if [ -f "$UNIT_SRC" ]; then
       log "service start deferred (needs reboot for driver first?)"
   fi
 fi
+
+# auxiliary units: watchdog agents + GPU tune + resource optimizer
+for unit in tokugawa-agents gpu-tune resource-optimizer; do
+  SRC="$SCRIPT_DIR/systemd/$unit.service"
+  [ -f "$SRC" ] || continue
+  DST="/etc/systemd/system/$unit.service"
+  sed -e "s|__STACK_DIR__|$STACK_DIR|g" \
+      -e "s|__STACK_USER__|$REAL_USER|g" \
+      "$SRC" | $SUDO tee "$DST" > /dev/null
+  $SUDO systemctl daemon-reload
+  $SUDO systemctl enable "$unit.service"
+done
+[ "$NO_START" != "1" ] && \
+  $SUDO systemctl start tokugawa-agents.service gpu-tune.service \
+    resource-optimizer.service 2>/dev/null || true
 
 # -------------------------------------------------------------- 8. firewall
 if [ "$ENABLE_UFW" = "1" ]; then

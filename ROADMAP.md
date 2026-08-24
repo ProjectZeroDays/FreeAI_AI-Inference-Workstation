@@ -8,6 +8,9 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - ✅ GPU warmup container (`--profile warmup`)
 - ✅ Centralized config (`config/config.json` + env overrides)
 - ✅ Environment profiles (dev/staging/prod via env)
+- ✅ AI resource optimizer (thermal/util-driven power modes, hysteresis,
+  runtime-state published to dashboard) — saves watts/money 24/7
+- ✅ GPU undervolt-equivalent tune (power cap + clock lock, systemd)
 - 🕐 Log aggregation (FluentBit → Loki → Grafana)
 - 🕐 Secrets management (Vault / Kubernetes Secrets)
 - 🕐 Request tracing (OpenTelemetry)

@@ -12,10 +12,12 @@ them as budget estimates, not quotes.
 | CPU | AMD Ryzen 9 7900 (12c/24t, boxed w/ Wraith) | `100-100000904` | Amazon/MC search MPN | $280–330 |
 | Cooler | Noctua NH-D15S (AM5 SecuFirm2 included) | `NH-D15S` | Amazon/MC | $100–110 |
 | Motherboard | ASUS TUF Gaming B650-PLUS WIFI | `TUF GAMING B650-PLUS WIFI` | Amazon/MC | $190–220 |
-| GPU | GIGABYTE RTX 4070 Ti SUPER Gaming OC 16G | `GV-N407TSGAMING OC-16GD` | Amazon ASIN `B0CSJVCD3Y` | $800–900 |
+| GPU | GIGABYTE RTX 4070 Ti SUPER Gaming OC **16G** | `GV-N407TSGAMING OC-16GD` | Amazon ASIN `B0CSJVCD3Y` | $800–900 |
 | RAM | G.Skill Flare X5 64GB (2×32) DDR5-6000 **CL30** EXPO | `F5-6000J3040G32GX2-FX5` | Amazon/MC | $200–230 |
 | OS SSD | Samsung 990 EVO 1TB Gen4 NVMe | `MZ-V9E1T0B/AM` (alt: 990 EVO Plus `MZ-V9S1T0B/AM`) | Amazon/MC | $70–95 |
 | Models SSD | WD Black SN850X 2TB Gen4 NVMe | `WDS200T2X0E` | Amazon ASIN `B0B7CMZ3QH` | $140–170 |
+| Models SSD alt | Crucial P5 Plus 2TB Gen4 NVMe | `CT2000P5PSSD8` | Amazon/MC | $120–150 |
+| Models SSD alt | Sabrent Rocket 4 Plus 2TB Gen4 NVMe | `SB-RKT4P-2TB` | Amazon | $130–160 |
 | PSU | Corsair RM850x 850W 80+ Gold (modular) | `CP-9020200-NA` | Amazon/MC | $130–150 |
 | Case | Fractal Design North (charcoal/walnut) | `FD-C-NOR1C-01` | Amazon/MC | $130–140 |
 | Case alt | Fractal Meshify 2 Compact (more airflow) | `FD-MES2C-001` | Amazon/MC | $90–110 |
@@ -26,6 +28,11 @@ them as budget estimates, not quotes.
 
 Notes:
 
+- **GPU reality check**: there is no "4070 Ti SUPER 32G" — the card is
+  16GB, full stop (some retail copy conflates it with the 4090). 16GB
+  is the sweet spot for Q6_K 12–13B coder models; if you later need
+  24GB+, the true upgrade paths are RTX 4090 (`GV-N4090GAMING OC-24GD`)
+  or used 3090 Ti — both change PSU math, so re-check headroom.
 - The B650-PLUS WIFI runs the second M.2 at Gen4 x4 — perfect for the
   SN850X models drive. First slot also Gen4 x4; either order works.
 - NH-D15S clears the top PCIe slot on this board; the GIGABYTE card's

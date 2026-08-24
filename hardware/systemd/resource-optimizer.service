@@ -1,0 +1,14 @@
+[Unit]
+Description=Tokugawa AI resource optimizer (thermal/power/load balancing)
+After=tokugawa-stack.service gpu-tune.service
+
+[Service]
+Type=simple
+User=__STACK_USER__
+WorkingDirectory=__STACK_DIR__
+ExecStart=/usr/bin/env python3 __STACK_DIR__/agents/resource_optimizer.py
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

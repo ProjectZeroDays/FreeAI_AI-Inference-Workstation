@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Tokugawa Dashboard — GPU telemetry, service health, alerts."""
+import json
 import os
 import subprocess
 import time
@@ -99,12 +100,20 @@ def build_alerts(services, gpu):
 def status():
     gpu = get_gpu_stats()
     services = listening_ports()
-    return jsonify({
+    body = {
         "timestamp": int(time.time()),
         "gpu": gpu,
         "services": services,
         "alerts": build_alerts(services, gpu),
-    })
+    }
+    state_path = os.path.join(os.path.dirname(BASE_DIR),
+                              "config", "runtime-state.json")
+    try:
+        with open(state_path) as f:
+            body["power_mode"] = json.load(f).get("mode", "balanced")
+    except (OSError, ValueError):
+        body["power_mode"] = "balanced"
+    return jsonify(body)
 
 
 @app.route("/")
