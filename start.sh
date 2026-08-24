@@ -13,6 +13,21 @@ fi
 source venv/bin/activate
 mkdir -p logs
 
+# ---- port preflight: fail fast with a clear message ----
+if [ "${ALLOW_PORT_REUSE:-0}" != "1" ] && command -v ss >/dev/null 2>&1; then
+  ports_in_use=""
+  for p in 8010 9001 8030; do
+    if ss -tuln 2>/dev/null | grep -q ":$p "; then
+      ports_in_use="$ports_in_use $p"
+    fi
+  done
+  if [ -n "$ports_in_use" ]; then
+    echo "[start] ABORT: already in use:$ports_in_use" >&2
+    echo "[start] another stack running? (or ALLOW_PORT_REUSE=1 to override)" >&2
+    exit 1
+  fi
+fi
+
 echo "[start] Starting llama.cpp..."
 bash llama/launch-llama.sh >>logs/llama.log 2>&1 &
 

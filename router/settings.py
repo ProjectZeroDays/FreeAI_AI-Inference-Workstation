@@ -36,6 +36,19 @@ def _repo_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def _runtime_settings_path():
+    return os.path.join(_repo_root(), "config", "runtime-settings.json")
+
+
+# runtime-settings.json keys that map into router config (lowest priority;
+# env vars still win since they are applied after this merge)
+_RUNTIME_KEYS = {
+    "cache_enabled": ("router", "cache_enabled", bool),
+    "rate_limit_capacity": ("router", "rate_limit_capacity", int),
+    "backend_timeout_s": ("router", "backend_timeout_s", int),
+}
+
+
 def load_config():
     cfg = {}
     path = os.path.join(_repo_root(), "config", "config.json")
@@ -44,6 +57,21 @@ def load_config():
             cfg = json.load(f)
     except (OSError, ValueError):
         cfg = {}
+
+    # dashboard-editable runtime settings feed the router too
+    try:
+        with open(_runtime_settings_path()) as f:
+            rt = json.load(f)
+        for key, (section, name, cast) in _RUNTIME_KEYS.items():
+            if key in rt:
+                try:
+                    v = rt[key]
+                    cfg.setdefault(section, {})[name] = \
+                        cast(v) if cast is not bool else bool(v)
+                except (ValueError, TypeError):
+                    continue
+    except (OSError, ValueError):
+        pass
 
     for env, (section, key, cast) in _ENV_OVERRIDES.items():
         raw = os.environ.get(env)

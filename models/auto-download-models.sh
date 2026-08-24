@@ -11,6 +11,14 @@ download() {
     echo "[models] $2 already present, skipping."
     return 0
   fi
+  # disk preflight: require model size + 10GB headroom
+  local need_gb=$(( min_bytes / 1000000000 + 10 ))
+  local free_gb
+  free_gb=$(df -BG --output=avail models 2>/dev/null | tail -n1 | tr -dc '0-9')
+  if [ -n "$free_gb" ] && [ "$free_gb" -lt "$need_gb" ]; then
+    echo "[models] ABORT: only ${free_gb}GB free, need ~${need_gb}GB for $2"
+    return 1
+  fi
   echo "[models] Downloading $2 ..."
   wget -c -O "$out.part" "$url" && mv "$out.part" "$out"
 }

@@ -10,6 +10,9 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - ✅ Environment profiles (dev/staging/prod via env)
 - ✅ AI resource optimizer (thermal/util-driven power modes, hysteresis,
   runtime-state published to dashboard) — saves watts/money 24/7
+- ✅ Settings control plane: dashboard panel → runtime-settings.json →
+  optimizer / autonomous cap / router / llama launcher
+- ✅ Recommended + custom presets incl. timed idle window w/ auto-restore
 - ✅ GPU undervolt-equivalent tune (power cap + clock lock, systemd)
 - 🕐 Log aggregation (FluentBit → Loki → Grafana)
 - 🕐 Secrets management (Vault / Kubernetes Secrets)

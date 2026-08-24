@@ -1,13 +1,61 @@
 #!/usr/bin/env python3
 """Tokugawa Dashboard — GPU telemetry, service health, alerts."""
 import json
+import json
 import os
 import subprocess
+import sys
 import time
 
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+
+sys.path.insert(0, ROOT_DIR)
+try:
+    from agents.resource_optimizer import (
+        SETTINGS_DEFAULTS, load_settings as _load_opt_settings,
+        save_settings as _save_opt_settings, SETTINGS_PATH as OPT_SETTINGS_PATH,
+        BUILTIN_PRESETS, get_builtin_preset,
+    )
+except Exception:  # pragma: no cover - standalone fallback
+    SETTINGS_DEFAULTS = {
+        "auto_management": True, "forced_mode": "balanced",
+        "power_limit_w": 240, "locked_clock_mhz": 2520,
+        "eco_power_w": 200, "eco_clock_mhz": 2400,
+        "repeat_penalty": 1.05, "repeat_last_n": 64, "llama_ctx": 4096,
+        "max_concurrent_runs": 3,
+    }
+    OPT_SETTINGS_PATH = os.path.join(ROOT_DIR, "config",
+                                     "runtime-settings.json")
+    BUILTIN_PRESETS, get_builtin_preset = [], lambda n: None
+
+    def _load_opt_settings():
+        return dict(SETTINGS_DEFAULTS)
+
+    def _save_opt_settings(s):
+        os.makedirs(os.path.dirname(OPT_SETTINGS_PATH), exist_ok=True)
+        with open(OPT_SETTINGS_PATH, "w") as f:
+            json.dump(s, f, indent=2)
+
+VALID_MODES = ("performance", "balanced", "eco")
+LLAMA_ENV_PATH = os.path.join(ROOT_DIR, "config", "llama.env")
+GPU_TUNE_SCRIPT = os.path.join(ROOT_DIR, "hardware", "gpu-power-tune.sh")
+PRESETS_PATH = os.path.join(ROOT_DIR, "config", "presets.json")
+
+# field -> (low, high) inclusive bounds; repeat_penalty handled apart
+FIELD_BOUNDS = {"power_limit_w": (150, 350),
+                "locked_clock_mhz": (2000, 2900),
+                "eco_power_w": (120, 350),
+                "eco_clock_mhz": (1800, 2900),
+                "repeat_last_n": (8, 2048),
+                "llama_ctx": (512, 32768),
+                "max_concurrent_runs": (1, 16)}
+
+# keys a preset is allowed to carry
+PRESET_KEYS = ("auto_management", "forced_mode",
+               *FIELD_BOUNDS.keys(), "repeat_penalty")
 
 try:
     from settings import load_config
@@ -114,6 +162,248 @@ def status():
     except (OSError, ValueError):
         body["power_mode"] = "balanced"
     return jsonify(body)
+
+
+# ----------------------------------------------------------- settings API
+
+def _validate_and_merge(base, body):
+    """Merge validated preset/settings fields from body onto base.
+    Returns (merged, error_response_or_None)."""
+    merged = dict(base)
+    if "auto_management" in body:
+        merged["auto_management"] = bool(body["auto_management"])
+    if "forced_mode" in body:
+        if body["forced_mode"] not in VALID_MODES:
+            return None, ({"error": "invalid forced_mode"}, 400)
+        merged["forced_mode"] = body["forced_mode"]
+    for field, (lo, hi) in FIELD_BOUNDS.items():
+        if field in body:
+            try:
+                val = int(body[field])
+            except (TypeError, ValueError):
+                return None, ({"error": f"{field} must be numeric"}, 400)
+            if not lo <= val <= hi:
+                return None, (
+                    {"error": f"{field} must be {lo}-{hi}"}, 400)
+            merged[field] = val
+    if "repeat_penalty" in body:
+        try:
+            val = float(body["repeat_penalty"])
+        except (TypeError, ValueError):
+            return None, ({"error": "repeat_penalty must be numeric"}, 400)
+        if not 1.0 <= val <= 2.0:
+            return None, ({"error": "repeat_penalty must be 1.0-2.0"}, 400)
+        merged["repeat_penalty"] = val
+    return merged, None
+
+
+def _load_custom_presets():
+    try:
+        with open(PRESETS_PATH) as f:
+            data = json.load(f)
+        return data.get("presets", []) if isinstance(data, dict) else []
+    except (OSError, ValueError):
+        return []
+
+
+def _save_custom_presets(presets):
+    os.makedirs(os.path.dirname(PRESETS_PATH), exist_ok=True)
+    with open(PRESETS_PATH, "w") as f:
+        json.dump({"presets": presets}, f, indent=2)
+
+
+@app.route("/api/presets")
+def list_presets():
+    return jsonify({
+        "builtins": BUILTIN_PRESETS,
+        "customs": _load_custom_presets(),
+    })
+
+
+@app.route("/api/presets", methods=["POST"])
+def create_preset():
+    body = request.get_json(silent=True) or {}
+    name = str(body.get("name", "")).strip()
+    if not name or len(name) > 48 or "/" in name:
+        return jsonify({"error": "name required (max 48 chars)"}), 400
+    if get_builtin_preset(name):
+        return jsonify({"error": "cannot shadow a built-in preset"}), 400
+
+    merged, err = _validate_and_merge(
+        {k: SETTINGS_DEFAULTS[k] for k in PRESET_KEYS},
+        body.get("settings", {}))
+    if err:
+        return jsonify(err[0]), err[1]
+
+    presets = [p for p in _load_custom_presets()
+               if p.get("name") != name]
+    presets.append({"name": name, "builtin": False,
+                    "description": str(body.get("description", "")
+                                       )[:200],
+                    "settings": merged})
+    _save_custom_presets(presets)
+    return jsonify({"status": "saved", "preset":
+                    presets[-1]}), 201
+
+
+@app.route("/api/presets/<path:name>", methods=["DELETE"])
+def delete_preset(name):
+    presets = _load_custom_presets()
+    remaining = [p for p in presets if p.get("name") != name]
+    if len(remaining) == len(presets):
+        return jsonify({"error": "custom preset not found"}), 404
+    _save_custom_presets(remaining)
+    return jsonify({"status": "deleted"})
+
+
+@app.route("/api/presets/<path:name>/apply", methods=["POST"])
+def apply_preset(name):
+    body = request.get_json(silent=True) or {}
+    duration_min = body.get("duration_min")
+    preset = get_builtin_preset(name)
+    if preset is None:
+        preset = next((p for p in _load_custom_presets()
+                       if p.get("name") == name), None)
+    if preset is None:
+        return jsonify({"error": "preset not found"}), 404
+
+    current = _load_opt_settings()
+    new_settings = dict(current)
+
+    if duration_min is not None:
+        # timed idle: snapshot current settings, activate window
+        try:
+            minutes = max(1, min(int(duration_min), 7 * 24 * 60))
+        except (TypeError, ValueError):
+            return jsonify({"error": "duration_min must be int"}), 400
+        restore = {k: v for k, v in current.items() if k != "idle"}
+        block = {
+            "active": True,
+            "until_epoch": time.time() + minutes * 60,
+            "preset": name,
+        }
+        new_settings.update({k: v for k, v in
+                             preset["settings"].items()})
+        new_settings["idle"] = {"active": True,
+                                "until_epoch": block["until_epoch"],
+                                "restore": restore}
+        applied_profile = "eco"
+    else:
+        new_settings.update({k: v for k, v in
+                             preset["settings"].items()})
+        new_settings.pop("idle", None)
+        applied_profile = ("performance" if not new_settings.get(
+            "auto_management", True)
+            else new_settings.get("forced_mode", "balanced"))
+
+    _save_opt_settings(new_settings)
+
+    gpu_applied, gpu_err = True, ""
+    if not new_settings.get("auto_management", True) \
+            or duration_min is not None:
+        tune = dict(new_settings)
+        if duration_min is not None:
+            tune["power_limit_w"] = preset["settings"].get(
+                "eco_power_w", 200)
+            tune["locked_clock_mhz"] = preset["settings"].get(
+                "eco_clock_mhz", 2400)
+        gpu_applied, gpu_err = _apply_gpu_tune(tune)
+
+    resp = {"status": "applied", "preset": name,
+            "gpu_applied": gpu_applied, "gpu_error": gpu_err}
+    if duration_min is not None:
+        resp["idle_minutes"] = duration_min
+        resp["revert_at_epoch"] = new_settings["idle"]["until_epoch"]
+    return jsonify(resp)
+
+
+def _apply_gpu_tune(settings):
+    """Apply power/clock caps via the tune script (patchable in tests)."""
+    if not os.path.exists(GPU_TUNE_SCRIPT):
+        return False, "gpu-power-tune.sh not found"
+    env = dict(os.environ,
+               GPU_POWER_LIMIT_W=str(settings["power_limit_w"]),
+               GPU_LOCKED_CLOCK_MHZ=str(settings["locked_clock_mhz"]))
+    try:
+        proc = subprocess.run(["bash", GPU_TUNE_SCRIPT, "apply"],
+                              env=env, capture_output=True,
+                              text=True, timeout=30)
+        return proc.returncode == 0, \
+            ((proc.stderr or proc.stdout) or "")[-300:]
+    except Exception as exc:
+        return False, str(exc)
+
+
+def _write_llama_env(settings):
+    os.makedirs(os.path.dirname(LLAMA_ENV_PATH), exist_ok=True)
+    lines = [
+        f"LLAMA_CTX={int(settings['llama_ctx'])}",
+        f"REPEAT_PENALTY={float(settings['repeat_penalty'])}",
+        f"REPEAT_LAST_N={int(settings['repeat_last_n'])}",
+    ]
+    with open(LLAMA_ENV_PATH, "w") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+def _restart_llama():
+    """Prefer systemd; fall back to pkill (supervisor restarts it)."""
+    try:
+        proc = subprocess.run(
+            ["systemctl", "restart", "tokugawa-stack.service"],
+            capture_output=True, text=True, timeout=30)
+        if proc.returncode == 0:
+            return "systemd"
+    except Exception:
+        pass
+    subprocess.run(["pkill", "-f", "llama-server"], capture_output=True)
+    return "pkill"
+
+
+@app.route("/api/settings")
+def get_settings():
+    mode_path = os.path.join(ROOT_DIR, "config", "runtime-state.json")
+    current_mode = "balanced"
+    try:
+        with open(mode_path) as f:
+            current_mode = json.load(f).get("mode", current_mode)
+    except (OSError, ValueError):
+        pass
+    return jsonify({
+        "settings": _load_opt_settings(),
+        "defaults": SETTINGS_DEFAULTS,
+        "current_power_mode": current_mode,
+        "llama_restart_pending": os.path.exists(LLAMA_ENV_PATH),
+    })
+
+
+@app.route("/api/settings", methods=["POST"])
+def post_settings():
+    body = request.get_json(silent=True) or {}
+    settings, err = _validate_and_merge(_load_opt_settings(), body)
+    if err:
+        return jsonify(err[0]), err[1]
+
+    _save_opt_settings(settings)
+
+    # With auto-management ON the optimizer owns the GPU profile and
+    # re-reads these caps next loop; OFF means apply right now.
+    applied, gpu_err = True, ""
+    if not settings["auto_management"]:
+        applied, gpu_err = _apply_gpu_tune(settings)
+    return jsonify({"status": "saved", "gpu_applied": applied,
+                    "gpu_error": gpu_err})
+
+
+@app.route("/api/settings/llama-restart", methods=["POST"])
+def llama_restart():
+    settings = _load_opt_settings()
+    _write_llama_env(settings)
+    method = _restart_llama()
+    try:
+        os.remove(LLAMA_ENV_PATH)   # consumed; clears pending flag
+    except OSError:
+        pass
+    return jsonify({"status": "restarting", "method": method})
 
 
 @app.route("/")

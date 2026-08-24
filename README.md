@@ -240,6 +240,7 @@ provisioner live in [`hardware/`](hardware/):
 - `./hardware/setup-remote-access.sh tailscale|cloudflare` — remote access
 - `sudo ./hardware/gpu-power-tune.sh apply` — undervolt-equivalent profile (−10..20°C)
 - `agents/resource_optimizer.py` — AI power-mode controller: watches GPU temp/utilization, shifts performance/balanced/eco automatically; mode shows on the dashboard
+- **Presets**: four recommended one-click profiles (24-7 Balanced · Max Performance · Silent Eco · timed **Idle** window with auto-restore) plus named custom presets — all editable from the dashboard Settings panel
 
 ## Troubleshooting
 

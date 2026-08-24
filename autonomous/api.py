@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Autonomous SDLC API — start runs, track lifecycle, fetch artifacts."""
+import json
 import os
 
 from fastapi import FastAPI, HTTPException
@@ -12,6 +13,19 @@ except ImportError:
     import agent as engine  # type: ignore
 
 app = FastAPI(title="Tokugawa Autonomous SDLC", version="1.0")
+
+_SETTINGS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config", "runtime-settings.json")
+
+
+def _max_concurrent_runs() -> int:
+    """Concurrency cap from the shared settings file (dashboard-editable)."""
+    try:
+        with open(_SETTINGS_PATH) as f:
+            return max(1, int(json.load(f).get("max_concurrent_runs", 3)))
+    except (OSError, ValueError, TypeError):
+        return 3
 
 
 class StartRequest(BaseModel):
@@ -28,13 +42,25 @@ class ShellRequest(BaseModel):
 @app.get("/health")
 def health():
     return {"status": "ok",
-            "shell_tools_enabled": engine.ENABLE_SHELL}
+            "shell_tools_enabled": engine.ENABLE_SHELL,
+            "max_concurrent_runs": _max_concurrent_runs()}
 
 
 @app.post("/auto/start")
 def start(req: StartRequest):
     if not req.spec.strip():
         raise HTTPException(status_code=400, detail="spec is required")
+
+    terminal = {"done", "failed", "cancelled"}
+    active = sum(1 for r in engine.RUNS.values()
+                 if r.get("status") not in terminal)
+    cap = _max_concurrent_runs()
+    if active >= cap:
+        raise HTTPException(
+            status_code=429,
+            detail=f"concurrency cap reached ({active}/{cap} active) — "
+                   f"raise 'max_concurrent_runs' in dashboard Settings")
+
     run_id = engine.start_async(
         req.spec, profile=req.profile,
         max_tasks=max(1, min(req.max_tasks, 16)),

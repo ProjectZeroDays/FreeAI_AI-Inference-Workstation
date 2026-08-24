@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Dashboard settings panel persists overrides here (Save + restart llama)
+[ -f "$ROOT/config/llama.env" ] && . "$ROOT/config/llama.env"
+
 PORT="${LLAMA_PORT:-9001}"
 MODEL="${LLAMA_MODEL_PATH:-$ROOT/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf}"
 

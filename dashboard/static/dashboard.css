@@ -78,6 +78,82 @@ section {
   margin: 0;
 }
 
+/* ---------------- settings panel ---------------- */
+
+.settings .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.settings label {
+  color: #9ca3af;
+}
+
+.settings input[type="number"],
+.settings select {
+  background: #020617;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.settings input[type="number"] {
+  width: 90px;
+}
+
+.settings fieldset {
+  border: 1px solid #1f2937;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+
+.settings legend {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  padding: 0 6px;
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #e5e7eb !important;
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sep {
+  border: none;
+  border-top: 1px solid #1f2937;
+  margin: 12px 0;
+}
+
+.banner {
+  border: 1px solid #d97706;
+  background: rgba(217, 119, 6, 0.12);
+  color: #fbbf24;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.banner.hidden {
+  display: none;
+}
+
 .badge.ok::after {
   content: " \25CF";
   color: #22c55e;

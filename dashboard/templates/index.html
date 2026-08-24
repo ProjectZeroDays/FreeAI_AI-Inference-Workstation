@@ -31,6 +31,82 @@
       <ul id="services-list"></ul>
     </section>
 
+    <section class="settings">
+      <h2>Settings</h2>
+
+      <div id="idle-banner" class="banner hidden"></div>
+
+      <div class="row">
+        <label for="preset-select">Preset</label>
+        <select id="preset-select"></select>
+        <button id="apply-preset">Apply</button>
+        <input type="text" id="preset-name" placeholder="custom name"
+               maxlength="48" />
+        <button id="save-preset">Save as custom</button>
+        <button id="delete-preset" title="delete selected custom preset">
+          Delete</button>
+      </div>
+
+      <div class="row">
+        <label for="idle-min">Idle for (min)</label>
+        <input type="number" id="idle-min" min="1" max="10080" value="60" />
+        <button id="start-idle">Start idle window</button>
+        <span class="muted">eco now &rarr; auto-restores after</span>
+      </div>
+
+      <hr class="sep" />
+
+      <label class="chk">
+        <input type="checkbox" id="opt-auto" checked />
+        AI auto-management
+        <span class="muted">(recommended &mdash; optimizer shifts power modes)</span>
+      </label>
+
+      <div class="row">
+        <label for="opt-mode">Power mode</label>
+        <select id="opt-mode" disabled>
+          <option value="performance">performance (stock)</option>
+          <option value="balanced">balanced</option>
+          <option value="eco">eco</option>
+        </select>
+        <span id="current-mode" class="muted"></span>
+      </div>
+
+      <div class="row">
+        <label for="gpu-pl">Power cap (W)</label>
+        <input type="number" id="gpu-pl" min="150" max="350" step="5" />
+        <label for="gpu-clk">Clock lock (MHz)</label>
+        <input type="number" id="gpu-clk" min="2000" max="2900" step="10" />
+      </div>
+
+      <fieldset>
+        <legend>llama.cpp sampling <span class="muted">(Save + restart to apply)</span></legend>
+        <div class="row">
+          <label for="rpen">Repeat penalty</label>
+          <input type="number" id="rpen" min="1.0" max="2.0" step="0.01" />
+          <label for="rlastn">Repeat last-n</label>
+          <input type="number" id="rlastn" min="8" max="2048" />
+          <label for="ctx">Context</label>
+          <input type="number" id="ctx" min="512" max="32768" step="512" />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Agent workload</legend>
+        <div class="row">
+          <label for="max-runs">Max concurrent SDLC runs</label>
+          <input type="number" id="max-runs" min="1" max="16" />
+          <span class="muted">(enforced live by the autonomous API)</span>
+        </div>
+      </fieldset>
+
+      <div class="btn-row">
+        <button id="save-settings">Save settings</button>
+        <button id="apply-llama">Save + restart llama</button>
+        <span id="settings-status" class="muted"></span>
+      </div>
+    </section>
+
     <section class="meta">
       <h2>Last Update</h2>
       <div id="timestamp"></div>
