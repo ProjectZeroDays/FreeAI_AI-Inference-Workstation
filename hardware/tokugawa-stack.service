@@ -1,0 +1,20 @@
+[Unit]
+Description=Tokugawa Unified GPU Inference Stack
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=__STACK_USER__
+WorkingDirectory=__STACK_DIR__
+Environment=CACHE_ENABLED=true
+ExecStart=/usr/bin/env bash __STACK_DIR__/start.sh
+ExecStop=/bin/bash -c 'pkill -f "router/router.py"; pkill -f "dashboard/backend.py"; pkill -f "llama-server"; pkill -f "uvicorn.*agents.api"; pkill -f "uvicorn.*workflow.api"; pkill -f "uvicorn.*autonomous.api"'
+Restart=on-failure
+RestartSec=15
+TimeoutStartSec=600
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

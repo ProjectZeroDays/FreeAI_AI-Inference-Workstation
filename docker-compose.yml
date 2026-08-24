@@ -8,6 +8,7 @@ services:
       - LLAMA_MODEL_PATH=/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf
       - LLAMA_PORT=9001
       - N_GPU_LAYERS=${N_GPU_LAYERS:-80}
+      - LLAMA_EXTRA_ARGS=${LLAMA_EXTRA_ARGS:-}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:

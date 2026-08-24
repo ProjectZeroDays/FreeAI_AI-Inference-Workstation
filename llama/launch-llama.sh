@@ -19,10 +19,15 @@ if [ ! -f "$MODEL" ]; then
 fi
 
 echo "[llama] Starting llama.cpp server on :$PORT"
+# --jinja activates the GGUF's embedded chat template; Qwen3/DeepSeek
+# reasoning models degrade into tag-soup/repetition loops without it.
+# Pass extra flags via LLAMA_EXTRA_ARGS (e.g. draft model for spec dec).
 exec "$BIN" \
   -m "$MODEL" \
+  --jinja \
   -c "${LLAMA_CTX:-4096}" \
   --host 0.0.0.0 \
   --port "$PORT" \
   --threads "$(nproc)" \
-  -ngl "${N_GPU_LAYERS:-80}"
+  -ngl "${N_GPU_LAYERS:-80}" \
+  ${LLAMA_EXTRA_ARGS:-}

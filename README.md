@@ -227,6 +227,16 @@ unified-ai-stack/
 
 See [ROADMAP.md](ROADMAP.md) for the implemented/planned feature matrix.
 
+## Hardware
+
+The stack is designed for an always-on CUDA workstation — verified
+parts list (MPN-level SKUs), assembly guide, and a one-shot Ubuntu
+provisioner live in [`hardware/`](hardware/):
+
+- [hardware/parts-list.md](hardware/parts-list.md) — Center AI Workstation v1 (~$2.3–2.6k, RTX 4070 Ti Super 16G)
+- [hardware/BUILD.md](hardware/BUILD.md) — step-by-step assembly + Ubuntu 24.04
+- `sudo ./hardware/install-stack.sh` — drivers → CUDA → Docker → stack → systemd → UFW
+
 ## Troubleshooting
 
 | Symptom | Fix |
