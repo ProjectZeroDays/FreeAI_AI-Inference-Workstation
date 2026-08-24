@@ -80,10 +80,20 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - ✅ Models PVC manifest
 - 🕐 Prometheus/Grafana stack, Istio, Argo CD/Workflows, sealed secrets
 
-## 13–15. Docs / Models / Future
+## 13. Documentation
 - ✅ MkDocs skeleton (architecture, API, switching, deployment,
   troubleshooting)
+- ✅ Autonomous SDLC guide
 - ✅ Auto-docs generator (docs/generate_docs.py → workflows.json)
-- 🕐 Function calling / tool use, RAG + vector DB, document ingestion,
-  repo-wide auto-refactor, full-app generation, multi-GPU distributed
-  inference, model registry UI
+
+## 14. Models
+- ✅ Health-aware fallback routing
+- ✅ GPU warmup (compose profile + agents/gpu-warmup.sh)
+- 🕐 Model performance scoring, registry UI
+
+## 15. Future
+- ✅ Autonomous SDLC agents (plan → code → verify → fix → document →
+  package, sandboxed workspaces, artifact delivery)
+- 🕐 Function calling / tool use beyond file ops, RAG + vector DB,
+  document ingestion, repo-wide auto-refactor of existing trees,
+  multi-GPU distributed inference, model registry UI

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autonomous
+  namespace: tokugawa-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autonomous
+  template:
+    metadata:
+      labels:
+        app: autonomous
+    spec:
+      containers:
+        - name: autonomous
+          image: your-registry/autonomous:latest
+          ports:
+            - containerPort: 8050
+          env:
+            - name: AGENT_API
+              value: http://agents:8020
+            - name: ENABLE_SHELL_TOOLS
+              value: "0"
+            - name: MAX_FIX_ROUNDS
+              value: "3"
+          volumeMounts:
+            - name: workspaces
+              mountPath: /stack/workspaces
+      volumes:
+        - name: workspaces
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: autonomous
+  namespace: tokugawa-stack
+spec:
+  selector:
+    app: autonomous
+  ports:
+    - port: 8050
+      targetPort: 8050

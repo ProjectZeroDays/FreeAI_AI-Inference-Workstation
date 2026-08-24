@@ -33,6 +33,7 @@ Production-grade, self-hosted environment for running GGUF coder models on NVIDI
 | 8010 | Tokugawa Router — `POST /route`, `GET /models`, `GET /health` |
 | 8020 | Agent REST API — `/agent/project` `/agent/refactor` `/agent/debug` `/agent/analyze` `/agent/orchestrate` |
 | 8040 | Workflow Engine — `GET /workflows`, `POST /workflow/run` |
+| 8050 | Autonomous SDLC — plan → code → test → fix → document → package |
 | 8030 | Dashboard UI + `GET /api/status` |
 | 9001 | llama.cpp completion endpoint |
 | 9002 | vLLM (optional profile) |
@@ -123,6 +124,25 @@ curl -X POST http://localhost:8040/workflow/run \
 
 Runs architecture → codegen → tests through the model-switching router. Features: sequential or parallel steps (`run_parallel`), 3-attempt retry per step, validation warnings, JSONL audit log (`logs/workflow-audit.jsonl`), registry-based discovery (`GET /workflows`), export (`GET /workflow/export/{name}`), inline execution (`POST /workflow/run-inline`). Register new pipelines in `workflow/registry.py`.
 
+## Autonomous SDLC Agents
+
+One prompt in, a packaged project out — the full development life cycle unattended:
+
+```
+plan → code → test → fix → review → document → package
+```
+
+```bash
+python3 tokugawa.py auto-start "Build a FastAPI notes service with tests" --watch 20
+python3 tokugawa.py auto-fetch <run_id> -o project.tar.gz
+```
+
+- **Real verification**: shell tools (`ENABLE_SHELL_TOOLS=1`) run `compileall`/`pytest`/`node --check` inside the sandbox; fix loops are driven by actual error output, not vibes. Falls back to static placeholder scanning.
+- **Sandboxed**: every write resolves inside `workspaces/<run_id>/`; traversal rejected. Shell off by default.
+- **Deliverable**: tarball artifact per run, downloadable via API/CLI.
+
+See [docs/autonomous-agents.md](docs/autonomous-agents.md).
+
 ## Workflow Designer
 
 Open `workflow/ui/designer.html` in a browser (or `python3 -m http.server -d workflow/ui`): add steps, set name/agent/consumes, delete, and **Save Workflow** exports a definition JSON that `POST /workflow/run-inline` can execute.
@@ -192,6 +212,8 @@ unified-ai-stack/
 │                     run.sh, Dockerfile
 ├── workflow/         engine.py, registry.py, api.py, ui/designer.*,
 │                     workflows/ (full_build, templates), Dockerfile
+├── autonomous/       agent.py (SDLC loop), api.py :8050, workspace.py,
+│                     prompts.py, Dockerfile
 ├── dashboard/        backend.py, templates/, static/ (Chart.js), Dockerfile
 ├── ui/               tokugawa.html/.js, theme.css, presets.json
 ├── models/           auto-download-models.sh (+ downloaded GGUFs, gitignored)

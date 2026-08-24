@@ -126,6 +126,24 @@ services:
       timeout: 5s
       retries: 5
 
+  autonomous:
+    container_name: autonomous_sdlc
+    build:
+      context: .
+      dockerfile: ./autonomous/Dockerfile
+    environment:
+      - AGENT_API=http://agents:8020
+      - ENABLE_SHELL_TOOLS=${ENABLE_SHELL_TOOLS:-0}
+      - MAX_FIX_ROUNDS=3
+    volumes:
+      - workspaces:/stack/workspaces
+    ports:
+      - "8050:8050"
+    depends_on:
+      agents:
+        condition: service_healthy
+    restart: always
+
   dashboard:
     container_name: tokugawa_dashboard
     build:
@@ -154,6 +172,7 @@ services:
 
 volumes:
   audit-logs:
+  workspaces:
 
 networks:
   default:

@@ -10,6 +10,7 @@ import urllib.request
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010")
 AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
+AUTONOMOUS_API = os.environ.get("AUTONOMOUS_API", "http://localhost:8050")
 
 
 def _req(method, url, body=None):
@@ -78,6 +79,72 @@ def cmd_run(args):
     _print(body)
 
 
+def cmd_auto_start(args):
+    _, body = _req("POST", f"{AUTONOMOUS_API}/auto/start",
+                   {"spec": args.spec,
+                    "profile": args.profile,
+                    "max_tasks": args.max_tasks,
+                    "enable_shell": args.shell})
+    print(f"run_id: {body.get('run_id')}")
+    print("poll: tokugawa.py auto-status " + body.get("run_id", ""))
+
+
+def _auto_poll(run_id):
+    code, body = _req("GET", f"{AUTONOMOUS_API}/auto/runs/{run_id}")
+    if code != 200:
+        _print(body)
+        return None
+    print(f"[{body['status']}] tasks={len(body.get('tasks', []))} "
+          f"files={len(body.get('files', []))} "
+          f"fixes={body.get('fix_rounds', 0)}")
+    for t in body.get("tasks", []):
+        print(f"  {t['status']:8s} {t['id']}: {t['title']}")
+    if body.get("report"):
+        _print(body["report"])
+    return body
+
+
+def cmd_auto_status(args):
+    import time as _time
+    for i in range(max(1, args.watch)):
+        body = _auto_poll(args.run_id)
+        if body is None or body.get("status") in (
+                "done", "failed", "cancelled"):
+            break
+        if args.watch > 1:
+            _time.sleep(5)
+    if body and body.get("artifact"):
+        print(f"artifact: tokugawa.py auto-fetch {args.run_id}")
+
+
+def cmd_auto_runs(_):
+    _, body = _req("GET", f"{AUTONOMOUS_API}/auto/runs")
+    for r in body.get("runs", []):
+        print(f"{r['run_id']}  {r['status']:10s}  "
+              f"{r['spec'][:60]}")
+
+
+def cmd_auto_cancel(args):
+    _, body = _req("POST",
+                   f"{AUTONOMOUS_API}/auto/runs/{args.run_id}/cancel")
+    _print(body)
+
+
+def cmd_auto_fetch(args):
+    import urllib.request
+    url = f"{AUTONOMOUS_API}/auto/runs/{args.run_id}/artifact"
+    try:
+        with urllib.request.urlopen(url, timeout=120) as resp:
+            data = resp.read()
+    except urllib.error.HTTPError as exc:
+        print(f"error: HTTP {exc.code} — artifact not ready?")
+        return
+    out = args.out or f"{args.run_id}.tar.gz"
+    with open(out, "wb") as f:
+        f.write(data)
+    print(f"saved {out} ({len(data)} bytes)")
+
+
 def main():
     parser = argparse.ArgumentParser(prog="tokugawa",
                                      description=__doc__)
@@ -100,6 +167,33 @@ def main():
     p_run.add_argument("name")
     p_run.add_argument("--context", help="JSON object string")
 
+    p_auto = sub.add_parser("auto-start",
+                            help="launch an autonomous SDLC run")
+    p_auto.add_argument("spec")
+    p_auto.add_argument("--profile",
+                        choices=["strict", "balanced", "creative",
+                                 "verbose", "minimal"],
+                        default="balanced")
+    p_auto.add_argument("--max-tasks", type=int, default=8)
+    p_auto.add_argument("--shell", action="store_true",
+                        help="request shell verification "
+                             "(server must enable it)")
+
+    p_status = sub.add_parser("auto-status", help="poll an autonomous run")
+    p_status.add_argument("run_id")
+    p_status.add_argument("--watch", type=int, default=1,
+                          help="poll N times (5s apart)")
+
+    sub.add_parser("auto-runs", help="list autonomous runs")
+
+    p_cancel = sub.add_parser("auto-cancel", help="cancel an autonomous run")
+    p_cancel.add_argument("run_id")
+
+    p_fetch = sub.add_parser("auto-fetch",
+                             help="download the run's artifact tarball")
+    p_fetch.add_argument("run_id")
+    p_fetch.add_argument("-o", "--out")
+
     args = parser.parse_args()
     {
         "status": cmd_status,
@@ -107,6 +201,11 @@ def main():
         "route": cmd_route,
         "workflows": cmd_workflows,
         "run": cmd_run,
+        "auto-start": cmd_auto_start,
+        "auto-status": cmd_auto_status,
+        "auto-runs": cmd_auto_runs,
+        "auto-cancel": cmd_auto_cancel,
+        "auto-fetch": cmd_auto_fetch,
     }[args.cmd](args)
 
 
