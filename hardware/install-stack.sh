@@ -137,9 +137,31 @@ for unit in tokugawa-agents gpu-tune resource-optimizer; do
   $SUDO systemctl daemon-reload
   $SUDO systemctl enable "$unit.service"
 done
+
+# daily housekeeping (log rotation + workspace pruning)
+CLEAN_SVC="$SCRIPT_DIR/systemd/tokugawa-cleanup.service"
+CLEAN_TMR="$SCRIPT_DIR/systemd/tokugawa-cleanup.timer"
+if [ -f "$CLEAN_SVC" ] && [ -f "$CLEAN_TMR" ]; then
+  for f in "$CLEAN_SVC" "$CLEAN_TMR"; do
+    DST="/etc/systemd/system/$(basename "$f")"
+    sed -e "s|__STACK_DIR__|$STACK_DIR|g" \
+        -e "s|__STACK_USER__|$REAL_USER|g" \
+        "$f" | $SUDO tee "$DST" > /dev/null
+  done
+  $SUDO systemctl daemon-reload
+  $SUDO systemctl enable --now tokugawa-cleanup.timer
+fi
+
 [ "$NO_START" != "1" ] && \
   $SUDO systemctl start tokugawa-agents.service gpu-tune.service \
     resource-optimizer.service 2>/dev/null || true
+
+# ---- unattended security updates + clock sync (24/7 box hygiene) ----
+log "Enabling unattended security upgrades..."
+$SUDO apt-get install -y unattended-upgrades > /dev/null 2>&1 || true
+$SUDO dpkg-reconfigure -f noninteractive unattended-upgrades \
+  > /dev/null 2>&1 || true
+$SUDO timedatectl set-ntp true 2>/dev/null || true
 
 # -------------------------------------------------------------- 8. firewall
 if [ "$ENABLE_UFW" = "1" ]; then

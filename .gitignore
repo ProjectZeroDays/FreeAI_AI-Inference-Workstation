@@ -13,3 +13,7 @@ __pycache__/
 docs/workflows.json
 
 workspaces/
+
+config/runtime-settings.json
+config/presets.json
+config/llama.env
