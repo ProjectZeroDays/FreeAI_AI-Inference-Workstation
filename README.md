@@ -34,6 +34,7 @@ Production-grade, self-hosted **AI inference workstation stack**: GGUF coder mod
   - [9.7 tokugawa-cli](#97-tokugawa-cli)
   - [9.8 Watchdogs and systemd Units](#98-watchdogs-and-systemd-units)
   - [9.9 Backup and Cleanup Maintenance](#99-backup-and-cleanup-maintenance)
+  - [9.10 External AI Providers](#910-external-ai-providers)
 - [10. Configuration Reference](#10-configuration-reference)
 - [11. API Reference](#11-api-reference)
 - [12. Model Management](#12-model-management)
@@ -76,6 +77,11 @@ The stack answers one question: *how do I run capable coding models on my own GP
 |---|---|
 | ![Designer](docs/screenshots/workflow-designer.png) | ![CLI](docs/screenshots/cli.png) |
 | 3-step pipeline (architecture -> codegen -> tests) w/ step config | Real --help output: 14 subcommands |
+
+| External Providers panel | tokugawa-cli providers + live test |
+|---|---|
+| ![Providers panel](docs/screenshots/dashboard-providers.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
+| 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings | Real `providers` listing + `provider-test openai` |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state.
 
@@ -321,9 +327,26 @@ WORKSPACE_RETENTION_DAYS=14 bash scripts/cleanup.sh
 
 Backups cover config/, registry/, manifest/, VERSION and every workspaces/*/​_run.json run manifest.
 
+### 9.10 External AI Providers
+
+Bridge turns 21+ hosted APIs into router backends with the same response shape as local GGUFs. Three adapters: `openai` (most hosts), `anthropic` (native messages), `gemini` (generateContent).
+
+```bash
+export OPENAI_API_KEY=sk-... && export GROQ_API_KEY=gsk_...
+curl -X POST localhost:8010/route -H "Content-Type: application/json" \
+  -d '{"prompt":"Design a rate limiter","model":"openai/gpt-4o-mini"}'
+```
+
+- Explicit `model: "provider/model"` wins over the local chain
+- `fallback: true` providers (config/providers.json) become last-resort after all local GGUFs - GPU down, hosted models take over
+- Dashboard **External AI Providers** panel: keyed badges + live Test pings; CLI: `tokugawa.py providers` / `provider-test groq`
+- Streaming: openai-style = true SSE; anthropic/gemini = single-frame
+
+Full per-provider setup (env vars, model slugs, custom/Azure/vLLM entries, cost guardrails): [docs/PROVIDERS.md](docs/PROVIDERS.md).
+
 ## 10. Configuration Reference
 
-Layering: defaults < config/config.json < config/runtime-settings.json < environment variables.
+Layering: defaults < config/config.json < config/providers.json (external backends) < config/runtime-settings.json < environment variables.
 
 ### config/config.json
 

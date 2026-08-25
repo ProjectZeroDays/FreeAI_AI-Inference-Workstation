@@ -56,4 +56,7 @@ def test_models_listing(client):
     res = client.get("/models")
     assert res.status_code == 200
     models = res.get_json()
-    assert set(models) == {"qwen3.6-12b", "moe-13b", "qwen3.5-9b"}
+    local = {k for k, v in models.items()
+             if not k.startswith(("openai/", "anthropic/", "google/"))}
+    assert {"qwen3.6-12b", "moe-13b", "qwen3.5-9b"} <= local
+    # provider models merged when keys present (see test_providers.py)

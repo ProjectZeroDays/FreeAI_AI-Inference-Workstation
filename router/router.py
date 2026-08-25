@@ -24,6 +24,9 @@ from flask import Flask, Response, request, jsonify, stream_with_context
 from classifier import classify_task
 from switcher import select_chain
 from settings import load_config
+from providers import (load_providers, is_keyed, keyed_providers,
+                       fallback_models, call_provider, parse_response,
+                       build_request)
 
 CFG = load_config().get("router", {})
 
@@ -191,6 +194,39 @@ def _sse_frames(resp):
             yield text
 
 
+def stream_provider(provider_model, prompt, payload_base=None):
+    """SSE generator for external providers (openai-style streaming;
+    anthropic/gemini fall back to single-frame emit)."""
+    pname, pcfg, pmodel = provider_model
+    payload = dict(payload_base or {})
+    started = time.monotonic()
+    try:
+        if pcfg.get("style") == "openai":
+            url, headers, body = build_request(
+                pname, pcfg, pmodel, prompt,
+                payload.get("max_tokens", 2048),
+                payload.get("temperature", 0.2), stream=True)
+            r = requests.post(url, headers=headers, json=body,
+                              stream=True, timeout=TIMEOUT)
+            r.raise_for_status()
+            yield f'data: {json.dumps({"model": f"{pname}/{pmodel}"})}\n\n'
+            for text in _sse_frames(r):
+                yield f'data: {json.dumps({"content": text})}\n\n'
+        else:
+            result = call_provider(pname, pcfg, pmodel, prompt,
+                                   payload.get("max_tokens", 2048),
+                                   payload.get("temperature", 0.2),
+                                   timeout=TIMEOUT)
+            yield f'data: {json.dumps({"model": f"{pname}/{pmodel}"})}\n\n'
+            yield f'data: {json.dumps({"content": result["content"]})}\n\n'
+        metrics_model(f"{pname}/{pmodel}")
+        metrics_latency(int((time.monotonic() - started) * 1000))
+        yield "data: [DONE]\n\n"
+    except Exception as exc:
+        yield f'data: {json.dumps({"error": str(exc)})}\n\n'
+        yield "data: [DONE]\n\n"
+
+
 def stream_route(prompt, task_type, agent, payload_base=None):
     """SSE generator: picks the primary model for the task and streams
     normalized frames: data: {"content": "..."} ... data: [DONE]."""
@@ -231,6 +267,22 @@ def stream_route(prompt, task_type, agent, payload_base=None):
             return
         except Exception:
             continue
+    # provider fallback tail
+    for fid in fallback_models():
+        fname, fmodel = fid.split("/", 1)
+        fcfg = load_providers()[fname]
+        try:
+            result = call_provider(fname, fcfg, fmodel, prompt,
+                                   payload.get("max_tokens", 2048),
+                                   payload.get("temperature", 0.2),
+                                   timeout=TIMEOUT)
+            yield f'data: {json.dumps({"model": fid})}\n\n'
+            yield f'data: {json.dumps({"content": result["content"]})}\n\n'
+            metrics_model(fid)
+            yield "data: [DONE]\n\n"
+            return
+        except Exception:
+            continue
     yield f'data: {json.dumps({"error": "all backends failed"})}\n\n'
     yield "data: [DONE]\n\n"
 
@@ -244,11 +296,42 @@ def health():
 @app.route("/models")
 def models():
     from models import MODEL_REGISTRY
-    return jsonify({
+    out = {
         key: {"name": m["name"], "role": m["role"],
               "strengths": m["strengths"], "endpoint": m["endpoint"]}
         for key, m in MODEL_REGISTRY.items()
-    })
+    }
+    for name, cfg in load_providers().items():
+        if not cfg.get("enabled"):
+            continue
+        keyed = is_keyed(name, cfg)
+        for m in cfg.get("models", []):
+            out[f"{name}/{m}"] = {
+                "name": f"{cfg.get('description', name)} - {m}",
+                "role": f"provider:{name}",
+                "strengths": ["external"],
+                "endpoint": cfg.get("base_url", ""),
+                "keyed": keyed,
+            }
+    return jsonify(out)
+
+
+@app.route("/providers")
+def providers():
+    rows = []
+    for name, cfg in load_providers().items():
+        rows.append({
+            "name": name,
+            "style": cfg.get("style", "openai"),
+            "base_url": cfg.get("base_url", ""),
+            "description": cfg.get("description", ""),
+            "models": cfg.get("models", []),
+            "enabled": bool(cfg.get("enabled")),
+            "keyed": is_keyed(name, cfg),
+            "fallback": bool(cfg.get("fallback")),
+            "key_env": cfg.get("key_env"),
+        })
+    return jsonify({"providers": rows})
 
 
 @app.route("/metrics")
@@ -278,12 +361,50 @@ def route():
     task_type, confidence = classify_task(prompt)
     metrics_task(task_type)
 
+    # explicit external-model selection: "provider/model" wins over chain
+    explicit = data.get("model") or ""
+    provider_model = None
+    if "/" in explicit:
+        pname, pmodel = explicit.split("/", 1)
+        pcfg = load_providers().get(pname)
+        if pcfg and pcfg.get("enabled") and is_keyed(pname, pcfg):
+            provider_model = (pname, pcfg, pmodel)
+
     if data.get("stream"):
+        if provider_model:
+            return Response(stream_with_context(
+                stream_provider(provider_model, prompt,
+                                payload_base=data)),
+                mimetype="text/event-stream",
+                headers={"Cache-Control": "no-cache",
+                         "X-Accel-Buffering": "no"})
         return Response(stream_with_context(
             stream_route(prompt, task_type, agent, payload_base=data)),
             mimetype="text/event-stream",
             headers={"Cache-Control": "no-cache",
                      "X-Accel-Buffering": "no"})
+
+    if provider_model is not None:
+        pname, pcfg, pmodel = provider_model
+        started = time.monotonic()
+        try:
+            result = call_provider(pname, pcfg, pmodel, prompt,
+                                   data.get("max_tokens", 2048),
+                                   data.get("temperature", 0.2),
+                                   timeout=TIMEOUT)
+        except Exception as exc:
+            metrics_incr("errors_total")
+            return jsonify({"error": str(exc), "provider": pname}), 502
+        elapsed_ms = int((time.monotonic() - started) * 1000)
+        metrics_latency(elapsed_ms)
+        metrics_model(f"{pname}/{pmodel}")
+        resp = jsonify({"model_used": f"{pname}/{pmodel}",
+                        "task_type": task_type,
+                        "confidence": confidence,
+                        "elapsed_ms": elapsed_ms,
+                        "response": result})
+        resp.headers["X-Cache"] = "PASS"   # external calls not cached
+        return resp
 
     cache_key = hashlib.sha256(
         f"{task_type}:{agent}:{prompt}".encode()).hexdigest()
@@ -340,6 +461,24 @@ def route():
                 continue
         if result is None and best_effort is not None:
             result, model_used = best_effort
+
+        # provider fallback tail: keyed providers flagged fallback=true
+        if result is None:
+            for fid in fallback_models():
+                fname, fmodel = fid.split("/", 1)
+                fcfg = load_providers()[fname]
+                try:
+                    result = call_provider(
+                        fname, fcfg, fmodel, prompt,
+                        payload.get("max_tokens", 2048),
+                        payload.get("temperature", 0.2), timeout=TIMEOUT)
+                    model_used = fid
+                    metrics_model(fid)
+                    break
+                except Exception as exc:
+                    error = str(exc)
+                    continue
+
         if result is None:
             metrics_incr("errors_total")
             return jsonify({

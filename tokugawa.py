@@ -12,6 +12,7 @@ AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTONOMOUS_API = os.environ.get("AUTONOMOUS_API", "http://localhost:8050")
 DASH_API = os.environ.get("DASH_API", "http://localhost:8030")
+ROUTER_URL2 = ROUTER_URL
 
 
 def _req(method, url, body=None):
@@ -146,6 +147,21 @@ def cmd_auto_fetch(args):
     print(f"saved {out} ({len(data)} bytes)")
 
 
+
+def cmd_providers(_):
+    _, body = _req("GET", f"{DASH_API}/api/providers")
+    for p in body.get("providers", []):
+        state = "keyed" if p["keyed"] else "NO KEY"
+        fb = " [fallback]" if p["fallback"] else ""
+        print(f"{p['name']:14s} {p['style']:9s} {state:8s}{fb}  "
+              f"{p.get('description','')}")
+
+
+def cmd_provider_test(args):
+    code, body = _req("POST", f"{DASH_API}/api/providers/test",
+                      {"name": args.name})
+    _print(body)
+
 def cmd_presets(_):
     _, body = _req("GET", f"{DASH_API}/api/presets")
     for p in body.get("builtins", []):
@@ -259,6 +275,8 @@ def main():
         "auto-runs": cmd_auto_runs,
         "auto-cancel": cmd_auto_cancel,
         "auto-fetch": cmd_auto_fetch,
+        "providers": cmd_providers,
+        "provider-test": cmd_provider_test,
         "presets": cmd_presets,
         "preset": cmd_preset,
         "settings": cmd_settings,

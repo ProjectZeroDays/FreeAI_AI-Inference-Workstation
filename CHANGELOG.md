@@ -1,6 +1,8 @@
 ## 1.2.0 - Unreleased
 
 ### Added
+- External AI provider bridge: 21+ hosted APIs as router backends (OpenAI/Anthropic/Gemini native adapters + openai-compatible for Groq/Mistral/DeepSeek/Together/Fireworks/OpenRouter/xAI/Perplexity/Cerebras/SambaNova/Cohere/Novita/DeepInfra/Hyperbolic/HuggingFace/Ollama/LM Studio); explicit model routing, keyed-fallback tails, streaming, /providers + /api/providers(+test), dashboard panel, CLI providers/provider-test, docs/PROVIDERS.md
+
 - llmv parity: vision (mmproj --mmproj flag + downloader + compose env), Jupyter (:8888 compose profile + systemd), clients-provision.sh (OpenCode/ZCode/MimoCode/JCode servers wired to router+llama), mimocode/ switchboard manifests, Vast.ai kit (template.json + onstart w/ Instance Portal + Selkies + Guacamole), CUDA 13.0 images (driver >= 580), VNC password env, dashboard auth gate (X-Auth-Token on writes), /api/upload + /api/uploads, /api/clients switchboard + dashboard panels
 
 - Autonomous releases: auto-release.yml cuts v<VERSION> tags from main (CHANGELOG-guarded); release.yml builds asset bundle (source, docs-site, deploy-kit, workflows.json, sha256sums) + generated notes

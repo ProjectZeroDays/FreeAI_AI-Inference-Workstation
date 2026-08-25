@@ -174,6 +174,56 @@ def clients():
             continue
     return jsonify({"clients": entries})
 
+
+# ---------------------------------------------------- external providers
+def _list_providers():
+    sys.path.insert(0, ROOT_DIR)
+    from router.providers import load_providers, is_keyed
+    rows = []
+    for name, cfg in load_providers().items():
+        if not cfg.get("enabled"):
+            continue
+        rows.append({
+            "name": name,
+            "style": cfg.get("style", "openai"),
+            "base_url": cfg.get("base_url", ""),
+            "description": cfg.get("description", ""),
+            "models": cfg.get("models", []),
+            "keyed": is_keyed(name, cfg),
+            "fallback": bool(cfg.get("fallback")),
+            "key_env": cfg.get("key_env"),
+        })
+    return rows
+
+
+@app.route("/api/providers")
+def providers_list():
+    return jsonify({"providers": _list_providers()})
+
+
+@app.route("/api/providers/test", methods=["POST"])
+def providers_test():
+    body = request.get_json(silent=True) or {}
+    name = body.get("name", "")
+    sys.path.insert(0, ROOT_DIR)
+    from router.providers import load_providers, is_keyed, call_provider
+    cfg = load_providers().get(name)
+    if not cfg:
+        return jsonify({"error": "unknown provider"}), 404
+    if not is_keyed(name, cfg):
+        return jsonify({"error": f"no API key ({cfg.get('key_env')})"}), 400
+    model = (cfg.get("models") or ["gpt-4o-mini"])[0]
+    started = time.time()
+    try:
+        result = call_provider(name, cfg, model,
+                               "Reply with the single word: pong",
+                               max_tokens=8, temperature=0.0, timeout=30)
+        return jsonify({"ok": True, "model": model,
+                        "latency_ms": int((time.time() - started) * 1000),
+                        "reply": (result.get("content") or "")[:80]})
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)[:300]}), 502
+
 _GPU_FIELDS = ("utilization.gpu,memory.used,memory.total,"
                "temperature.gpu,power.draw,clocks.current.sm")
 

@@ -347,8 +347,60 @@ async function uploadFile() {
   } catch (e) { st.textContent = "Error: " + e.message; }
 }
 
+
+/* ---------------- external providers ---------------- */
+
+async function loadProviders() {
+  const el = document.getElementById("providers-list");
+  const sel = document.getElementById("prov-test-select");
+  try {
+    const res = await fetch("/api/providers");
+    const d = await res.json();
+    el.innerHTML = "";
+    sel.innerHTML = "";
+    (d.providers || []).forEach(p => {
+      const li = document.createElement("li");
+      const badge = document.createElement("span");
+      badge.className = "badge " + (p.keyed ? "ok" : "down");
+      badge.textContent = p.keyed ? "KEYED" : "NO KEY";
+      li.appendChild(badge);
+      li.appendChild(document.createTextNode(
+        " " + p.name + " (" + p.style + ")" +
+        (p.fallback ? " [fallback]" : "") +
+        " - " + (p.description || "")));
+      el.appendChild(li);
+
+      if (p.keyed) {
+        const o = document.createElement("option");
+        o.value = p.name; o.textContent = p.name;
+        sel.appendChild(o);
+      }
+    });
+  } catch (e) { el.textContent = "providers unavailable"; }
+}
+
+async function testProvider() {
+  const name = document.getElementById("prov-test-select").value;
+  const st = document.getElementById("prov-status");
+  if (!name) { st.textContent = "no keyed provider selected"; return; }
+  st.textContent = "Testing " + name + "...";
+  try {
+    const res = await fetch("/api/providers/test", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    });
+    const d = await res.json();
+    st.textContent = d.ok
+      ? name + " OK: " + d.latency_ms + "ms - " + (d.reply || "")
+      : name + " failed: " + (d.error || res.status);
+  } catch (e) { st.textContent = "Error: " + e.message; }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadClients();
+  loadProviders();
+  document.getElementById("prov-test").onclick = testProvider;
   loadUploads();
   document.getElementById("up-send").onclick = uploadFile;
   fetchStatus();
