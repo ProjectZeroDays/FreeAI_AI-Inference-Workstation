@@ -87,6 +87,11 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | FreeToken Edge MoE (290B+ on consumer GPUs) | Dashboard - Full-page view |
 |---|---|
 | ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) | ![Dashboard full](docs/screenshots/dashboard-full.png) |
+
+| TokugawaOS GRUB Boot Menu | Live ISO |
+|---|---|
+| ![Boot menu](docs/screenshots/boot-menu.png) | `live/build-live.sh` — GRUB entries: Install (wipes disk) / Try Live / Rescue |
+| Rendered preview of the ISO's boot menu (GRUB) | Built on any Ubuntu host — see [live/README.md](live/README.md) |
 | FreeToken desktop console - frontier MoE on RTX 30/40/50 (7.2k★) | Every panel in one scroll: alerts, GPU, services, clients, providers, runs, files, settings, shelf |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).

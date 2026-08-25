@@ -23,6 +23,9 @@
 
 # Changelog
 
+### Changed
+- UI polish: FreeToken-inspired OLED dark theme (Inter + Fira Code), bento-grid dashboard with sidebar, polished Tokugawa UI and Workflow Designer
+
 ## 1.1.0 — Settings plane, presets, autonomous SDLC, local-deploy kit
 
 ### Added
