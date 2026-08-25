@@ -282,7 +282,7 @@ def listening_ports():
     def up(port):
         return f":{port}" in out
 
-    return {
+    base = {
         "router": up(8010),
         "agents": up(8020),
         "dashboard": up(PORT),
@@ -290,11 +290,25 @@ def listening_ports():
         "llama": up(9001),
         "vllm": up(9002),
     }
+    # optional edge services — reported but not alert-critical unless enabled
+    base.update({
+        "autonomous": up(8050),
+        "freetoken": up(9100),
+        "lollms": up(9600),
+        "jupyter": up(8888),
+        "opencode": up(3000),
+        "zcode": up(5000),
+    })
+    return base
+
+
+_CORE_SERVICES = {"router", "agents", "dashboard", "workflow", "llama"}
 
 
 def build_alerts(services, gpu):
     alerts = []
-    down = [name for name, ok in services.items() if not ok]
+    down = [name for name, ok in services.items()
+            if not ok and name in _CORE_SERVICES]
     if down:
         alerts.append({"level": "critical",
                        "message": f"services down: {', '.join(down)}"})

@@ -151,6 +151,16 @@ PRESETS = {
         "models": ["local-model"],
         "description": "LM Studio (local server)",
     },
+    "freetoken": {
+        "style": "openai",
+        "base_url": os.environ.get("FREETOKEN_BASE_URL",
+                                   "http://localhost:9100/v1"),
+        "key_env": None,
+        "models": ["deepseek-ai/DeepSeek-V4-Flash",
+                   "Qwen/Qwen3.6-35B-A3B", "zai-org/GLM-5.2"],
+        "description": "FreeToken edge MoE (290B+ on consumer GPUs)",
+        "auto_fallback_when_healthy": True,
+    },
 }
 
 # ---------------------------------------------------------------- loading
@@ -180,8 +190,11 @@ def load_providers():
 
 
 def is_keyed(name, cfg):
-    key = cfg.get("api_key") or (
-        os.environ.get(cfg["key_env"]) if cfg.get("key_env") else None)
+    # keyless local providers (ollama, lmstudio, freetoken) are always
+    # considered keyed — they need no API key
+    if not cfg.get("key_env"):
+        return True
+    key = cfg.get("api_key") or os.environ.get(cfg["key_env"])
     return bool(key)
 
 
@@ -199,13 +212,52 @@ def keyed_providers():
 
 
 def fallback_models():
-    """Provider models appended to local chains (keyed + fallback=true)."""
+    """Provider models appended to local chains.
+
+    Includes explicit fallback=true providers plus any
+    auto_fallback_when_healthy provider that currently passes a health
+    probe (used for FreeToken local edge MoE).
+    """
     ids = []
     for name, cfg in keyed_providers().items():
         if cfg.get("fallback"):
             for m in cfg["models"]:
                 ids.append(f"{name}/{m}")
+        elif cfg.get("auto_fallback_when_healthy") and is_provider_healthy(name, cfg):
+            for m in cfg["models"]:
+                ids.append(f"{name}/{m}")
     return ids
+
+
+_HEALTH_CACHE = {}
+_HEALTH_TTL = 30
+
+def is_provider_healthy(name, cfg, timeout=2):
+    """Lightweight health probe — tries /health then /v1/models.
+
+    Results cached for _HEALTH_TTL seconds to avoid per-request stalls.
+    """
+    base = cfg.get("base_url", "").rstrip("/")
+    if not base:
+        return False
+    now = time.time()
+    cached = _HEALTH_CACHE.get(name)
+    if cached and now - cached[0] < _HEALTH_TTL:
+        return cached[1]
+    healthy = False
+    for suffix in ("/health", "/v1/models", "/models"):
+        try:
+            url = base + suffix if not base.endswith(suffix) else base
+            if base.endswith("/v1") and suffix == "/v1/models":
+                url = base + "/models"
+            r = requests.get(url, timeout=timeout)
+            if r.status_code < 500:
+                healthy = True
+                break
+        except Exception:
+            continue
+    _HEALTH_CACHE[name] = (now, healthy)
+    return healthy
 
 
 # ---------------------------------------------------------------- adapters

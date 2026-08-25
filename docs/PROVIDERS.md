@@ -57,6 +57,7 @@ the difference. External calls bypass the cache (`X-Cache: PASS`).
 | **HuggingFace** | `HF_TOKEN` | `huggingface/Qwen/Qwen2.5-Coder-32B-Instruct` | Inference router |
 | **Ollama (local)** | none | `ollama/qwen2.5-coder` | localhost:11434 |
 | **LM Studio (local)** | none | `lmstudio/local-model` | localhost:1234 |
+| **FreeToken (local)** | none | `freetoken/deepseek-ai/DeepSeek-V4-Flash` | localhost:9100 — 290B+ MoE on consumer GPUs, auto-fallback when healthy |
 | **Your vLLM** | none | custom entry | point base_url at :9002/v1 |
 
 ## Configuration

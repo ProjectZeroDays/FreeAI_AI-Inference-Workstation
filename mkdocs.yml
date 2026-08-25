@@ -4,10 +4,13 @@ nav:
   - Home: index.md
   - Architecture: architecture.md
   - Autonomous SDLC: autonomous-agents.md
+  - External Providers: PROVIDERS.md
+  - Stack Rating: STACK_RATING.md
   - API Reference: api.md
   - Model Switching: model-switching.md
   - Deployment: deployment.md
   - Troubleshooting: troubleshooting.md
+  - Enhancement Plan: ENHANCEMENT-PLAN.md
 use_directory_urls: false
 theme:
   name: mkdocs

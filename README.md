@@ -84,7 +84,12 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Providers panel](docs/screenshots/dashboard-providers.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
 | 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings | Real `providers` listing + `provider-test openai` |
 
-> Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state.
+| FreeToken Edge MoE (290B+ on consumer GPUs) | Dashboard - Full-page view |
+|---|---|
+| ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) | ![Dashboard full](docs/screenshots/dashboard-full.png) |
+| FreeToken desktop console - frontier MoE on RTX 30/40/50 (7.2k★) | Every panel in one scroll: alerts, GPU, services, clients, providers, runs, files, settings, shelf |
+
+> Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
 ## 3. Feature Set Breakdown
 
@@ -143,6 +148,8 @@ raises alerts, writes runtime-settings.json consumed by all services.
 | 8888 | JupyterLab (`--profile jupyter` / clients-provision) | LAN only |
 | 3000 / 5000 | OpenCode / ZCode (clients-provision) | LAN only |
 | 8443 | Caddy TLS gateway (`--profile tls`) - dashboard + basic-auth `/auto/*` | optional public |
+| 9100 | FreeToken edge MoE (`--profile freetoken`) - 290B+ on RTX 30/40/50 | auto-fallback when healthy |
+| 9600 | LoLLMs chat UI (`--profile lollms`) | LAN only |
 | 5901 / 6080 | VNC / noVNC desktop | via `--profile desktop` |
 
 All ports overridable: `ROUTER_PORT`, `AGENT_API_PORT`, `DASHBOARD_PORT`, `WORKFLOW_PORT`, `AUTONOMOUS_PORT`, `LLAMA_PORT`, `VLLM_PORT`.
