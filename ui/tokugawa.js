@@ -1,21 +1,14 @@
 const AGENT_API = "http://localhost:8020";
 
 const presets = [
-  {
-    id: "qwen3.6-12b",
-    label: "\uD83E\uDDE0 Ultra Coder (12B IQ Ultra)",
-    description: "Full projects, production code, architecture"
-  },
-  {
-    id: "moe-13b",
-    label: "\u26A1 MOE Fast Coder (13.7B)",
-    description: "Refactoring, debugging, patching"
-  },
-  {
-    id: "qwen3.5-9b",
-    label: "\uD83D\uDD0D Reasoning Specialist (Claude-style)",
-    description: "Analysis, planning, decomposition"
-  }
+  { id: "qwen3.6-12b", label: "Ultra Coder 12B", description: "Qwen3.6 12B - primary coder, architecture & full projects" },
+  { id: "claude-code-9b", label: "CodeClawd 9B", description: "Qwen3.5 CodeClawd - Claude Code + Codex agent traces" },
+  { id: "qwythos-v2", label: "Qwythos v2 9B", description: "Qwythos 9B v2 (FTPO loop-fix) - reasoning primary, 1M ctx" },
+  { id: "qwythos-9b", label: "Qwythos 9B", description: "Qwythos 9B - Claude Mythos reasoning, 1M ctx" },
+  { id: "qwable-9b", label: "Qwable 9B", description: "Qwable - Claude Fable 5 multimodal generalist" },
+  { id: "qwen3.5-thinking", label: "Qwen THINKING 9B", description: "Claude HighIQ THINKING (i1) - reasoning fallback" },
+  { id: "qwen3.5-9b", label: "Qwen HighIQ 9B", description: "Claude HighIQ Heretic - legacy" },
+  { id: "moe-13b", label: "MOE 13.7B", description: "L3.1 MOE 2x8B - fast coder, refactor & debug" }
 ];
 
 let selectedModel = "qwen3.6-12b";

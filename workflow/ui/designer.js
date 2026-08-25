@@ -42,7 +42,18 @@ function renderConfig() {
     step.consumes = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
 }
 
+function seedDemo() {
+  if (steps.length) return;
+  steps = [
+    { id: "1", name: "architecture", agent: "analyze", consumes: [] },
+    { id: "2", name: "codegen", agent: "orchestrate", consumes: ["architecture"] },
+    { id: "3", name: "tests", agent: "orchestrate", consumes: ["codegen"] }
+  ];
+  selectedId = "2";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  seedDemo();
   document.getElementById("add-step").onclick = () => {
     const id = Date.now().toString();
     steps.push({ id, name: `step_${steps.length + 1}`,
