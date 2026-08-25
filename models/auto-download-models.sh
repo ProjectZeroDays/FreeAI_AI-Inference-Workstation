@@ -51,5 +51,31 @@ if [ "${DOWNLOAD_MTP:-0}" = "1" ]; then
     "Qwythos-9B-Claude-Mythos-5-1M-MTP-Q4_K_M.gguf" 5000000000
 fi
 
+# ---- empero-ai roster expansion (v2 + specialists) ----
+
+# Qwythos-9B-v2: looping FIXED at model level (FTPO), 1M ctx, MTP, own mmproj
+download "https://huggingface.co/empero-ai/Qwythos-9B-v2-GGUF/resolve/main/Qwythos-9B-v2-Q4_K_M.gguf" \
+  "Qwythos-9B-v2-Q4_K_M.gguf" 5000000000
+if [ "${DOWNLOAD_VISION:-1}" = "1" ]; then
+  download "https://huggingface.co/empero-ai/Qwythos-9B-v2-GGUF/resolve/main/mmproj-Qwythos-9B-v2-BF16.gguf" \
+    "mmproj-Qwythos-9B-v2-BF16.gguf" 500000000
+fi
+
+# CodeClawd: Qwen3.5-9B SFT on Claude Code + Codex agent traces
+download "https://huggingface.co/empero-ai/Qwen3.5-9B-Claude-Code-GGUF/resolve/main/Qwen3.5-9B-Claude-Code-Q4_K_M.gguf" \
+  "Qwen3.5-9B-Claude-Code-Q4_K_M.gguf" 5000000000
+
+# Qwable: Claude Fable 5 + GPT-5.5 terminal-agent distill (multimodal)
+download "https://huggingface.co/empero-ai/Qwable-9B-Claude-Fable-5-GGUF/resolve/main/Qwable-9B-Claude-Fable-5-Q4_K_M.gguf" \
+  "Qwable-9B-Claude-Fable-5-Q4_K_M.gguf" 5000000000
+if [ "${DOWNLOAD_VISION:-1}" = "1" ]; then
+  download "https://huggingface.co/empero-ai/Qwable-9B-Claude-Fable-5-GGUF/resolve/main/mmproj-Qwable-9B-Claude-Fable-5-f16.gguf" \
+    "mmproj-Qwable-9B-Claude-Fable-5-f16.gguf" 500000000
+fi
+
+# THINKING variant of the legacy HighIQ Heretic (imatrix quants by mradermacher)
+download "https://huggingface.co/mradermacher/Qwen3.5-9B-Claude-4.6-HighIQ-THINKING-HERETIC-UNCENSORED-i1-GGUF/resolve/main/Qwen3.5-9B-Claude-4.6-HighIQ-THINKING-HERETIC-UNCENSORED.i1-Q4_K_M.gguf" \
+  "Qwen3.5-9B-Claude-4.6-HighIQ-THINKING-HERETIC-UNCENSORED.i1-Q4_K_M.gguf" 5000000000
+
 echo "[models] All models downloaded:"
 ls -lh models/

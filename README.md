@@ -468,16 +468,20 @@ Roster (registry/registry.json):
 
 | Key | GGUF | Role |
 |---|---|---|
-| qwen3.6-12b | Qwen3.6-12B IQ Ultra Heretic Uncensored Thinking Q6_K | primary_coder |
-| moe-13b | L3.1 MOE 2x8B DeepSeek DeepHermes 13.7B Q6_K | fast_coder |
-| qwen3.5-9b | Qwen3.5-9B Claude HighIQ Heretic Q6_K | reasoning_specialist |
+| `qwen3.6-12b` | Qwen3.6 12B IQ Ultra Heretic Uncensored Thinking (GGUF) | Primary coder - architecture, full projects, CI/CD |
+| `claude-code-9b` | CodeClawd - Qwen3.5 9B Claude Code (empero-ai) | Code specialist - SFT on Claude Code + Codex agent traces, `<think>` + `<tool_call>` |
+| `qwythos-v2` | Qwythos 9B v2 (empero-ai) | Reasoning primary - Claude-trace CoT, **looping fixed (FTPO)**, 1M context, vision, MTP |
+| `qwythos-9b` | Qwythos 9B Claude Mythos 5 1M (empero-ai) | Reasoning (v1 fallback) - 1M context, vision, function calling |
+| `qwable-9b` | Qwable 9B Claude Fable 5 (empero-ai) | General assistant - Claude Fable 5 + GPT-5.5 terminal-agent distill, multimodal |
+| `qwen3.5-thinking` | Qwen3.5 9B Claude 4.6 HighIQ THINKING Heretic (mradermacher i1) | Reasoning fallback - thinking variant, imatrix quants |
+| `qwen3.5-9b` | Qwen3.5 9B Claude HighIQ Heretic Uncensored (GGUF) | Legacy fallback |
+| `moe-13b` | L3.1 MOE 2x8B DeepSeek DeepHermes e32 Abliterated 13.7B (GGUF) | Fast coder - refactor, debug, patch |
 
-- Download: `bash models/auto-download-models.sh` - resumable (wget -c) with disk preflight (size + 10GB headroom).
-- Quant policy: Q4_K/Q5_K/Q6_K only; validate.sh warns on aggressive quants (IQ2/IQ3 degrade coherence).
-- Add a model: drop the GGUF in models/, add a registry entry (key/id/name/role/endpoint/gguf), restart llama with `LLAMA_MODEL_PATH` pointing at it.
-- llama.cpp serves one hot model per process; point registry entries at separate instances for true parallel serving.
-- Keep fresh: `make update-llama` (pulls llama.cpp master + rebuilds) - stale builds mis-tokenize newer Qwen/DeepSeek GGUFs.
-- Chat templates: `--jinja` is always on; missing it causes tool-tag soup and repetition on Qwen3/DeepSeek.
+> **Reasoning models** (qwythos-*, claude-code-9b, qwen3.5-thinking): replies open with a `<think>` block; the router clamps temperature to each model's floor (0.6) automatically. Qwythos v2 fixes v1's repetition loops at the model level (FTPO). MTP speculative decoding: `DOWNLOAD_MTP=1` + `LLAMA_EXTRA_ARGS="--spec-type draft-mtp --spec-draft-n-max 6"`. 1M-context models: raise `LLAMA_CTX` (KV memory grows linearly).
+
+> **openNemo-9B** (abliterated / Claude-Opus-4.6-distill): safetensors-only (Nemotron-H hybrid Mamba2). Convert locally with `bash scripts/convert-hf.sh empero-ai/openNemo-9B-abliterated Q4_K_M`, then add a registry entry.
+
+> Note: llama.cpp serves one hot model per process;
 
 ## 13. Custom Integrations
 

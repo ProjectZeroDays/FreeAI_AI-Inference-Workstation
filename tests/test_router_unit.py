@@ -35,8 +35,9 @@ def test_confidence_scales_with_hits():
 
 def test_select_model_roles():
     assert select_model("full_project")["role"] == "primary_coder"
-    assert select_model("refactor")["role"] == "fast_coder"
-    assert select_model("analysis")["role"] == "reasoning_specialist"
+    assert select_model("refactor")["role"] in ("fast_coder", "code_specialist")
+    assert select_model("analysis")["role"] in ("reasoning_specialist",)
+    assert select_model("refactor")["role"] in ("fast_coder", "code_specialist")
 
 
 def test_fallback_chain_primary_first():
@@ -52,9 +53,26 @@ def test_per_agent_override_reorders_chain():
         chain[0] in ("qwen3.6-12b", "moe-13b", "qwen3.5-9b")
 
 
-def test_qwythos_is_analysis_primary():
+def test_qwythos_v2_is_analysis_primary():
     chain = select_chain("analysis")
-    assert chain[0] == "qwythos-9b"
+    assert chain[0] == "qwythos-v2"
+    assert "qwythos-9b" in chain          # v1 demoted to fallback
+    assert "qwen3.5-thinking" in chain
+
+
+def test_claude_code_is_refactor_primary():
+    assert select_chain("refactor")[0] == "claude-code-9b"
+
+
+def test_qwable_in_general_chain():
+    assert "qwable-9b" in select_chain("general_code")
+
+
+def test_reasoning_models_have_temperature_floors():
+    from models import MODEL_REGISTRY
+    for key in ("qwythos-v2", "qwythos-9b", "claude-code-9b",
+                "qwable-9b", "qwen3.5-thinking"):
+        assert MODEL_REGISTRY[key].get("min_temperature") == 0.6, key
 
 
 def test_qwythos_has_temperature_floor():

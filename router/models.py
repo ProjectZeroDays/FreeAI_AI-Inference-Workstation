@@ -54,12 +54,59 @@ MODEL_REGISTRY = {
         "min_temperature": 0.6,
         "context": 1048576,
     },
+    "qwythos-v2": {
+        "id": "qwythos-9b-v2",
+        "name": "Qwythos 9B v2 (empero-ai, FTPO loop-fix)",
+        "role": "reasoning_specialist",
+        "strengths": [
+            "deep_reasoning", "analysis", "planning",
+            "long_context", "function_calling", "vision",
+            "math", "logic"
+        ],
+        "endpoint": LLAMA_COMPLETION,
+        "min_temperature": 0.6,
+        "context": 1048576,
+    },
+    "claude-code-9b": {
+        "id": "qwen3.5-9b-claude-code",
+        "name": "CodeClawd - Qwen3.5 9B Claude Code (empero-ai)",
+        "role": "code_specialist",
+        "strengths": [
+            "coding_agent", "tool_calling", "multi_file",
+            "refactor", "debug", "production_code"
+        ],
+        "endpoint": LLAMA_COMPLETION,
+        "min_temperature": 0.6,
+    },
+    "qwable-9b": {
+        "id": "qwable-9b-claude-fable-5",
+        "name": "Qwable 9B Claude Fable 5 (empero-ai, multimodal)",
+        "role": "general_assistant",
+        "strengths": [
+            "general", "vision", "coding", "creative",
+            "terminal_agent", "chat"
+        ],
+        "endpoint": LLAMA_COMPLETION,
+        "min_temperature": 0.6,
+    },
+    "qwen3.5-thinking": {
+        "id": "qwen3.5-9b-claude-4.6-highiq-thinking-heretic",
+        "name": "Qwen3.5 9B Claude 4.6 HighIQ THINKING Heretic (i1)",
+        "role": "reasoning_fallback",
+        "strengths": [
+            "analysis", "think_step_by_step", "planning", "logic"
+        ],
+        "endpoint": LLAMA_COMPLETION,
+        "min_temperature": 0.6,
+    },
 }
 
 # Fallback order per task: primary first, then alternates.
 FALLBACK_CHAIN = {
-    "full_project": ["qwen3.6-12b", "qwythos-9b", "moe-13b", "qwen3.5-9b"],
-    "refactor": ["moe-13b", "qwen3.6-12b", "qwythos-9b", "qwen3.5-9b"],
-    "analysis": ["qwythos-9b", "qwen3.5-9b", "qwen3.6-12b", "moe-13b"],
-    "general_code": ["qwen3.6-12b", "qwythos-9b", "moe-13b", "qwen3.5-9b"],
+    "full_project": ["qwen3.6-12b", "claude-code-9b", "qwythos-v2", "moe-13b"],
+    "refactor": ["claude-code-9b", "moe-13b", "qwen3.6-12b", "qwythos-v2"],
+    "analysis": ["qwythos-v2", "qwythos-9b", "qwen3.5-thinking",
+                 "qwen3.5-9b"],
+    "general_code": ["qwen3.6-12b", "qwable-9b", "claude-code-9b",
+                     "moe-13b"],
 }

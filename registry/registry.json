@@ -78,6 +78,82 @@
         "math",
         "logic"
       ]
+    },
+    {
+      "key": "qwythos-v2",
+      "id": "qwythos-9b-v2",
+      "name": "Qwythos 9B v2 (empero-ai, FTPO loop-fix)",
+      "role": "reasoning_specialist",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwythos-9B-v2-Q4_K_M.gguf",
+      "context": 1048576,
+      "min_temperature": 0.6,
+      "strengths": [
+        "deep_reasoning",
+        "analysis",
+        "planning",
+        "long_context",
+        "function_calling",
+        "vision",
+        "math",
+        "logic"
+      ]
+    },
+    {
+      "key": "claude-code-9b",
+      "id": "qwen3.5-9b-claude-code",
+      "name": "CodeClawd - Qwen3.5 9B Claude Code (empero-ai)",
+      "role": "code_specialist",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwen3.5-9B-Claude-Code-Q4_K_M.gguf",
+      "context": 4096,
+      "min_temperature": 0.6,
+      "strengths": [
+        "coding_agent",
+        "tool_calling",
+        "multi_file",
+        "refactor",
+        "debug",
+        "production_code"
+      ]
+    },
+    {
+      "key": "qwable-9b",
+      "id": "qwable-9b-claude-fable-5",
+      "name": "Qwable 9B Claude Fable 5 (empero-ai, multimodal)",
+      "role": "general_assistant",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwable-9B-Claude-Fable-5-Q4_K_M.gguf",
+      "context": 4096,
+      "min_temperature": 0.6,
+      "strengths": [
+        "general",
+        "vision",
+        "coding",
+        "creative",
+        "terminal_agent",
+        "chat"
+      ]
+    },
+    {
+      "key": "qwen3.5-thinking",
+      "id": "qwen3.5-9b-claude-4.6-highiq-thinking-heretic",
+      "name": "Qwen3.5 9B Claude 4.6 HighIQ THINKING Heretic (i1)",
+      "role": "reasoning_fallback",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwen3.5-9B-Claude-4.6-HighIQ-THINKING-HERETIC-UNCENSORED.i1-Q4_K_M.gguf",
+      "context": 4096,
+      "min_temperature": 0.6,
+      "strengths": [
+        "analysis",
+        "think_step_by_step",
+        "planning",
+        "logic"
+      ]
     }
   ]
 }
