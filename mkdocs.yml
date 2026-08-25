@@ -9,6 +9,8 @@ nav:
   - API Reference: api.md
   - Model Switching: model-switching.md
   - Deployment: deployment.md
+  - RAG: rag.md
+  - WebSocket: websocket.md
   - Troubleshooting: troubleshooting.md
   - Enhancement Plan: ENHANCEMENT-PLAN.md
 use_directory_urls: false

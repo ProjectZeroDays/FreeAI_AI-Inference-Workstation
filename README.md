@@ -1,7 +1,7 @@
 # Ubuntu-Desktop_XFCE_TigerVNC_noVNC_Tokugawa_llama.cpp_Opencode_Unified-AI-Stack
 
-![version](https://img.shields.io/badge/version-1.1.0-blue)
-![tests](https://img.shields.io/badge/tests-63_passing-brightgreen)
+![version](https://img.shields.io/badge/version-1.2.0-blue)
+![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)
 ![python](https://img.shields.io/badge/python-3.10%2B-informational)
 ![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)
 
@@ -148,6 +148,7 @@ raises alerts, writes runtime-settings.json consumed by all services.
 | 8030 | Dashboard UI + `/api/*` | **Yes** (UFW allow) |
 | 8040 | Workflow Engine | LAN only |
 | 8050 | Autonomous SDLC API | **Yes** (UFW allow) |
+| 8011 | Router WebSocket (`ws://:8011/ws/route` token streaming) | LAN only |
 | 9001 | llama.cpp server (`--jinja`) | localhost/tailnet only |
 | 9002 | vLLM (optional profile) | LAN only |
 | 8888 | JupyterLab (`--profile jupyter` / clients-provision) | LAN only |
@@ -155,6 +156,7 @@ raises alerts, writes runtime-settings.json consumed by all services.
 | 8443 | Caddy TLS gateway (`--profile tls`) - dashboard + basic-auth `/auto/*` | optional public |
 | 9100 | FreeToken edge MoE (`--profile freetoken`) - 290B+ on RTX 30/40/50 | auto-fallback when healthy |
 | 9600 | LoLLMs chat UI (`--profile lollms`) | LAN only |
+| 6333/6334 | Qdrant RAG vector DB (`--profile rag`) | LAN only |
 | 5901 / 6080 | VNC / noVNC desktop | via `--profile desktop` |
 
 All ports overridable: `ROUTER_PORT`, `AGENT_API_PORT`, `DASHBOARD_PORT`, `WORKFLOW_PORT`, `AUTONOMOUS_PORT`, `LLAMA_PORT`, `VLLM_PORT`.

@@ -1,4 +1,4 @@
-## 1.2.0 - Unreleased
+## 1.2.0 - 2026-08-25
 
 ### Added
 - LoLLMs chat UI (--profile lollms :9600) + FreeToken edge MoE engine (--profile freetoken :9100, 290B+ models on consumer GPUs via CPU-GPU co-execution) as optional compose profiles; pytest-asyncio pinned <0.24 to silence deprecation warnings
