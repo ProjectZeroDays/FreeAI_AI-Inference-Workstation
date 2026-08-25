@@ -40,34 +40,30 @@ Common contract: any host that can run
 `curl bundle | bash` or pull one image gets the full stack + dashboards.
 Provider-specific work reduces to env plumbing.
 
-## Track C — Live ISO ("TokugawaOS")
+## Track C - Live ISO (TokugawaOS)
 
-Bootable USB: try live session *with* the stack preinstalled, or install
-to disk. Starter: `live/build-live.sh` + `live/README.md`.
+**Approach (final): remaster the official Ubuntu 24.04 live-server ISO.**
+`live/build-live.sh` extracts the ISO, adds a `/tokugawa/` payload (repo
+tarball + first-boot provisioner), writes a cloud-init NoCloud autoinstall
+seed, prepends three GRUB entries, and repacks with the canonical Ubuntu
+UEFI/BIOS xorriso flags.
 
-Build pipeline (on an Ubuntu build box):
-1. `live-build` (Ubuntu squashfs) with these layers:
-   - ubuntu-noble base + `ubuntu-drivers-common`, HWE kernel
-   - NVIDIA driver `.deb`s bundled (server-570 series) so live boots
-     accelerated on target GPUs without network
-   - our repo cloned into `/opt/unified-ai-stack` + venv prebuilt
-     CPU-mode fallback (llama.cpp CUDA build happens at first boot when
-     GPU detected — keeps ISO arch-portable)
-2. Boot menu (GRUB) entries:
-   - `Try Tokugawa Live (RAM)` — desktop-less autologin, starts
-     `tokugawa-stack-live.service` (CPU llama if no GPU)
-   - `Install to disk (autoinstall)` — boots Subiquity autoinstall seed:
-     partitions, copies /opt stack, enables install-stack.sh first-boot
-     unit, sets hostname/user prompts
-   - `Rescue shell`
-3. First-boot unit (`live/first-boot.sh`) detects GPU:
-   - NVIDIA present → apt driver already bundled → run install-stack.sh
-     (builds CUDA llama.cpp), starts services, prints dashboard URL on
-     TTY1 + optional hotspot QR page
-   - No GPU → MOCK_LLM demo mode so the ISO is testable in VMs
-4. Persistence: optional casper-rw partition stores models/workspaces
-5. Artifacts: ISO ~4–6 GB; CI job on self-hosted runner publishes
-   release asset monthly
+Boot menu on the built ISO:
 
-Acceptance checks per track are listed inline above; each track lands
-behind its own git tag (`iso-v0.1`, `allinone-v0.1`) with release notes.
+1. **Install Tokugawa AI Stack (wipes disk)** - boots Subiquity with
+   `autoinstall ds=nocloud;s=/cdrom/autoinstall`: unattended Ubuntu +
+   `nvidia-driver-570-server` + SSH; late-commands copy the repo to
+   `/opt/tokugawa` and enable `tokugawa-first-boot.service`, which runs
+   `install-stack.sh` (CUDA llama.cpp build), downloads models,
+   provisions coding clients, and starts the stack. Login
+   `tokugawa/tokugawa` - forced-change note in live/README.md.
+2. **Try Ubuntu Server (Tokugawa Live)** - stock live session.
+3. **Rescue shell** - live rescue target.
+
+Build: any Ubuntu 24.04 host, `apt install xorriso isolinux`, one
+command. Network required during *installation* (NVIDIA apt packages);
+the Tokugawa payload itself rides on the ISO. Acceptance: boot menu
+shows 3 entries; entry 1 completes unattended on a wipe-test VM and
+`tokugawa.py status` reports all services UP on first boot; entry 2
+boots a working live session.
+

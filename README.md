@@ -188,7 +188,7 @@ Verify: `python3 tokugawa.py status` - open `http://localhost:8030`.
 | **Cloud: Lambda / Hetzner / Paperspace** | **Ready now** | `deploy.ps1 -Hostname <ip>` or SSH + installer | same bare-metal path, drivers preinstalled on these hosts |
 | **Cloud: Vast.ai** | **Ready now** | import `vastai/template.json` (Portal + Selkies + Guacamole) | `vastai/onstart.sh` -> bundle -> provision -> clients -> desktop |
 | **Cloud: RunPod / any Docker host** | **Ready now (build locally)** | `docker compose --profile allinone up -d --build` | GHCR prebuilt image pending CI (blocker below) |
-| **Live ISO (TokugawaOS)** | **Scripted - ISO not yet compiled** | `live/build-live.sh` on an Ubuntu build host | GRUB: Try Live / Install to disk (autoinstall) / Rescue; needs one manual build run (~40 GB) |
+| **Live ISO (TokugawaOS)** | **Builder ready - compile on any Ubuntu host** | `live/build-live.sh` (Subiquity autoinstall remaster) | Boot menu: **Install Tokugawa (wipes disk, stack first-boot)** / Try Live / Rescue; needs one build run + network for NVIDIA driver |
 
 **Known blocker (GitHub-side):** the account billing lock stops Actions from
 publishing GHCR images and release bundles. Workarounds until cleared:
