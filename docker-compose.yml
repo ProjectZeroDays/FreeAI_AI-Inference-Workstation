@@ -203,13 +203,23 @@ services:
     container_name: tokugawa_tls
     image: caddy:latest
     profiles: ["tls"]
+    environment:
+      - AUTOAUTH_USER=${AUTOAUTH_USER:-tokugawa}
+      - AUTOAUTH_HASH=${AUTOAUTH_HASH:-}
+      - TOKUGAWA_DOMAIN=${TOKUGAWA_DOMAIN:-}
+      - ACME_EMAIL=${ACME_EMAIL:-}
+    # Public domain w/ automatic HTTPS: swap the volume to
+    # ./docker/Caddyfile.public and uncomment ports 80/443.
     volumes:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
     ports:
       - "8443:8443"
+      # - "80:80"
+      # - "443:443"
     depends_on:
       - dashboard
+      - autonomous
     restart: always
 
   jupyter:

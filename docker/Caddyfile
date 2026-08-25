@@ -1,19 +1,35 @@
 # Tokugawa TLS gateway (compose --profile tls)
-# Terminates HTTPS on :8443 and proxies the public surfaces.
-# Basic auth (optional): create Caddyfile next to this with:
-#   basic_auth { user <bcrypt-hash> }
+# Default: internal (self-signed) cert on :8443 - fine for LAN/tailnet.
+# For a PUBLIC domain with automatic HTTPS (ACME/Let's Encrypt):
+#   1. mount docker/Caddyfile.public instead of this file
+#   2. set TOKUGAWA_DOMAIN + ACME_EMAIL (+ publish ports 80/443)
+#
+# Autonomous API auth: AUTOAUTH_USER / AUTOAUTH_HASH (bcrypt).
+#   generate a hash:  docker run --rm caddy caddy hash-password --plaintext 'yourpw'
+#   DEFAULT BELOW IS "changeme" - OVERRIDE BEFORE EXPOSING ANYTHING.
 {
-  admin off
+	admin off
 }
 
 :8443 {
-  # Dashboard (public surface)
-  handle /api/settings* {
-    @post method POST
-    respond @post 403 "write via LAN/tailnet only" 403
-    reverse_proxy dashboard:8030
-  }
-  handle {
-    reverse_proxy dashboard:8030
-  }
+	# ---- Dashboard (public surface) ----
+	# Settings writes stay LAN/tailnet-only even through TLS.
+	handle /api/settings* {
+		@post method POST
+		respond @post 403 "write via LAN/tailnet only" 403
+		reverse_proxy dashboard:8030
+	}
+
+	# ---- Autonomous SDLC API (basic-auth protected) ----
+	handle /auto/* {
+		basic_auth {
+			{$AUTOAUTH_USER:tokugawa} {$AUTOAUTH_HASH:$2b$12$jaNpJiLbzS1iZVdogZuB9.u4nLCtLipqOIH880wLXwGM7n0sqqjZi}
+		}
+		reverse_proxy autonomous:8050
+	}
+
+	# ---- everything else -> dashboard ----
+	handle {
+		reverse_proxy dashboard:8030
+	}
 }
