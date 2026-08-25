@@ -44,6 +44,7 @@ Profiles: `strict` (t0.0), `balanced` (t0.2), `creative` (t0.8),
 | POST | /api/upload | multipart file -> uploads/ (name-sanitized, UPLOAD_MAX_MB cap) |
 | GET | /api/uploads | uploaded files list |
 | GET | /api/clients | client switchboard (mimocode manifests) |
+| GET | /api/runs | autonomous SDLC runs (proxy to :8050, graceful offline) |
 | * | writes require X-Auth-Token when DASHBOARD_AUTH_TOKEN is set |
 
 ## Workflow Engine (:8040)

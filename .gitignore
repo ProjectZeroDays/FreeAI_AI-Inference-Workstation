@@ -19,3 +19,4 @@ config/presets.json
 config/llama.env
 uploads/
 config/providers.json
+site/

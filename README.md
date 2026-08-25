@@ -93,6 +93,7 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | **Router** (:8010) | Keyword classifier w/ confidence score - fallback chain across the roster - degenerate-output (repetition loop) detection w/ automatic retry - LRU response cache (`X-Cache: HIT/MISS`) - per-client token-bucket rate limiting (429) - optional `X-API-Key` auth - `/metrics` (counts, per-task/model, avg latency) - mock mode (`MOCK_LLM=1`) for GPU-less dev |
 | **Agent API** (:8020) | project / refactor / debug / analyze / orchestrate / chat endpoints - profiles: `strict` (t0.0) `balanced` (t0.2) `creative` (t0.8) `verbose` (4096 tok) `minimal` (512 tok) - session memory w/ inspect + clear - error envelopes - call counters |
 | **Workflow Engine** (:8040) | registry-based pipelines - sequential + parallel steps - 3-attempt retry per step - missing-dependency validation - JSONL audit log - export/import definitions - inline execution - 4 shipped templates |
+| **SDLC Runs panel** | dashboard view of autonomous runs: status badges, run IDs, specs, 15s refresh |
 | **Autonomous SDLC** (:8050) | 7-phase lifecycle (plan/coding/testing/fixing/documenting/packaging) - real verification: `compileall`, `pytest`->`unittest`, `node --check` inside sandboxed workspace - static placeholder scan fallback - artifact tarball download - run cancel - concurrency cap |
 | **Presets & Settings** | 4 recommended presets + named custom presets (CRUD) - timed idle window w/ auto-restore (survives restarts) - one `runtime-settings.json` consumed live by 5 services |
 | **Dashboard** (:8030) | GPU util/mem/temp/power/clock + Chart.js history - alerts (services down, thermal, util) - service UP/DOWN badges - settings panel - preset picker - idle countdown banner - model shelf (registry vs disk + free GB) - router metrics - SSE live updates - security headers |
@@ -228,6 +229,8 @@ Reboot once after driver install, then `systemctl status tokugawa-stack`.
 | `--profile allinone` | single supervisord CUDA container, every service |
 | `--profile warmup` | one-shot GPU warmup after healthy |
 | `--profile desktop` | + XFCE/VNC/noVNC |
+| `--profile jupyter` | + JupyterLab :8888 |
+| `--profile tls` | + Caddy TLS gateway :8443 |
 
 Config via `.env` (copy `.env.example`). Every core service has a compose healthcheck; `warmup` waits on router + llama health.
 
@@ -460,7 +463,7 @@ Condensed; full curl examples in docs/api.md.
 | GET | /api/status (gpu, services, alerts, power_mode, router_metrics, version) |
 | GET/POST | /api/settings ; POST /api/settings/llama-restart |
 | GET/POST/DELETE | /api/presets[/{name}] ; POST /api/presets/{name}/apply {duration_min?} |
-| GET | /api/models-status ; GET /api/events (SSE) |
+| GET | /api/models-status ; GET /api/runs (autonomous runs proxy) ; GET /api/events (SSE) |
 
 ## 12. Model Management
 

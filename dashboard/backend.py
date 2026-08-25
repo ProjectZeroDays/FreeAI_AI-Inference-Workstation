@@ -71,6 +71,7 @@ LLAMA_ENV_PATH = os.path.join(ROOT_DIR, "config", "llama.env")
 GPU_TUNE_SCRIPT = os.path.join(ROOT_DIR, "hardware", "gpu-power-tune.sh")
 PRESETS_PATH = os.path.join(ROOT_DIR, "config", "presets.json")
 ROUTER_PORT = int(os.environ.get("ROUTER_PORT", "8010"))
+AUTON_PORT = int(os.environ.get("AUTONOMOUS_PORT", "8050"))
 
 # field -> (low, high) inclusive bounds; repeat_penalty handled apart
 FIELD_BOUNDS = {"power_limit_w": (150, 350),
@@ -151,6 +152,19 @@ def uploads():
             if os.path.isfile(p):
                 out.append({"name": n, "bytes": os.path.getsize(p)})
     return jsonify({"uploads": out})
+
+
+@app.route("/api/runs")
+def sdlc_runs():
+    """Proxy autonomous SDLC run list (graceful when service is down)."""
+    try:
+        with urllib.request.urlopen(
+                f"http://127.0.0.1:{AUTON_PORT}/auto/runs",
+                timeout=3) as resp:
+            data = json.loads(resp.read().decode())
+        return jsonify(data)
+    except Exception as exc:
+        return jsonify({"runs": [], "offline": str(exc)[:120]})
 
 
 @app.route("/api/clients")

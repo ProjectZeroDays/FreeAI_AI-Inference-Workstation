@@ -299,6 +299,39 @@ async function saveSettings(restartLlama) {
 }
 
 
+
+/* ---------------- autonomous SDLC runs ---------------- */
+
+const RUN_BADGE = { done: "ok", failed: "down", cancelled: "down" };
+
+async function loadRuns() {
+  const el = document.getElementById("runs-list");
+  try {
+    const res = await fetch("/api/runs");
+    const d = await res.json();
+    if (d.offline) {
+      el.innerHTML = "<li class='muted'>autonomous service offline</li>";
+      return;
+    }
+    if (!(d.runs || []).length) {
+      el.innerHTML = "<li class='muted'>no runs yet - tokugawa.py auto-start &lt;spec&gt;</li>";
+      return;
+    }
+    el.innerHTML = "";
+    d.runs.slice(0, 8).forEach(r => {
+      const li = document.createElement("li");
+      const badge = document.createElement("span");
+      badge.className = "badge " + (RUN_BADGE[r.status] ||
+        (["done","failed","cancelled"].includes(r.status) ? "down" : "warn"));
+      badge.textContent = r.status.toUpperCase();
+      li.appendChild(badge);
+      const spec = (r.spec || "").slice(0, 60);
+      li.appendChild(document.createTextNode(" " + r.run_id + " - " + spec));
+      el.appendChild(li);
+    });
+  } catch (e) { el.textContent = "runs unavailable"; }
+}
+
 /* ---------------- clients switchboard + uploads ---------------- */
 
 async function loadClients() {
@@ -400,11 +433,12 @@ async function testProvider() {
 document.addEventListener("DOMContentLoaded", () => {
   loadClients();
   loadProviders();
-  document.getElementById("prov-test").onclick = testProvider;
+  loadRuns();
   loadUploads();
   document.getElementById("up-send").onclick = uploadFile;
   fetchStatus();
   setInterval(fetchStatus, 5000);
+  setInterval(loadRuns, 15000);
   loadSettings();
   loadPresets();
   loadModelShelf();

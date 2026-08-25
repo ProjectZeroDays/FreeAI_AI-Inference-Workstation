@@ -1,6 +1,7 @@
 ## 1.2.0 - Unreleased
 
 ### Added
+- Dashboard SDLC Runs panel (status badges, run IDs, 15s refresh) via /api/runs proxy; MkDocs site screenshots; docs sweep for 8-model roster
 - Roster expansion (empero-ai + mradermacher): Qwythos-9B-v2 (FTPO loop-fix, reasoning primary), CodeClawd Qwen3.5-9B-Claude-Code (code specialist, agent-trace SFT), Qwable-9B-Claude-Fable-5 (multimodal general), Qwen3.5-9B-Claude-4.6-HighIQ-THINKING (mradermacher i1); per-model min_temperature floors; scripts/convert-hf.sh for safetensors-only repos (openNemo pair)
 
 - Model: Qwythos-9B Claude Mythos 5 1M (empero-ai) as reasoning_specialist primary - Claude-trace post-train of Qwen3.5-9B, 1M context (YaRN), native function calling, vision-capable; router enforces per-model min_temperature floor (0.6) on sync + stream paths; optional MTP speculative-decoding download
