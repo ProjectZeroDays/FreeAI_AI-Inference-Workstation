@@ -276,10 +276,6 @@ volumes:
   lollms-data:
   freetoken-cache:
 
-volumes:
-  audit-logs:
-  workspaces:
-
 networks:
   default:
     driver: bridge
