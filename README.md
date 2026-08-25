@@ -231,6 +231,8 @@ Reboot once after driver install, then `systemctl status tokugawa-stack`.
 | `--profile desktop` | + XFCE/VNC/noVNC |
 | `--profile jupyter` | + JupyterLab :8888 |
 | `--profile tls` | + Caddy TLS gateway :8443 |
+| `--profile lollms` | + LoLLMs chat UI :9600 (points at router) |
+| `--profile freetoken` | + FreeToken edge MoE engine :9100 (290B+ models on consumer GPUs) |
 
 Config via `.env` (copy `.env.example`). Every core service has a compose healthcheck; `warmup` waits on router + llama health.
 

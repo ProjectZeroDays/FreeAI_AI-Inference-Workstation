@@ -127,6 +127,8 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
   Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
 
 ## 17b. External providers (shipped)
+- ✅ FreeToken edge MoE serving engine (--profile freetoken) - 290B+ frontier models on consumer GPUs
+- ✅ LoLLMs chat UI (--profile lollms) - optional chat-centric frontend
 - ✅ 21+ hosted API bridge (openai/anthropic/gemini adapters), explicit model routing, keyed-fallback tails, streaming, dashboard panel + test pings, docs/PROVIDERS.md
 
 ## 18. llmv-llama.cpp-cuda-13.0-ZCode-MimoCode-NoVNC-DesktopEnv integration

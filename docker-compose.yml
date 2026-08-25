@@ -237,10 +237,44 @@ services:
       - "8888:8888"
     restart: always
 
+  lollms:
+    container_name: tokugawa_lollms
+    image: parisneo/lollms:latest
+    profiles: ["lollms"]
+    ports:
+      - "9600:9600"
+    volumes:
+      - lollms-data:/data
+    environment:
+      - LOLLMS_HOST=0.0.0.0
+    restart: unless-stopped
+
+  freetoken:
+    container_name: tokugawa_freetoken
+    image: flashml/freetoken:latest
+    profiles: ["freetoken"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - FREETOKEN_MODEL=${FREETOKEN_MODEL:-deepseek-ai/DeepSeek-V4-Flash}
+      - FREETOKEN_PORT=9100
+    volumes:
+      - freetoken-cache:/root/.cache/freetoken
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+
 volumes:
   audit-logs:
   workspaces:
   caddy-data:
+  lollms-data:
+  freetoken-cache:
 
 volumes:
   audit-logs:

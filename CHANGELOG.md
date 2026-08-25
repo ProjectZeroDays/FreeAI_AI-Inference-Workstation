@@ -1,6 +1,8 @@
 ## 1.2.0 - Unreleased
 
 ### Added
+- LoLLMs chat UI (--profile lollms :9600) + FreeToken edge MoE engine (--profile freetoken :9100, 290B+ models on consumer GPUs via CPU-GPU co-execution) as optional compose profiles; pytest-asyncio pinned <0.24 to silence deprecation warnings
+
 - Caddy gateway expansion: basic-auth-protected /auto/* proxy (autonomous API) w/ env-injected bcrypt (AUTOAUTH_USER/HASH), public-domain template (Caddyfile.public) w/ automatic ACME HTTPS via TOKUGAWA_DOMAIN/ACME_EMAIL, .env wiring
 - Dashboard SDLC Runs panel (status badges, run IDs, 15s refresh) via /api/runs proxy; MkDocs site screenshots; docs sweep for 8-model roster
 - Roster expansion (empero-ai + mradermacher): Qwythos-9B-v2 (FTPO loop-fix, reasoning primary), CodeClawd Qwen3.5-9B-Claude-Code (code specialist, agent-trace SFT), Qwable-9B-Claude-Fable-5 (multimodal general), Qwen3.5-9B-Claude-4.6-HighIQ-THINKING (mradermacher i1); per-model min_temperature floors; scripts/convert-hf.sh for safetensors-only repos (openNemo pair)
