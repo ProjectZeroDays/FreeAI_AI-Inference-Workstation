@@ -1,0 +1,6 @@
+.sops.yaml
+---
+creation_rules:
+  - path_regex: config/secrets.enc.yaml
+    age: age1ql0example-replace-with-your-age-recipient
+    encrypted_regex: "^(data|stringData)$"

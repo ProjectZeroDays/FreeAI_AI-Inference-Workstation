@@ -40,6 +40,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check billing / fallback to artifacts
+        id: preflight
+        run: |
+          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+            echo "skip=1" >> $GITHUB_OUTPUT
+          else
+            echo "skip=0" >> $GITHUB_OUTPUT
+          fi
+
       - uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
@@ -49,3 +58,15 @@ jobs:
             ${{ startsWith(github.ref, 'refs/tags/v') && format('{0}-{1}:{2}', env.IMAGE_PREFIX, matrix.name, github.ref_name) || '' }}
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+          # models cache: pre-warm HF cache layer when possible
+          build-args: |
+            HF_CACHE_WARM=${{ secrets.HF_TOKEN != '' && '1' || '0' }}
+
+      - name: Upload image artifact (billing workaround)
+        if: always() && steps.preflight.outputs.skip != '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-${{ matrix.name }}-${{ github.sha }}
+          path: /tmp/*.tar
+          if-no-files-found: ignore
+          retention-days: 7

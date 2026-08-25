@@ -356,6 +356,39 @@ def metrics():
     return jsonify(snap)
 
 
+@app.route("/admin/model-switch", methods=["POST"])
+def model_switch():
+    """Dynamic LLAMA_MODEL_PATH hot-swap (requires restart of llama container).
+
+    Body: {"model_path": "/models/Other-Q4_K_M.gguf"}
+    Returns 202 with restart instruction; actual swap is env-driven.
+    """
+    data = request.get_json(silent=True) or {}
+    path = data.get("model_path", "").strip()
+    if not path:
+        return jsonify({"error": "model_path required"}), 400
+    # validate path is inside /models to avoid traversal
+    if ".." in path or not path.startswith("/models/"):
+        return jsonify({"error": "path must be under /models/"}), 400
+    return jsonify({"status": "accepted", "model_path": path,
+                    "hint": "set LLAMA_MODEL_PATH and restart llama: "
+                            "docker compose restart llama"}), 202
+
+
+@app.route("/admin/hot-models")
+def hot_models():
+    from models import _llama_bases
+    out = []
+    for base in _llama_bases:
+        try:
+            import requests as _r
+            r = _r.get(f"{base}/health", timeout=2)
+            out.append({"base": base, "healthy": r.status_code == 200})
+        except Exception:
+            out.append({"base": base, "healthy": False})
+    return jsonify({"shards": out})
+
+
 @app.route("/route", methods=["POST"])
 def route():
     data = request.get_json(silent=True) or {}
@@ -475,6 +508,23 @@ def route():
                 continue
         if result is None and best_effort is not None:
             result, model_used = best_effort
+
+        # parallel hot model: try secondary llama shard
+        if result is None:
+            try:
+                from models import _llama_bases
+                for base in _llama_bases[1:]:
+                    try:
+                        r = requests.post(f"{base}/completion",
+                                          json=call_payload, timeout=TIMEOUT)
+                        r.raise_for_status()
+                        result, model_used = r.json(), f"hot-shard:{base}"
+                        metrics_model("hot-shard")
+                        break
+                    except Exception:
+                        continue
+            except Exception:
+                pass
 
         # provider fallback tail: keyed providers flagged fallback=true
         if result is None:

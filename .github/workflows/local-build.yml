@@ -1,0 +1,22 @@
+name: local-build-fallback
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-local-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build allinone tarball (no push)
+        run: |
+          docker build -f docker/all-in-one.Dockerfile -t tokugawa-allinone:ci .
+          docker save tokugawa-allinone:ci | gzip > tokugawa-allinone.tar.gz
+          ls -lh tokugawa-allinone.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tokugawa-allinone-image
+          path: tokugawa-allinone.tar.gz
+          retention-days: 14

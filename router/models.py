@@ -5,7 +5,11 @@ from settings import load_config
 _CFG = load_config()
 LLAMA_BASE = _CFG.get("router", {}).get(
     "llama_base", os.environ.get("LLAMA_BASE", "http://localhost:9001"))
+LLAMA2_BASE = os.environ.get("LLAMA2_BASE", "http://localhost:9003")
+_llama_bases = [b.rstrip("/") for b in os.environ.get(
+    "LLAMA_BASES", f"{LLAMA_BASE},{LLAMA2_BASE}").split(",") if b.strip()]
 LLAMA_COMPLETION = f"{LLAMA_BASE}/completion"
+LLAMA2_COMPLETION = f"{LLAMA2_BASE}/completion"
 
 MODEL_REGISTRY = {
     "qwen3.6-12b": {

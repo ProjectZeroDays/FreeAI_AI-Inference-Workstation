@@ -30,6 +30,38 @@ services:
       retries: 5
       start_period: 120s
 
+  llama2:
+    container_name: llama2_cpp
+    build:
+      context: ./llama
+      dockerfile: Dockerfile
+    profiles: ["llama2"]
+    environment:
+      - LLAMA_MODEL_PATH=${LLAMA2_MODEL_PATH:-/models/Qwen3.5-9B-Claude-Code-Q4_K_M.gguf}
+      - LLAMA_PORT=9003
+      - N_GPU_LAYERS=${N_GPU_LAYERS:-60}
+      - LLAMA_EXTRA_ARGS=${LLAMA_EXTRA_ARGS:-}
+      - LLAMA_VISION_ENABLED=${LLAMA2_VISION_ENABLED:-false}
+      - LLAMA_MMPROJ_PATH=${LLAMA2_MMPROJ_PATH:-}
+      - NVIDIA_VISIBLE_DEVICES=${LLAMA2_GPU:-1}
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9003:9003"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:9003/health', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
   gpu-warmup:
     container_name: gpu_warmup
     build:
@@ -79,6 +111,7 @@ services:
       - CACHE_ENABLED=${CACHE_ENABLED:-true}
     ports:
       - "8010:8010"
+      - "8011:8011"
     depends_on:
       - llama
     restart: always
@@ -87,6 +120,7 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
+    command: ["bash", "-c", "python router/router.py & python router/ws_stream.py & wait"]
 
   agents:
     container_name: agent_api
@@ -269,12 +303,42 @@ services:
       - "9100:9100"
     restart: unless-stopped
 
+  qdrant:
+    container_name: tokugawa_qdrant
+    image: qdrant/qdrant:latest
+    profiles: ["rag"]
+    volumes:
+      - qdrant-data:/qdrant/storage
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    restart: unless-stopped
+
+  rag-ingest:
+    container_name: tokugawa_rag_ingest
+    build:
+      context: ./rag
+      dockerfile: Dockerfile
+    profiles: ["rag"]
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - ROUTER_URL=http://router:8010/route
+    volumes:
+      - ./docs:/app/docs:ro
+      - ./README.md:/app/README.md:ro
+    depends_on:
+      - qdrant
+      - router
+    restart: "no"
+    command: ["python", "ingest.py", "--watch"]
+
 volumes:
   audit-logs:
   workspaces:
   caddy-data:
   lollms-data:
   freetoken-cache:
+  qdrant-data:
 
 networks:
   default:
