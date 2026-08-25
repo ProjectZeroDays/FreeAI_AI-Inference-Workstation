@@ -110,6 +110,9 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | **Optimizer + Tune** | performance/balanced/eco power modes w/ hysteresis + 10-min cooldown - `gpu-power-tune.sh` power cap + clock lock (-10..20C) - `nvidia-persistenced` enablement |
 | **Self-healing** | supervisor 10s loop - health agent 30s - recovery agent 15s - systemd units w/ auto-restart |
 | **Maintenance** | daily cleanup timer (log rotation 25MB x5, workspace pruning) - weekly backup timer (config/registry/manifests + run manifests, keep 10, restore mode) |
+| **Parallel hot models** | second resident shard (`--profile llama2`, per-GPU CUDA_VISIBLE_DEVICES) - `/admin/hot-models` roster + `/admin/model-switch` zero-reload swap |
+| **RAG** | Qdrant sidecar :6333 + ingest watcher (`--profile rag`) - MiniLM 384-dim embeddings, deterministic hash fallback for GPU-less CI |
+| **Evals** | golden-task harness (`evals/golden_tasks.json`) - `run_eval.py` scores router answers vs expectations incl. reviewer-model pass |
 | **Tooling** | `tokugawa-cli` (14 subcommands) - Makefile - MkDocs site - auto-docs generator - GitHub Actions CI (py/bash/js/json gates) + docker publish + release bundling |
 | **Desktop** | XFCE + TigerVNC + noVNC (compose `--profile desktop`) |
 
@@ -528,15 +531,16 @@ UFW opens only 22/8030/8050. Router (8010) and llama (9001) stay off the public 
 ## 15. Testing and Validation
 
 ```bash
-make test     # 63-test offline pytest suite
+make test     # 88-test offline pytest suite
 make lint     # bash -n + py_compile + node --check + json.tool over tracked files
+python evals/run_eval.py   # golden-task eval sweep (needs router up; MOCK_LLM=1 works)
 ```
 
-Suite map: router unit (classifier/switcher/cache/limiter) - router API via Flask test client (mock backend) - coherence (degenerate detector + retry) - agents (profiles/memory/metrics via TestClient) - workflow (validation/retries/definitions) - autonomous SDLC (full lifecycle, fix loop, cancellation, sandbox safety) - optimizer (mode decisions) - presets (CRUD/apply/idle expiry/cap).
+Suite map: router unit (classifier/switcher/cache/limiter) - router API via Flask test client (mock backend) - coherence (degenerate detector + retry) - agents (profiles/memory/metrics via TestClient) - workflow (validation/retries/definitions) - autonomous SDLC (full lifecycle, fix loop, cancellation, sandbox safety) - optimizer (mode decisions) - presets (CRUD/apply/idle expiry/cap). Golden-task evals live outside pytest: they score real router output quality per task class.
 
-CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (offline smoke) - docs.yml (auto-generate workflows.json) - docker-publish.yml (5 images to GHCR on tags) - release.yml (source bundle on tags).
+CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (offline smoke) - docs.yml (auto-generate workflows.json) - docker-publish.yml (5 images to GHCR on tags) - release.yml (source bundle on tags) - local-build.yml (builds all 5 images and uploads artifact tarballs instead of pushing to GHCR — use this while the account has an Actions billing lock).
 
-> Note: if Actions shows startup failures reading account locked due to a billing issue, that is GitHub-side billing - resolve at github.com -> Settings -> Billing; the workflows themselves are fine.
+> Note: if Actions shows startup failures reading account locked due to a billing issue, that is GitHub-side billing - resolve at github.com -> Settings -> Billing; until then local-build.yml still produces runnable image tarballs as workflow artifacts.
 
 ## 16. Performance Tuning Guide
 

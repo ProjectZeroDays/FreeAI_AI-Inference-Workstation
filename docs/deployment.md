@@ -49,3 +49,11 @@ nodeSelector + tolerations already.
 ```bash
 pip install mkdocs && mkdocs serve   # renders docs/ via mkdocs.yml
 ```
+
+## Additional compose profiles
+
+```bash
+docker compose --profile lollms up -d      # LoLLMs chat UI :9600
+docker compose --profile freetoken up -d   # FreeToken edge MoE :9100 (290B+ on consumer GPUs)
+docker compose --profile rag up -d         # Qdrant RAG sidecar :6333
+```

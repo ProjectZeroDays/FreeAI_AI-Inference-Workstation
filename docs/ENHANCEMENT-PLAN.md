@@ -24,8 +24,8 @@ Status legend: ✅ implemented · 🔜 planned (with approach sketched) ·
 | Router live metrics on dashboard | ✅ | `/api/status` embeds router `/metrics` |
 | Model shelf (registry vs disk) | ✅ | `/api/models-status`: present/missing + free disk |
 | Security headers | ✅ | nosniff / frame-deny / referrer-policy |
-| Auth on dashboard write endpoints | 🔜 | require `X-API-Key` (reuse ROUTER_API_KEY) for POST routes when set; GET stays open on LAN |
-| WebSocket bi-directional agent feed | 🕐 | flask-sock; SSE covers 90% today |
+| Auth on dashboard write endpoints | ✅ | auth.js gate + X-Auth-Token on POST routes; GET stays open on LAN |
+| WebSocket bi-directional agent feed | ✅ | ws://:8011/ws/route token streaming alongside SSE |
 
 ## 3. Inference coherence (already shipped)
 
@@ -49,7 +49,7 @@ fallback retry, `install.sh --update-llama`.
 | Makefile (test/lint/up/down/backup/update) | ✅ | single entry point |
 | CLI presets/settings commands | ✅ | `tokugawa.py presets/preset/settings` |
 | GitHub Pages docs publish (MkDocs) | 🔜 | `.github/workflows/docs-pages.yml`: `mkdocs gh-deploy` on main |
-| Image size diet (slim llama build stage) | 🔜 | multi-stage Dockerfile: devel→runtime copy of `llama-server` only |
+| Image size diet (slim llama build stage) | ✅ | multi-stage all-in-one: devel→runtime, ~60% smaller; llama/Dockerfile too |
 | Prometheus exporter endpoint | 🕐 | translate `/metrics` JSON to text format |
 
 ## 6. Future (unchanged)

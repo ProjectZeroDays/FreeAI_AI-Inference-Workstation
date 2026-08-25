@@ -126,7 +126,14 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - ?? Provider launch kits: RunPod template from GHCR image, Lambda/
   Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
 
-## 17b. External providers (shipped)
+## 17b. External providers & expansion (shipped)
+- ✅ Parallel hot models: llama2 shard :9003 (--profile llama2, per-GPU CUDA_VISIBLE_DEVICES) + /admin/hot-models + /admin/model-switch
+- ✅ Qdrant RAG sidecar + ingest watcher (--profile rag) - MiniLM 384-dim, hash fallback for CI
+- ✅ WebSocket token streaming (ws://:8011/ws/route) alongside SSE
+- ✅ Golden-task eval harness (evals/golden_tasks.json + reviewer-scored run_eval.py)
+- ✅ Multi-stage image diet (~60% smaller all-in-one) + SOPS/Vault secrets via scripts/up-secure.sh
+- ✅ local-build.yml workflow (billing workaround: artifact tarballs instead of GHCR push)
+
 - ✅ FreeToken edge MoE serving engine (--profile freetoken) - 290B+ frontier models on consumer GPUs
 - ✅ LoLLMs chat UI (--profile lollms) - optional chat-centric frontend
 - ✅ 21+ hosted API bridge (openai/anthropic/gemini adapters), explicit model routing, keyed-fallback tails, streaming, dashboard panel + test pings, docs/PROVIDERS.md
