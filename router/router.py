@@ -248,10 +248,15 @@ def stream_route(prompt, task_type, agent, payload_base=None):
     from models import MODEL_REGISTRY
     started = time.monotonic()
     for candidate in select_chain(task_type, agent):
-        endpoint = MODEL_REGISTRY[candidate]["endpoint"].replace(
-            "/completion", "/completion")
+        model_meta = MODEL_REGISTRY[candidate]
+        endpoint = model_meta["endpoint"]
         try:
             stream_payload = dict(payload, stream=True)
+            floor = model_meta.get("min_temperature")
+            if floor is not None:
+                stream_payload["temperature"] = max(
+                    float(stream_payload.get("temperature", 0.2)),
+                    float(floor))
             r = requests.post(endpoint, json=stream_payload,
                               stream=True, timeout=TIMEOUT)
             r.raise_for_status()
@@ -442,8 +447,15 @@ def route():
         while candidates:
             candidate = candidates.pop(0)
             model = MODEL_REGISTRY[candidate]
+            # reasoning models (e.g. Qwythos) need a temperature floor to
+            # avoid greedy-decode repetition loops
+            call_payload = dict(payload)
+            floor = model.get("min_temperature")
+            if floor is not None:
+                call_payload["temperature"] = max(
+                    float(call_payload.get("temperature", 0.2)), float(floor))
             try:
-                r = requests.post(model["endpoint"], json=payload,
+                r = requests.post(model["endpoint"], json=call_payload,
                                   timeout=TIMEOUT)
                 r.raise_for_status()
                 attempt = r.json()

@@ -42,7 +42,7 @@ def test_select_model_roles():
 def test_fallback_chain_primary_first():
     chain = select_chain("refactor")
     assert chain[0] in MODEL_REGISTRY
-    assert len(chain) == 3
+    assert len(chain) == 4
 
 
 def test_per_agent_override_reorders_chain():
@@ -50,6 +50,43 @@ def test_per_agent_override_reorders_chain():
     # no override configured for this fake agent -> default order
     assert chain[0] == MODEL_REGISTRY["qwen3.6-12b"]["id"] or \
         chain[0] in ("qwen3.6-12b", "moe-13b", "qwen3.5-9b")
+
+
+def test_qwythos_is_analysis_primary():
+    chain = select_chain("analysis")
+    assert chain[0] == "qwythos-9b"
+
+
+def test_qwythos_has_temperature_floor():
+    from models import MODEL_REGISTRY
+    assert MODEL_REGISTRY["qwythos-9b"]["min_temperature"] == 0.6
+
+
+def test_temperature_floor_applied(monkeypatch):
+    import router as router_mod
+    captured = {}
+
+    class FakeResp:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"content": "ok"}
+
+    def fake_post(url, json=None, timeout=None, **kw):
+        captured["payload"] = json
+        return FakeResp()
+
+    monkeypatch.setattr(router_mod.requests, "post", fake_post)
+    monkeypatch.setattr(router_mod, "MOCK_LLM", False)
+    router_mod.app.config["TESTING"] = True
+    with router_mod.app.test_client() as c:
+        # "explain..." -> analysis -> qwythos-9b (floor 0.6); balanced=0.2
+        res = c.post("/route", json={
+            "prompt": "explain how does recursion work",
+            "temperature": 0.2, "max_tokens": 8})
+    assert res.status_code == 200
+    assert captured["payload"]["temperature"] == 0.6
 
 
 def test_registry_integrity():

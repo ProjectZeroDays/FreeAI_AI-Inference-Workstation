@@ -9,7 +9,17 @@
       "endpoint": "http://localhost:9001/completion",
       "gguf": "models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf",
       "context": 4096,
-      "strengths": ["architecture", "full_project", "production_code", "multi_file", "api_design", "microservices", "ci_cd", "infrastructure", "deep_reasoning"]
+      "strengths": [
+        "architecture",
+        "full_project",
+        "production_code",
+        "multi_file",
+        "api_design",
+        "microservices",
+        "ci_cd",
+        "infrastructure",
+        "deep_reasoning"
+      ]
     },
     {
       "key": "moe-13b",
@@ -20,7 +30,15 @@
       "endpoint": "http://localhost:9001/completion",
       "gguf": "models/L3.1-MOE-2X8B-Deepseek-DeepHermes-e32-uncensored-abliterated-13.7B-Q6_K.gguf",
       "context": 4096,
-      "strengths": ["refactor", "debug", "fix_code", "patch", "optimize", "incremental", "fast_completion"]
+      "strengths": [
+        "refactor",
+        "debug",
+        "fix_code",
+        "patch",
+        "optimize",
+        "incremental",
+        "fast_completion"
+      ]
     },
     {
       "key": "qwen3.5-9b",
@@ -31,7 +49,35 @@
       "endpoint": "http://localhost:9001/completion",
       "gguf": "models/Qwen3.5-9B-Claude-4.6-HighIQ-INSTRUCT-HERETIC-UNCENSORED-Q6_K.gguf",
       "context": 4096,
-      "strengths": ["analysis", "explain", "think_step_by_step", "planning", "decomposition", "logic"]
+      "strengths": [
+        "analysis",
+        "explain",
+        "think_step_by_step",
+        "planning",
+        "decomposition",
+        "logic"
+      ]
+    },
+    {
+      "key": "qwythos-9b",
+      "id": "qwythos-9b-claude-mythos-5-1m",
+      "name": "Qwythos 9B Claude Mythos 5 1M (empero-ai)",
+      "role": "reasoning_specialist",
+      "backend": "llama",
+      "endpoint": "http://localhost:9001/completion",
+      "gguf": "models/Qwythos-9B-Claude-Mythos-5-1M-Q4_K_M.gguf",
+      "context": 1048576,
+      "min_temperature": 0.6,
+      "strengths": [
+        "deep_reasoning",
+        "analysis",
+        "planning",
+        "long_context",
+        "function_calling",
+        "vision",
+        "math",
+        "logic"
+      ]
     }
   ]
 }

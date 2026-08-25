@@ -38,5 +38,18 @@ if [ "${DOWNLOAD_VISION:-1}" = "1" ]; then
     "mmproj-Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-BF16.gguf" 100000000
 fi
 
+# Qwythos-9B Claude-Mythos 1M (empero-ai) - reasoning specialist:
+# Claude-trace post-train of Qwen3.5-9B, 1M ctx, function calling,
+# +34 MMLU vs base. Reasoning model -> temp floor 0.6 (router clamps).
+download "https://huggingface.co/empero-ai/Qwythos-9B-Claude-Mythos-5-1M-GGUF/resolve/main/Qwythos-9B-Claude-Mythos-5-1M-Q4_K_M.gguf" \
+  "Qwythos-9B-Claude-Mythos-5-1M-Q4_K_M.gguf" 5000000000
+
+# Optional MTP variant for speculative decoding (--spec-type draft-mtp):
+# DOWNLOAD_MTP=1 bash models/auto-download-models.sh
+if [ "${DOWNLOAD_MTP:-0}" = "1" ]; then
+  download "https://huggingface.co/empero-ai/Qwythos-9B-Claude-Mythos-5-1M-GGUF/resolve/main/Qwythos-9B-Claude-Mythos-5-1M-MTP-Q4_K_M.gguf" \
+    "Qwythos-9B-Claude-Mythos-5-1M-MTP-Q4_K_M.gguf" 5000000000
+fi
+
 echo "[models] All models downloaded:"
 ls -lh models/

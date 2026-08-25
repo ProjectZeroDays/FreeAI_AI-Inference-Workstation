@@ -40,12 +40,26 @@ MODEL_REGISTRY = {
         ],
         "endpoint": LLAMA_COMPLETION,
     },
+    "qwythos-9b": {
+        "id": "qwythos-9b-claude-mythos-5-1m",
+        "name": "Qwythos 9B Claude Mythos 5 1M (empero-ai)",
+        "role": "reasoning_specialist",
+        "strengths": [
+            "deep_reasoning", "analysis", "planning",
+            "long_context", "function_calling", "vision",
+            "math", "logic"
+        ],
+        "endpoint": LLAMA_COMPLETION,
+        # reasoning model: <think> blocks; temp <= 0.3 causes repetition
+        "min_temperature": 0.6,
+        "context": 1048576,
+    },
 }
 
 # Fallback order per task: primary first, then alternates.
 FALLBACK_CHAIN = {
-    "full_project": ["qwen3.6-12b", "moe-13b", "qwen3.5-9b"],
-    "refactor": ["moe-13b", "qwen3.6-12b", "qwen3.5-9b"],
-    "analysis": ["qwen3.5-9b", "qwen3.6-12b", "moe-13b"],
-    "general_code": ["qwen3.6-12b", "moe-13b", "qwen3.5-9b"],
+    "full_project": ["qwen3.6-12b", "qwythos-9b", "moe-13b", "qwen3.5-9b"],
+    "refactor": ["moe-13b", "qwen3.6-12b", "qwythos-9b", "qwen3.5-9b"],
+    "analysis": ["qwythos-9b", "qwen3.5-9b", "qwen3.6-12b", "moe-13b"],
+    "general_code": ["qwen3.6-12b", "qwythos-9b", "moe-13b", "qwen3.5-9b"],
 }
