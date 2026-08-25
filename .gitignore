@@ -17,3 +17,5 @@ workspaces/
 config/runtime-settings.json
 config/presets.json
 config/llama.env
+uploads/
+config/providers.json

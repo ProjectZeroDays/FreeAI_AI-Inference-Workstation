@@ -187,7 +187,9 @@ def _sse_frames(resp):
         if choices:
             choice = choices[0] or {}
             msg = choice.get("message") or {}
-            text = msg.get("content") or choice.get("text") or ""
+            delta = choice.get("delta") or {}
+            text = (msg.get("content") or delta.get("content")
+                    or choice.get("text") or "")
         else:
             text = obj.get("content") or ""
         if text:

@@ -39,7 +39,9 @@ check autonomous-runs    "$AUTON/auto/runs"
 if resp=$(curl -sf --max-time 120 -X POST "$ROUTER/route" \
     -H "Content-Type: application/json" "${auth[@]+"${auth[@]}"}" \
     -d '{"prompt":"Build a production smoke test service","max_tokens":32}'); then
-  echo "PASS  router /route round-trip ($(echo "$resp" | jq -r '.task_type // "?"') via $(echo "$resp" | jq -r '.model_used // "?"'))"
+  task=$(printf '%s' "$resp" | sed -n 's/.*"task_type"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+  model=$(printf '%s' "$resp" | sed -n 's/.*"model_used"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+  echo "PASS  router /route round-trip (${task:-?} via ${model:-?})"
 else
   echo "FAIL  router /route round-trip"; fail=1
 fi

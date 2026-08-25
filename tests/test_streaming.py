@@ -39,3 +39,22 @@ def test_non_stream_unchanged(client):
     res = client.post("/route", json={"prompt": "plain request"})
     assert res.status_code == 200
     assert res.mimetype == "application/json"
+
+
+def test_sse_frames_parse_delta_content():
+    """Regression: OpenAI streaming uses choices[0].delta.content."""
+    import json as _json
+
+    class FakeResp:
+        def iter_lines(self, decode_unicode=True):
+            frames = [
+                {"choices": [{"delta": {"content": "pong "}}]},
+                {"choices": [{"delta": {"content": "from stub"}}]},
+                {"choices": [{"message": {"content": "full"}}]},
+            ]
+            for f in frames:
+                yield "data: " + _json.dumps(f)
+            yield "data: [DONE]"
+
+    out = list(router_mod._sse_frames(FakeResp()))
+    assert out == ["pong ", "from stub", "full"]

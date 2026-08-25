@@ -250,6 +250,12 @@ def main():
     p_fetch.add_argument("run_id")
     p_fetch.add_argument("-o", "--out")
 
+    sub.add_parser("providers", help="list external AI providers")
+
+    p_pt = sub.add_parser("provider-test",
+                          help="ping an external provider")
+    p_pt.add_argument("name")
+
     sub.add_parser("presets", help="list recommended + custom presets")
 
     p_pre = sub.add_parser("preset", help="apply a preset by name")
