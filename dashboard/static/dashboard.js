@@ -298,7 +298,59 @@ async function saveSettings(restartLlama) {
   }
 }
 
+
+/* ---------------- clients switchboard + uploads ---------------- */
+
+async function loadClients() {
+  const el = document.getElementById("clients-list");
+  try {
+    const res = await fetch("/api/clients");
+    const d = await res.json();
+    el.innerHTML = "";
+    (d.clients || []).forEach(c => {
+      const li = document.createElement("li");
+      const badge = document.createElement("span");
+      badge.className = "badge " + (c.enabled ? "ok" : "down");
+      badge.textContent = c.enabled ? "ON" : "OFF";
+      li.appendChild(badge);
+      li.appendChild(document.createTextNode(
+        " " + (c.name || c.id) + (c.port ? " :" + c.port : "")));
+      el.appendChild(li);
+    });
+  } catch (e) { el.textContent = "switchboard unavailable"; }
+}
+
+async function loadUploads() {
+  const el = document.getElementById("uploads-list");
+  try {
+    const res = await fetch("/api/uploads");
+    const d = await res.json();
+    el.innerHTML = (d.uploads || []).map(u =>
+      "<li>" + u.name + " <span class='muted'>(" +
+      (u.bytes / 1024).toFixed(1) + " KB)</span></li>").join("")
+      || "<li class='muted'>no uploads</li>";
+  } catch (e) { el.textContent = ""; }
+}
+
+async function uploadFile() {
+  const inp = document.getElementById("up-file");
+  const st = document.getElementById("up-status");
+  if (!inp.files.length) { st.textContent = "choose a file first"; return; }
+  const fd = new FormData();
+  fd.append("file", inp.files[0]);
+  st.textContent = "Uploading...";
+  try {
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const d = await res.json();
+    st.textContent = res.ok ? "Saved " + d.name : "Error: " + (d.error || res.status);
+    loadUploads();
+  } catch (e) { st.textContent = "Error: " + e.message; }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  loadClients();
+  loadUploads();
+  document.getElementById("up-send").onclick = uploadFile;
   fetchStatus();
   setInterval(fetchStatus, 5000);
   loadSettings();

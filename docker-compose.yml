@@ -9,6 +9,8 @@ services:
       - LLAMA_PORT=9001
       - N_GPU_LAYERS=${N_GPU_LAYERS:-80}
       - LLAMA_EXTRA_ARGS=${LLAMA_EXTRA_ARGS:-}
+      - LLAMA_VISION_ENABLED=${LLAMA_VISION_ENABLED:-false}
+      - LLAMA_MMPROJ_PATH=/models/mmproj-Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-BF16.gguf
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     volumes:
@@ -208,6 +210,21 @@ services:
       - "8443:8443"
     depends_on:
       - dashboard
+    restart: always
+
+  jupyter:
+    container_name: tokugawa_jupyter
+    image: jupyter/base-notebook:latest
+    profiles: ["jupyter"]
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: ["start-notebook.py", "--NotebookApp.token=",
+              "--NotebookApp.allow_origin='*'",
+              "--notebook-dir=/home/jovyan/notebooks"]
+    volumes:
+      - ./notebooks:/home/jovyan/notebooks
+    ports:
+      - "8888:8888"
     restart: always
 
 volumes:

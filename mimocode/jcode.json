@@ -1,0 +1,8 @@
+{
+  "id": "jcode",
+  "name": "JCode",
+  "type": "web",
+  "port": 5000,
+  "url": "/zcode",
+  "enabled": true
+}

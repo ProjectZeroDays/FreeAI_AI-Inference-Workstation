@@ -3,6 +3,7 @@
 import json
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -13,6 +14,12 @@ from flask import Flask, jsonify, request, send_from_directory, Response
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
+
+AUTH_TOKEN = os.environ.get("DASHBOARD_AUTH_TOKEN", "").strip()
+UPLOAD_DIR = os.environ.get(
+    "UPLOAD_DIR", os.path.join(ROOT_DIR, "uploads"))
+UPLOAD_MAX_MB = int(os.environ.get("UPLOAD_MAX_MB", "100"))
+SAFE_NAME = re.compile(r"[^A-Za-z0-9._-]")
 
 
 def _read_version():
@@ -99,6 +106,73 @@ def security_headers(resp):
     resp.headers.setdefault("X-Frame-Options", "DENY")
     resp.headers.setdefault("Referrer-Policy", "same-origin")
     return resp
+
+
+# ------------------------------------------------------- auth + uploads
+WRITE_PATHS = ("/api/settings", "/api/presets",
+               "/api/settings/llama-restart")
+
+
+@app.before_request
+def auth_gate():
+    """Token-gate all writes (POST/DELETE/PUT) when DASHBOARD_AUTH_TOKEN
+    is set. Reads stay open for LAN dashboards; SSE stays open so live
+    panels keep working for viewers."""
+    if not AUTH_TOKEN:
+        return None
+    if request.method in ("POST", "DELETE", "PUT"):
+        if request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+            return jsonify({"error": "unauthorized"}), 401
+    return None
+
+
+@app.route("/api/upload", methods=["POST"])
+def upload():
+    f = request.files.get("file")
+    if f is None:
+        return jsonify({"error": "multipart file field required"}), 400
+    name = SAFE_NAME.sub("_", os.path.basename(f.filename)) or "upload.bin"
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    dest = os.path.join(UPLOAD_DIR, name)
+    f.save(dest)
+    size = os.path.getsize(dest)
+    if size > UPLOAD_MAX_MB * 1024 * 1024:
+        os.remove(dest)
+        return jsonify({"error": f"exceeds {UPLOAD_MAX_MB}MB"}), 413
+    return jsonify({"status": "saved", "name": name, "bytes": size})
+
+
+@app.route("/api/uploads")
+def uploads():
+    out = []
+    if os.path.isdir(UPLOAD_DIR):
+        for n in sorted(os.listdir(UPLOAD_DIR)):
+            p = os.path.join(UPLOAD_DIR, n)
+            if os.path.isfile(p):
+                out.append({"name": n, "bytes": os.path.getsize(p)})
+    return jsonify({"uploads": out})
+
+
+@app.route("/api/clients")
+def clients():
+    """Client switchboard: mimocode/clients.json (+ desktop.json)."""
+    entries = []
+    base = os.path.join(ROOT_DIR, "mimocode")
+    for fname, key in (("clients.json", "clients"),
+                       ("desktop.json", None)):
+        try:
+            with open(os.path.join(base, fname)) as f:
+                data = json.load(f)
+            items = data.get(key) if key else [data]
+            for c in items or []:
+                entries.append({
+                    "id": c.get("id"), "name": c.get("name"),
+                    "port": c.get("port"), "enabled": c.get("enabled", True),
+                    "url": c.get("url"),
+                })
+        except (OSError, ValueError):
+            continue
+    return jsonify({"clients": entries})
 
 _GPU_FIELDS = ("utilization.gpu,memory.used,memory.total,"
                "temperature.gpu,power.draw,clocks.current.sm")

@@ -1,0 +1,15 @@
+{
+  "name": "mimocode-switchboard",
+  "version": "1.0.0",
+  "description": "MimoCode / JCode / OpenCode client switchboard manifest",
+  "clients": [
+    { "id": "mimocode", "name": "MimoCode Web", "port": 5000, "enabled": true },
+    { "id": "mimocode-desktop", "name": "MimoCode Desktop", "port": 6080, "enabled": true },
+    { "id": "opencode", "name": "OpenCode", "port": 3000, "enabled": true },
+    { "id": "jcode", "name": "JCode", "port": 5000, "enabled": true }
+  ],
+  "ui": {
+    "tokugawa": "/workspace/repo/ui/tokugawa.html",
+    "presets": "/workspace/repo/ui/presets.json"
+  }
+}

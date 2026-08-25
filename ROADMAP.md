@@ -125,3 +125,13 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
   (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v0.1 tag
 - ?? Provider launch kits: RunPod template from GHCR image, Lambda/
   Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
+
+## 18. llmv-llama.cpp-cuda-13.0-ZCode-MimoCode-NoVNC-DesktopEnv integration
+- ✅ Vision (mmproj): launcher flag, downloader entry, compose env
+- ✅ JupyterLab :8888 (compose --profile jupyter + systemd template)
+- ✅ Coding-clients provisioning (OpenCode :3000, ZCode :5000, MimoCode, JCode) wired to router + llama /v1
+- ✅ mimocode/ switchboard manifests + dashboard Clients panel (/api/clients)
+- ✅ Vast.ai kit: template.json (Instance Portal + Selkies + Guacamole PORTAL_CONFIG) + onstart.sh
+- ✅ CUDA 13.0 images (llama/all-in-one/vLLM; driver >= 580) + installer 13-0 default w/ 12-6 fallback
+- ✅ UI auth gate (auth.js + X-Auth-Token write protection), /api/upload + Files panel
+- ✅ VNC password via VNC_PASSWORD env

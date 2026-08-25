@@ -1,4 +1,5 @@
-FROM nvidia/cuda:12.2.0-devel-ubuntu22.04
+# CUDA 13 (llmv parity) - requires host driver >= 580
+FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
 
 RUN apt-get update && apt-get install -y python3 python3-pip \
     && rm -rf /var/lib/apt/lists/*

@@ -40,6 +40,10 @@ Profiles: `strict` (t0.0), `balanced` (t0.2), `creative` (t0.8),
 | POST | /api/presets/{name}/apply | apply; {duration_min} activates timed idle w/ auto-restore |
 | GET | /api/models-status | registry vs on-disk GGUFs + disk free |
 | GET | /api/events | SSE: settings-changed events for live dashboards |
+| POST | /api/upload | multipart file -> uploads/ (name-sanitized, UPLOAD_MAX_MB cap) |
+| GET | /api/uploads | uploaded files list |
+| GET | /api/clients | client switchboard (mimocode manifests) |
+| * | writes require X-Auth-Token when DASHBOARD_AUTH_TOKEN is set |
 
 ## Workflow Engine (:8040)
 

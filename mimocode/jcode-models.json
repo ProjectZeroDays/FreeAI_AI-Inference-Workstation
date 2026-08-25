@@ -1,0 +1,28 @@
+{
+  "jcode_models": [
+    {
+      "id": "qwen3.5-9b-uncensored-hauhaucs-aggressive-q6_k",
+      "name": "Qwen3.5 9B Uncensored Aggressive Q6_K",
+      "backend": "llama.cpp",
+      "path": "/workspace/models/Qwen3.5-9B-Q6_K.gguf",
+      "mode": "code",
+      "extensions": ["python", "c", "cpp", "js", "rust"]
+    },
+    {
+      "id": "qwen2.5-7b-instruct",
+      "name": "Qwen2.5 7B Instruct",
+      "backend": "vllm",
+      "path": "vllm:Qwen/Qwen2.5-7B-Instruct",
+      "mode": "analysis",
+      "extensions": ["python", "go", "java", "ts"]
+    },
+    {
+      "id": "qwen3.6-12b-iq-ultra-heretic-uncensored-thinking",
+      "name": "Qwen3.6 12B IQ Ultra Heretic Uncensored Thinking",
+      "backend": "llama.cpp",
+      "path": "/workspace/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf",
+      "mode": "code",
+      "extensions": ["py", "js", "ts", "cpp", "rs", "go"]
+    }
+  ]
+}

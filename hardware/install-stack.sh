@@ -15,7 +15,7 @@ set -euo pipefail
 STACK_DIR="${STACK_DIR:-}"
 STACK_REPO="${STACK_REPO:-}"          # optional git URL to clone from
 DRIVER_VERSION="${DRIVER_VERSION:-570-server}"
-CUDA_VERSION="${CUDA_VERSION:-12-6}"
+CUDA_VERSION="${CUDA_VERSION:-13-0}"  # llmv parity; fallback 12-6 below
 INSTALL_DOCKER="${INSTALL_DOCKER:-1}"
 ENABLE_UFW="${ENABLE_UFW:-1}"
 ENABLE_CLOUDFLARED="${ENABLE_CLOUDFLARED:-0}"
@@ -71,6 +71,7 @@ if ! command -v nvcc >/dev/null 2>&1; then
     $SUDO dpkg -i "$keyring"
     $SUDO apt-get update -y
     $SUDO apt-get install -y "cuda-toolkit-${CUDA_VERSION}" \
+    || { CUDA_VERSION="12-6"; $SUDO apt-get install -y cuda-toolkit-12-6; } \
       || log "cuda-toolkit install failed — falling back to apt toolkit"
   fi
   command -v nvcc >/dev/null 2>&1 \

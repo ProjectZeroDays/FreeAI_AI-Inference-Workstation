@@ -132,6 +132,9 @@ raises alerts, writes runtime-settings.json consumed by all services.
 | 8050 | Autonomous SDLC API | **Yes** (UFW allow) |
 | 9001 | llama.cpp server (`--jinja`) | localhost/tailnet only |
 | 9002 | vLLM (optional profile) | LAN only |
+| 8888 | JupyterLab (`--profile jupyter` / clients-provision) | LAN only |
+| 3000 / 5000 | OpenCode / ZCode (clients-provision) | LAN only |
+| 8443 | Caddy TLS gateway (`--profile tls`) | optional public |
 | 5901 / 6080 | VNC / noVNC desktop | via `--profile desktop` |
 
 All ports overridable: `ROUTER_PORT`, `AGENT_API_PORT`, `DASHBOARD_PORT`, `WORKFLOW_PORT`, `AUTONOMOUS_PORT`, `LLAMA_PORT`, `VLLM_PORT`.

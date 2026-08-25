@@ -1,0 +1,8 @@
+{
+  "clients": [
+    { "id": "mimocode", "name": "MimoCode Web", "manifest": "manifest/mimocode-models.json" },
+    { "id": "mimocode-desktop", "name": "MimoCode Desktop", "manifest": "manifest/mimocode-models.json" },
+    { "id": "opencode", "name": "OpenCode", "manifest": "manifest/opencode-models.json" },
+    { "id": "jcode", "name": "JCode", "manifest": "manifest/jcode-models.json" }
+  ]
+}

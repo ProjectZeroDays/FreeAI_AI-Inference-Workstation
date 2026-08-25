@@ -27,7 +27,13 @@ echo "[llama] Starting llama.cpp server on :$PORT"
 # reasoning models degrade into tag-soup/repetition loops without it.
 # Server-side sampling guards below are the anti-repetition backstop;
 # clients (agent profiles) still send their own temperature.
-# Pass extra flags via LLAMA_EXTRA_ARGS (e.g. draft model for spec dec).
+# Vision: set LLAMA_VISION_ENABLED=true + LLAMA_MMPROJ_PATH (llmv port).
+VISON_ARGS=()
+if [ "${LLAMA_VISION_ENABLED:-false}" = "true" ] \
+    && [ -n "${LLAMA_MMPROJ_PATH:-}" ] && [ -f "$LLAMA_MMPROJ_PATH" ]; then
+  VISON_ARGS=(--mmproj "$LLAMA_MMPROJ_PATH")
+  echo "[llama] vision enabled via mmproj: $LLAMA_MMPROJ_PATH"
+fi
 exec "$BIN" \
   -m "$MODEL" \
   --jinja \
@@ -38,4 +44,5 @@ exec "$BIN" \
   -ngl "${N_GPU_LAYERS:-80}" \
   --repeat-penalty "${REPEAT_PENALTY:-1.05}" \
   --repeat-last-n "${REPEAT_LAST_N:-64}" \
+  "${VISON_ARGS[@]}" \
   ${LLAMA_EXTRA_ARGS:-}

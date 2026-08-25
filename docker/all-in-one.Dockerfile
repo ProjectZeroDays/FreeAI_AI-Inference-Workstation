@@ -1,5 +1,6 @@
 # All-in-one Tokugawa stack image (supervisord inside).
-FROM nvidia/cuda:12.2.0-devel-ubuntu22.04
+# CUDA 13 (llmv parity) - requires host driver >= 580
+FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \

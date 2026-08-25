@@ -31,6 +31,21 @@
       <ul id="services-list"></ul>
     </section>
 
+    <section class="services">
+      <h2>Clients</h2>
+      <ul id="clients-list" class="muted">loading switchboard...</ul>
+    </section>
+
+    <section class="services">
+      <h2>Files</h2>
+      <div class="row">
+        <input type="file" id="up-file" />
+        <button id="up-send">Upload</button>
+        <span id="up-status" class="muted"></span>
+      </div>
+      <ul id="uploads-list" class="muted"></ul>
+    </section>
+
     <section class="settings">
       <h2>Settings</h2>
 
@@ -116,6 +131,7 @@
     </section>
   </div>
 
+  <script src="/static/auth.js"></script>
   <script src="/static/dashboard.js"></script>
 </body>
 </html>

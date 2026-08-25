@@ -32,5 +32,11 @@ download "https://huggingface.co/DavidAU/L3.1-MOE-2X8B-Deepseek-DeepHermes-e32-u
 download "https://huggingface.co/DavidAU/Qwen3.5-9B-Claude-4.6-HighIQ-INSTRUCT-HERETIC-UNCENSORED/resolve/main/Qwen3.5-9B-Claude-4.6-HighIQ-INSTRUCT-HERETIC-UNCENSORED-Q6_K.gguf" \
   "Qwen3.5-9B-Claude-4.6-HighIQ-INSTRUCT-HERETIC-UNCENSORED-Q6_K.gguf" 4000000000
 
+# Vision projector (llmv port) - small BF16 mmproj for Qwen3.5-9B
+if [ "${DOWNLOAD_VISION:-1}" = "1" ]; then
+  download "https://huggingface.co/HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive/resolve/main/mmproj-Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-BF16.gguf" \
+    "mmproj-Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-BF16.gguf" 100000000
+fi
+
 echo "[models] All models downloaded:"
 ls -lh models/

@@ -1,0 +1,8 @@
+{
+  "id": "mimocode-desktop",
+  "name": "MimoCode Desktop",
+  "type": "desktop",
+  "port": 6080,
+  "url": "/desktop",
+  "enabled": true
+}
