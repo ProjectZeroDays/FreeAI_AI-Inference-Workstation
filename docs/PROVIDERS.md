@@ -114,6 +114,38 @@ curl -N -X POST localhost:8010/route -H "Content-Type: application/json" \
   -d '{"prompt":"Write a haiku about GPUs","model":"openai/gpt-4o-mini","stream":true}'
 ```
 
+
+## FreeToken Local Setup (step-by-step)
+
+FreeToken is keyless and auto-fallbacks when healthy.
+
+**Option A - Docker (compose users):**
+```bash
+docker compose --profile freetoken up -d
+curl -s http://localhost:9100/v1/models | jq
+```
+
+**Option B - Native (desktop app or CLI):**
+```bash
+# Desktop app: https://www.flashml.ai/
+# CLI:
+uv pip install "freetoken[accel]"
+freetoken serve --model deepseek-ai/DeepSeek-V4-Flash --port 9100
+```
+
+**Models:** deepseek-ai/DeepSeek-V4-Flash (default), Qwen/Qwen3.6-35B-A3B, zai-org/GLM-5.2 - set via FREETOKEN_MODEL env.
+
+**Router wiring (automatic):**
+- Preset base_url http://localhost:9100/v1 (compose override: http://freetoken:9100/v1 via FREETOKEN_BASE_URL).
+- auto_fallback_when_healthy true - every local chain appends freetoken/<model> when health probe passes; cached 30s.
+- Explicit routing: model "freetoken/deepseek-ai/DeepSeek-V4-Flash"
+
+**Verify:**
+```bash
+curl -s http://localhost:8010/models | jq "keys | map(select(startswith("freetoken/")))"
+curl -X POST http://localhost:8010/route -H "Content-Type: application/json" -d "{"prompt":"haiku","model":"freetoken/deepseek-ai/DeepSeek-V4-Flash"}" | jq .response.content
+```
+
 ## Dashboard & CLI
 
 - Dashboard → **External AI Providers** panel: keyed/no-key badges,

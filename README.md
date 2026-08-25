@@ -84,15 +84,15 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Providers panel](docs/screenshots/dashboard-providers.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
 | 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings | Real `providers` listing + `provider-test openai` |
 
-| FreeToken Edge MoE (290B+ on consumer GPUs) | Dashboard - Full-page view |
+| FreeToken @ GitHub (7.2k★) | FreeToken Desktop Console |
 |---|---|
-| ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) | ![Dashboard full](docs/screenshots/dashboard-full.png) |
+| ![FreeToken GitHub](docs/screenshots/freetoken-github.png) | ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
+| Repo overview — Apache-2.0, 290B MoE | Console UI — edge runtime on RTX 30/40/50 |
 
-| TokugawaOS GRUB Boot Menu | Live ISO |
+| Full Dashboard (every panel) | TokugawaOS GRUB Boot Menu |
 |---|---|
-| ![Boot menu](docs/screenshots/boot-menu.png) | `live/build-live.sh` — GRUB entries: Install (wipes disk) / Try Live / Rescue |
-| Rendered preview of the ISO's boot menu (GRUB) | Built on any Ubuntu host — see [live/README.md](live/README.md) |
-| FreeToken desktop console - frontier MoE on RTX 30/40/50 (7.2k★) | Every panel in one scroll: alerts, GPU, services, clients, providers, runs, files, settings, shelf |
+| ![Dashboard full](docs/screenshots/dashboard-full.png) | ![Boot menu](docs/screenshots/boot-menu.png) |
+| Alerts, GPU, services, clients, providers, runs, files, settings, model shelf | Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
@@ -382,6 +382,8 @@ curl -X POST localhost:8010/route -H "Content-Type: application/json" \
 - Streaming: openai-style = true SSE; anthropic/gemini = single-frame
 
 Full per-provider setup (env vars, model slugs, custom/Azure/vLLM entries, cost guardrails): [docs/PROVIDERS.md](docs/PROVIDERS.md).
+
+**Local FreeToken (edge MoE) in 30s:** `docker compose --profile freetoken up -d` -> `curl http://localhost:9100/v1/models` -> `model: "freetoken/deepseek-ai/DeepSeek-V4-Flash"` routes automatically as fallback when healthy. Native: `uv pip install "freetoken[accel]" && freetoken serve --model deepseek-ai/DeepSeek-V4-Flash`. See detailed steps in [docs/PROVIDERS.md#FreeToken-Local-Setup](docs/PROVIDERS.md).
 
 ## 10. Configuration Reference
 
