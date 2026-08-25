@@ -17,6 +17,7 @@ Production-grade, self-hosted **AI inference workstation stack**: GGUF coder mod
 - [4. Architecture](#4-architecture)
 - [5. Ports and Services](#5-ports-and-services)
 - [6. Getting Started](#6-getting-started)
+  - [Deployment readiness matrix](#deployment-readiness-matrix)
 - [7. Hardware Requirements](#7-hardware-requirements)
 - [8. Install and Deploy Handbook](#8-install-and-deploy-handbook)
   - [8.1 Bare Metal Provisioner](#81-bare-metal-provisioner)
@@ -175,6 +176,25 @@ MOCK_LLM=1 python3 router/router.py       # canned completions, full API surface
 ```
 
 Verify: `python3 tokugawa.py status` - open `http://localhost:8030`.
+
+### Deployment readiness matrix
+
+| Track | Status | Entry point | Verified by |
+|---|---|---|---|
+| **Installed as a system** (bare metal) | **Ready now** | `sudo ./hardware/install-stack.sh` | E2E: provisioner chains drivers -> CUDA -> Docker -> llama.cpp CUDA build -> models -> 6 systemd units -> UFW; `install.sh --check` drift report; `make smoke` on-box |
+| **Docker Compose (split)** | **Ready now** | `docker compose up -d --build` (+ `vllm` / `warmup` / `desktop` / `jupyter` / `tls` profiles) | healthchecks on every service; `scripts/smoke-test.sh` -> `ALL_SYSTEMS_OPERATIONAL` |
+| **Docker all-in-one** | **Ready now** | `docker compose --profile allinone up -d --build` | supervisord per-service restarts; CUDA 13 base (driver >= 580) |
+| **Kubernetes** | **Ready now** | `kubectl apply -f k8s/` | manifests + HPAs shipped; images from CI (see blocker) |
+| **Cloud: Lambda / Hetzner / Paperspace** | **Ready now** | `deploy.ps1 -Hostname <ip>` or SSH + installer | same bare-metal path, drivers preinstalled on these hosts |
+| **Cloud: Vast.ai** | **Ready now** | import `vastai/template.json` (Portal + Selkies + Guacamole) | `vastai/onstart.sh` -> bundle -> provision -> clients -> desktop |
+| **Cloud: RunPod / any Docker host** | **Ready now (build locally)** | `docker compose --profile allinone up -d --build` | GHCR prebuilt image pending CI (blocker below) |
+| **Live ISO (TokugawaOS)** | **Scripted - ISO not yet compiled** | `live/build-live.sh` on an Ubuntu build host | GRUB: Try Live / Install to disk (autoinstall) / Rescue; needs one manual build run (~40 GB) |
+
+**Known blocker (GitHub-side):** the account billing lock stops Actions from
+publishing GHCR images and release bundles. Workarounds until cleared:
+`docker compose build` locally, or SSH + `install-stack.sh`. Everything else
+above works today; clearing billing turns on `docker-publish`, `release`, and
+`auto-release` with zero repo changes.
 
 ## 7. Hardware Requirements
 
