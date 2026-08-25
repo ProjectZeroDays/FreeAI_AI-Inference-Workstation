@@ -77,7 +77,25 @@ async function sendRequest() {
       body: JSON.stringify(body)
     });
     const json = await res.json();
-    output.textContent = JSON.stringify(json, null, 2);
+    // structured header for router response fields
+    const meta = document.createElement("div");
+    meta.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px";
+    const pill = (label, val, color) => {
+      const s = document.createElement("span");
+      s.textContent = `${label}: ${val}`;
+      s.style.cssText = `padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid ${color}30;background:${color}18;color:${color === "#22C55E" ? "#BBF7D0" : color === "#38BDF8" ? "#BAE6FD" : "#FDE68A"}`;
+      return s;
+    };
+    if (json.model_used) meta.appendChild(pill("model", json.model_used, "#22C55E"));
+    if (json.task_type) meta.appendChild(pill("task", json.task_type, "#38BDF8"));
+    if (json.confidence != null) meta.appendChild(pill("confidence", json.confidence, "#F59E0B"));
+    if (json.elapsed_ms != null) meta.appendChild(pill("elapsed", json.elapsed_ms + "ms", "#A78BFA"));
+    output.innerHTML = "";
+    if (meta.childNodes.length) output.appendChild(meta);
+    const pre = document.createElement("pre");
+    pre.style.cssText = "margin:0;white-space:pre-wrap;word-break:break-word";
+    pre.textContent = JSON.stringify(json.response ?? json, null, 2);
+    output.appendChild(pre);
   } catch (e) {
     output.textContent = "Error: " + e.message;
   }
