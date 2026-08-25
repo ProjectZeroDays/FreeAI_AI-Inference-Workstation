@@ -103,3 +103,19 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - 🕐 Function calling / tool use beyond file ops, RAG + vector DB,
   document ingestion, repo-wide auto-refactor of existing trees,
   multi-GPU distributed inference, model registry UI
+
+## 16. Codex-class integration (planned epic)
+- ?? MCP server wrapper over /route, /agent/*, /workflow, autonomous API
+- ?? Approval profiles (suggest/auto/full-auto) + dashboard confirm queue
+- ?? Diff-based surgical edits (`EDIT_MODE=diff`)
+- ?? OS-level sandbox runner option (bwrap/nspawn, network-off profile)
+- ?? Git-native runs (init/commit per green phase; branch archive export)
+- See docs/CODEX-INTEGRATION.md and docs/GAP-ANALYSIS-CODEX.md
+
+## 17. Distribution tracks (planned)
+- ? All-in-one CUDA image starter (`docker/all-in-one.Dockerfile` +
+  supervisord) behind compose `--profile allinone`
+- ?? Live ISO ("TokugawaOS"): build script + boot-menu plan
+  (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v0.1 tag
+- ?? Provider launch kits: RunPod template from GHCR image, Lambda/
+  Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module

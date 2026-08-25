@@ -1,0 +1,26 @@
+# Changelog
+
+## 1.1.0 — Settings plane, presets, autonomous SDLC, local-deploy kit
+
+### Added
+- Autonomous SDLC agents (`autonomous/`): plan→code→verify→fix→review→document→package, sandboxed workspaces, real shell verification (compileall/pytest/node), artifact tarballs, REST :8050 + CLI `auto-*`
+- Presets: 4 recommended (24-7 Balanced / Max Performance / Silent Eco / timed **Idle** w/ auto-restore) + named custom presets (CRUD) — dashboard dropdown
+- Settings control plane: dashboard panel → `config/runtime-settings.json` → optimizer / autonomous concurrency cap / router rate-cache-timeout / llama sampling env; SSE `/api/events` live push
+- AI resource optimizer service: thermal/util-driven performance/balanced/eco with hysteresis + cooldown; GPU undervolt tune script + systemd
+- Dashboard: settings panel, preset picker, idle banner/countdown, alerts, Chart.js GPU graph, model shelf (registry vs disk + free space), router metrics embed, security headers, version display
+- Backup/restore (`scripts/backup.sh` + weekly timer), daily cleanup timer (log rotation, workspace pruning)
+- Router: degenerate-output detection → automatic fallback retry (`X-Coherence-Retries`), confidence scoring, LRU cache, API-key auth, rate limiting
+- Agents: profiles (strict/balanced/creative/verbose/minimal), session memory + `/agent/chat`, metrics
+- Workflow engine: validation warnings, audit JSONL, export/import, inline runs, api_build/microservice_build templates, retry+parallel+logging
+- CLI: presets/preset/settings/auto-* commands; Makefile; `.env.example`; MkDocs site; auto-docs generator
+- Hardware kit: verified parts list (MPN/ASIN), BUILD guide, one-shot provisioner, remote-access setup, LOCAL-DEPLOY min-spec guide
+
+### Fixed
+- llama.cpp launcher: absolute model/binary paths, modern `-DGGML_CUDA=ON`, `--jinja` chat template (Qwen3/DeepSeek repetition fix), `LLAMA_EXTRA_ARGS`
+- install.sh: clone into empty dir (was colliding), CUDA autodetect fallback
+- Watchdog pgrep patterns matched real process names; vLLM no longer crash-loop placeholder
+- Workflow CI smoke test runs fully offline; docs generator sys.path fix; designer save = file download
+- LF enforced via .gitattributes; runtime state files gitignored
+
+## 1.0.0 — Initial public scaffold
+Router/classifier/switcher, agent API + 5 CLIs, workflow engine, dashboard+UI, compose/K8s, CI.

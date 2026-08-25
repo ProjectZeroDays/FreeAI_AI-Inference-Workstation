@@ -3,14 +3,34 @@
 import json
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
+import urllib.request
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, Response
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
+
+
+def _read_version():
+    try:
+        with open(os.path.join(ROOT_DIR, "VERSION")) as f:
+            return f.read().strip()
+    except OSError:
+        return "dev"
+
+
+APP_VERSION = _read_version()
+
+# bumped on every settings/preset write; SSE clients watch this
+_SETTINGS_VERSION = {"v": 1}
+
+
+def bump_settings_version():
+    _SETTINGS_VERSION["v"] += 1
 
 sys.path.insert(0, ROOT_DIR)
 try:
@@ -43,6 +63,7 @@ VALID_MODES = ("performance", "balanced", "eco")
 LLAMA_ENV_PATH = os.path.join(ROOT_DIR, "config", "llama.env")
 GPU_TUNE_SCRIPT = os.path.join(ROOT_DIR, "hardware", "gpu-power-tune.sh")
 PRESETS_PATH = os.path.join(ROOT_DIR, "config", "presets.json")
+ROUTER_PORT = int(os.environ.get("ROUTER_PORT", "8010"))
 
 # field -> (low, high) inclusive bounds; repeat_penalty handled apart
 FIELD_BOUNDS = {"power_limit_w": (150, 350),
@@ -70,6 +91,14 @@ GPU_UTIL_ALERT_PCT = int(_CFG.get("gpu_util_alert_pct", 90))
 app = Flask(__name__,
             static_folder=os.path.join(BASE_DIR, "static"),
             template_folder=os.path.join(BASE_DIR, "templates"))
+
+
+@app.after_request
+def security_headers(resp):
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "DENY")
+    resp.headers.setdefault("Referrer-Policy", "same-origin")
+    return resp
 
 _GPU_FIELDS = ("utilization.gpu,memory.used,memory.total,"
                "temperature.gpu,power.draw,clocks.current.sm")
@@ -150,11 +179,13 @@ def status():
     services = listening_ports()
     body = {
         "timestamp": int(time.time()),
+        "version": APP_VERSION,
         "gpu": gpu,
         "services": services,
         "alerts": build_alerts(services, gpu),
+        "router_metrics": _fetch_router_metrics(),
     }
-    state_path = os.path.join(os.path.dirname(BASE_DIR),
+    state_path = os.path.join(ROOT_DIR,
                               "config", "runtime-state.json")
     try:
         with open(state_path) as f:
@@ -162,6 +193,70 @@ def status():
     except (OSError, ValueError):
         body["power_mode"] = "balanced"
     return jsonify(body)
+
+
+def _fetch_router_metrics():
+    try:
+        with urllib.request.urlopen(
+                f"http://127.0.0.1:{ROUTER_PORT}/metrics",
+                timeout=2) as resp:
+            return json.loads(resp.read().decode())
+    except Exception:
+        return None
+
+
+@app.route("/api/models-status")
+def models_status():
+    """Registry models vs what is actually on disk + free space."""
+    registry = os.path.join(ROOT_DIR, "registry", "registry.json")
+    models_dir = os.path.join(ROOT_DIR, "models")
+    entries = []
+    try:
+        with open(registry) as f:
+            models = json.load(f).get("models", [])
+        on_disk = {}
+        if os.path.isdir(models_dir):
+            for name in os.listdir(models_dir):
+                if name.endswith(".gguf"):
+                    p = os.path.join(models_dir, name)
+                    on_disk[name] = os.path.getsize(p)
+        for m in models:
+            fname = os.path.basename(m.get("gguf", ""))
+            size = on_disk.pop(fname, None)
+            entries.append({"id": m.get("key") or m.get("id"),
+                            "name": m.get("name"),
+                            "gguf": fname or None,
+                            "present": size is not None,
+                            "size_bytes": size})
+    except (OSError, ValueError) as exc:
+        return jsonify({"error": str(exc), "models": entries})
+    extra = [{"id": n, "name": n, "gguf": n, "present": True,
+              "size_bytes": s} for n, s in sorted(on_disk.items())]
+    free_gb = 0
+    if os.path.isdir(models_dir):
+        free_gb = round(shutil.disk_usage(models_dir).free / 1e9, 1)
+    return jsonify({"models": entries + extra, "disk_free_gb": free_gb,
+                    "version": APP_VERSION})
+
+
+@app.route("/api/events")
+def events():
+    """SSE: pushes a settings-changed event whenever the version bumps."""
+    def gen():
+        last = _SETTINGS_VERSION["v"]
+        yield f"data: {json.dumps({'v': last, 'type': 'hello'})}\n\n"
+        deadline = time.time() + 300          # client auto-reconnects
+        while time.time() < deadline:
+            time.sleep(1)
+            if _SETTINGS_VERSION["v"] != last:
+                last = _SETTINGS_VERSION["v"]
+                yield f"data: {json.dumps({'type': 'settings-changed', 'v': last})}\n\n"
+                deadline = time.time() + 300
+        yield f"data: {json.dumps({'type': 'refresh'})}\n\n"
+
+    return Response(gen(), mimetype="text/event-stream",
+                    headers={"Cache-Control": "no-cache",
+                             "X-Accel-Buffering": "no"})
 
 
 # ----------------------------------------------------------- settings API
@@ -297,6 +392,7 @@ def apply_preset(name):
             else new_settings.get("forced_mode", "balanced"))
 
     _save_opt_settings(new_settings)
+    bump_settings_version()
 
     gpu_applied, gpu_err = True, ""
     if not new_settings.get("auto_management", True) \
@@ -373,6 +469,7 @@ def get_settings():
         "defaults": SETTINGS_DEFAULTS,
         "current_power_mode": current_mode,
         "llama_restart_pending": os.path.exists(LLAMA_ENV_PATH),
+        "version": APP_VERSION,
     })
 
 
@@ -384,6 +481,7 @@ def post_settings():
         return jsonify(err[0]), err[1]
 
     _save_opt_settings(settings)
+    bump_settings_version()
 
     # With auto-management ON the optimizer owns the GPU profile and
     # re-reads these caps next loop; OFF means apply right now.

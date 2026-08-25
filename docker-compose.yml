@@ -171,6 +171,32 @@ services:
       - "6080:6080"
     restart: always
 
+  allinone:
+    container_name: tokugawa_allinone
+    build:
+      context: .
+      dockerfile: docker/all-in-one.Dockerfile
+    profiles: ["allinone"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/stack/models
+      - workspaces:/stack/workspaces
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "8010:8010"
+      - "8020:8020"
+      - "8030:8030"
+      - "8040:8040"
+      - "8050:8050"
+      - "9001:9001"
+    restart: always
+
 volumes:
   audit-logs:
   workspaces:

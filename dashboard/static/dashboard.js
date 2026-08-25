@@ -72,6 +72,10 @@ async function loadSettings() {
       (s.auto_management ? " (auto)" : " (manual)");
     syncModeLock();
 
+    if (data.version) {
+      document.title = `Tokugawa Dashboard v${data.version}`;
+    }
+
     updateIdleBanner(s.idle);
     if (data.llama_restart_pending) {
       $("settings-status").textContent =
@@ -299,11 +303,26 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(fetchStatus, 5000);
   loadSettings();
   loadPresets();
+  loadModelShelf();
   setInterval(() => {           // keep idle countdown fresh
     fetch("/api/settings").then(r => r.json())
       .then(d => updateIdleBanner(d.settings.idle))
       .catch(() => {});
   }, 30000);
+
+  // live push: any settings/preset write anywhere reloads this panel
+  if (window.EventSource) {
+    const es = new EventSource("/api/events");
+    es.onmessage = ev => {
+      try {
+        const d = JSON.parse(ev.data);
+        if (d.type === "settings-changed") {
+          loadSettings();
+          fetchStatus();
+        }
+      } catch (_) { /* ignore malformed frames */ }
+    };
+  }
 
   $("opt-auto").addEventListener("change", syncModeLock);
   $("idle-min").addEventListener("input",
@@ -315,6 +334,29 @@ document.addEventListener("DOMContentLoaded", () => {
   $("delete-preset").onclick = deleteSelectedPreset;
   $("start-idle").onclick = startIdleWindow;
 });
+
+/* ---------------- model shelf ---------------- */
+
+async function loadModelShelf() {
+  const el = $("model-shelf");
+  if (!el) return;
+  try {
+    const res = await fetch("/api/models-status");
+    const d = await res.json();
+    if (d.error) { el.textContent = "model shelf: " + d.error; return; }
+    const lines = d.models.map(m =>
+      `${m.present ? "●" : "○"} ${m.name || m.id}` +
+      (m.present && m.size_bytes
+        ? ` (${(m.size_bytes / 1e9).toFixed(1)}GB)` : ""));
+    el.innerHTML =
+      `<strong>Models</strong> <span class="muted">` +
+      `${d.disk_free_gb}GB free</span><br>` +
+      lines.join("<br>") +
+      `<br><span class="muted">missing → bash models/auto-download-models.sh</span>`;
+  } catch (e) {
+    el.textContent = "model shelf unavailable";
+  }
+}
 
 async function fetchStatus() {
   const gpuUtil = document.getElementById("gpu-util");

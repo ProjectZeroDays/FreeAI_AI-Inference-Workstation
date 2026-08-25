@@ -14,6 +14,11 @@
 | Dashboard shows zeros | `nvidia-smi` missing or no GPU visible in the container |
 | Port conflicts | override via env: `ROUTER_PORT`, `LLAMA_PORT`, `AGENT_API_PORT`, `WORKFLOW_PORT`, `DASHBOARD_PORT` |
 
+| Port already in use at start | `start.sh` aborts with the busy ports; stop the other stack or `ALLOW_PORT_REUSE=1` |
+| Model download aborts: disk | preflight needs size+10GB free; clear space or point MODEL_DIR elsewhere |
+| Settings changed but router unchanged | rate-limit/cache/timeout apply on router restart |
+| Idle window never restored | optimizer service down? `systemctl status resource-optimizer`; state is in runtime-settings.json |
+
 ## Local dev without a GPU
 
 ```bash

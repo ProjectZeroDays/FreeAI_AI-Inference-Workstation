@@ -28,6 +28,18 @@ Auth: if `ROUTER_API_KEY` is set, send `X-API-Key` on all paths except
 Profiles: `strict` (t0.0), `balanced` (t0.2), `creative` (t0.8),
 `verbose` (4096 tok), `minimal` (512 tok).
 
+## Dashboard (:8030)
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | /api/status | GPU (util/mem/temp/power/clock), services, alerts, power mode, router metrics |
+| GET/POST | /api/settings | shared settings plane (validated, persisted) |
+| POST | /api/settings/llama-restart | persist sampling env + restart llama |
+| GET/POST/DELETE | /api/presets[/{name}] | recommended + custom preset CRUD |
+| POST | /api/presets/{name}/apply | apply; {duration_min} activates timed idle w/ auto-restore |
+| GET | /api/models-status | registry vs on-disk GGUFs + disk free |
+| GET | /api/events | SSE: settings-changed events for live dashboards |
+
 ## Workflow Engine (:8040)
 
 | Method | Path | Purpose |

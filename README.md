@@ -1,20 +1,24 @@
 # Unified GPU Inference Stack
 
-Production-grade, self-hosted environment for running GGUF coder models on NVIDIA GPUs with automatic task-based model switching, a multi-agent REST layer, workflow engine, Tokugawa UI/dashboard, and a full XFCE + VNC desktop.
+Production-grade, self-hosted environment for running GGUF coder models on NVIDIA GPUs with automatic task-based model switching, a multi-agent REST layer, workflow engine, **autonomous SDLC agents**, Tokugawa UI/dashboard, and a full XFCE + VNC desktop.
+
+`v1.1.0` - 63 offline tests - CI-gated (python/bash/js/json) - Docker / K8s / bare-metal / Live-ISO tracks
 
 ## Overview
 
-- **GGUF inference** on NVIDIA GPUs (llama.cpp + CUDA)
-- **Tokugawa Router** — classifies each prompt (with confidence) and routes it to the right model, with fallback chains, LRU caching, rate limiting, optional API-key auth, and a `/metrics` endpoint
-- **Agent REST API** — project scaffolding, refactor, debug, analysis, orchestrator + memory-backed chat; profiles: strict/balanced/creative/verbose/minimal
-- **Workflow Engine** — chains agents into pipelines (sequential + parallel, retries, validation, audit logs, export/import, inline execution)
-- **Tokugawa UI** — model presets, agent buttons, prompt/output console
-- **Workflow Designer** — visual step editor (`workflow/ui/designer.html`) with JSON export
-- **Tokugawa Dashboard** — live GPU stats (util/mem/temp/power/clock), alerts panel, service health with charts
-- **tokugawa-cli** — status / models / route / workflows / run from your shell
-- **Desktop environment** — XFCE + TigerVNC + noVNC
-- **Self-healing** — supervisor loop plus health/recovery agents
-- **Docker Compose** — one command brings up every service
+- **GGUF inference** on NVIDIA GPUs (llama.cpp CUDA, --jinja templates, anti-repetition sampling guards, degenerate-output auto-retry)
+- **Tokugawa Router** (:8010) - confidence-scored task classification, fallback chains, LRU cache, rate limiting, API keys, /metrics
+- **Agent REST API** (:8020) - project/refactor/debug/analyze/orchestrate/chat; profiles + session memory
+- **Workflow Engine** (:8040) - multi-agent pipelines: retries, validation, audit log, export/import, inline runs
+- **Autonomous SDLC** (:8050) - spec in -> plan/code/verify/fix/document/package out; sandboxed workspaces; artifact tarballs; concurrency cap
+- **Presets & Settings plane** - 4 recommended + named custom presets; timed idle windows; one runtime-settings.json consumed live by optimizer / autonomous / router / llama launcher
+- **Tokugawa Dashboard** (:8030) - GPU telemetry, alerts, settings panel, preset picker, model shelf, SSE live updates
+- **AI resource optimizer** - thermal/util-driven power modes (performance/balanced/eco) with hysteresis; undervolt tune (-10..20C)
+- **Workflow Designer** - visual step editor with JSON export -> run-inline
+- **tokugawa-cli** - status/models/route/workflows/presets/preset/settings/auto-* 
+- **Desktop environment** - XFCE + TigerVNC + noVNC
+- **Self-healing** - supervisor loop, health/recovery watchdogs, daily cleanup + weekly backups
+
 
 ### Model roster
 
@@ -171,8 +175,8 @@ python3 tokugawa.py run full_build --context '{"spec":"..."}'
 
 ```bash
 pip install -r requirements-dev.txt
-pytest          # offline suite: classifier, switcher, cache, rate limiter,
-                # router API (mock), agent profiles/memory, workflow engine
+make test       # 63-test offline suite: router/coherence/presets/idle/
+                # optimizer/agents/workflow/autonomous SDLC
 ```
 
 ## Kubernetes
@@ -224,6 +228,24 @@ unified-ai-stack/
 ├── docs/             MkDocs site sources + generate_docs.py
 └── .github/workflows/  ci · workflow-ci · docs · docker-publish · release
 ```
+
+## Deployment tracks
+
+| Track | Entry |
+|---|---|
+| Docker (split services) | `docker compose up -d --build` (+ `--profile vllm/allinone/desktop/warmup`) |
+| All-in-one image | `docker compose --profile allinone up -d` - supervisord runs everything in one CUDA container |
+| Bare metal / workstation | `hardware/install-stack.sh` (drivers->CUDA->Docker->stack->systemd->UFW) |
+| GPU providers | `docs/DEPLOYMENT-PLANS.md` - Vast.ai, RunPod, Lambda, Hetzner, spot-cloud plans |
+| Live ISO | `docs/DEPLOYMENT-PLANS.md` Track C + `live/build-live.sh` |
+
+## Documentation map
+
+- [docs/ENHANCEMENT-PLAN.md](docs/ENHANCEMENT-PLAN.md) - what shipped vs planned
+- [docs/CODEX-INTEGRATION.md](docs/CODEX-INTEGRATION.md) - OpenCode/JCode host choice + Codex feature port map
+- [docs/GAP-ANALYSIS-CODEX.md](docs/GAP-ANALYSIS-CODEX.md) - capability gap matrix vs Codex
+- [docs/DEPLOYMENT-PLANS.md](docs/DEPLOYMENT-PLANS.md) - ISO/container/provider rollout plans
+- [docs/api.md](docs/api.md) + [docs/architecture.md](docs/architecture.md) - endpoints & settings interconnection
 
 See [ROADMAP.md](ROADMAP.md) for the implemented/planned feature matrix.
 

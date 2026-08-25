@@ -11,6 +11,7 @@ ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010")
 AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTONOMOUS_API = os.environ.get("AUTONOMOUS_API", "http://localhost:8050")
+DASH_API = os.environ.get("DASH_API", "http://localhost:8030")
 
 
 def _req(method, url, body=None):
@@ -145,6 +146,45 @@ def cmd_auto_fetch(args):
     print(f"saved {out} ({len(data)} bytes)")
 
 
+def cmd_presets(_):
+    _, body = _req("GET", f"{DASH_API}/api/presets")
+    for p in body.get("builtins", []):
+        star = " (timed)" if p.get("idle_default_minutes") else ""
+        print(f"* {p['name']}{star} — {p.get('description','')}")
+    for p in body.get("customs", []):
+        print(f"  {p['name']} — custom")
+
+
+def cmd_preset(args):
+    body = {}
+    if args.idle:
+        body["duration_min"] = args.idle
+    code, out = _req(
+        "POST", f"{DASH_API}/api/presets/{args.name}/apply", body)
+    _print(out) if code != 200 else print(f"[preset] applied: {args.name}")
+
+
+def cmd_settings(args):
+    if args.action == "get":
+        _, body = _req("GET", f"{DASH_API}/api/settings")
+        s = body["settings"]
+        if args.key:
+            print(json.dumps({args.key: s.get(args.key)}))
+        else:
+            _print(s)
+    elif args.action == "set":
+        if not args.key or args.value is None:
+            print("settings set KEY VALUE required", file=sys.stderr)
+            raise SystemExit(2)
+        try:
+            val = json.loads(args.value)
+        except ValueError:
+            val = args.value
+        code, body = _req("POST", f"{DASH_API}/api/settings",
+                          {args.key: val})
+        _print(body) if code != 200 else print("[settings] saved")
+
+
 def main():
     parser = argparse.ArgumentParser(prog="tokugawa",
                                      description=__doc__)
@@ -194,6 +234,19 @@ def main():
     p_fetch.add_argument("run_id")
     p_fetch.add_argument("-o", "--out")
 
+    sub.add_parser("presets", help="list recommended + custom presets")
+
+    p_pre = sub.add_parser("preset", help="apply a preset by name")
+    p_pre.add_argument("name")
+    p_pre.add_argument("--idle", type=int, default=None,
+                       help="treat as timed-idle for N minutes")
+
+    p_set = sub.add_parser("settings",
+                           help="get/set shared runtime settings")
+    p_set.add_argument("action", choices=["get", "set"])
+    p_set.add_argument("key", nargs="?")
+    p_set.add_argument("value", nargs="?")
+
     args = parser.parse_args()
     {
         "status": cmd_status,
@@ -206,6 +259,9 @@ def main():
         "auto-runs": cmd_auto_runs,
         "auto-cancel": cmd_auto_cancel,
         "auto-fetch": cmd_auto_fetch,
+        "presets": cmd_presets,
+        "preset": cmd_preset,
+        "settings": cmd_settings,
     }[args.cmd](args)
 
 
