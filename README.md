@@ -62,19 +62,22 @@ The stack answers one question: *how do I run capable coding models on my own GP
 
 ## 2. Screenshots
 
-| Tokugawa Dashboard | Tokugawa UI |
+| Tokugawa Dashboard - active load | Dashboard - timed idle window |
 |---|---|
-| ![Tokugawa Dashboard](docs/screenshots/dashboard.png) | ![Tokugawa UI](docs/screenshots/tokugawa-ui.png) |
-| Live GPU telemetry, alerts, service health, presets & settings panel | Model presets, agent picker, prompt console |
+| ![Dashboard active](docs/screenshots/dashboard.png) | ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
+| 74% util, alerts panel, service badges, settings + presets | Eco enforced (6% util, 198W/2400MHz), idle banner w/ auto-restore countdown |
 
-![Workflow Designer](docs/screenshots/workflow-designer.png)
+| Tokugawa UI | UI in use (refactor via moe-13b) |
+|---|---|
+| ![Tokugawa UI](docs/screenshots/tokugawa-ui.png) | ![UI output](docs/screenshots/tokugawa-ui-output.png) |
+| Model presets + agent picker + prompt console | Router response: model_used, task_type, confidence, elapsed_ms |
 
-*Workflow Designer - visual multi-agent pipeline editor; export JSON and run it via `POST /workflow/run-inline`.*
+| Workflow Designer | tokugawa-cli |
+|---|---|
+| ![Designer](docs/screenshots/workflow-designer.png) | ![CLI](docs/screenshots/cli.png) |
+| 3-step pipeline (architecture -> codegen -> tests) w/ step config | Real --help output: 14 subcommands |
 
-> The dashboard shot uses sample telemetry; on a live box the same panel streams real `nvidia-smi` data, router metrics, and idle-window state.
-
-
----
+> Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state.
 
 ## 3. Feature Set Breakdown
 

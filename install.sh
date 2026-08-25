@@ -4,6 +4,29 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
+# --check: drift report only (no changes)
+if [ "${1:-}" = "--check" ]; then
+  echo "== drift report =="
+  rc=0
+  for unit in tokugawa-stack tokugawa-agents gpu-tune resource-optimizer; do
+    st=$(systemctl is-active "$unit.service" 2>/dev/null || echo missing)
+    printf '  %-28s %s\n' "$unit" "$st"
+    [ "$st" = "active" ] || rc=1
+  done
+  if command -v ss >/dev/null 2>&1; then
+    for port in 8010 8030 9001; do
+      if ss -tln 2>/dev/null | grep -q ":$port "; then
+        echo "  port $port bound"
+      else
+        echo "  port $port NOT bound"; rc=1
+      fi
+    done
+  fi
+  [ -x llama.cpp/build/bin/llama-server ] || { echo "  llama-server missing"; rc=1; }
+  [ $rc -eq 0 ] && echo "STATE: CONVERGED" || echo "STATE: DRIFT DETECTED"
+  exit $rc
+fi
+
 # --update-llama: refresh llama.cpp to latest master and rebuild only
 if [ "${1:-}" = "--update-llama" ]; then
   LLAMA_DIR="$ROOT/llama.cpp"

@@ -18,6 +18,7 @@ import threading
 import time
 from collections import OrderedDict
 
+import requests
 from flask import Flask, Response, request, jsonify, stream_with_context
 
 from classifier import classify_task
@@ -166,6 +167,74 @@ def is_degenerate(text):
     return False
 
 
+# ---------------------------------------------------------------- stream
+def _sse_frames(resp):
+    """Yield normalized data frames from an OpenAI-ish SSE stream."""
+    for raw in resp.iter_lines(decode_unicode=True):
+        if not raw or not raw.startswith("data: "):
+            continue
+        payload = raw[len("data: "):]
+        if payload.strip() == "[DONE]":
+            break
+        try:
+            obj = json.loads(payload)
+        except ValueError:
+            continue
+        choices = obj.get("choices")
+        if choices:
+            choice = choices[0] or {}
+            msg = choice.get("message") or {}
+            text = msg.get("content") or choice.get("text") or ""
+        else:
+            text = obj.get("content") or ""
+        if text:
+            yield text
+
+
+def stream_route(prompt, task_type, agent, payload_base=None):
+    """SSE generator: picks the primary model for the task and streams
+    normalized frames: data: {"content": "..."} ... data: [DONE]."""
+    base = dict(payload_base or {})
+    payload = {
+        "prompt": prompt,
+        "max_tokens": base.get("max_tokens", 2048),
+        "temperature": base.get("temperature", 0.2),
+    }
+    if MOCK_LLM:
+        yield f'data: {json.dumps({"model": "mock-model", "task_type": task_type})}\n\n'
+        for word in mock_completion(payload)["content"].split(" ", 24):
+            yield f'data: {json.dumps({"content": word + " "})}\n\n'
+        yield "data: [DONE]\n\n"
+        return
+
+    from models import MODEL_REGISTRY
+    started = time.monotonic()
+    for candidate in select_chain(task_type, agent):
+        endpoint = MODEL_REGISTRY[candidate]["endpoint"].replace(
+            "/completion", "/completion")
+        try:
+            stream_payload = dict(payload, stream=True)
+            r = requests.post(endpoint, json=stream_payload,
+                              stream=True, timeout=TIMEOUT)
+            r.raise_for_status()
+            first = True
+            for text in _sse_frames(r):
+                if first:
+                    yield f'data: {json.dumps({"model": MODEL_REGISTRY[candidate]["name"], "task_type": task_type})}\n\n'
+                    first = False
+                yield f'data: {json.dumps({"content": text})}\n\n'
+            if first:
+                continue  # empty stream from this backend -> try next
+            metrics_model(candidate)
+            metrics_latency(int((time.monotonic() - started) * 1000))
+            yield "data: [DONE]\n\n"
+            return
+        except Exception:
+            continue
+    yield f'data: {json.dumps({"error": "all backends failed"})}\n\n'
+    yield "data: [DONE]\n\n"
+
+
 # ---------------------------------------------------------------- routes
 @app.route("/health")
 def health():
@@ -208,6 +277,13 @@ def route():
     metrics_incr("requests_total")
     task_type, confidence = classify_task(prompt)
     metrics_task(task_type)
+
+    if data.get("stream"):
+        return Response(stream_with_context(
+            stream_route(prompt, task_type, agent, payload_base=data)),
+            mimetype="text/event-stream",
+            headers={"Cache-Control": "no-cache",
+                     "X-Accel-Buffering": "no"})
 
     cache_key = hashlib.sha256(
         f"{task_type}:{agent}:{prompt}".encode()).hexdigest()

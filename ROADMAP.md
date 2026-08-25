@@ -97,7 +97,13 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - ✅ GPU warmup (compose profile + agents/gpu-warmup.sh)
 - 🕐 Model performance scoring, registry UI
 
-## 15. Future
+## 15. Ops scripts (ported from center-control-plane)
+- ✅ model-benchmark.sh (per-task latency), smoke-test.sh (11-endpoint sweep)
+- ✅ validate.ps1 + deploy.ps1 (Windows validator + remote provisioner)
+- ✅ install.sh --check drift report
+- ✅ autonomous release pipeline (VERSION-tag-cut + multi-asset releases)
+
+## 15b. Future
 - ✅ Autonomous SDLC agents (plan → code → verify → fix → document →
   package, sandboxed workspaces, artifact delivery)
 - 🕐 Function calling / tool use beyond file ops, RAG + vector DB,

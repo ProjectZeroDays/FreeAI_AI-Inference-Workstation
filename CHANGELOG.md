@@ -1,3 +1,15 @@
+## 1.2.0 - Unreleased
+
+### Added
+- Autonomous releases: auto-release.yml cuts v<VERSION> tags from main (CHANGELOG-guarded); release.yml builds asset bundle (source, docs-site, deploy-kit, workflows.json, sha256sums) + generated notes
+- Router SSE streaming: POST /route {stream:true} -> normalized data frames w/ model header + [DONE]; fallback across chain on empty streams
+- Caddy TLS gateway (compose --profile tls, :8443 -> dashboard, write-guard on settings API)
+- scripts/model-benchmark.sh: per-task-type latency benchmark (avg/min/max via router elapsed_ms + /metrics by_model)
+- scripts/smoke-test.sh: 11-endpoint live sweep + inference round-trip -> ALL_SYSTEMS_OPERATIONAL
+- install.sh --check: drift report (systemd units, bound ports, llama binary) -> CONVERGED/DRIFT
+- Windows tooling: validate.ps1 (structure/JSON/py-compile/quant sanity), deploy.ps1 (SSH bundle+provision remote host)
+- 3 new screenshots: dashboard idle state, UI in-use (refactor response), real CLI help
+
 # Changelog
 
 ## 1.1.0 — Settings plane, presets, autonomous SDLC, local-deploy kit

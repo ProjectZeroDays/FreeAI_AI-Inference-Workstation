@@ -197,6 +197,24 @@ services:
       - "9001:9001"
     restart: always
 
+  caddy:
+    container_name: tokugawa_tls
+    image: caddy:latest
+    profiles: ["tls"]
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    ports:
+      - "8443:8443"
+    depends_on:
+      - dashboard
+    restart: always
+
+volumes:
+  audit-logs:
+  workspaces:
+  caddy-data:
+
 volumes:
   audit-logs:
   workspaces:

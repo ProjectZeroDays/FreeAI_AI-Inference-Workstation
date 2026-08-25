@@ -6,6 +6,7 @@
 |---|---|---|
 | GET | /health | liveness |
 | GET | /models | roster + endpoints |
+| POST | /route (stream:true) | SSE: `data: {model,task_type}` header, `data: {content}` deltas, `data: [DONE]`; chain fallback on empty streams |
 | POST | /route | `{prompt, max_tokens?, temperature?, agent?, profile?}` → `{model_used, task_type, confidence, elapsed_ms, response}`; headers `X-Cache: HIT/MISS` |
 | GET | /metrics | request/cache/error counters, per-task/model counts, avg latency |
 

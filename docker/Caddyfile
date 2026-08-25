@@ -1,0 +1,19 @@
+# Tokugawa TLS gateway (compose --profile tls)
+# Terminates HTTPS on :8443 and proxies the public surfaces.
+# Basic auth (optional): create Caddyfile next to this with:
+#   basic_auth { user <bcrypt-hash> }
+{
+  admin off
+}
+
+:8443 {
+  # Dashboard (public surface)
+  handle /api/settings* {
+    @post method POST
+    respond @post 403 "write via LAN/tailnet only" 403
+    reverse_proxy dashboard:8030
+  }
+  handle {
+    reverse_proxy dashboard:8030
+  }
+}
