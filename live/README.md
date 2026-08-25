@@ -12,6 +12,12 @@ REPO_TARBALL=../dist/unified-ai-stack-v1.2.0.tar.gz ./build-live.sh
 
 ## Boot menu (on the built ISO)
 
+![TokugawaOS GRUB boot menu](../docs/screenshots/boot-menu.png)
+
+*Rendered preview from the builder's grub.cfg entries - compile the ISO
+on an Ubuntu host to boot it for real.*
+
+
 | Entry | What it does |
 |---|---|
 | **Install Tokugawa AI Stack (wipes disk)** | Unattended Subiquity install (autoinstall seed on the ISO): Ubuntu 24.04 + NVIDIA server driver + SSH, then a first-boot systemd unit runs `install-stack.sh`, downloads models, provisions coding clients, and starts the stack. Login: `tokugawa` / `tokugawa` — **change it immediately**. |
