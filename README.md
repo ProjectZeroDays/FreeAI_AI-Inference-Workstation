@@ -20,6 +20,20 @@ Production-grade, self-hosted environment for running GGUF coder models on NVIDI
 - **Self-healing** - supervisor loop, health/recovery watchdogs, daily cleanup + weekly backups
 
 
+## Screenshots
+
+| Tokugawa Dashboard | Tokugawa UI |
+|---|---|
+| ![Tokugawa Dashboard](docs/screenshots/dashboard.png) | ![Tokugawa UI](docs/screenshots/tokugawa-ui.png) |
+| Live GPU telemetry, alerts, service health, presets & settings panel | Model presets, agent picker, prompt console |
+
+| Workflow Designer | |
+|---|---|
+| ![Workflow Designer](docs/screenshots/workflow-designer.png) | Visual multi-agent pipeline editor - steps, dependencies, JSON export -> `POST /workflow/run-inline` |
+
+> Dashboard shown with sample telemetry; on a live box the same panel
+> streams real `nvidia-smi` data, router metrics, and idle-window state.
+
 ### Model roster
 
 | Key | Model | Role |
