@@ -176,8 +176,8 @@ Fastest paths (details in [Section 8](#8-install-and-deploy-handbook)):
 
 **Bare metal (Ubuntu 24.04 + NVIDIA):**
 ```bash
-git clone https://github.com/ProjectZeroDays/FreeAI.git
-cd FreeAI
+git clone https://github.com/ProjectZeroDays/FreeAI_Ubuntu-AI-Inference-Workstation.git
+cd FreeAI_Ubuntu-AI-Inference-Workstation
 sudo ./hardware/install-stack.sh          # drivers->CUDA->Docker->stack->systemd->UFW
 bash models/auto-download-models.sh       # ~15GB of GGUFs, resumable
 ```
