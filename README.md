@@ -49,6 +49,7 @@ Production-grade, self-hosted **AI inference workstation stack**: GGUF coder mod
 - [20. Documentation Index](#20-documentation-index)
 - [21. Help and FAQ](#21-help-and-faq)
 - [22. Contributing and License](#22-contributing-and-license)
+- [23. Acknowledgments](#23-acknowledgments)
 
 ---
 
@@ -638,3 +639,21 @@ PRs welcome: keep the CI gates green (make lint && make test), match the existin
 Ideas with the highest leverage right now (see ROADMAP): MCP server, approval profiles, diff edits, sandbox runner, Prometheus exporter.
 
 License: MIT - see [LICENSE](LICENSE).
+
+## 23. Acknowledgments
+
+Tokugawa (the router, UI, workflow engine, and autonomous SDLC layer in this repo) is an original project — it is not a fork. It stands on these upstream projects:
+
+| Project | Role here |
+|---|---|
+| [llama.cpp](https://github.com/ggml-org/llama.cpp) | GGUF inference engine — CUDA build, `llama-server` behind the router |
+| [vLLM](https://github.com/vllm-project/vllm) | High-throughput coexisting backend (:9002, prefix caching) |
+| [Qdrant](https://github.com/qdrant/qdrant) | Vector DB for the RAG sidecar (`--profile rag`) |
+| [LoLLMs](https://github.com/ParisNeo/lollms) | Optional chat frontend (`--profile lollms`) |
+| [FreeToken](https://github.com/FlashML-org/FreeToken) | Edge MoE serving engine (`--profile freetoken`) — Apache-2.0 |
+| [TigerVNC](https://github.com/TigerVNC/tigervnc) / [noVNC](https://github.com/novnc/noVNC) | Desktop remote access layer |
+| [OpenCode](https://github.com/sst/opencode) | Coding-client integration target (:3000) |
+
+Model credits: [empero-ai](https://huggingface.co/empero-ai) (CodeClawd, Qwythos, Qwable distills), [mradermacher](https://huggingface.co/mradermacher) (imatrix quants), Qwen team (base models). Quantization sanity depends on their upload hygiene — thank them.
+
+The OLED dashboard/UI styling takes visual inspiration from FreeToken's console aesthetic; all code in this repo is original MIT-licensed work.
