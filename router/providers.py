@@ -1,6 +1,6 @@
 """External AI provider bridge (llmv-era expansion).
 
-Turns any hosted model API into a Tokugawa backend. Three wire styles
+Turns any hosted model API into a FreeAI backend. Three wire styles
 cover effectively every host:
 
   openai    - OpenAI-compatible /chat/completions (OpenAI, Groq, Mistral,
@@ -310,8 +310,8 @@ def build_request(name, cfg, model, prompt, max_tokens=2048,
         if key:
             headers["Authorization"] = f"Bearer {key}"
         if name == "openrouter":
-            headers["HTTP-Referer"] = "https://tokugawa.local"
-            headers["X-Title"] = "Tokugawa Router"
+            headers["HTTP-Referer"] = "https://freeai.local"
+            headers["X-Title"] = "FreeAI Router"
         body = _payload_openai(model, prompt, max_tokens, temperature,
                                stream)
     return url, headers, body

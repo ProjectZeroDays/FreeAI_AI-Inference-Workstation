@@ -1,5 +1,5 @@
 (function () {
-  const KEY = "tokugawa_auth_token";
+  const KEY = "freeai_auth_token";
   const orig = window.fetch.bind(window);
 
   window.fetch = function (url, opts = {}) {

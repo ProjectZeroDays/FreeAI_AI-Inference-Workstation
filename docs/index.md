@@ -2,7 +2,7 @@
 
 Self-hosted LLM operations stack:
 
-- **Tokugawa Router** (:8010) — classifies prompts and routes with fallback
+- **FreeAI Router** (:8010) — classifies prompts and routes with fallback
 - **Agent API** (:8020) — project/refactor/debug/analyze/chat agents with profiles and session memory
 - **Workflow Engine** (:8040) — multi-agent pipelines with retries, validation, audit logs
 - **Dashboard** (:8030) — GPU telemetry, alerts, service health

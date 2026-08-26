@@ -8,7 +8,7 @@ cd "$ROOT"
 if [ "${1:-}" = "--check" ]; then
   echo "== drift report =="
   rc=0
-  for unit in tokugawa-stack tokugawa-agents gpu-tune resource-optimizer; do
+  for unit in freeai-stack freeai-agents gpu-tune resource-optimizer; do
     st=$(systemctl is-active "$unit.service" 2>/dev/null || echo missing)
     printf '  %-28s %s\n' "$unit" "$st"
     [ "$st" = "active" ] || rc=1
@@ -42,7 +42,7 @@ if [ "${1:-}" = "--update-llama" ]; then
   command -v nvcc >/dev/null 2>&1 && CUDA_FLAGS=(-DGGML_CUDA=ON)
   cmake -S "$LLAMA_DIR" -B "$LLAMA_DIR/build" "${CUDA_FLAGS[@]}"
   cmake --build "$LLAMA_DIR/build" --config Release -j "$(nproc)"
-  echo "[update] done — restart the stack (systemctl restart tokugawa-stack)"
+  echo "[update] done — restart the stack (systemctl restart freeai-stack)"
   exit 0
 fi
 

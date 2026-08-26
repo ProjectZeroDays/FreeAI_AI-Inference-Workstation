@@ -18,7 +18,7 @@ Starter artifacts:
   workflow, autonomous, dashboard (+ auto-restart, stdout logs)
 
 Plan:
-1. ✅ artifacts in tree; build: `docker build -f docker/all-in-one.Dockerfile -t tokugawa/allinone .`
+1. ✅ artifacts in tree; build: `docker build -f docker/all-in-one.Dockerfile -t freeai/allinone .`
 2. compose service `allinone` (profile `allinone`) mounting ./models,
    publishing 8010/8020/8030/8040/8050/9001
 3. CI: add matrix entry to docker-publish.yml building/pushing
@@ -40,30 +40,30 @@ Common contract: any host that can run
 `curl bundle | bash` or pull one image gets the full stack + dashboards.
 Provider-specific work reduces to env plumbing.
 
-## Track C - Live ISO (TokugawaOS)
+## Track C - Live ISO (FreeAIOS)
 
 **Approach (final): remaster the official Ubuntu 24.04 live-server ISO.**
-`live/build-live.sh` extracts the ISO, adds a `/tokugawa/` payload (repo
+`live/build-live.sh` extracts the ISO, adds a `/freeai/` payload (repo
 tarball + first-boot provisioner), writes a cloud-init NoCloud autoinstall
 seed, prepends three GRUB entries, and repacks with the canonical Ubuntu
 UEFI/BIOS xorriso flags.
 
 Boot menu on the built ISO:
 
-1. **Install Tokugawa AI Stack (wipes disk)** - boots Subiquity with
+1. **Install FreeAI AI Stack (wipes disk)** - boots Subiquity with
    `autoinstall ds=nocloud;s=/cdrom/autoinstall`: unattended Ubuntu +
    `nvidia-driver-570-server` + SSH; late-commands copy the repo to
-   `/opt/tokugawa` and enable `tokugawa-first-boot.service`, which runs
+   `/opt/freeai` and enable `freeai-first-boot.service`, which runs
    `install-stack.sh` (CUDA llama.cpp build), downloads models,
    provisions coding clients, and starts the stack. Login
-   `tokugawa/tokugawa` - forced-change note in live/README.md.
-2. **Try Ubuntu Server (Tokugawa Live)** - stock live session.
+   `freeai/freeai` - forced-change note in live/README.md.
+2. **Try Ubuntu Server (FreeAI Live)** - stock live session.
 3. **Rescue shell** - live rescue target.
 
 Build: any Ubuntu 24.04 host, `apt install xorriso isolinux`, one
 command. Network required during *installation* (NVIDIA apt packages);
-the Tokugawa payload itself rides on the ISO. Acceptance: boot menu
+the FreeAI payload itself rides on the ISO. Acceptance: boot menu
 shows 3 entries; entry 1 completes unattended on a wipe-test VM and
-`tokugawa.py status` reports all services UP on first boot; entry 2
+`freeai.py status` reports all services UP on first boot; entry 2
 boots a working live session.
 

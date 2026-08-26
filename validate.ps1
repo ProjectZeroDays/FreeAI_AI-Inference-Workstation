@@ -1,4 +1,4 @@
-# Tokugawa stack offline validator (Windows / PowerShell 5.1+).
+# FreeAI stack offline validator (Windows / PowerShell 5.1+).
 # Mirrors validate.sh: structure, JSON, python syntax, quant sanity.
 # Usage: .\validate.ps1
 $ErrorActionPreference = "Stop"
@@ -16,7 +16,7 @@ foreach ($d in @("router","agents","workflow","autonomous","dashboard","ui",
   Check (Test-Path $d) "dir $d/"
 }
 foreach ($f in @("install.sh","start.sh","validate.sh","supervisor.sh",
-                 "docker-compose.yml","tokugawa.py","requirements.txt",
+                 "docker-compose.yml","freeai.py","requirements.txt",
                  "config\config.json","registry\registry.json","VERSION")) {
   Check (Test-Path $f) "file $f"
 }

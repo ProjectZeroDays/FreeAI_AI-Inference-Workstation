@@ -1,4 +1,4 @@
-# All-in-one Tokugawa stack image (supervisord inside).
+# All-in-one FreeAI stack image (supervisord inside).
 # Multi-stage: 60% smaller — devel only for llama build.
 # CUDA 13 (llmv parity) - host driver >= 580 required.
 FROM nvidia/cuda:13.0.1-devel-ubuntu24.04 AS llama-builder
@@ -19,8 +19,8 @@ RUN python3 -m venv /stack/venv \
 
 COPY --from=llama-builder /src/build/bin/llama-server /usr/local/bin/llama-server
 ENV LLAMA_SERVER_BIN=/usr/local/bin/llama-server
-COPY docker/supervisord-all.conf /etc/supervisor/conf.d/tokugawa.conf
+COPY docker/supervisord-all.conf /etc/supervisor/conf.d/freeai.conf
 
 VOLUME ["/stack/models", "/stack/workspaces"]
 EXPOSE 8010 8020 8030 8040 8050 9001
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/tokugawa.conf"]
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/freeai.conf"]

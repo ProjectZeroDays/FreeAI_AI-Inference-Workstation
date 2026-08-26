@@ -12,7 +12,7 @@ try:
 except ImportError:
     import agent as engine  # type: ignore
 
-app = FastAPI(title="Tokugawa Autonomous SDLC", version="1.0")
+app = FastAPI(title="FreeAI Autonomous SDLC", version="1.0")
 
 _SETTINGS_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

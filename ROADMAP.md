@@ -73,7 +73,7 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - 🕐 Integration/load (Locust), GPU stress, prompt regression suites
 
 ## 10–11. DevEx & CI/CD
-- ✅ tokugawa-cli (status/models/route/workflows/run)
+- ✅ freeai-cli (status/models/route/workflows/run)
 - ✅ Local dev mode (MOCK_LLM=1)
 - ✅ Docker build+push to GHCR on tags
 - ✅ Release bundle workflow
@@ -121,7 +121,7 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 ## 17. Distribution tracks (planned)
 - ? All-in-one CUDA image starter (`docker/all-in-one.Dockerfile` +
   supervisord) behind compose `--profile allinone`
-- ?? Live ISO ("TokugawaOS"): build script + boot-menu plan
+- ?? Live ISO ("FreeAIOS"): build script + boot-menu plan
   (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v0.1 tag
 - ?? Provider launch kits: RunPod template from GHCR image, Lambda/
   Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module

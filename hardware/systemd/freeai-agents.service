@@ -1,6 +1,6 @@
 [Unit]
-Description=Tokugawa health + recovery watchdog agents
-After=tokugawa-stack.service tokugawa-supervisor.service
+Description=FreeAI health + recovery watchdog agents
+After=freeai-stack.service freeai-supervisor.service
 
 [Service]
 Type=simple

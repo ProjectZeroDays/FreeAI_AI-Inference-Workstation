@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tokugawa Dashboard — GPU telemetry, service health, alerts."""
+"""FreeAI Dashboard — GPU telemetry, service health, alerts."""
 import json
 import json
 import os
@@ -597,7 +597,7 @@ def _restart_llama():
     """Prefer systemd; fall back to pkill (supervisor restarts it)."""
     try:
         proc = subprocess.run(
-            ["systemctl", "restart", "tokugawa-stack.service"],
+            ["systemctl", "restart", "freeai-stack.service"],
             capture_output=True, text=True, timeout=30)
         if proc.returncode == 0:
             return "systemd"

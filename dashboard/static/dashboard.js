@@ -73,7 +73,7 @@ async function loadSettings() {
     syncModeLock();
 
     if (data.version) {
-      document.title = `Tokugawa Dashboard v${data.version}`;
+      document.title = `FreeAI Dashboard v${data.version}`;
     }
 
     updateIdleBanner(s.idle);
@@ -314,7 +314,7 @@ async function loadRuns() {
       return;
     }
     if (!(d.runs || []).length) {
-      el.innerHTML = "<li class='muted'>no runs yet - tokugawa.py auto-start &lt;spec&gt;</li>";
+      el.innerHTML = "<li class='muted'>no runs yet - freeai.py auto-start &lt;spec&gt;</li>";
       return;
     }
     el.innerHTML = "";

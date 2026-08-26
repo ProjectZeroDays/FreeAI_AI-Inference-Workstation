@@ -52,7 +52,7 @@ sudo systemctl enable --now gpu-tune      # undervolt profile (-10..20°C)
   GPU temperature/utilization and shifts between
   **performance / balanced / eco** power profiles automatically —
   saving money when idle, full speed when the SDLC agents are hammering
-- Current mode shows on the Tokugawa Dashboard
+- Current mode shows on the FreeAI Dashboard
 
 Compare: an always-on Vast.ai RTX 4090 class instance costs roughly
 $300–450/month — this build breaks even in well under a year of

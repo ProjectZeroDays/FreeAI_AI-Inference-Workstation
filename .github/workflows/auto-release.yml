@@ -50,7 +50,7 @@ jobs:
       - name: Cut tag (triggers release workflow)
         if: steps.check.outputs.exists == 'false'
         run: |
-          git config user.name "tokugawa-release-bot"
+          git config user.name "freeai-release-bot"
           git config user.email "actions@users.noreply.github.com"
           git tag -a "${{ steps.ver.outputs.target }}" \
             -m "Release ${{ steps.ver.outputs.target }} (auto-cut from VERSION)"

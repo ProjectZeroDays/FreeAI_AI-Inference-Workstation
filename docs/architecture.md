@@ -1,7 +1,7 @@
 # Architecture
 
 ```
-Tokugawa UI (ui/)          Workflow Designer (workflow/ui/)
+FreeAI UI (ui/)          Workflow Designer (workflow/ui/)
         │                        │
         ▼                        ▼
   Agent API (:8020) ◄──── Workflow Engine (:8040)

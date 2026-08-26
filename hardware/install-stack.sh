@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================================
 # Center AI Workstation — Ubuntu 24.04 provisioner
-# Drivers -> CUDA toolkit -> Docker -> Tokugawa stack -> systemd -> firewall.
+# Drivers -> CUDA toolkit -> Docker -> FreeAI stack -> systemd -> firewall.
 #
 # Usage:
 #   sudo ./install-stack.sh                      # full provisioning
@@ -112,23 +112,23 @@ if [ "${AUTO_MODELS:-1}" = "1" ]; then
 fi
 
 # -------------------------------------------------------------- 7. systemd
-UNIT_SRC="$SCRIPT_DIR/tokugawa-stack.service"
-UNIT_DST="/etc/systemd/system/tokugawa-stack.service"
+UNIT_SRC="$SCRIPT_DIR/freeai-stack.service"
+UNIT_DST="/etc/systemd/system/freeai-stack.service"
 if [ -f "$UNIT_SRC" ]; then
-  log "Installing tokugawa-stack.service..."
+  log "Installing freeai-stack.service..."
   sed -e "s|__STACK_DIR__|$STACK_DIR|g" \
       -e "s|__STACK_USER__|$REAL_USER|g" \
       "$UNIT_SRC" | $SUDO tee "$UNIT_DST" > /dev/null
   $SUDO systemctl daemon-reload
-  $SUDO systemctl enable tokugawa-stack.service
+  $SUDO systemctl enable freeai-stack.service
   if [ "$NO_START" != "1" ]; then
-    $SUDO systemctl restart tokugawa-stack.service || \
+    $SUDO systemctl restart freeai-stack.service || \
       log "service start deferred (needs reboot for driver first?)"
   fi
 fi
 
 # auxiliary units: watchdog agents + GPU tune + resource optimizer
-for unit in tokugawa-agents gpu-tune resource-optimizer; do
+for unit in freeai-agents gpu-tune resource-optimizer; do
   SRC="$SCRIPT_DIR/systemd/$unit.service"
   [ -f "$SRC" ] || continue
   DST="/etc/systemd/system/$unit.service"
@@ -140,8 +140,8 @@ for unit in tokugawa-agents gpu-tune resource-optimizer; do
 done
 
 # daily housekeeping (log rotation + workspace pruning)
-CLEAN_SVC="$SCRIPT_DIR/systemd/tokugawa-cleanup.service"
-CLEAN_TMR="$SCRIPT_DIR/systemd/tokugawa-cleanup.timer"
+CLEAN_SVC="$SCRIPT_DIR/systemd/freeai-cleanup.service"
+CLEAN_TMR="$SCRIPT_DIR/systemd/freeai-cleanup.timer"
 if [ -f "$CLEAN_SVC" ] && [ -f "$CLEAN_TMR" ]; then
   for f in "$CLEAN_SVC" "$CLEAN_TMR"; do
     DST="/etc/systemd/system/$(basename "$f")"
@@ -150,11 +150,11 @@ if [ -f "$CLEAN_SVC" ] && [ -f "$CLEAN_TMR" ]; then
         "$f" | $SUDO tee "$DST" > /dev/null
   done
   $SUDO systemctl daemon-reload
-  $SUDO systemctl enable --now tokugawa-cleanup.timer
+  $SUDO systemctl enable --now freeai-cleanup.timer
 fi
 
 [ "$NO_START" != "1" ] && \
-  $SUDO systemctl start tokugawa-agents.service gpu-tune.service \
+  $SUDO systemctl start freeai-agents.service gpu-tune.service \
     resource-optimizer.service 2>/dev/null || true
 
 # ---- unattended security updates + clock sync (24/7 box hygiene) ----
@@ -193,10 +193,10 @@ command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi | head -n12 || \
   log "nvidia-smi unavailable yet"
 echo
 log "Stack dir : $STACK_DIR"
-log "Service   : systemctl status tokugawa-stack"
+log "Service   : systemctl status freeai-stack"
 log "Dashboard : http://localhost:8030"
 log "Autonomous: http://localhost:8050"
 log "Router    : http://localhost:8010 (local/tailnet only)"
 [ "$REBOOT_REQUIRED" = "1" ] && \
   log "*** REBOOT REQUIRED to activate NVIDIA driver ***"
-log "Then verify: python3 $STACK_DIR/tokugawa.py status"
+log "Then verify: python3 $STACK_DIR/freeai.py status"

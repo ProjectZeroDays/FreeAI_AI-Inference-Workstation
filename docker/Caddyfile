@@ -1,8 +1,8 @@
-# Tokugawa TLS gateway (compose --profile tls)
+# FreeAI TLS gateway (compose --profile tls)
 # Default: internal (self-signed) cert on :8443 - fine for LAN/tailnet.
 # For a PUBLIC domain with automatic HTTPS (ACME/Let's Encrypt):
 #   1. mount docker/Caddyfile.public instead of this file
-#   2. set TOKUGAWA_DOMAIN + ACME_EMAIL (+ publish ports 80/443)
+#   2. set FREEAI_DOMAIN + ACME_EMAIL (+ publish ports 80/443)
 #
 # Autonomous API auth: AUTOAUTH_USER / AUTOAUTH_HASH (bcrypt).
 #   generate a hash:  docker run --rm caddy caddy hash-password --plaintext 'yourpw'
@@ -23,7 +23,7 @@
 	# ---- Autonomous SDLC API (basic-auth protected) ----
 	handle /auto/* {
 		basic_auth {
-			{$AUTOAUTH_USER:tokugawa} {$AUTOAUTH_HASH:$2b$12$jaNpJiLbzS1iZVdogZuB9.u4nLCtLipqOIH880wLXwGM7n0sqqjZi}
+			{$AUTOAUTH_USER:freeai} {$AUTOAUTH_HASH:$2b$12$jaNpJiLbzS1iZVdogZuB9.u4nLCtLipqOIH880wLXwGM7n0sqqjZi}
 		}
 		reverse_proxy autonomous:8050
 	}

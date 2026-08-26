@@ -1,5 +1,5 @@
 [Unit]
-Description=Run Tokugawa cleanup daily
+Description=Run FreeAI cleanup daily
 
 [Timer]
 OnCalendar=daily

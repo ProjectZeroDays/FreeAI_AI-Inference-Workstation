@@ -38,7 +38,7 @@ Public, well-understood agentic-CLI capabilities mapped to our stack:
 1. Ship MCP server wrapper (`mcp/server.py`) over `/route`, `/agent/*`,
    `/workflow/run`, autonomous start/status — instant Codex/OpenCode
    compatibility without touching their code.
-2. Fork-track OpenCode: add "Tokugawa" provider preset pointing at the
+2. Fork-track OpenCode: add "FreeAI" provider preset pointing at the
    MCP endpoint; keep upstream mergeable.
 3. Port approval profiles into `autonomous/agent.py` (suggest = shell
    requires dashboard confirm endpoint; full-auto = current behavior).

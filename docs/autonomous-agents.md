@@ -43,9 +43,9 @@ queued → planning → coding → testing → fixing → reviewing
 ## CLI
 
 ```bash
-python3 tokugawa.py auto-start "Build a FastAPI notes service with tests" --watch 20
-python3 tokugawa.py auto-runs
-python3 tokugawa.py auto-fetch <run_id> -o my-project.tar.gz
+python3 freeai.py auto-start "Build a FastAPI notes service with tests" --watch 20
+python3 freeai.py auto-runs
+python3 freeai.py auto-fetch <run_id> -o my-project.tar.gz
 ```
 
 ## Deployment

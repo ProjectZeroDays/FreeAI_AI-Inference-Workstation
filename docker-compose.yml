@@ -98,7 +98,7 @@ services:
     restart: always
 
   router:
-    container_name: tokugawa_router
+    container_name: freeai_router
     build:
       context: ./router
       dockerfile: Dockerfile
@@ -182,7 +182,7 @@ services:
     restart: always
 
   dashboard:
-    container_name: tokugawa_dashboard
+    container_name: freeai_dashboard
     build:
       context: ./dashboard
       dockerfile: Dockerfile
@@ -208,7 +208,7 @@ services:
     restart: always
 
   allinone:
-    container_name: tokugawa_allinone
+    container_name: freeai_allinone
     build:
       context: .
       dockerfile: docker/all-in-one.Dockerfile
@@ -234,13 +234,13 @@ services:
     restart: always
 
   caddy:
-    container_name: tokugawa_tls
+    container_name: freeai_tls
     image: caddy:latest
     profiles: ["tls"]
     environment:
-      - AUTOAUTH_USER=${AUTOAUTH_USER:-tokugawa}
+      - AUTOAUTH_USER=${AUTOAUTH_USER:-freeai}
       - AUTOAUTH_HASH=${AUTOAUTH_HASH:-}
-      - TOKUGAWA_DOMAIN=${TOKUGAWA_DOMAIN:-}
+      - FREEAI_DOMAIN=${FREEAI_DOMAIN:-}
       - ACME_EMAIL=${ACME_EMAIL:-}
     # Public domain w/ automatic HTTPS: swap the volume to
     # ./docker/Caddyfile.public and uncomment ports 80/443.
@@ -257,7 +257,7 @@ services:
     restart: always
 
   jupyter:
-    container_name: tokugawa_jupyter
+    container_name: freeai_jupyter
     image: jupyter/base-notebook:latest
     profiles: ["jupyter"]
     environment:
@@ -272,7 +272,7 @@ services:
     restart: always
 
   lollms:
-    container_name: tokugawa_lollms
+    container_name: freeai_lollms
     image: parisneo/lollms:latest
     profiles: ["lollms"]
     ports:
@@ -284,7 +284,7 @@ services:
     restart: unless-stopped
 
   freetoken:
-    container_name: tokugawa_freetoken
+    container_name: freeai_freetoken
     image: flashml/freetoken:latest
     profiles: ["freetoken"]
     environment:
@@ -304,7 +304,7 @@ services:
     restart: unless-stopped
 
   qdrant:
-    container_name: tokugawa_qdrant
+    container_name: freeai_qdrant
     image: qdrant/qdrant:latest
     profiles: ["rag"]
     volumes:
@@ -315,7 +315,7 @@ services:
     restart: unless-stopped
 
   rag-ingest:
-    container_name: tokugawa_rag_ingest
+    container_name: freeai_rag_ingest
     build:
       context: ./rag
       dockerfile: Dockerfile

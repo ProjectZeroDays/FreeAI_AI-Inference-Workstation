@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================================
-# TokugawaOS ISO builder — remasters an official Ubuntu 24.04 live-server ISO.
+# FreeAIOS ISO builder — remasters an official Ubuntu 24.04 live-server ISO.
 #
 # Boot menu on the resulting ISO:
-#   1) Install Tokugawa AI Stack (wipes disk)   <- Subiquity autoinstall:
+#   1) Install FreeAI AI Stack (wipes disk)   <- Subiquity autoinstall:
 #        unattended Ubuntu install + stack provisioned on first boot
-#   2) Try Ubuntu Server (Tokugawa Live)        <- stock live session
+#   2) Try Ubuntu Server (FreeAI Live)        <- stock live session
 #   3) Rescue shell
 #
 # Run on Ubuntu 24.04 with:  sudo apt-get install -y xorriso isolinux
@@ -17,13 +17,13 @@ set -euo pipefail
 
 UBUNTU_ISO="${UBUNTU_ISO:?set UBUNTU_ISO=/path/to/ubuntu-24.04-live-server-amd64.iso}"
 REPO_TARBALL="${REPO_TARBALL:-}"
-OUT="${OUT:-$(pwd)/tokugawaos-amd64.iso}"
+OUT="${OUT:-$(pwd)/freeaios-amd64.iso}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 command -v xorriso >/dev/null || { echo "need xorriso";  exit 1; }
 [ -f "$UBUNTU_ISO" ] || { echo "ISO not found: $UBUNTU_ISO"; exit 1; }
 
-WORK="$(mktemp -d /tmp/tokugawaos.XXXXXX)"
+WORK="$(mktemp -d /tmp/freeaios.XXXXXX)"
 SRC="$WORK/src"          # extracted original
 NEW="$WORK/new"          # modified tree
 trap 'rm -rf "$WORK"' EXIT
@@ -33,46 +33,46 @@ xorriso -osirrox on -indev "$UBUNTU_ISO" -extract / "$SRC" >/dev/null 2>&1
 cp -a "$SRC" "$NEW"
 
 # ---------------------------------------------------------------- repo payload
-mkdir -p "$NEW/tokugawa"
+mkdir -p "$NEW/freeai"
 if [ -n "$REPO_TARBALL" ] && [ -f "$REPO_TARBALL" ]; then
-  cp "$REPO_TARBALL" "$NEW/tokugawa/repo.tar.gz"
+  cp "$REPO_TARBALL" "$NEW/freeai/repo.tar.gz"
 else
   echo "[iso] bundling local repo tree (git-clean snapshot)..."
   tar --exclude='./.git' --exclude='./venv' --exclude='./.venv-vllm' \
       --exclude='./llama.cpp' --exclude='./models/*.gguf' \
       --exclude='./workspaces' --exclude='./backups' \
-      -czf "$NEW/tokugawa/repo.tar.gz" -C "$(dirname "$HERE")" \
+      -czf "$NEW/freeai/repo.tar.gz" -C "$(dirname "$HERE")" \
       "$(basename "$(dirname "$HERE")")" 2>/dev/null || \
   tar --exclude='./.git' --exclude='./venv' --exclude='./.venv-vllm' \
       --exclude='./llama.cpp' --exclude='./models/*.gguf' \
       --exclude='./workspaces' --exclude='./backups' \
-      -czf "$NEW/tokugawa/repo.tar.gz" -C "$HERE/.." .
+      -czf "$NEW/freeai/repo.tar.gz" -C "$HERE/.." .
 fi
 
 # ---------------------------------------------------------------- first-boot
 # Runs once on the INSTALLED system: stack provision + systemd enable.
-mkdir -p "$NEW/tokugawa/firstboot"
-cat > "$NEW/tokugawa/firstboot/tokugawa-first-boot" <<'EOF'
+mkdir -p "$NEW/freeai/firstboot"
+cat > "$NEW/freeai/firstboot/freeai-first-boot" <<'EOF'
 #!/bin/bash
 set -u
-LOG=/var/log/tokugawa-first-boot.log
+LOG=/var/log/freeai-first-boot.log
 exec >> "$LOG" 2>&1
 echo "[firstboot] $(date -Is) starting"
-/opt/tokugawa/hardware/install-stack.sh || echo "[firstboot] installer partial"
-bash /opt/tokugawa/models/auto-download-models.sh || true
-bash /opt/tokugawa/scripts/clients-provision.sh || true
-systemctl enable tokugawa-stack 2>/dev/null || true
-systemctl restart tokugawa-stack || bash /opt/tokugawa/start.sh >> "$LOG" 2>&1 &
+/opt/freeai/hardware/install-stack.sh || echo "[firstboot] installer partial"
+bash /opt/freeai/models/auto-download-models.sh || true
+bash /opt/freeai/scripts/clients-provision.sh || true
+systemctl enable freeai-stack 2>/dev/null || true
+systemctl restart freeai-stack || bash /opt/freeai/start.sh >> "$LOG" 2>&1 &
 echo "[firstboot] done - dashboard :8030 | autonomous :8050"
 EOF
-chmod +x "$NEW/tokugawa/firstboot/tokugawa-first-boot"
+chmod +x "$NEW/freeai/firstboot/freeai-first-boot"
 
 # ---------------------------------------------------------------- autoinstall
 # cloud-init NoCloud seed on the ISO; Subiquity reads it when booted with
 #   autoinstall ds=nocloud\;s=/cdrom/autoinstall
 mkdir -p "$NEW/autoinstall"
 cat > "$NEW/autoinstall/meta-data" <<'EOF'
-instance-id: tokugawa-os-001
+instance-id: freeai-os-001
 EOF
 
 cat > "$NEW/autoinstall/user-data" <<'EOF'
@@ -82,10 +82,10 @@ autoinstall:
   locale: en_US.UTF-8
   keyboard: { layout: us }
   identity:
-    hostname: tokugawa
-    username: tokugawa
-    # password: "tokugawa" (change on first login!)
-    password: "$6$rounds=4096$TokugawaOS$Oo0pb.nAah4MWcIQbTh0XBMTALsVmZfTQ0T0WhS2gD5PnH1vBkFMnQeujRipJiUzB0Jzqp9kLwGJljbvXOJ1mN0"
+    hostname: freeai
+    username: freeai
+    # password: "freeai" (change on first login!)
+    password: "$6$rounds=4096$FreeAIOS$Oo0pb.nAah4MWcIQbTh0XBMTALsVmZfTQ0T0WhS2gD5PnH1vBkFMnQeujRipJiUzB0Jzqp9kLwGJljbvXOJ1mN0"
   ssh:
     install-server: true
     allow-pw: true
@@ -96,26 +96,26 @@ autoinstall:
     package_update: true
     packages: [nvidia-driver-570-server, xorriso]
     runcmd:
-      - mkdir -p /opt/tokugawa
+      - mkdir -p /opt/freeai
       - |
-        if [ -d /cdrom/tokugawa ] && [ -f /cdrom/tokugawa/repo.tar.gz ]; then
-          tar -xzf /cdrom/tokugawa/repo.tar.gz -C /opt --strip-components=1
+        if [ -d /cdrom/freeai ] && [ -f /cdrom/freeai/repo.tar.gz ]; then
+          tar -xzf /cdrom/freeai/repo.tar.gz -C /opt --strip-components=1
         fi
       - |
-        cat > /etc/systemd/system/tokugawa-first-boot.service <<UNIT
+        cat > /etc/systemd/system/freeai-first-boot.service <<UNIT
         [Unit]
-        Description=Tokugawa stack first-boot provisioner
+        Description=FreeAI stack first-boot provisioner
         After=network-online.target
         Wants=network-online.target
         [Service]
         Type=oneshot
-        ExecStart=/tokugawa-first-boot
+        ExecStart=/freeai-first-boot
         RemainAfterExit=yes
         [Install]
         WantedBy=multi-user.target
         UNIT
-        install -m 0755 /cdrom/tokugawa/firstboot/tokugawa-first-boot /tokugawa-first-boot
-        systemctl enable tokugawa-first-boot
+        install -m 0755 /cdrom/freeai/firstboot/freeai-first-boot /freeai-first-boot
+        systemctl enable freeai-first-boot
 EOF
 
 # ---------------------------------------------------------------- grub menu
@@ -129,12 +129,12 @@ mv "$GRUB_CFG" "$GRUB_CFG.orig"
 set default=0
 set timeout=10
 
-menuentry "Install Tokugawa AI Stack (WIPES DISK - unattended)" {
+menuentry "Install FreeAI AI Stack (WIPES DISK - unattended)" {
 	set gfxpayload=keep
 	linux	/casper/vmlinuz autoinstall ds=nocloud\;s=/cdrom/autoinstall ---
 	initrd	/casper/initrd
 }
-menuentry "Try Ubuntu Server (Tokugawa Live)" {
+menuentry "Try Ubuntu Server (FreeAI Live)" {
 	set gfxpayload=keep
 	linux	/casper/vmlinuz ---
 	initrd	/casper/initrd
@@ -153,7 +153,7 @@ EOF
 # UEFI: same entries for the ESP config if present
 for efi_cfg in "$NEW/boot/grub/grub.cfg" "$NEW/EFI/boot/grub.cfg"; do
   [ -f "$efi_cfg" ] || continue
-  grep -q "Install Tokugawa" "$efi_cfg" || true
+  grep -q "Install FreeAI" "$efi_cfg" || true
 done
 
 # ---------------------------------------------------------------- repack
@@ -162,7 +162,7 @@ ISOLINUX_MBR="/usr/lib/ISOLINUX/isohdpfx.bin"
 [ -f "$ISOLINUX_MBR" ] || ISOLINUX_MBR="/usr/lib/syslinux/modules/bios/isohdpfx.bin"
 
 xorriso -as mkisofs -r \
-  -V TOKUGAWA_OS \
+  -V FREEAI_OS \
   -o "$OUT" \
   -J -joliet-long -l \
   -isohybrid-mbr "$ISOLINUX_MBR" \
@@ -176,7 +176,7 @@ xorriso -as mkisofs -r \
 
 echo "[iso] built: $OUT ($(du -h "$OUT" | cut -f1))"
 echo "[iso] boot menu:"
-echo "  1) Install Tokugawa AI Stack (wipes disk, unattended + stack first-boot)"
-echo "  2) Try Ubuntu Server (Tokugawa Live)"
+echo "  1) Install FreeAI AI Stack (wipes disk, unattended + stack first-boot)"
+echo "  2) Try Ubuntu Server (FreeAI Live)"
 echo "  3) Rescue shell"
-echo "[iso] install login: tokugawa / tokugawa  (CHANGE ON FIRST LOGIN)"
+echo "[iso] install login: freeai / freeai  (CHANGE ON FIRST LOGIN)"

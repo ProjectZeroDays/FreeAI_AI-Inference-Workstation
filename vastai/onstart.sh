@@ -1,11 +1,11 @@
 #!/bin/bash
-# Tokugawa stack onstart for Vast.ai (CUDA 13 image).
+# FreeAI stack onstart for Vast.ai (CUDA 13 image).
 # Downloads the release bundle, provisions, launches clients + desktop.
 set -u
 
-REPO_DIR="${REPO_DIR:-/opt/tokugawa}"
+REPO_DIR="${REPO_DIR:-/opt/freeai}"
 BUNDLE_URL="${PROVISIONING_SCRIPT:-}"
-LOG="/var/log/tokugawa-onstart.log"
+LOG="/var/log/freeai-onstart.log"
 exec >> "$LOG" 2>&1
 
 echo "[onstart] $(date -Is) starting"
@@ -35,8 +35,8 @@ bash desktop/start_novnc.sh >> "$REPO_DIR/logs/desktop.log" 2>&1 &
 # 6) stack via systemd if available, else start.sh
 if command -v systemctl >/dev/null 2>&1 && pidof systemd >/dev/null; then
   sed -e "s|__STACK_DIR__|$REPO_DIR|g" -e "s|__STACK_USER__|root|g" \
-      hardware/tokugawa-stack.service > /etc/systemd/system/tokugawa-stack.service
-  systemctl daemon-reload && systemctl restart tokugawa-stack
+      hardware/freeai-stack.service > /etc/systemd/system/freeai-stack.service
+  systemctl daemon-reload && systemctl restart freeai-stack
 else
   nohup bash start.sh >> "$REPO_DIR/logs/stack.log" 2>&1 &
 fi

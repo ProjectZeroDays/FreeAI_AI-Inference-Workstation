@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tokugawa Workflow Engine — chaining, retries, parallelism, validation,
+"""FreeAI Workflow Engine — chaining, retries, parallelism, validation,
 audit logging, and inline (imported) workflow execution."""
 import concurrent.futures
 import json

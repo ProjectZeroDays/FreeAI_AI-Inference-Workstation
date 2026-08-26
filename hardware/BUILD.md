@@ -129,7 +129,7 @@ Then verify:
 nvidia-smi                                       # driver OK
 curl -s localhost:8010/health                    # router
 curl -s localhost:8030/api/status | head         # dashboard telemetry
-python3 tokugawa.py status
+python3 freeai.py status
 ```
 
 ## 10. Remote access (choose one)

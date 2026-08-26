@@ -1,4 +1,4 @@
-# GAP Analysis — Tokugawa Autonomous Stack vs OpenAI Codex (reverse-engineered)
+# GAP Analysis — FreeAI Autonomous Stack vs OpenAI Codex (reverse-engineered)
 
 Scope: capability-by-capability comparison of our self-hosted stack
 against publicly understood Codex agentic-coding behavior. Gap sizes:

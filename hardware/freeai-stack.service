@@ -1,5 +1,5 @@
 [Unit]
-Description=Tokugawa Unified GPU Inference Stack
+Description=FreeAI Unified GPU Inference Stack
 After=network-online.target docker.service
 Wants=network-online.target
 

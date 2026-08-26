@@ -1,4 +1,4 @@
-# Ubuntu-Desktop_XFCE_TigerVNC_noVNC_Tokugawa_llama.cpp_Opencode_Unified-AI-Stack
+# Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack
 
 ![version](https://img.shields.io/badge/version-1.2.0-blue)
 ![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)
@@ -26,13 +26,13 @@ Production-grade, self-hosted **AI inference workstation stack**: GGUF coder mod
   - [8.4 GPU Providers](#84-gpu-providers)
   - [8.5 Live ISO](#85-live-iso)
 - [9. Tool Handbook](#9-tool-handbook)
-  - [9.1 Tokugawa Router](#91-tokugawa-router)
+  - [9.1 FreeAI Router](#91-freeai-router)
   - [9.2 Agent API](#92-agent-api)
   - [9.3 Workflow Engine](#93-workflow-engine)
   - [9.4 Autonomous SDLC Agents](#94-autonomous-sdlc-agents)
   - [9.5 Resource Optimizer and GPU Tune](#95-resource-optimizer-and-gpu-tune)
   - [9.6 Dashboard](#96-dashboard)
-  - [9.7 tokugawa-cli](#97-tokugawa-cli)
+  - [9.7 freeai-cli](#97-freeai-cli)
   - [9.8 Watchdogs and systemd Units](#98-watchdogs-and-systemd-units)
   - [9.9 Backup and Cleanup Maintenance](#99-backup-and-cleanup-maintenance)
   - [9.10 External AI Providers](#910-external-ai-providers)
@@ -57,7 +57,7 @@ Production-grade, self-hosted **AI inference workstation stack**: GGUF coder mod
 
 The stack answers one question: *how do I run capable coding models on my own GPU, 24/7, with agents that actually ship work - and reach it from anywhere?*
 
-- **One URL for every client.** The Tokugawa Router classifies each prompt (with a confidence score), routes to the best healthy backend, falls back automatically, caches repeats, and blocks repetition-loop garbage before it reaches you.
+- **One URL for every client.** The FreeAI Router classifies each prompt (with a confidence score), routes to the best healthy backend, falls back automatically, caches repeats, and blocks repetition-loop garbage before it reaches you.
 - **Agents with teeth.** The Agent API exposes scaffolding/refactor/debug/analysis/chat personas with temperature profiles and session memory. The Workflow Engine chains them into pipelines. The Autonomous SDLC layer goes further: plan -> code -> **verify with real compilers/tests** -> fix -> review -> document -> package a tarball.
 - **Ops that run themselves.** Watchdogs restart dead services in seconds. An AI resource optimizer watches GPU temperature/utilization and shifts between performance/balanced/eco power profiles. Daily cleanup rotates logs and prunes old workspaces; weekly backups snapshot your config.
 - **Everything is one settings file.** The dashboard writes `config/runtime-settings.json`; the optimizer, autonomous API, router, and llama launcher all consume it on their own cadence. Change once, propagates everywhere.
@@ -65,24 +65,24 @@ The stack answers one question: *how do I run capable coding models on my own GP
 
 ## 2. Screenshots
 
-| TokugawaOS GRUB Boot Menu |
+| FreeAIOS GRUB Boot Menu |
 |---|
 | ![Boot menu](docs/screenshots/boot-menu.png) |
 | Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
 
-| tokugawa-cli | tokugawa-cli providers + live test |
+| freeai-cli | freeai-cli providers + live test |
 |---|---|
 | ![CLI](docs/screenshots/cli.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
 | Real --help output: 14 subcommands | Real `providers` listing + `provider-test openai` |
 
-| Tokugawa Dashboard - active load | Dashboard - timed idle window |
+| FreeAI Dashboard - active load | Dashboard - timed idle window |
 |---|---|
 | ![Dashboard active](docs/screenshots/dashboard.png) | ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
 | 74% util, alerts panel, service badges, settings + presets | Eco enforced (6% util, 198W/2400MHz), idle banner w/ auto-restore countdown |
 
-| Tokugawa UI | UI in use (refactor via moe-13b) |
+| FreeAI UI | UI in use (refactor via moe-13b) |
 |---|---|
-| ![Tokugawa UI](docs/screenshots/tokugawa-ui.png) | ![UI output](docs/screenshots/tokugawa-ui-output.png) |
+| ![FreeAI UI](docs/screenshots/freeai-ui.png) | ![UI output](docs/screenshots/freeai-ui-output.png) |
 | Model presets + agent picker + prompt console | Router response: model_used, task_type, confidence, elapsed_ms |
 
 | Workflow Designer | External Providers panel |
@@ -119,13 +119,13 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | **Parallel hot models** | second resident shard (`--profile llama2`, per-GPU CUDA_VISIBLE_DEVICES) - `/admin/hot-models` roster + `/admin/model-switch` zero-reload swap |
 | **RAG** | Qdrant sidecar :6333 + ingest watcher (`--profile rag`) - MiniLM 384-dim embeddings, deterministic hash fallback for GPU-less CI |
 | **Evals** | golden-task harness (`evals/golden_tasks.json`) - `run_eval.py` scores router answers vs expectations incl. reviewer-model pass |
-| **Tooling** | `tokugawa-cli` (14 subcommands) - Makefile - MkDocs site - auto-docs generator - GitHub Actions CI (py/bash/js/json gates) + docker publish + release bundling |
+| **Tooling** | `freeai-cli` (14 subcommands) - Makefile - MkDocs site - auto-docs generator - GitHub Actions CI (py/bash/js/json gates) + docker publish + release bundling |
 | **Desktop** | XFCE + TigerVNC + noVNC (compose `--profile desktop`) |
 
 ## 4. Architecture
 
 ```
-Tokugawa UI (ui/)        Workflow Designer (workflow/ui/)      tokugawa-cli
+FreeAI UI (ui/)        Workflow Designer (workflow/ui/)      freeai-cli
         |                        |                               |
         v                        v                               v
    Agent API (:8020) <---- Workflow Engine (:8040)      Autonomous SDLC (:8050)
@@ -152,7 +152,7 @@ raises alerts, writes runtime-settings.json consumed by all services.
 
 | Port | Service | Exposed by default |
 |---|---|---|
-| 8010 | Tokugawa Router (`/route`, `/models`, `/metrics`, `/health`) | LAN only (UFW blocks) |
+| 8010 | FreeAI Router (`/route`, `/models`, `/metrics`, `/health`) | LAN only (UFW blocks) |
 | 8020 | Agent REST API | LAN only |
 | 8030 | Dashboard UI + `/api/*` | **Yes** (UFW allow) |
 | 8040 | Workflow Engine | LAN only |
@@ -176,8 +176,8 @@ Fastest paths (details in [Section 8](#8-install-and-deploy-handbook)):
 
 **Bare metal (Ubuntu 24.04 + NVIDIA):**
 ```bash
-git clone https://github.com/ProjectZeroDays/Ubuntu-Desktop_XFCE_TigerVNC_noVNC_Tokugawa_llama.cpp_Opencode_Unified-AI-Stack.git
-cd Ubuntu-Desktop_XFCE_TigerVNC_noVNC_Tokugawa_llama.cpp_Opencode_Unified-AI-Stack
+git clone https://github.com/ProjectZeroDays/Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack.git
+cd Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack
 sudo ./hardware/install-stack.sh          # drivers->CUDA->Docker->stack->systemd->UFW
 bash models/auto-download-models.sh       # ~15GB of GGUFs, resumable
 ```
@@ -199,7 +199,7 @@ python3 -m venv venv && source venv/bin/activate && pip install -r requirements.
 MOCK_LLM=1 python3 router/router.py       # canned completions, full API surface
 ```
 
-Verify: `python3 tokugawa.py status` - open `http://localhost:8030`.
+Verify: `python3 freeai.py status` - open `http://localhost:8030`.
 
 ### Deployment readiness matrix
 
@@ -212,7 +212,7 @@ Verify: `python3 tokugawa.py status` - open `http://localhost:8030`.
 | **Cloud: Lambda / Hetzner / Paperspace** | **Ready now** | `deploy.ps1 -Hostname <ip>` or SSH + installer | same bare-metal path, drivers preinstalled on these hosts |
 | **Cloud: Vast.ai** | **Ready now** | import `vastai/template.json` (Portal + Selkies + Guacamole) | `vastai/onstart.sh` -> bundle -> provision -> clients -> desktop |
 | **Cloud: RunPod / any Docker host** | **Ready now (build locally)** | `docker compose --profile allinone up -d --build` | GHCR prebuilt image pending CI (blocker below) |
-| **Live ISO (TokugawaOS)** | **Builder ready - compile on any Ubuntu host** | `live/build-live.sh` (Subiquity autoinstall remaster) | Boot menu: **Install Tokugawa (wipes disk, stack first-boot)** / Try Live / Rescue; needs one build run + network for NVIDIA driver |
+| **Live ISO (FreeAIOS)** | **Builder ready - compile on any Ubuntu host** | `live/build-live.sh` (Subiquity autoinstall remaster) | Boot menu: **Install FreeAI (wipes disk, stack first-boot)** / Try Live / Rescue; needs one build run + network for NVIDIA driver |
 
 **Known blocker (GitHub-side):** the account billing lock stops Actions from
 publishing GHCR images and release bundles. Workarounds until cleared:
@@ -230,11 +230,11 @@ above works today; clearing billing turns on `docker-publish`, `release`, and
 
 Verified parts list (MPN/ASIN): [hardware/parts-list.md](hardware/parts-list.md) - assembly: [hardware/BUILD.md](hardware/BUILD.md) - build-vs-cloud economics: [hardware/LOCAL-DEPLOY.md](hardware/LOCAL-DEPLOY.md).
 
-Model selection at a glance — full roster in the Tokugawa UI picker, live model shelf on the dashboard (see §2 for captions):
+Model selection at a glance — full roster in the FreeAI UI picker, live model shelf on the dashboard (see §2 for captions):
 
-| Tokugawa UI - 8-model roster picker | Dashboard - model shelf |
+| FreeAI UI - 8-model roster picker | Dashboard - model shelf |
 |---|---|
-| ![8-model roster picker](docs/screenshots/tokugawa-ui.png) | ![Model shelf](docs/screenshots/dashboard-full.png) |
+| ![8-model roster picker](docs/screenshots/freeai-ui.png) | ![Model shelf](docs/screenshots/dashboard-full.png) |
 
 ## 8. Install and Deploy Handbook
 
@@ -247,7 +247,7 @@ sudo ./hardware/install-stack.sh                 # full provisioning
 NO_START=1 sudo ./hardware/install-stack.sh      # install without starting
 ```
 
-Reboot once after driver install, then `systemctl status tokugawa-stack`.
+Reboot once after driver install, then `systemctl status freeai-stack`.
 
 ### 8.2 Docker Compose Profiles
 
@@ -289,11 +289,11 @@ Details: [docs/DEPLOYMENT-PLANS.md](docs/DEPLOYMENT-PLANS.md).
 
 ### 8.5 Live ISO
 
-`live/build-live.sh` builds TokugawaOS via live-build: GRUB menu - **Try Live (RAM)** / **Install to disk (autoinstall)** / **Rescue shell** - bundled NVIDIA drivers, GPU-detect first boot (MOCK fallback in VMs), optional casper persistence. Plan: `docs/DEPLOYMENT-PLANS.md` Track C.
+`live/build-live.sh` builds FreeAIOS via live-build: GRUB menu - **Try Live (RAM)** / **Install to disk (autoinstall)** / **Rescue shell** - bundled NVIDIA drivers, GPU-detect first boot (MOCK fallback in VMs), optional casper persistence. Plan: `docs/DEPLOYMENT-PLANS.md` Track C.
 
 ## 9. Tool Handbook
 
-### 9.1 Tokugawa Router
+### 9.1 FreeAI Router
 
 - **Classification**: keyword hits -> `(task_type, confidence)`: `full_project` / `refactor` / `analysis` / `general_code` (0.5).
 - **Fallback chain**: per-task primary + alternates; per-agent overrides via `AGENT_MODEL_OVERRIDES` JSON or config.
@@ -324,7 +324,7 @@ Lifecycle: `queued -> planning -> coding -> testing <-> fixing -> reviewing -> d
 - Workspace `workspaces/<run_id>/`: traversal/absolute/drive paths rejected, 512KB/file cap.
 - Verification: real commands in-workspace when shell enabled (`ENABLE_SHELL_TOOLS=1` + per-run `enable_shell`); else static placeholder scan.
 - Fix loop: up to 3 rounds fed actual compiler/test output.
-- Artifact: `_artifact.tar.gz` via API or `tokugawa.py auto-fetch`.
+- Artifact: `_artifact.tar.gz` via API or `freeai.py auto-fetch`.
 - Guard: `max_concurrent_runs` -> 429 over cap.
 
 ### 9.5 Resource Optimizer and GPU Tune
@@ -343,32 +343,32 @@ Publishes config/runtime-state.json (dashboard shows live mode). Manual override
 
 Panels: Alerts (services down, thermal, util thresholds) - GPU stats with Chart.js utilization history - Services UP/DOWN badges - Settings (preset dropdown, custom save/delete, idle timer, auto-management checkbox, power/clock caps, llama sampling, concurrency cap) - Model shelf (registry vs on-disk GGUFs + free GB) - router metrics embed - SSE /api/events pushes settings changes to every open tab.
 
-### 9.7 tokugawa-cli
+### 9.7 freeai-cli
 
 ```bash
-python3 tokugawa.py status                       # health + router metrics
-python3 tokugawa.py models                       # roster
-python3 tokugawa.py route "Build an API" --profile strict
-python3 tokugawa.py workflows && python3 tokugawa.py run full_build --context {"spec":"..."}
-python3 tokugawa.py auto-start "FastAPI notes service" --watch 20
-python3 tokugawa.py auto-fetch <run_id> -o out.tar.gz
-python3 tokugawa.py presets                      # recommended + custom
-python3 tokugawa.py preset "Silent Eco"          # apply
-python3 tokugawa.py preset "Idle (timed)" --idle 45
-python3 tokugawa.py settings get auto_management
-python3 tokugawa.py settings set max_concurrent_runs 2
+python3 freeai.py status                       # health + router metrics
+python3 freeai.py models                       # roster
+python3 freeai.py route "Build an API" --profile strict
+python3 freeai.py workflows && python3 freeai.py run full_build --context {"spec":"..."}
+python3 freeai.py auto-start "FastAPI notes service" --watch 20
+python3 freeai.py auto-fetch <run_id> -o out.tar.gz
+python3 freeai.py presets                      # recommended + custom
+python3 freeai.py preset "Silent Eco"          # apply
+python3 freeai.py preset "Idle (timed)" --idle 45
+python3 freeai.py settings get auto_management
+python3 freeai.py settings set max_concurrent_runs 2
 ```
 
 ### 9.8 Watchdogs and systemd Units
 
 | Unit | Role |
 |---|---|
-| tokugawa-stack.service | start.sh: all services, Restart=on-failure |
-| tokugawa-agents.service | health-agent (30s) + recovery-agent (15s) via run-watchdogs.sh |
+| freeai-stack.service | start.sh: all services, Restart=on-failure |
+| freeai-agents.service | health-agent (30s) + recovery-agent (15s) via run-watchdogs.sh |
 | gpu-tune.service | applies eco power/clock at boot, resets on stop |
 | resource-optimizer.service | the AI optimizer loop |
-| tokugawa-cleanup.timer | daily: rotate logs 25MB x5, prune workspaces >7d |
-| tokugawa-backup.timer | weekly: config/registry/manifests snapshot, keep 10 |
+| freeai-cleanup.timer | daily: rotate logs 25MB x5, prune workspaces >7d |
+| freeai-backup.timer | weekly: config/registry/manifests snapshot, keep 10 |
 
 ### 9.9 Backup and Cleanup Maintenance
 
@@ -393,7 +393,7 @@ curl -X POST localhost:8010/route -H "Content-Type: application/json" \
 
 - Explicit `model: "provider/model"` wins over the local chain
 - `fallback: true` providers (config/providers.json) become last-resort after all local GGUFs - GPU down, hosted models take over
-- Dashboard **External AI Providers** panel: keyed badges + live Test pings; CLI: `tokugawa.py providers` / `provider-test groq`
+- Dashboard **External AI Providers** panel: keyed badges + live Test pings; CLI: `freeai.py providers` / `provider-test groq`
 - Streaming: openai-style = true SSE; anthropic/gemini = single-frame
 
 Full per-provider setup (env vars, model slugs, custom/Azure/vLLM entries, cost guardrails): [docs/PROVIDERS.md](docs/PROVIDERS.md).
@@ -538,7 +538,7 @@ Roster (registry/registry.json):
 
 UFW opens only 22/8030/8050. Router (8010) and llama (9001) stay off the public internet by design; reach them via tailnet. noVNC desktop: compose `--profile desktop`, port 6080.
 
-**Public HTTPS:** `--profile tls` serves `https://<host>:8443` (internal cert by default). For a real domain with automatic ACME certs: set `TOKUGAWA_DOMAIN` + `ACME_EMAIL` in `.env`, swap the caddy volume to `docker/Caddyfile.public`, and publish 80/443. The **autonomous API** is reachable through the gateway behind basic auth (`AUTOAUTH_USER`/`AUTOAUTH_HASH` - bcrypt via `docker run --rm caddy caddy hash-password`); dashboard settings writes are blocked at the gateway (LAN/tailnet only).
+**Public HTTPS:** `--profile tls` serves `https://<host>:8443` (internal cert by default). For a real domain with automatic ACME certs: set `FREEAI_DOMAIN` + `ACME_EMAIL` in `.env`, swap the caddy volume to `docker/Caddyfile.public`, and publish 80/443. The **autonomous API** is reachable through the gateway behind basic auth (`AUTOAUTH_USER`/`AUTOAUTH_HASH` - bcrypt via `docker run --rm caddy caddy hash-password`); dashboard settings writes are blocked at the gateway (LAN/tailnet only).
 
 ## 15. Testing and Validation
 
@@ -599,7 +599,7 @@ More: docs/troubleshooting.md.
 Full matrix: [ROADMAP.md](ROADMAP.md). Headliners:
 
 - Codex-class integration epic: MCP server wrapper, approval profiles (suggest/auto/full-auto), diff-based surgical edits, OS-sandbox runner (bwrap/nspawn, network-off), git-native runs - see docs/CODEX-INTEGRATION.md + docs/GAP-ANALYSIS-CODEX.md
-- Distribution: all-inone GHCR image in CI, TokugawaOS Live ISO v0.1 (build script shipped), provider kits (RunPod template, spot-cloud Terraform)
+- Distribution: all-inone GHCR image in CI, FreeAIOS Live ISO v0.1 (build script shipped), provider kits (RunPod template, spot-cloud Terraform)
 - Ops: Prometheus exporter, off-site backup sync (rclone), dashboard auth on write endpoints
 - Agents: prompt-template library, run artifacts panel, two-model review gate, token accounting
 - Models: performance scoring, registry UI
@@ -625,7 +625,7 @@ Full matrix: [ROADMAP.md](ROADMAP.md). Headliners:
 
 ## 21. Help and FAQ
 
-- **Where do I ask?** GitHub Issues on this repo - include `tokugawa.py status` output and relevant logs/ *.log tail.
+- **Where do I ask?** GitHub Issues on this repo - include `freeai.py status` output and relevant logs/ *.log tail.
 - **No GPU, can I try?** Yes: MOCK_LLM=1 runs the entire API surface with canned completions; pytest is fully offline.
 - **Is my model garbage or is the stack?** Check /metrics degenerate_skips - if climbing, the model loops; router already retries the next backend. Verify --jinja and quant tier first.
 - **Windows?** Development-friendly (tests run anywhere python does); serving targets Linux + NVIDIA. WSL2 works for API-only dev with MOCK_LLM.
@@ -642,7 +642,7 @@ License: MIT - see [LICENSE](LICENSE).
 
 ## 23. Acknowledgments
 
-Tokugawa (the router, UI, workflow engine, and autonomous SDLC layer in this repo) is an original project — it is not a fork. It stands on these upstream projects:
+FreeAI (the router, UI, workflow engine, and autonomous SDLC layer in this repo) is an original project — it is not a fork. It stands on these upstream projects:
 
 | Project | Role here |
 |---|---|

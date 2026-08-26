@@ -13,7 +13,7 @@ except ImportError:
     QdrantClient = None
 
 QDRANT_URL = os.environ.get("QDRANT_URL", "http://localhost:6333")
-COLLECTION = "tokugawa_docs"
+COLLECTION = "freeai_docs"
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 120
 

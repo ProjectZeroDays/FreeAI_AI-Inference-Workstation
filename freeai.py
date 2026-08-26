@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tokugawa-cli — control the Unified GPU Inference Stack from a shell."""
+"""freeai-cli — control the Unified GPU Inference Stack from a shell."""
 import argparse
 import json
 import os
@@ -88,7 +88,7 @@ def cmd_auto_start(args):
                     "max_tasks": args.max_tasks,
                     "enable_shell": args.shell})
     print(f"run_id: {body.get('run_id')}")
-    print("poll: tokugawa.py auto-status " + body.get("run_id", ""))
+    print("poll: freeai.py auto-status " + body.get("run_id", ""))
 
 
 def _auto_poll(run_id):
@@ -116,7 +116,7 @@ def cmd_auto_status(args):
         if args.watch > 1:
             _time.sleep(5)
     if body and body.get("artifact"):
-        print(f"artifact: tokugawa.py auto-fetch {args.run_id}")
+        print(f"artifact: freeai.py auto-fetch {args.run_id}")
 
 
 def cmd_auto_runs(_):
@@ -202,7 +202,7 @@ def cmd_settings(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="tokugawa",
+    parser = argparse.ArgumentParser(prog="freeai",
                                      description=__doc__)
     sub = parser.add_subparsers(dest="cmd", required=True)
 

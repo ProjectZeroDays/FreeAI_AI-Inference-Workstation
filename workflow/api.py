@@ -12,7 +12,7 @@ except ImportError:
     from engine import from_definition, to_definition, validate_workflow
     from registry import get_workflow, list_workflows
 
-app = FastAPI(title="Tokugawa Workflow Engine", version="1.1")
+app = FastAPI(title="FreeAI Workflow Engine", version="1.1")
 
 
 class WorkflowRequest(BaseModel):

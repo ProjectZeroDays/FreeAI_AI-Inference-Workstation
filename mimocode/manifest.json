@@ -9,7 +9,7 @@
     { "id": "jcode", "name": "JCode", "port": 5000, "enabled": true }
   ],
   "ui": {
-    "tokugawa": "/workspace/repo/ui/tokugawa.html",
+    "freeai": "/workspace/repo/ui/freeai.html",
     "presets": "/workspace/repo/ui/presets.json"
   }
 }

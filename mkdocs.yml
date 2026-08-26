@@ -1,5 +1,5 @@
 site_name: Unified GPU Inference Stack
-site_description: Tokugawa Router, Agent API, Workflow Engine, Dashboard
+site_description: FreeAI Router, Agent API, Workflow Engine, Dashboard
 nav:
   - Home: index.md
   - Architecture: architecture.md

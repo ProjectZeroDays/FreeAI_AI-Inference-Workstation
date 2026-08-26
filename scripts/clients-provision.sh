@@ -61,7 +61,7 @@ cat > "$HOME/.config/opencode/opencode.json" <<EOF
     },
     "router": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Tokugawa Router",
+      "name": "FreeAI Router",
       "options": { "baseURL": "${ROUTER_API}/v1" },
       "models": { "auto": { "name": "Router Auto" } }
     }

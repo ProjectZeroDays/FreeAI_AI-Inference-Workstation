@@ -1,6 +1,6 @@
 [Unit]
-Description=Tokugawa AI resource optimizer (thermal/power/load balancing)
-After=tokugawa-stack.service gpu-tune.service
+Description=FreeAI AI resource optimizer (thermal/power/load balancing)
+After=freeai-stack.service gpu-tune.service
 
 [Service]
 Type=simple

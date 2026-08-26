@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tokugawa Router — task classification + fallback routing.
+"""FreeAI Router — task classification + fallback routing.
 
 Features:
 - Task classification with confidence score

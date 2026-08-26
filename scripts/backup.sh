@@ -53,7 +53,7 @@ case "${1:-backup}" in
     echo "[backup] restoring from $FILE into $ROOT"
     tar -xzf "$FILE" -C "$ROOT"
     echo "[backup] done. Restart the stack to pick up changes:"
-    echo "  sudo systemctl restart tokugawa-stack"
+    echo "  sudo systemctl restart freeai-stack"
     ;;
 
   list)

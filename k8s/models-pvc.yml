@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: llama-models
-  namespace: tokugawa-stack
+  namespace: freeai-stack
 spec:
   accessModes:
     - ReadWriteOnce

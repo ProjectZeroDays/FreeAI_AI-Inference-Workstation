@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Housekeeping: rotate logs, prune old autonomous workspaces + artifacts.
-# Designed for a systemd timer (tokugawa-cleanup.timer) or cron.
+# Designed for a systemd timer (freeai-cleanup.timer) or cron.
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

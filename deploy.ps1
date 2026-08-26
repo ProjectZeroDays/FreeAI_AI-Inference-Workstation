@@ -1,18 +1,18 @@
 # Remote SSH deploy: copy the repo to a Linux host and provision it.
 # Usage:
-#   .\deploy.ps1 -Hostname 1.2.3.4 [-Port 22] [-User root] [-TargetDir /opt/tokugawa] [-NoStart]
+#   .\deploy.ps1 -Hostname 1.2.3.4 [-Port 22] [-User root] [-TargetDir /opt/freeai] [-NoStart]
 param(
   [Parameter(Mandatory=$true)][string]$Hostname,
   [int]$Port = 22,
   [string]$User = "root",
-  [string]$TargetDir = "/opt/tokugawa",
+  [string]$TargetDir = "/opt/freeai",
   [switch]$NoStart
 )
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$bundle = Join-Path $env:TEMP "tokugawa-deploy-$stamp.tar.gz"
+$bundle = Join-Path $env:TEMP "freeai-deploy-$stamp.tar.gz"
 
 Write-Host "[deploy] packing repo (excluding venv/models/git)..."
 tar --exclude='./.git' --exclude='./venv' --exclude='./.venv-vllm' `
@@ -35,5 +35,5 @@ ssh -t -p $Port "$User@$Hostname" "cd $TargetDir/hardware && $envFlag ./install-
 
 Write-Host ""
 Write-Host "[deploy] done. Verify:"
-Write-Host "  ssh -p $Port ${User}@${Hostname} 'python3 $TargetDir/tokugawa.py status'"
+Write-Host "  ssh -p $Port ${User}@${Hostname} 'python3 $TargetDir/freeai.py status'"
 Write-Host "  dashboard: http://${Hostname}:8030"

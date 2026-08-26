@@ -1,5 +1,5 @@
 [Unit]
-Description=Tokugawa weekly config/run-manifest backup
+Description=FreeAI weekly config/run-manifest backup
 
 [Service]
 Type=oneshot

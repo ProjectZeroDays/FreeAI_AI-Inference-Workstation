@@ -7,11 +7,11 @@ Status legend: ✅ implemented · 🔜 planned (with approach sketched) ·
 
 | Item | Status | Notes |
 |---|---|---|
-| Config/registry/manifest backups w/ retention | ✅ | `scripts/backup.sh` (+ `restore` mode), weekly `tokugawa-backup.timer` |
-| Daily log rotation + workspace pruning | ✅ | `scripts/cleanup.sh`, `tokugawa-cleanup.timer` |
+| Config/registry/manifest backups w/ retention | ✅ | `scripts/backup.sh` (+ `restore` mode), weekly `freeai-backup.timer` |
+| Daily log rotation + workspace pruning | ✅ | `scripts/cleanup.sh`, `freeai-cleanup.timer` |
 | Model-download disk preflight | ✅ | aborts before filling the models SSD |
 | Port-collision preflight at `start.sh` | ✅ | fails fast with clear message (`ALLOW_PORT_REUSE=1` overrides) |
-| Off-site backup sync (rclone → S3/B2) | 🔜 | wrap `backup.sh` output: `rclone copy backups/ remote:tokugawa-backups` after tar; add `BACKUP_REMOTE` env |
+| Off-site backup sync (rclone → S3/B2) | 🔜 | wrap `backup.sh` output: `rclone copy backups/ remote:freeai-backups` after tar; add `BACKUP_REMOTE` env |
 | Restore drill in CI | 🕐 | needs a disposable runner with the stack |
 
 ## 2. Live dashboard / control plane
@@ -20,7 +20,7 @@ Status legend: ✅ implemented · 🔜 planned (with approach sketched) ·
 |---|---|---|
 | Presets (4 recommended + custom CRUD) | ✅ | `/api/presets*` |
 | Timed idle window w/ auto-restore | ✅ | optimizer lifecycle, survives restarts |
-| Settings change push to all dashboards | ✅ | SSE `/api/events` (version-bumped), Tokugawa UI follows on next phase |
+| Settings change push to all dashboards | ✅ | SSE `/api/events` (version-bumped), FreeAI UI follows on next phase |
 | Router live metrics on dashboard | ✅ | `/api/status` embeds router `/metrics` |
 | Model shelf (registry vs disk) | ✅ | `/api/models-status`: present/missing + free disk |
 | Security headers | ✅ | nosniff / frame-deny / referrer-policy |
@@ -47,7 +47,7 @@ fallback retry, `install.sh --update-llama`.
 | Item | Status | Notes |
 |---|---|---|
 | Makefile (test/lint/up/down/backup/update) | ✅ | single entry point |
-| CLI presets/settings commands | ✅ | `tokugawa.py presets/preset/settings` |
+| CLI presets/settings commands | ✅ | `freeai.py presets/preset/settings` |
 | GitHub Pages docs publish (MkDocs) | 🔜 | `.github/workflows/docs-pages.yml`: `mkdocs gh-deploy` on main |
 | Image size diet (slim llama build stage) | ✅ | multi-stage all-in-one: devel→runtime, ~60% smaller; llama/Dockerfile too |
 | Prometheus exporter endpoint | 🕐 | translate `/metrics` JSON to text format |

@@ -1,6 +1,6 @@
 # External AI Providers — Connect Any Hosted Model
 
-The Tokugawa Router bridges **21+ hosted AI APIs** into the same
+The FreeAI Router bridges **21+ hosted AI APIs** into the same
 routing, caching, metrics, and fallback fabric as your local GGUFs.
 Three wire styles cover effectively every host on the market:
 
@@ -151,7 +151,7 @@ curl -X POST http://localhost:8010/route -H "Content-Type: application/json" -d 
 - Dashboard → **External AI Providers** panel: keyed/no-key badges,
   fallback flags, per-provider **Test** button (live `pong` ping with
   latency).
-- CLI: `tokugawa.py providers` and `tokugawa.py provider-test groq`.
+- CLI: `freeai.py providers` and `freeai.py provider-test groq`.
 
 ## Security & cost guardrails
 
@@ -169,7 +169,7 @@ curl -X POST http://localhost:8010/route -H "Content-Type: application/json" -d 
 | Symptom | Fix |
 |---|---|
 | Provider shows NO KEY | export its env var, restart router |
-| 401 from provider | key invalid/expired; `tokugawa.py provider-test <name>` |
+| 401 from provider | key invalid/expired; `freeai.py provider-test <name>` |
 | model not found | provider model id mismatch — check provider docs, use exact slug |
 | slow first call | cold-start on host side; router timeout default 300s |
 | want local-only | set `"enabled": false` per provider or delete from providers.json |
