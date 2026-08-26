@@ -28,6 +28,7 @@ jobs:
               --exclude='./models/*.gguf' \
               --exclude='./workspaces' \
               --exclude='./backups' \
+              --exclude='./dist' \
               -czf "dist/unified-ai-stack-${GITHUB_REF_NAME}.tar.gz" .
 
       - name: Docs bundle (MkDocs-ready sources)

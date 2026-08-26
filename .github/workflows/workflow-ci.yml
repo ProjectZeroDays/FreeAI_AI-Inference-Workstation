@@ -45,8 +45,11 @@ jobs:
           sys.path.insert(0, "router")
           from classifier import classify_task
           from switcher import select_model
-          t = classify_task("Build a production API service")
-          assert t == "full_project"
+          result = classify_task("Build a production API service")
+          # classifier returns (task_type, confidence) tuple
+          t = result[0] if isinstance(result, tuple) else result
+          print(f"classify_task returned: {result}")
+          assert t == "full_project", f"expected full_project got {t}"
           assert select_model(t)["role"] == "primary_coder"
 
           print("Workflow smoke test OK")
