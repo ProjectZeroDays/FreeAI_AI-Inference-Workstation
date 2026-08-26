@@ -19,8 +19,9 @@ jobs:
 
       - name: Fetch Ubuntu 24.04 live-server ISO
         run: |
-          # pin the point release; bump when 24.04.x moves
-          URL="https://releases.ubuntu.com/24.04/ubuntu-24.04.2-live-server-amd64.iso"
+          ISO=$(curl -s https://releases.ubuntu.com/24.04/ | grep -o 'ubuntu-24\.04\.[0-9]*-live-server-amd64\.iso' | sort -V | tail -n1)
+          URL="https://releases.ubuntu.com/24.04/${ISO}"
+          echo "Downloading $URL"
           wget -q --show-progress -O /mnt/iso-work/ubuntu.iso "$URL"
           ls -lh /mnt/iso-work/ubuntu.iso
 
