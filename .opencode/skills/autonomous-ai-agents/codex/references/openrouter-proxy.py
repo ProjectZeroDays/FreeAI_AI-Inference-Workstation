@@ -11,7 +11,7 @@ import sys
 import os
 
 # Configuration - modify these values
-API_KEY = os.environ.get('OPENROUTER_API_KEY', 'REDACTED
+API_KEY = os.environ.get('OPENROUTER_API_KEY', 'REDACTED')
 OPENROUTER_BASE = os.environ.get('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')
 LISTEN_HOST = os.environ.get('OPENROUTER_PROXY_HOST', 'localhost')
 LISTEN_PORT = int(os.environ.get('OPENROUTER_PROXY_PORT', '8080'))

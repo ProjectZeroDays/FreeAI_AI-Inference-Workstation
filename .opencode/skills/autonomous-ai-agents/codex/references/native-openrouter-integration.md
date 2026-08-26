@@ -45,7 +45,7 @@ Instead of using a localhost proxy, we'll modify the binary to point directly to
 
 ### Phase 2: Inject OpenRouter Authentication Headers
 Modify the header construction logic to always include:
-- `Authorization: Bearer REDACTED
+- `Authorization: Bearer REDACTED`
 - `HTTP-Referer: https://hermes.ai`
 - `X-Title: Hermes-Agent`
 
@@ -182,7 +182,7 @@ Look for where the Authorization header is built:
 #### 2.4 Implement Header Injection
 At the header construction point:
 1. Instead of copying getenv result, copy our hardcoded key
-2. Always append "Authorization: Bearer REDACTED
+2. Always append "Authorization: Bearer REDACTED"
 3. Always append "HTTP-Referer: https://hermes.ai" 
 4. Always append "X-Title: Hermes-Agent"
 5. Skip the original getenv call for API key

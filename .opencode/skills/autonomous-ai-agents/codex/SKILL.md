@@ -135,14 +135,14 @@ export OPENAI_API_KEY="your-openrouter-api-key"
 name = "poolside/laguna-xs.2:free"
 provider = "openrouter"
 base_url = "https://openrouter.ai/api/v1"
-api_key = "REDACTED
+api_key = "REDACTED"
 ```
 
 ### Command-line Override
 ```bash
 codex -c model.name="poolside/laguna-xs.2:free" \\\\
       -c model.base_url="https://openrouter.ai/api/v1" \\\\
-      -c model.api_key="REDACTED \\\\
+      -c model.api_key="REDACTED" \\\\
       exec "your task"
 ```
 
@@ -159,10 +159,10 @@ For truly seamless OpenRouter integration that feels native to the application (
 - **Bytes Following Original**: `73 69 7a 65 20 6f 76 65 72` (ASCII: " size over" - start of "size overflows MAX_SIZE...")
 - **OpenRouter String**: `https://openrouter.ai/api/v1` (28 bytes) - requires 4 extra bytes
 - **User's OpenRouter Credentials** (from session):
-  - API Key: `REDACTED
+  - API Key: `REDACTED`
   - Base URL: `https://openrouter.ai/api/v1`
   - Required Headers: 
-    - `Authorization: Bearer REDACTED
+    - `Authorization: Bearer REDACTED`
     - `HTTP-Referer: https://hermes.ai`
     - `X-Title: Hermes-Agent`
 
@@ -188,7 +188,7 @@ For truly seamless OpenRouter integration that feels native to the application (
 3. **Patch HTTP header construction** (for truly native Option A solution):
    - Locate where Authorization, User-Agent, Referer headers are constructed (search for string constants)
    - Patch to inject OpenRouter-required headers when destination matches OpenRouter pattern:
-     * `Authorization: Bearer REDACTED
+     * `Authorization: Bearer REDACTED`
      * `HTTP-Referer: https://hermes.ai` 
      * `X-Title: Hermes-Agent`
    - For Option B, the forwarder handles header injection automatically

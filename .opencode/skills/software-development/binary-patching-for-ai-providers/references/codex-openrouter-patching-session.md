@@ -143,7 +143,7 @@ The proxy uses Node.js built-in `http`/`https` modules:
 {
   "config": {
     "openrouter": {
-      "apiKey": "REDACTED
+      "apiKey": "REDACTED",
       "models": ["poolside/laguna-xs.2:free", "baidu/cobuddy:free", ...],
       "defaultModel": "nvidia/nemotron-3-super-120b-a12b:free",
       "proxyPort": 8080
@@ -224,7 +224,7 @@ console.log('âœ… Configuration patched successfully');
 The `~/.codex/config.toml` structure for OpenRouter:
 ```toml
 [model_provider_configs.openrouter]
-api_key = "REDACTED
+api_key = "REDACTED"
 base_url = "https://openrouter.ai/api/v1"
 
 [profiles.openrouter-free]

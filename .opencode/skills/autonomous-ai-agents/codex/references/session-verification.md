@@ -24,7 +24,7 @@
 
 ### Header Requirements for OpenRouter
 Based on OpenRouter API documentation and session requirements:
-- **Authorization**: `Bearer REDACTED
+- **Authorization**: `Bearer REDACTED`
 - **HTTP-Referer**: `https://hermes.ai`
 - **X-Title**: `Hermes-Agent`
 - **Content-Type**: `application/json` (for POST requests)

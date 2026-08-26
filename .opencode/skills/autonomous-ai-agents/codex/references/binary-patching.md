@@ -35,7 +35,7 @@ Check what comes before and after the string:
 - Before: `...struct ModelProviderInfo...`
 - After: `...size overflows MAX_SIZE...`
 
-### 5. Patch the String (Length-Sensitive)\n**Critical**: Replacement must be SAME LENGTH or SHORTER\n\nOriginal: `https://api.openai.com/v1` (24 bytes)\n\n**Option A: Local Proxy** (Same length replacement)\n```\nhttps://localhost:8080/v1  (24 bytes - perfect fit)\n```\n\n**Option B: Shorter domain with DNS**\n```\nhttps://or.ai/v1             (15 bytes - pad with nulls)\n```\n\n**Option C: Jump to new string** (Advanced - User Preferred)\nFind free space in .rodata section, write new string there, patch pointer\n- **User's Verified Approach**: Patch to OpenRouter URL with header injection\n- **OpenRouter URL**: `https://openrouter.ai/api/v1` (28 bytes - requires jumping)\n- **Jump Technique**: Allocate space in .rodata, write URL there, redirect pointers\n\n### 5.1 Verified User Session Details\nFrom the session, the user successfully patched the Codex binary using:\n- **API Endpoint Offset**: 0xa46bd4c\n- **Original Bytes**: `68 74 74 70 73 3a 2f 2f 61 70 69 2e 6f 70 65 6e 61 69 2e 63 6f 6d 2f 76 31` (https://api.openai.com/v1)\n- **Following Bytes**: `73 69 7a 65 20 6f 76 65 72` (ASCII: " size over" - start of "size overflows MAX_SIZE...")\n- **Target OpenRouter URL**: `https://openrouter.ai/api/v1`\n- **API Key**: `REDACTED **Required Headers**:\n  - `Authorization: Bearer REDACTED  - `HTTP-Referer: https://hermes.ai`\n  - `X-Title: Hermes-Agent`\n\n**User's Preferred Method**: Native binary modification without external proxies or environment variables, achieved through Ghidra string patching and header construction modification.
+### 5. Patch the String (Length-Sensitive)\n**Critical**: Replacement must be SAME LENGTH or SHORTER\n\nOriginal: `https://api.openai.com/v1` (24 bytes)\n\n**Option A: Local Proxy** (Same length replacement)\n```\nhttps://localhost:8080/v1  (24 bytes - perfect fit)\n```\n\n**Option B: Shorter domain with DNS**\n```\nhttps://or.ai/v1             (15 bytes - pad with nulls)\n```\n\n**Option C: Jump to new string** (Advanced - User Preferred)\nFind free space in .rodata section, write new string there, patch pointer\n- **User's Verified Approach**: Patch to OpenRouter URL with header injection\n- **OpenRouter URL**: `https://openrouter.ai/api/v1` (28 bytes - requires jumping)\n- **Jump Technique**: Allocate space in .rodata, write URL there, redirect pointers\n\n### 5.1 Verified User Session Details\nFrom the session, the user successfully patched the Codex binary using:\n- **API Endpoint Offset**: 0xa46bd4c\n- **Original Bytes**: `68 74 74 70 73 3a 2f 2f 61 70 69 2e 6f 70 65 6e 61 69 2e 63 6f 6d 2f 76 31` (https://api.openai.com/v1)\n- **Following Bytes**: `73 69 7a 65 20 6f 76 65 72` (ASCII: " size over" - start of "size overflows MAX_SIZE...")\n- **Target OpenRouter URL**: `https://openrouter.ai/api/v1`\n- **API Key**: `REDACTED`\n- **Required Headers**:\n  - `Authorization: Bearer REDACTED`\n  - `HTTP-Referer: https://hermes.ai`\n  - `X-Title: Hermes-Agent`\n\n**User's Preferred Method**: Native binary modification without external proxies or environment variables, achieved through Ghidra string patching and header construction modification.
 
 ### 6. Performing the Patch in Ghidra
 1. Navigate to the string address
@@ -68,7 +68,7 @@ Replace with target model (ensure length compatibility):
 **Option B: Hardcode API Key**
 - Find writable data section (.data or .bss)
 - Locate free space
-- Insert API key: `REDACTED
+- Insert API key: `REDACTED`
 - Patch getenv call to return pointer to your hardcoded key
 
 **Option C: Redirect Auth Header**
@@ -106,7 +106,7 @@ Create a simple Python proxy that runs on localhost:8080 and forwards to OpenRou
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import urllib.request
 
-API_KEY = "REDACTED
+API_KEY = "REDACTED"
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 class OpenRouterProxy(BaseHTTPRequestHandler):

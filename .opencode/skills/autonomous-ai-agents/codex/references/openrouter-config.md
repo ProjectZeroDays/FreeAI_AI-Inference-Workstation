@@ -7,7 +7,7 @@
   - https://openrouter.ai/api/v1/models
 
 ## Authentication
-- **API Key Format**: REDACTED string]
+- **API Key Format**: REDACTED_API_KEY
 - **Header**: Authorization: Bearer REDACTED
 - **Environment Variable**: OPENAI_API_KEY (Codex uses OpenAI-compatible env vars)
 
@@ -21,7 +21,7 @@
 ### 1. Environment Variables (Recommended)
 ```bash
 export OPENAI_API_BASE_URL="https://openrouter.ai/api/v1"
-export OPENAI_API_KEY="REDACTED
+export OPENAI_API_KEY="REDACTED"
 ```
 
 ### 2. Config File (~/.codex/config.toml)
@@ -30,7 +30,7 @@ export OPENAI_API_KEY="REDACTED
 name = "nvidia/nemotron-3-super-120b-a12b:free"
 provider = "openrouter" 
 base_url = "https://openrouter.ai/api/v1"
-api_key = "REDACTED
+api_key = "REDACTED"
 ```
 
 ### 3. Command-line Override
@@ -38,7 +38,7 @@ api_key = "REDACTED
 codex -c model.name="nvidia/nemotron-3-super-120b-a12b:free" \\
       -c model.provider="openrouter" \\
       -c model.base_url="https://openrouter.ai/api/v1" \\
-      -c model.api_key="REDACTED \\
+      -c model.api_key="REDACTED" \\
       exec "your prompt here"
 ```
 
@@ -76,6 +76,6 @@ Test configuration with:
 codex -c model.name="nvidia/nemotron-3-super-120b-a12b:free" \\
       -c model.provider="openrouter" \\
       -c model.base_url="https://openrouter.ai/api/v1" \\
-      -c model.api_key="REDACTED \\
+      -c model.api_key="REDACTED" \\
       exec "Say 'Hello World' in Python"
 ```

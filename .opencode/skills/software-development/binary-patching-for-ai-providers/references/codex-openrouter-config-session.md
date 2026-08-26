@@ -24,7 +24,7 @@ Configuration-based integration of OpenRouter with Codex CLI, replacing binary p
   },
   "config": {
     "openrouter": {
-      "apiKey": "REDACTED
+      "apiKey": "REDACTED",
       "models": [
         "poolside/laguna-xs.2:free",
         "baidu/cobuddy:free",
@@ -48,7 +48,7 @@ Main CLI entry point - loads config and provides interactive chat.
 Generated configuration file:
 ```toml
 [model_provider_configs.openrouter]
-api_key = "REDACTED
+api_key = "REDACTED"
 base_url = "https://openrouter.ai/api/v1"
 
 [profiles.openrouter-free]

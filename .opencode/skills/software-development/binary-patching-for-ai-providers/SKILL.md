@@ -233,7 +233,7 @@ const CONFIG_DIR = path.join(os.homedir(), '.codex');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.toml');
 
 // Configuration values from package.json or environment
-const API_KEY = "REDACTED
+const API_KEY = "REDACTED";
 const DEFAULT_MODEL = 'poolside/laguna-xs.2:free';
 
 // Ensure directory exists
@@ -308,7 +308,7 @@ const CONFIG_PATH = path.join(os.homedir(), '.codex', 'config.toml');
 The `~/.codex/config.toml` structure for OpenRouter:
 ```toml
 [model_provider_configs.openrouter]
-api_key = "REDACTED
+api_key = "REDACTED"
 base_url = "https://openrouter.ai/api/v1"
 
 [profiles.openrouter-free]
