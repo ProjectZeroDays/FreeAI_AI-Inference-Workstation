@@ -223,11 +223,17 @@ above works today; clearing billing turns on `docker-publish`, `release`, and
 
 | Tier | GPU VRAM | RAM | Storage | What runs |
 |---|---|---|---|---|
-| Floor | 8 GB (RTX 3060 Ti / 4060) | 32 GB | 500 GB SSD | Qwen3.5-9B Q4_K, short ctx, 1-2 agents |
-| **Recommended** | 16 GB (RTX 4070 Ti SUPER / 4080) | 64 GB DDR5-6000 | 1 TB OS + 2 TB models | All 3 roster models Q6_K, full SDLC loops 24/7 |
-| Headroom | 24 GB (RTX 4090 / 3090) | 96-128 GB | +4 TB models | Larger coders, vLLM coexistence |
+| Floor | 8 GB (RTX 3060 Ti / 4060) | 32 GB | 500 GB SSD | Subset of roster Q4_K (9B-class), short ctx, 1-2 agents |
+| **Recommended** | 16 GB (RTX 4070 Ti SUPER / 4080) | 64 GB DDR5-6000 | 1 TB OS + 2 TB models | Full 8-model roster Q6_K on disk w/ instant hot-swap (`/admin/model-switch`; `--profile llama2` keeps a 2nd shard resident), full SDLC loops 24/7 |
+| Headroom | 24 GB (RTX 4090 / 3090) | 96-128 GB | +4 TB models | Larger coders + MTP speculative decoding, vLLM coexistence |
 
 Verified parts list (MPN/ASIN): [hardware/parts-list.md](hardware/parts-list.md) - assembly: [hardware/BUILD.md](hardware/BUILD.md) - build-vs-cloud economics: [hardware/LOCAL-DEPLOY.md](hardware/LOCAL-DEPLOY.md).
+
+Model selection at a glance — full roster in the Tokugawa UI picker, live model shelf on the dashboard (see §2 for captions):
+
+| Tokugawa UI - 8-model roster picker | Dashboard - model shelf |
+|---|---|
+| ![8-model roster picker](docs/screenshots/tokugawa-ui.png) | ![Model shelf](docs/screenshots/dashboard-full.png) |
 
 ## 8. Install and Deploy Handbook
 
