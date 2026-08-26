@@ -69,6 +69,11 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Boot menu](docs/screenshots/boot-menu.png) |
 | Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
 
+| tokugawa-cli | tokugawa-cli providers + live test |
+|---|---|
+| ![CLI](docs/screenshots/cli.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
+| Real --help output: 14 subcommands | Real `providers` listing + `provider-test openai` |
+
 | Tokugawa Dashboard - active load | Dashboard - timed idle window |
 |---|---|
 | ![Dashboard active](docs/screenshots/dashboard.png) | ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
@@ -78,11 +83,6 @@ The stack answers one question: *how do I run capable coding models on my own GP
 |---|---|
 | ![Tokugawa UI](docs/screenshots/tokugawa-ui.png) | ![UI output](docs/screenshots/tokugawa-ui-output.png) |
 | Model presets + agent picker + prompt console | Router response: model_used, task_type, confidence, elapsed_ms |
-
-| tokugawa-cli | tokugawa-cli providers + live test |
-|---|---|
-| ![CLI](docs/screenshots/cli.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
-| Real --help output: 14 subcommands | Real `providers` listing + `provider-test openai` |
 
 | Workflow Designer | External Providers panel |
 |---|---|
