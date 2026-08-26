@@ -17,6 +17,9 @@ nav:
   - WebSocket: WEBSOCKET.md
   - Troubleshooting: TROUBLESHOOTING.md
   - Enhancement Plan: ENHANCEMENT-PLAN.md
+  - Codex Integration: CODEX-INTEGRATION.md
+  - Deployment Plans: DEPLOYMENT-PLANS.md
+  - Gap Analysis: GAP-ANALYSIS-CODEX.md
 use_directory_urls: false
 theme:
   name: mkdocs
