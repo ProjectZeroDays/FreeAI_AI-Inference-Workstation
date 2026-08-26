@@ -446,3 +446,92 @@ def purple_team_agent(request: Request, req: PurpleTeamRequest):
         _remember(req.session_id, "assistant", str(result.get("response",""))[:2000])
     return {**result, "team": "purple", "operation": op, "model": uncensored_model}
 
+
+# ── Unified AI Dev Environment Endpoints ─────────────────────────────
+
+@app.get("/env/status")
+def env_status():
+    """System health for the unified AI dev environment."""
+    from agents.agent_bridge import get_bridge
+    bridge = get_bridge()
+    from agents.llm_proxy import health as proxy_health
+    proxy = proxy_health()
+    stats = bridge.stats()
+    return {
+        "proxy": proxy,
+        "agents": stats["agents"],
+        "memory": stats["memory"],
+        "plugins": stats["plugins"],
+        "skills": stats["skills"],
+    }
+
+
+@app.post("/env/chat")
+def env_chat(req: OrchestratorSpec):
+    """Unified chat endpoint — auto-routes to best agent."""
+    from agents.agent_bridge import get_bridge
+    bridge = get_bridge()
+    agent = req.agent_hint or bridge.route_to_agent(req.prompt)
+    result = bridge.execute_with_agent(
+        req.prompt, agent=agent, session_id=req.session_id)
+    return result
+
+
+@app.get("/env/agents")
+def env_agents():
+    """List all specialized agents with their models."""
+    from agents.specialized_agents import AGENT_MODELS, AGENT_PROMPTS
+    out = {}
+    for name, model in AGENT_MODELS.items():
+        prompt = AGENT_PROMPTS.get(name, "")
+        desc = prompt.split("\n")[1].strip() if prompt else ""
+        out[name] = {"model": model, "description": desc}
+    return out
+
+
+@app.get("/env/plugins")
+def env_plugins(category: str = None):
+    """List plugins from the registry."""
+    from agents.plugin_registry import get_registry
+    registry = get_registry()
+    plugins = registry.list_plugins(category=category)
+    return {"plugins": plugins[:50]}
+
+
+@app.post("/env/plugins/{name}/install")
+def env_install_plugin(name: str):
+    """Install a plugin by name."""
+    from agents.plugin_registry import get_registry
+    registry = get_registry()
+    return registry.install_plugin(name)
+
+
+@app.get("/env/skills")
+def env_skills(query: str = None):
+    """Search or list skills."""
+    from agents.plugin_registry import get_loader
+    loader = get_loader()
+    if query:
+        matches = loader.match_skills(query)
+        return {"skills": matches}
+    skills = loader.list_skills()
+    return {"skills": skills[:50]}
+
+
+@app.get("/env/memory/{session_id}")
+def env_memory(session_id: str):
+    """Recall memory for a session."""
+    from agents.agent_zero_memory import get_store
+    store = get_store()
+    entries = store.recall(session_id, limit=20)
+    return {"session": session_id, "entries": entries}
+
+
+@app.post("/env/memory/search")
+def env_memory_search(req: AnalysisSpec):
+    """Search global knowledge base."""
+    from agents.agent_zero_memory import get_store
+    store = get_store()
+    results = store.search_global(req.question, limit=10)
+    return {"results": results}
+

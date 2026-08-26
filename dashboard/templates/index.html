@@ -27,6 +27,8 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
         <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
         <a href="#files" class="nav-item"><span class="nav-dot"></span> Files</a>
       </div>
@@ -170,6 +172,49 @@
               <label for="max-runs">Max concurrent SDLC runs</label>
               <input type="number" id="max-runs" min="1" max="16" />
               <span class="muted">(enforced live by the autonomous API)</span>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Knight-Shade Browser <span class="muted">(save applies to config/browser.json)</span></legend>
+            <div class="row">
+              <label class="chk"><input type="checkbox" id="br-stealth" checked /> Stealth mode</label>
+              <label class="chk"><input type="checkbox" id="br-cdp" checked /> CDP access</label>
+              <label class="chk"><input type="checkbox" id="br-healing" checked /> Self-healing</label>
+              <label class="chk"><input type="checkbox" id="br-manifestx" checked /> Manifest-X extensions</label>
+            </div>
+            <div class="row">
+              <label for="br-mode">Anonymity mode</label>
+              <select id="br-mode">
+                <option value="none">None (direct)</option>
+                <option value="tor">Tor</option>
+                <option value="vpn">VPN (WireGuard)</option>
+                <option value="shadowsocks">Shadowsocks</option>
+                <option value="mix">Full stack (mix)</option>
+              </select>
+              <label for="br-headless">Headless</label>
+              <input type="checkbox" id="br-headless" checked />
+            </div>
+            <div class="row">
+              <label for="br-retries">Max healing retries</label>
+              <input type="number" id="br-retries" min="1" max="20" value="5" />
+              <label for="br-backoff">Retry backoff (s)</label>
+              <input type="number" id="br-backoff" min="0.5" max="10" step="0.5" value="1.5" />
+              <label for="br-viewport-w">Viewport W</label>
+              <input type="number" id="br-viewport-w" min="320" max="3840" value="1920" />
+              <label for="br-viewport-h">Viewport H</label>
+              <input type="number" id="br-viewport-h" min="240" max="2160" value="1080" />
+            </div>
+            <div class="row">
+              <label class="chk"><input type="checkbox" id="br-screenshot-fail" checked /> Screenshot on heal fail</label>
+              <label class="chk"><input type="checkbox" id="br-scroll-view" checked /> Scroll into view on retry</label>
+              <label class="chk"><input type="checkbox" id="br-adaptive-sel" checked /> Adaptive selectors</label>
+              <label class="chk"><input type="checkbox" id="br-dom-mirror" /> DOM mirror (observability)</label>
+            </div>
+            <div class="row">
+              <label for="br-port">Browser API port</label>
+              <input type="number" id="br-port" min="1024" max="65535" value="8180" />
+              <span class="muted">(restart required for port change)</span>
             </div>
           </fieldset>
 
