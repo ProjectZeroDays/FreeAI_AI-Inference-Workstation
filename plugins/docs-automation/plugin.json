@@ -1,0 +1,11 @@
+{
+  "name": "docs-automation",
+  "version": "1.0.0",
+  "description": "Expert docs automation — wiki, readme, API docs, and changelog generation for FreeAI",
+  "author": "FreeAI",
+  "license": "MIT",
+  "opencode": ">=1.18.0",
+  "agents": ["expert-wiki", "expert-readme", "docs-architect"],
+  "skills": ["expert-wiki", "expert-readme", "documentation-generator"],
+  "mcp": ["mcp-docs"]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Superpowers"
+  short_description: "Spec-first TDD workflow"
+  default_prompt: "Use $superpowers to follow a spec-first TDD workflow for a feature, bug, or branch finish."

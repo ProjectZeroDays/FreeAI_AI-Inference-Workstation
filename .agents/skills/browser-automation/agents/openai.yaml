@@ -1,0 +1,4 @@
+interface:
+  display_name: "Browser Automation"
+  short_description: "Drive browser workflows by CLI"
+  default_prompt: "Use $browser-automation to navigate a site, extract data, or interact with a web app from Codex."

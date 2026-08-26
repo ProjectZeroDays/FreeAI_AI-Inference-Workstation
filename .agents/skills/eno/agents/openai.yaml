@@ -1,0 +1,4 @@
+interface:
+  display_name: "ENO Architecture Analyzer"
+  short_description: "Frontend architecture analysis"
+  default_prompt: "Use $eno to evaluate a frontend architecture, tech stack, components, build setup, or monorepo."

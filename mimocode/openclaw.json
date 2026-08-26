@@ -1,0 +1,8 @@
+{
+  "id": "openclaw",
+  "name": "OpenClaw",
+  "type": "web",
+  "port": 7002,
+  "url": "/openclaw",
+  "enabled": true
+}

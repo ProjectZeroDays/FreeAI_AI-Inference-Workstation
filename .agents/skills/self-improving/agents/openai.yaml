@@ -1,0 +1,4 @@
+interface:
+  display_name: "Self Improving"
+  short_description: "Self-reflection and correction memory"
+  default_prompt: "Use $self-improving after a correction, failure, outdated assumption, or reusable lesson."

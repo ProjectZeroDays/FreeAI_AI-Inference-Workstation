@@ -1,0 +1,35 @@
+{
+  "name": "codex-openrouter-patcher",
+  "version": "1.0.0",
+  "description": "Postinstall script to patch Codex binary for OpenRouter integration",
+  "main": "postinstall.js",
+  "scripts": {
+    "postinstall": "node postinstall.js",
+    "patch": "node postinstall.js",
+    "proxy": "node openrouter-proxy.js",
+    "start-proxy": "node openrouter-proxy.js"
+  },
+  "keywords": [
+    "codex",
+    "openrouter",
+    "patch",
+    "openai",
+    "binary",
+    "reverse-engineering"
+  ],
+  "author": "Hermes-Agent",
+  "license": "MIT",
+  "dependencies": {},
+  "config": {
+    "openrouter": {
+      "apiKey": "YOUR_API_KEY_HERE",
+      "models": [
+        "poolside/laguna-xs.2:free",
+        "baidu/cobuddy:free",
+        "nvidia/nemotron-3-super-120b-a12b:free"
+      ],
+      "defaultModel": "nvidia/nemotron-3-super-120b-a12b:free",
+      "proxyPort": 8080
+    }
+  }
+}

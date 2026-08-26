@@ -1,0 +1,3 @@
+display_name: "TDD Framework Restoration"
+short_description: "Restores missing components using a strict Fail -> Implement -> Pass TDD cycle."
+default_prompt: "Restore the [component] using a TDD approach. Start by writing a failing test for the first requirement, then implement the minimum logic to pass it."

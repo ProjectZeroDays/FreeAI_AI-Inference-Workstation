@@ -1,0 +1,4 @@
+interface:
+  display_name: "PexoAI Agent"
+  short_description: "Generate multi-shot videos"
+  default_prompt: "Use $pexoai-agent to create a multi-shot video from text, images, URLs, scripts, or audio."

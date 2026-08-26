@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deep Research Pro"
+  short_description: "Cited multi-source research"
+  default_prompt: "Use $deep-research-pro to plan and produce a cited multi-source research report."

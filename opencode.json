@@ -1,0 +1,5047 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "freeai/qwen3.6-12b-heretic",
+  "small_model": "freeai/qwythos-v2-9b",
+  "provider": {
+    "freeai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "FreeAI Router (Uncensored Heretic Pool)",
+      "options": {
+        "baseURL": "http://localhost:8010/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "qwen3.6-12b-heretic": {
+          "name": "Qwen3.6 12B Heretic Uncensored (Primary Coder)"
+        },
+        "qwen3.6-12b": {
+          "name": "Qwen3.6 12B Alias"
+        },
+        "claude-code-9b": {
+          "name": "CodeClawd Qwen3.5 9B Claude Code (Heretic)"
+        },
+        "claude-code-9b-abliterated": {
+          "name": "Claude Code 9B Abliterated"
+        },
+        "qwythos-v2-9b": {
+          "name": "Qwythos v2 9B FTPO 1M"
+        },
+        "qwythos-9b": {
+          "name": "Qwythos 9B Mythos 1M"
+        },
+        "qwable-9b": {
+          "name": "Qwable 9B Fable 5"
+        },
+        "qwen3.5-thinking-9b": {
+          "name": "Qwen3.5 THINKING Heretic i1"
+        },
+        "qwen3.5-9b": {
+          "name": "Qwen3.5 9B HighIQ Heretic"
+        },
+        "moe-13b": {
+          "name": "L3.1 MOE 2x8B DeepHermes Abliterated"
+        }
+      }
+    },
+    "venice": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Venice Uncensored (Red Team Primary)",
+      "options": {
+        "baseURL": "https://api.venice.ai/api/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "qwen-edit-uncensored": {
+          "name": "Qwen Edit Uncensored (Red Team Primary)"
+        },
+        "gemma-4-uncensored": {
+          "name": "Gemma 4 Uncensored (Blue Team)"
+        },
+        "venice-uncensored-1-2": {
+          "name": "Venice Uncensored 1.2"
+        },
+        "llama-3.3-70b": {
+          "name": "Venice Llama 3.3 70B"
+        }
+      }
+    },
+    "huggingface": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Hugging Face Inference",
+      "options": {
+        "baseURL": "https://router.huggingface.co/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "Qwen/Qwen2.5-Coder-32B-Instruct": {
+          "name": "Qwen2.5 Coder 32B"
+        },
+        "meta-llama/Llama-3.3-70B-Instruct": {
+          "name": "Llama 3.3 70B"
+        },
+        "deepseek-ai/DeepSeek-R1": {
+          "name": "DeepSeek R1"
+        }
+      }
+    },
+    "zen": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Opencode Zen",
+      "options": {
+        "baseURL": "https://api.opencode.ai/zen/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "zen-coder": {
+          "name": "Zen Coder"
+        },
+        "zen-think": {
+          "name": "Zen Think"
+        },
+        "zen-4": {
+          "name": "Zen 4"
+        }
+      }
+    },
+    "openrouter": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenRouter (400+ models)",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "anthropic/claude-3.5-sonnet": {
+          "name": "Claude 3.5 Sonnet (via OR)"
+        },
+        "qwen/qwen-2.5-coder-32b-instruct": {
+          "name": "Qwen2.5 Coder 32B (via OR)"
+        },
+        "google/gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro (via OR)"
+        }
+      }
+    },
+    "agnes": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Agnes AI",
+      "options": {
+        "baseURL": "https://apihub.agnes-ai.com/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "agnes-2.0-flash": {
+          "name": "Agnes 2.0 Flash"
+        }
+      }
+    },
+    "openai": {
+      "npm": "@ai-sdk/openai",
+      "name": "OpenAI",
+      "options": {
+        "apiKey": ""
+      },
+      "models": {
+        "gpt-4o": {
+          "name": "GPT-4o"
+        },
+        "gpt-4o-mini": {
+          "name": "GPT-4o Mini"
+        },
+        "o3-mini": {
+          "name": "o3 Mini"
+        }
+      }
+    },
+    "anthropic": {
+      "npm": "@ai-sdk/anthropic",
+      "name": "Anthropic Claude",
+      "options": {
+        "apiKey": ""
+      },
+      "models": {
+        "claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5"
+        },
+        "claude-opus-4-1": {
+          "name": "Claude Opus 4.1"
+        },
+        "claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5"
+        }
+      }
+    },
+    "google": {
+      "npm": "@ai-sdk/google",
+      "name": "Google Gemini",
+      "options": {
+        "apiKey": ""
+      },
+      "models": {
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro"
+        },
+        "gemini-2.5-flash": {
+          "name": "Gemini 2.5 Flash"
+        }
+      }
+    },
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (Local Heretic)",
+      "options": {
+        "baseURL": "http://localhost:1234/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "qwen3.5-4b-uncensored-hauhaucs-aggressive": {
+          "name": "Qwen 3.5 4B Aggressive (Fast Red)"
+        },
+        "gemma-4-e4b-uncensored-hauhaucs-aggressive": {
+          "name": "Gemma 4 E4B Aggressive"
+        }
+      }
+    },
+    "ext001": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 001",
+      "options": {
+        "baseURL": "https://api.ext001.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext001/model-a": {
+          "name": "Ext 001 Model A"
+        },
+        "ext001/model-b": {
+          "name": "Ext 001 Model B"
+        }
+      }
+    },
+    "ext002": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 002",
+      "options": {
+        "baseURL": "https://api.ext002.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext002/model-a": {
+          "name": "Ext 002 Model A"
+        },
+        "ext002/model-b": {
+          "name": "Ext 002 Model B"
+        }
+      }
+    },
+    "ext003": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 003",
+      "options": {
+        "baseURL": "https://api.ext003.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext003/model-a": {
+          "name": "Ext 003 Model A"
+        },
+        "ext003/model-b": {
+          "name": "Ext 003 Model B"
+        }
+      }
+    },
+    "ext004": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 004",
+      "options": {
+        "baseURL": "https://api.ext004.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext004/model-a": {
+          "name": "Ext 004 Model A"
+        },
+        "ext004/model-b": {
+          "name": "Ext 004 Model B"
+        }
+      }
+    },
+    "ext005": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 005",
+      "options": {
+        "baseURL": "https://api.ext005.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext005/model-a": {
+          "name": "Ext 005 Model A"
+        },
+        "ext005/model-b": {
+          "name": "Ext 005 Model B"
+        }
+      }
+    },
+    "ext006": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 006",
+      "options": {
+        "baseURL": "https://api.ext006.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext006/model-a": {
+          "name": "Ext 006 Model A"
+        },
+        "ext006/model-b": {
+          "name": "Ext 006 Model B"
+        }
+      }
+    },
+    "ext007": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 007",
+      "options": {
+        "baseURL": "https://api.ext007.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext007/model-a": {
+          "name": "Ext 007 Model A"
+        },
+        "ext007/model-b": {
+          "name": "Ext 007 Model B"
+        }
+      }
+    },
+    "ext008": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 008",
+      "options": {
+        "baseURL": "https://api.ext008.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext008/model-a": {
+          "name": "Ext 008 Model A"
+        },
+        "ext008/model-b": {
+          "name": "Ext 008 Model B"
+        }
+      }
+    },
+    "ext009": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 009",
+      "options": {
+        "baseURL": "https://api.ext009.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext009/model-a": {
+          "name": "Ext 009 Model A"
+        },
+        "ext009/model-b": {
+          "name": "Ext 009 Model B"
+        }
+      }
+    },
+    "ext010": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 010",
+      "options": {
+        "baseURL": "https://api.ext010.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext010/model-a": {
+          "name": "Ext 010 Model A"
+        },
+        "ext010/model-b": {
+          "name": "Ext 010 Model B"
+        }
+      }
+    },
+    "ext011": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 011",
+      "options": {
+        "baseURL": "https://api.ext011.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext011/model-a": {
+          "name": "Ext 011 Model A"
+        },
+        "ext011/model-b": {
+          "name": "Ext 011 Model B"
+        }
+      }
+    },
+    "ext012": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 012",
+      "options": {
+        "baseURL": "https://api.ext012.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext012/model-a": {
+          "name": "Ext 012 Model A"
+        },
+        "ext012/model-b": {
+          "name": "Ext 012 Model B"
+        }
+      }
+    },
+    "ext013": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 013",
+      "options": {
+        "baseURL": "https://api.ext013.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext013/model-a": {
+          "name": "Ext 013 Model A"
+        },
+        "ext013/model-b": {
+          "name": "Ext 013 Model B"
+        }
+      }
+    },
+    "ext014": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 014",
+      "options": {
+        "baseURL": "https://api.ext014.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext014/model-a": {
+          "name": "Ext 014 Model A"
+        },
+        "ext014/model-b": {
+          "name": "Ext 014 Model B"
+        }
+      }
+    },
+    "ext015": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 015",
+      "options": {
+        "baseURL": "https://api.ext015.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext015/model-a": {
+          "name": "Ext 015 Model A"
+        },
+        "ext015/model-b": {
+          "name": "Ext 015 Model B"
+        }
+      }
+    },
+    "ext016": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 016",
+      "options": {
+        "baseURL": "https://api.ext016.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext016/model-a": {
+          "name": "Ext 016 Model A"
+        },
+        "ext016/model-b": {
+          "name": "Ext 016 Model B"
+        }
+      }
+    },
+    "ext017": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 017",
+      "options": {
+        "baseURL": "https://api.ext017.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext017/model-a": {
+          "name": "Ext 017 Model A"
+        },
+        "ext017/model-b": {
+          "name": "Ext 017 Model B"
+        }
+      }
+    },
+    "ext018": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 018",
+      "options": {
+        "baseURL": "https://api.ext018.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext018/model-a": {
+          "name": "Ext 018 Model A"
+        },
+        "ext018/model-b": {
+          "name": "Ext 018 Model B"
+        }
+      }
+    },
+    "ext019": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 019",
+      "options": {
+        "baseURL": "https://api.ext019.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext019/model-a": {
+          "name": "Ext 019 Model A"
+        },
+        "ext019/model-b": {
+          "name": "Ext 019 Model B"
+        }
+      }
+    },
+    "ext020": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 020",
+      "options": {
+        "baseURL": "https://api.ext020.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext020/model-a": {
+          "name": "Ext 020 Model A"
+        },
+        "ext020/model-b": {
+          "name": "Ext 020 Model B"
+        }
+      }
+    },
+    "ext021": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 021",
+      "options": {
+        "baseURL": "https://api.ext021.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext021/model-a": {
+          "name": "Ext 021 Model A"
+        },
+        "ext021/model-b": {
+          "name": "Ext 021 Model B"
+        }
+      }
+    },
+    "ext022": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 022",
+      "options": {
+        "baseURL": "https://api.ext022.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext022/model-a": {
+          "name": "Ext 022 Model A"
+        },
+        "ext022/model-b": {
+          "name": "Ext 022 Model B"
+        }
+      }
+    },
+    "ext023": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 023",
+      "options": {
+        "baseURL": "https://api.ext023.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext023/model-a": {
+          "name": "Ext 023 Model A"
+        },
+        "ext023/model-b": {
+          "name": "Ext 023 Model B"
+        }
+      }
+    },
+    "ext024": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 024",
+      "options": {
+        "baseURL": "https://api.ext024.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext024/model-a": {
+          "name": "Ext 024 Model A"
+        },
+        "ext024/model-b": {
+          "name": "Ext 024 Model B"
+        }
+      }
+    },
+    "ext025": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 025",
+      "options": {
+        "baseURL": "https://api.ext025.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext025/model-a": {
+          "name": "Ext 025 Model A"
+        },
+        "ext025/model-b": {
+          "name": "Ext 025 Model B"
+        }
+      }
+    },
+    "ext026": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 026",
+      "options": {
+        "baseURL": "https://api.ext026.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext026/model-a": {
+          "name": "Ext 026 Model A"
+        },
+        "ext026/model-b": {
+          "name": "Ext 026 Model B"
+        }
+      }
+    },
+    "ext027": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 027",
+      "options": {
+        "baseURL": "https://api.ext027.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext027/model-a": {
+          "name": "Ext 027 Model A"
+        },
+        "ext027/model-b": {
+          "name": "Ext 027 Model B"
+        }
+      }
+    },
+    "ext028": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 028",
+      "options": {
+        "baseURL": "https://api.ext028.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext028/model-a": {
+          "name": "Ext 028 Model A"
+        },
+        "ext028/model-b": {
+          "name": "Ext 028 Model B"
+        }
+      }
+    },
+    "ext029": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 029",
+      "options": {
+        "baseURL": "https://api.ext029.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext029/model-a": {
+          "name": "Ext 029 Model A"
+        },
+        "ext029/model-b": {
+          "name": "Ext 029 Model B"
+        }
+      }
+    },
+    "ext030": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 030",
+      "options": {
+        "baseURL": "https://api.ext030.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext030/model-a": {
+          "name": "Ext 030 Model A"
+        },
+        "ext030/model-b": {
+          "name": "Ext 030 Model B"
+        }
+      }
+    },
+    "ext031": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 031",
+      "options": {
+        "baseURL": "https://api.ext031.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext031/model-a": {
+          "name": "Ext 031 Model A"
+        },
+        "ext031/model-b": {
+          "name": "Ext 031 Model B"
+        }
+      }
+    },
+    "ext032": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 032",
+      "options": {
+        "baseURL": "https://api.ext032.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext032/model-a": {
+          "name": "Ext 032 Model A"
+        },
+        "ext032/model-b": {
+          "name": "Ext 032 Model B"
+        }
+      }
+    },
+    "ext033": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 033",
+      "options": {
+        "baseURL": "https://api.ext033.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext033/model-a": {
+          "name": "Ext 033 Model A"
+        },
+        "ext033/model-b": {
+          "name": "Ext 033 Model B"
+        }
+      }
+    },
+    "ext034": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 034",
+      "options": {
+        "baseURL": "https://api.ext034.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext034/model-a": {
+          "name": "Ext 034 Model A"
+        },
+        "ext034/model-b": {
+          "name": "Ext 034 Model B"
+        }
+      }
+    },
+    "ext035": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 035",
+      "options": {
+        "baseURL": "https://api.ext035.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext035/model-a": {
+          "name": "Ext 035 Model A"
+        },
+        "ext035/model-b": {
+          "name": "Ext 035 Model B"
+        }
+      }
+    },
+    "ext036": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 036",
+      "options": {
+        "baseURL": "https://api.ext036.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext036/model-a": {
+          "name": "Ext 036 Model A"
+        },
+        "ext036/model-b": {
+          "name": "Ext 036 Model B"
+        }
+      }
+    },
+    "ext037": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 037",
+      "options": {
+        "baseURL": "https://api.ext037.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext037/model-a": {
+          "name": "Ext 037 Model A"
+        },
+        "ext037/model-b": {
+          "name": "Ext 037 Model B"
+        }
+      }
+    },
+    "ext038": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 038",
+      "options": {
+        "baseURL": "https://api.ext038.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext038/model-a": {
+          "name": "Ext 038 Model A"
+        },
+        "ext038/model-b": {
+          "name": "Ext 038 Model B"
+        }
+      }
+    },
+    "ext039": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 039",
+      "options": {
+        "baseURL": "https://api.ext039.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext039/model-a": {
+          "name": "Ext 039 Model A"
+        },
+        "ext039/model-b": {
+          "name": "Ext 039 Model B"
+        }
+      }
+    },
+    "ext040": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 040",
+      "options": {
+        "baseURL": "https://api.ext040.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext040/model-a": {
+          "name": "Ext 040 Model A"
+        },
+        "ext040/model-b": {
+          "name": "Ext 040 Model B"
+        }
+      }
+    },
+    "ext041": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 041",
+      "options": {
+        "baseURL": "https://api.ext041.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext041/model-a": {
+          "name": "Ext 041 Model A"
+        },
+        "ext041/model-b": {
+          "name": "Ext 041 Model B"
+        }
+      }
+    },
+    "ext042": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 042",
+      "options": {
+        "baseURL": "https://api.ext042.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext042/model-a": {
+          "name": "Ext 042 Model A"
+        },
+        "ext042/model-b": {
+          "name": "Ext 042 Model B"
+        }
+      }
+    },
+    "ext043": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 043",
+      "options": {
+        "baseURL": "https://api.ext043.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext043/model-a": {
+          "name": "Ext 043 Model A"
+        },
+        "ext043/model-b": {
+          "name": "Ext 043 Model B"
+        }
+      }
+    },
+    "ext044": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 044",
+      "options": {
+        "baseURL": "https://api.ext044.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext044/model-a": {
+          "name": "Ext 044 Model A"
+        },
+        "ext044/model-b": {
+          "name": "Ext 044 Model B"
+        }
+      }
+    },
+    "ext045": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 045",
+      "options": {
+        "baseURL": "https://api.ext045.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext045/model-a": {
+          "name": "Ext 045 Model A"
+        },
+        "ext045/model-b": {
+          "name": "Ext 045 Model B"
+        }
+      }
+    },
+    "ext046": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 046",
+      "options": {
+        "baseURL": "https://api.ext046.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext046/model-a": {
+          "name": "Ext 046 Model A"
+        },
+        "ext046/model-b": {
+          "name": "Ext 046 Model B"
+        }
+      }
+    },
+    "ext047": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 047",
+      "options": {
+        "baseURL": "https://api.ext047.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext047/model-a": {
+          "name": "Ext 047 Model A"
+        },
+        "ext047/model-b": {
+          "name": "Ext 047 Model B"
+        }
+      }
+    },
+    "ext048": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 048",
+      "options": {
+        "baseURL": "https://api.ext048.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext048/model-a": {
+          "name": "Ext 048 Model A"
+        },
+        "ext048/model-b": {
+          "name": "Ext 048 Model B"
+        }
+      }
+    },
+    "ext049": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 049",
+      "options": {
+        "baseURL": "https://api.ext049.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext049/model-a": {
+          "name": "Ext 049 Model A"
+        },
+        "ext049/model-b": {
+          "name": "Ext 049 Model B"
+        }
+      }
+    },
+    "ext050": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 050",
+      "options": {
+        "baseURL": "https://api.ext050.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext050/model-a": {
+          "name": "Ext 050 Model A"
+        },
+        "ext050/model-b": {
+          "name": "Ext 050 Model B"
+        }
+      }
+    },
+    "ext051": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 051",
+      "options": {
+        "baseURL": "https://api.ext051.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext051/model-a": {
+          "name": "Ext 051 Model A"
+        },
+        "ext051/model-b": {
+          "name": "Ext 051 Model B"
+        }
+      }
+    },
+    "ext052": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 052",
+      "options": {
+        "baseURL": "https://api.ext052.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext052/model-a": {
+          "name": "Ext 052 Model A"
+        },
+        "ext052/model-b": {
+          "name": "Ext 052 Model B"
+        }
+      }
+    },
+    "ext053": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 053",
+      "options": {
+        "baseURL": "https://api.ext053.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext053/model-a": {
+          "name": "Ext 053 Model A"
+        },
+        "ext053/model-b": {
+          "name": "Ext 053 Model B"
+        }
+      }
+    },
+    "ext054": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 054",
+      "options": {
+        "baseURL": "https://api.ext054.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext054/model-a": {
+          "name": "Ext 054 Model A"
+        },
+        "ext054/model-b": {
+          "name": "Ext 054 Model B"
+        }
+      }
+    },
+    "ext055": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 055",
+      "options": {
+        "baseURL": "https://api.ext055.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext055/model-a": {
+          "name": "Ext 055 Model A"
+        },
+        "ext055/model-b": {
+          "name": "Ext 055 Model B"
+        }
+      }
+    },
+    "ext056": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 056",
+      "options": {
+        "baseURL": "https://api.ext056.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext056/model-a": {
+          "name": "Ext 056 Model A"
+        },
+        "ext056/model-b": {
+          "name": "Ext 056 Model B"
+        }
+      }
+    },
+    "ext057": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 057",
+      "options": {
+        "baseURL": "https://api.ext057.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext057/model-a": {
+          "name": "Ext 057 Model A"
+        },
+        "ext057/model-b": {
+          "name": "Ext 057 Model B"
+        }
+      }
+    },
+    "ext058": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 058",
+      "options": {
+        "baseURL": "https://api.ext058.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext058/model-a": {
+          "name": "Ext 058 Model A"
+        },
+        "ext058/model-b": {
+          "name": "Ext 058 Model B"
+        }
+      }
+    },
+    "ext059": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 059",
+      "options": {
+        "baseURL": "https://api.ext059.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext059/model-a": {
+          "name": "Ext 059 Model A"
+        },
+        "ext059/model-b": {
+          "name": "Ext 059 Model B"
+        }
+      }
+    },
+    "ext060": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 060",
+      "options": {
+        "baseURL": "https://api.ext060.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext060/model-a": {
+          "name": "Ext 060 Model A"
+        },
+        "ext060/model-b": {
+          "name": "Ext 060 Model B"
+        }
+      }
+    },
+    "ext061": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 061",
+      "options": {
+        "baseURL": "https://api.ext061.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext061/model-a": {
+          "name": "Ext 061 Model A"
+        },
+        "ext061/model-b": {
+          "name": "Ext 061 Model B"
+        }
+      }
+    },
+    "ext062": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 062",
+      "options": {
+        "baseURL": "https://api.ext062.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext062/model-a": {
+          "name": "Ext 062 Model A"
+        },
+        "ext062/model-b": {
+          "name": "Ext 062 Model B"
+        }
+      }
+    },
+    "ext063": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 063",
+      "options": {
+        "baseURL": "https://api.ext063.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext063/model-a": {
+          "name": "Ext 063 Model A"
+        },
+        "ext063/model-b": {
+          "name": "Ext 063 Model B"
+        }
+      }
+    },
+    "ext064": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 064",
+      "options": {
+        "baseURL": "https://api.ext064.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext064/model-a": {
+          "name": "Ext 064 Model A"
+        },
+        "ext064/model-b": {
+          "name": "Ext 064 Model B"
+        }
+      }
+    },
+    "ext065": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 065",
+      "options": {
+        "baseURL": "https://api.ext065.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext065/model-a": {
+          "name": "Ext 065 Model A"
+        },
+        "ext065/model-b": {
+          "name": "Ext 065 Model B"
+        }
+      }
+    },
+    "ext066": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 066",
+      "options": {
+        "baseURL": "https://api.ext066.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext066/model-a": {
+          "name": "Ext 066 Model A"
+        },
+        "ext066/model-b": {
+          "name": "Ext 066 Model B"
+        }
+      }
+    },
+    "ext067": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 067",
+      "options": {
+        "baseURL": "https://api.ext067.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext067/model-a": {
+          "name": "Ext 067 Model A"
+        },
+        "ext067/model-b": {
+          "name": "Ext 067 Model B"
+        }
+      }
+    },
+    "ext068": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 068",
+      "options": {
+        "baseURL": "https://api.ext068.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext068/model-a": {
+          "name": "Ext 068 Model A"
+        },
+        "ext068/model-b": {
+          "name": "Ext 068 Model B"
+        }
+      }
+    },
+    "ext069": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 069",
+      "options": {
+        "baseURL": "https://api.ext069.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext069/model-a": {
+          "name": "Ext 069 Model A"
+        },
+        "ext069/model-b": {
+          "name": "Ext 069 Model B"
+        }
+      }
+    },
+    "ext070": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 070",
+      "options": {
+        "baseURL": "https://api.ext070.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext070/model-a": {
+          "name": "Ext 070 Model A"
+        },
+        "ext070/model-b": {
+          "name": "Ext 070 Model B"
+        }
+      }
+    },
+    "ext071": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 071",
+      "options": {
+        "baseURL": "https://api.ext071.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext071/model-a": {
+          "name": "Ext 071 Model A"
+        },
+        "ext071/model-b": {
+          "name": "Ext 071 Model B"
+        }
+      }
+    },
+    "ext072": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 072",
+      "options": {
+        "baseURL": "https://api.ext072.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext072/model-a": {
+          "name": "Ext 072 Model A"
+        },
+        "ext072/model-b": {
+          "name": "Ext 072 Model B"
+        }
+      }
+    },
+    "ext073": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 073",
+      "options": {
+        "baseURL": "https://api.ext073.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext073/model-a": {
+          "name": "Ext 073 Model A"
+        },
+        "ext073/model-b": {
+          "name": "Ext 073 Model B"
+        }
+      }
+    },
+    "ext074": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 074",
+      "options": {
+        "baseURL": "https://api.ext074.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext074/model-a": {
+          "name": "Ext 074 Model A"
+        },
+        "ext074/model-b": {
+          "name": "Ext 074 Model B"
+        }
+      }
+    },
+    "ext075": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 075",
+      "options": {
+        "baseURL": "https://api.ext075.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext075/model-a": {
+          "name": "Ext 075 Model A"
+        },
+        "ext075/model-b": {
+          "name": "Ext 075 Model B"
+        }
+      }
+    },
+    "ext076": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 076",
+      "options": {
+        "baseURL": "https://api.ext076.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext076/model-a": {
+          "name": "Ext 076 Model A"
+        },
+        "ext076/model-b": {
+          "name": "Ext 076 Model B"
+        }
+      }
+    },
+    "ext077": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 077",
+      "options": {
+        "baseURL": "https://api.ext077.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext077/model-a": {
+          "name": "Ext 077 Model A"
+        },
+        "ext077/model-b": {
+          "name": "Ext 077 Model B"
+        }
+      }
+    },
+    "ext078": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 078",
+      "options": {
+        "baseURL": "https://api.ext078.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext078/model-a": {
+          "name": "Ext 078 Model A"
+        },
+        "ext078/model-b": {
+          "name": "Ext 078 Model B"
+        }
+      }
+    },
+    "ext079": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 079",
+      "options": {
+        "baseURL": "https://api.ext079.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext079/model-a": {
+          "name": "Ext 079 Model A"
+        },
+        "ext079/model-b": {
+          "name": "Ext 079 Model B"
+        }
+      }
+    },
+    "ext080": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 080",
+      "options": {
+        "baseURL": "https://api.ext080.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext080/model-a": {
+          "name": "Ext 080 Model A"
+        },
+        "ext080/model-b": {
+          "name": "Ext 080 Model B"
+        }
+      }
+    },
+    "ext081": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 081",
+      "options": {
+        "baseURL": "https://api.ext081.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext081/model-a": {
+          "name": "Ext 081 Model A"
+        },
+        "ext081/model-b": {
+          "name": "Ext 081 Model B"
+        }
+      }
+    },
+    "ext082": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 082",
+      "options": {
+        "baseURL": "https://api.ext082.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext082/model-a": {
+          "name": "Ext 082 Model A"
+        },
+        "ext082/model-b": {
+          "name": "Ext 082 Model B"
+        }
+      }
+    },
+    "ext083": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 083",
+      "options": {
+        "baseURL": "https://api.ext083.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext083/model-a": {
+          "name": "Ext 083 Model A"
+        },
+        "ext083/model-b": {
+          "name": "Ext 083 Model B"
+        }
+      }
+    },
+    "ext084": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 084",
+      "options": {
+        "baseURL": "https://api.ext084.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext084/model-a": {
+          "name": "Ext 084 Model A"
+        },
+        "ext084/model-b": {
+          "name": "Ext 084 Model B"
+        }
+      }
+    },
+    "ext085": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 085",
+      "options": {
+        "baseURL": "https://api.ext085.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext085/model-a": {
+          "name": "Ext 085 Model A"
+        },
+        "ext085/model-b": {
+          "name": "Ext 085 Model B"
+        }
+      }
+    },
+    "ext086": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 086",
+      "options": {
+        "baseURL": "https://api.ext086.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext086/model-a": {
+          "name": "Ext 086 Model A"
+        },
+        "ext086/model-b": {
+          "name": "Ext 086 Model B"
+        }
+      }
+    },
+    "ext087": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 087",
+      "options": {
+        "baseURL": "https://api.ext087.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext087/model-a": {
+          "name": "Ext 087 Model A"
+        },
+        "ext087/model-b": {
+          "name": "Ext 087 Model B"
+        }
+      }
+    },
+    "ext088": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 088",
+      "options": {
+        "baseURL": "https://api.ext088.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext088/model-a": {
+          "name": "Ext 088 Model A"
+        },
+        "ext088/model-b": {
+          "name": "Ext 088 Model B"
+        }
+      }
+    },
+    "ext089": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 089",
+      "options": {
+        "baseURL": "https://api.ext089.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext089/model-a": {
+          "name": "Ext 089 Model A"
+        },
+        "ext089/model-b": {
+          "name": "Ext 089 Model B"
+        }
+      }
+    },
+    "ext090": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 090",
+      "options": {
+        "baseURL": "https://api.ext090.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext090/model-a": {
+          "name": "Ext 090 Model A"
+        },
+        "ext090/model-b": {
+          "name": "Ext 090 Model B"
+        }
+      }
+    },
+    "ext091": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 091",
+      "options": {
+        "baseURL": "https://api.ext091.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext091/model-a": {
+          "name": "Ext 091 Model A"
+        },
+        "ext091/model-b": {
+          "name": "Ext 091 Model B"
+        }
+      }
+    },
+    "ext092": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 092",
+      "options": {
+        "baseURL": "https://api.ext092.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext092/model-a": {
+          "name": "Ext 092 Model A"
+        },
+        "ext092/model-b": {
+          "name": "Ext 092 Model B"
+        }
+      }
+    },
+    "ext093": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 093",
+      "options": {
+        "baseURL": "https://api.ext093.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext093/model-a": {
+          "name": "Ext 093 Model A"
+        },
+        "ext093/model-b": {
+          "name": "Ext 093 Model B"
+        }
+      }
+    },
+    "ext094": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 094",
+      "options": {
+        "baseURL": "https://api.ext094.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext094/model-a": {
+          "name": "Ext 094 Model A"
+        },
+        "ext094/model-b": {
+          "name": "Ext 094 Model B"
+        }
+      }
+    },
+    "ext095": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 095",
+      "options": {
+        "baseURL": "https://api.ext095.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext095/model-a": {
+          "name": "Ext 095 Model A"
+        },
+        "ext095/model-b": {
+          "name": "Ext 095 Model B"
+        }
+      }
+    },
+    "ext096": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 096",
+      "options": {
+        "baseURL": "https://api.ext096.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext096/model-a": {
+          "name": "Ext 096 Model A"
+        },
+        "ext096/model-b": {
+          "name": "Ext 096 Model B"
+        }
+      }
+    },
+    "ext097": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 097",
+      "options": {
+        "baseURL": "https://api.ext097.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext097/model-a": {
+          "name": "Ext 097 Model A"
+        },
+        "ext097/model-b": {
+          "name": "Ext 097 Model B"
+        }
+      }
+    },
+    "ext098": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 098",
+      "options": {
+        "baseURL": "https://api.ext098.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext098/model-a": {
+          "name": "Ext 098 Model A"
+        },
+        "ext098/model-b": {
+          "name": "Ext 098 Model B"
+        }
+      }
+    },
+    "ext099": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 099",
+      "options": {
+        "baseURL": "https://api.ext099.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext099/model-a": {
+          "name": "Ext 099 Model A"
+        },
+        "ext099/model-b": {
+          "name": "Ext 099 Model B"
+        }
+      }
+    },
+    "ext100": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 100",
+      "options": {
+        "baseURL": "https://api.ext100.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext100/model-a": {
+          "name": "Ext 100 Model A"
+        },
+        "ext100/model-b": {
+          "name": "Ext 100 Model B"
+        }
+      }
+    },
+    "ext101": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 101",
+      "options": {
+        "baseURL": "https://api.ext101.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext101/model-a": {
+          "name": "Ext 101 Model A"
+        },
+        "ext101/model-b": {
+          "name": "Ext 101 Model B"
+        }
+      }
+    },
+    "ext102": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 102",
+      "options": {
+        "baseURL": "https://api.ext102.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext102/model-a": {
+          "name": "Ext 102 Model A"
+        },
+        "ext102/model-b": {
+          "name": "Ext 102 Model B"
+        }
+      }
+    },
+    "ext103": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 103",
+      "options": {
+        "baseURL": "https://api.ext103.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext103/model-a": {
+          "name": "Ext 103 Model A"
+        },
+        "ext103/model-b": {
+          "name": "Ext 103 Model B"
+        }
+      }
+    },
+    "ext104": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 104",
+      "options": {
+        "baseURL": "https://api.ext104.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext104/model-a": {
+          "name": "Ext 104 Model A"
+        },
+        "ext104/model-b": {
+          "name": "Ext 104 Model B"
+        }
+      }
+    },
+    "ext105": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 105",
+      "options": {
+        "baseURL": "https://api.ext105.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext105/model-a": {
+          "name": "Ext 105 Model A"
+        },
+        "ext105/model-b": {
+          "name": "Ext 105 Model B"
+        }
+      }
+    },
+    "ext106": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 106",
+      "options": {
+        "baseURL": "https://api.ext106.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext106/model-a": {
+          "name": "Ext 106 Model A"
+        },
+        "ext106/model-b": {
+          "name": "Ext 106 Model B"
+        }
+      }
+    },
+    "ext107": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 107",
+      "options": {
+        "baseURL": "https://api.ext107.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext107/model-a": {
+          "name": "Ext 107 Model A"
+        },
+        "ext107/model-b": {
+          "name": "Ext 107 Model B"
+        }
+      }
+    },
+    "ext108": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 108",
+      "options": {
+        "baseURL": "https://api.ext108.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext108/model-a": {
+          "name": "Ext 108 Model A"
+        },
+        "ext108/model-b": {
+          "name": "Ext 108 Model B"
+        }
+      }
+    },
+    "ext109": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 109",
+      "options": {
+        "baseURL": "https://api.ext109.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext109/model-a": {
+          "name": "Ext 109 Model A"
+        },
+        "ext109/model-b": {
+          "name": "Ext 109 Model B"
+        }
+      }
+    },
+    "ext110": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 110",
+      "options": {
+        "baseURL": "https://api.ext110.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext110/model-a": {
+          "name": "Ext 110 Model A"
+        },
+        "ext110/model-b": {
+          "name": "Ext 110 Model B"
+        }
+      }
+    },
+    "ext111": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 111",
+      "options": {
+        "baseURL": "https://api.ext111.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext111/model-a": {
+          "name": "Ext 111 Model A"
+        },
+        "ext111/model-b": {
+          "name": "Ext 111 Model B"
+        }
+      }
+    },
+    "ext112": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 112",
+      "options": {
+        "baseURL": "https://api.ext112.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext112/model-a": {
+          "name": "Ext 112 Model A"
+        },
+        "ext112/model-b": {
+          "name": "Ext 112 Model B"
+        }
+      }
+    },
+    "ext113": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 113",
+      "options": {
+        "baseURL": "https://api.ext113.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext113/model-a": {
+          "name": "Ext 113 Model A"
+        },
+        "ext113/model-b": {
+          "name": "Ext 113 Model B"
+        }
+      }
+    },
+    "ext114": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 114",
+      "options": {
+        "baseURL": "https://api.ext114.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext114/model-a": {
+          "name": "Ext 114 Model A"
+        },
+        "ext114/model-b": {
+          "name": "Ext 114 Model B"
+        }
+      }
+    },
+    "ext115": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 115",
+      "options": {
+        "baseURL": "https://api.ext115.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext115/model-a": {
+          "name": "Ext 115 Model A"
+        },
+        "ext115/model-b": {
+          "name": "Ext 115 Model B"
+        }
+      }
+    },
+    "ext116": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 116",
+      "options": {
+        "baseURL": "https://api.ext116.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext116/model-a": {
+          "name": "Ext 116 Model A"
+        },
+        "ext116/model-b": {
+          "name": "Ext 116 Model B"
+        }
+      }
+    },
+    "ext117": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 117",
+      "options": {
+        "baseURL": "https://api.ext117.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext117/model-a": {
+          "name": "Ext 117 Model A"
+        },
+        "ext117/model-b": {
+          "name": "Ext 117 Model B"
+        }
+      }
+    },
+    "ext118": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 118",
+      "options": {
+        "baseURL": "https://api.ext118.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext118/model-a": {
+          "name": "Ext 118 Model A"
+        },
+        "ext118/model-b": {
+          "name": "Ext 118 Model B"
+        }
+      }
+    },
+    "ext119": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 119",
+      "options": {
+        "baseURL": "https://api.ext119.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext119/model-a": {
+          "name": "Ext 119 Model A"
+        },
+        "ext119/model-b": {
+          "name": "Ext 119 Model B"
+        }
+      }
+    },
+    "ext120": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 120",
+      "options": {
+        "baseURL": "https://api.ext120.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext120/model-a": {
+          "name": "Ext 120 Model A"
+        },
+        "ext120/model-b": {
+          "name": "Ext 120 Model B"
+        }
+      }
+    },
+    "ext121": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 121",
+      "options": {
+        "baseURL": "https://api.ext121.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext121/model-a": {
+          "name": "Ext 121 Model A"
+        },
+        "ext121/model-b": {
+          "name": "Ext 121 Model B"
+        }
+      }
+    },
+    "ext122": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 122",
+      "options": {
+        "baseURL": "https://api.ext122.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext122/model-a": {
+          "name": "Ext 122 Model A"
+        },
+        "ext122/model-b": {
+          "name": "Ext 122 Model B"
+        }
+      }
+    },
+    "ext123": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 123",
+      "options": {
+        "baseURL": "https://api.ext123.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext123/model-a": {
+          "name": "Ext 123 Model A"
+        },
+        "ext123/model-b": {
+          "name": "Ext 123 Model B"
+        }
+      }
+    },
+    "ext124": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 124",
+      "options": {
+        "baseURL": "https://api.ext124.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext124/model-a": {
+          "name": "Ext 124 Model A"
+        },
+        "ext124/model-b": {
+          "name": "Ext 124 Model B"
+        }
+      }
+    },
+    "ext125": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 125",
+      "options": {
+        "baseURL": "https://api.ext125.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext125/model-a": {
+          "name": "Ext 125 Model A"
+        },
+        "ext125/model-b": {
+          "name": "Ext 125 Model B"
+        }
+      }
+    },
+    "ext126": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 126",
+      "options": {
+        "baseURL": "https://api.ext126.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext126/model-a": {
+          "name": "Ext 126 Model A"
+        },
+        "ext126/model-b": {
+          "name": "Ext 126 Model B"
+        }
+      }
+    },
+    "ext127": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 127",
+      "options": {
+        "baseURL": "https://api.ext127.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext127/model-a": {
+          "name": "Ext 127 Model A"
+        },
+        "ext127/model-b": {
+          "name": "Ext 127 Model B"
+        }
+      }
+    },
+    "ext128": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 128",
+      "options": {
+        "baseURL": "https://api.ext128.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext128/model-a": {
+          "name": "Ext 128 Model A"
+        },
+        "ext128/model-b": {
+          "name": "Ext 128 Model B"
+        }
+      }
+    },
+    "ext129": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 129",
+      "options": {
+        "baseURL": "https://api.ext129.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext129/model-a": {
+          "name": "Ext 129 Model A"
+        },
+        "ext129/model-b": {
+          "name": "Ext 129 Model B"
+        }
+      }
+    },
+    "ext130": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 130",
+      "options": {
+        "baseURL": "https://api.ext130.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext130/model-a": {
+          "name": "Ext 130 Model A"
+        },
+        "ext130/model-b": {
+          "name": "Ext 130 Model B"
+        }
+      }
+    },
+    "ext131": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 131",
+      "options": {
+        "baseURL": "https://api.ext131.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext131/model-a": {
+          "name": "Ext 131 Model A"
+        },
+        "ext131/model-b": {
+          "name": "Ext 131 Model B"
+        }
+      }
+    },
+    "ext132": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 132",
+      "options": {
+        "baseURL": "https://api.ext132.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext132/model-a": {
+          "name": "Ext 132 Model A"
+        },
+        "ext132/model-b": {
+          "name": "Ext 132 Model B"
+        }
+      }
+    },
+    "ext133": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 133",
+      "options": {
+        "baseURL": "https://api.ext133.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext133/model-a": {
+          "name": "Ext 133 Model A"
+        },
+        "ext133/model-b": {
+          "name": "Ext 133 Model B"
+        }
+      }
+    },
+    "ext134": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 134",
+      "options": {
+        "baseURL": "https://api.ext134.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext134/model-a": {
+          "name": "Ext 134 Model A"
+        },
+        "ext134/model-b": {
+          "name": "Ext 134 Model B"
+        }
+      }
+    },
+    "ext135": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 135",
+      "options": {
+        "baseURL": "https://api.ext135.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext135/model-a": {
+          "name": "Ext 135 Model A"
+        },
+        "ext135/model-b": {
+          "name": "Ext 135 Model B"
+        }
+      }
+    },
+    "ext136": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 136",
+      "options": {
+        "baseURL": "https://api.ext136.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext136/model-a": {
+          "name": "Ext 136 Model A"
+        },
+        "ext136/model-b": {
+          "name": "Ext 136 Model B"
+        }
+      }
+    },
+    "ext137": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 137",
+      "options": {
+        "baseURL": "https://api.ext137.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext137/model-a": {
+          "name": "Ext 137 Model A"
+        },
+        "ext137/model-b": {
+          "name": "Ext 137 Model B"
+        }
+      }
+    },
+    "ext138": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 138",
+      "options": {
+        "baseURL": "https://api.ext138.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext138/model-a": {
+          "name": "Ext 138 Model A"
+        },
+        "ext138/model-b": {
+          "name": "Ext 138 Model B"
+        }
+      }
+    },
+    "ext139": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 139",
+      "options": {
+        "baseURL": "https://api.ext139.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext139/model-a": {
+          "name": "Ext 139 Model A"
+        },
+        "ext139/model-b": {
+          "name": "Ext 139 Model B"
+        }
+      }
+    },
+    "ext140": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 140",
+      "options": {
+        "baseURL": "https://api.ext140.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext140/model-a": {
+          "name": "Ext 140 Model A"
+        },
+        "ext140/model-b": {
+          "name": "Ext 140 Model B"
+        }
+      }
+    },
+    "ext141": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 141",
+      "options": {
+        "baseURL": "https://api.ext141.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext141/model-a": {
+          "name": "Ext 141 Model A"
+        },
+        "ext141/model-b": {
+          "name": "Ext 141 Model B"
+        }
+      }
+    },
+    "ext142": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 142",
+      "options": {
+        "baseURL": "https://api.ext142.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext142/model-a": {
+          "name": "Ext 142 Model A"
+        },
+        "ext142/model-b": {
+          "name": "Ext 142 Model B"
+        }
+      }
+    },
+    "ext143": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 143",
+      "options": {
+        "baseURL": "https://api.ext143.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext143/model-a": {
+          "name": "Ext 143 Model A"
+        },
+        "ext143/model-b": {
+          "name": "Ext 143 Model B"
+        }
+      }
+    },
+    "ext144": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 144",
+      "options": {
+        "baseURL": "https://api.ext144.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext144/model-a": {
+          "name": "Ext 144 Model A"
+        },
+        "ext144/model-b": {
+          "name": "Ext 144 Model B"
+        }
+      }
+    },
+    "ext145": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 145",
+      "options": {
+        "baseURL": "https://api.ext145.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext145/model-a": {
+          "name": "Ext 145 Model A"
+        },
+        "ext145/model-b": {
+          "name": "Ext 145 Model B"
+        }
+      }
+    },
+    "ext146": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 146",
+      "options": {
+        "baseURL": "https://api.ext146.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext146/model-a": {
+          "name": "Ext 146 Model A"
+        },
+        "ext146/model-b": {
+          "name": "Ext 146 Model B"
+        }
+      }
+    },
+    "ext147": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 147",
+      "options": {
+        "baseURL": "https://api.ext147.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext147/model-a": {
+          "name": "Ext 147 Model A"
+        },
+        "ext147/model-b": {
+          "name": "Ext 147 Model B"
+        }
+      }
+    },
+    "ext148": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 148",
+      "options": {
+        "baseURL": "https://api.ext148.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext148/model-a": {
+          "name": "Ext 148 Model A"
+        },
+        "ext148/model-b": {
+          "name": "Ext 148 Model B"
+        }
+      }
+    },
+    "ext149": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 149",
+      "options": {
+        "baseURL": "https://api.ext149.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext149/model-a": {
+          "name": "Ext 149 Model A"
+        },
+        "ext149/model-b": {
+          "name": "Ext 149 Model B"
+        }
+      }
+    },
+    "ext150": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 150",
+      "options": {
+        "baseURL": "https://api.ext150.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext150/model-a": {
+          "name": "Ext 150 Model A"
+        },
+        "ext150/model-b": {
+          "name": "Ext 150 Model B"
+        }
+      }
+    },
+    "ext151": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 151",
+      "options": {
+        "baseURL": "https://api.ext151.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext151/model-a": {
+          "name": "Ext 151 Model A"
+        },
+        "ext151/model-b": {
+          "name": "Ext 151 Model B"
+        }
+      }
+    },
+    "ext152": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 152",
+      "options": {
+        "baseURL": "https://api.ext152.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext152/model-a": {
+          "name": "Ext 152 Model A"
+        },
+        "ext152/model-b": {
+          "name": "Ext 152 Model B"
+        }
+      }
+    },
+    "ext153": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 153",
+      "options": {
+        "baseURL": "https://api.ext153.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext153/model-a": {
+          "name": "Ext 153 Model A"
+        },
+        "ext153/model-b": {
+          "name": "Ext 153 Model B"
+        }
+      }
+    },
+    "ext154": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 154",
+      "options": {
+        "baseURL": "https://api.ext154.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext154/model-a": {
+          "name": "Ext 154 Model A"
+        },
+        "ext154/model-b": {
+          "name": "Ext 154 Model B"
+        }
+      }
+    },
+    "ext155": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 155",
+      "options": {
+        "baseURL": "https://api.ext155.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext155/model-a": {
+          "name": "Ext 155 Model A"
+        },
+        "ext155/model-b": {
+          "name": "Ext 155 Model B"
+        }
+      }
+    },
+    "ext156": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 156",
+      "options": {
+        "baseURL": "https://api.ext156.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext156/model-a": {
+          "name": "Ext 156 Model A"
+        },
+        "ext156/model-b": {
+          "name": "Ext 156 Model B"
+        }
+      }
+    },
+    "ext157": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 157",
+      "options": {
+        "baseURL": "https://api.ext157.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext157/model-a": {
+          "name": "Ext 157 Model A"
+        },
+        "ext157/model-b": {
+          "name": "Ext 157 Model B"
+        }
+      }
+    },
+    "ext158": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 158",
+      "options": {
+        "baseURL": "https://api.ext158.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext158/model-a": {
+          "name": "Ext 158 Model A"
+        },
+        "ext158/model-b": {
+          "name": "Ext 158 Model B"
+        }
+      }
+    },
+    "ext159": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 159",
+      "options": {
+        "baseURL": "https://api.ext159.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext159/model-a": {
+          "name": "Ext 159 Model A"
+        },
+        "ext159/model-b": {
+          "name": "Ext 159 Model B"
+        }
+      }
+    },
+    "ext160": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 160",
+      "options": {
+        "baseURL": "https://api.ext160.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext160/model-a": {
+          "name": "Ext 160 Model A"
+        },
+        "ext160/model-b": {
+          "name": "Ext 160 Model B"
+        }
+      }
+    },
+    "ext161": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 161",
+      "options": {
+        "baseURL": "https://api.ext161.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext161/model-a": {
+          "name": "Ext 161 Model A"
+        },
+        "ext161/model-b": {
+          "name": "Ext 161 Model B"
+        }
+      }
+    },
+    "ext162": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 162",
+      "options": {
+        "baseURL": "https://api.ext162.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext162/model-a": {
+          "name": "Ext 162 Model A"
+        },
+        "ext162/model-b": {
+          "name": "Ext 162 Model B"
+        }
+      }
+    },
+    "ext163": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 163",
+      "options": {
+        "baseURL": "https://api.ext163.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext163/model-a": {
+          "name": "Ext 163 Model A"
+        },
+        "ext163/model-b": {
+          "name": "Ext 163 Model B"
+        }
+      }
+    },
+    "ext164": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 164",
+      "options": {
+        "baseURL": "https://api.ext164.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext164/model-a": {
+          "name": "Ext 164 Model A"
+        },
+        "ext164/model-b": {
+          "name": "Ext 164 Model B"
+        }
+      }
+    },
+    "ext165": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 165",
+      "options": {
+        "baseURL": "https://api.ext165.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext165/model-a": {
+          "name": "Ext 165 Model A"
+        },
+        "ext165/model-b": {
+          "name": "Ext 165 Model B"
+        }
+      }
+    },
+    "ext166": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 166",
+      "options": {
+        "baseURL": "https://api.ext166.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext166/model-a": {
+          "name": "Ext 166 Model A"
+        },
+        "ext166/model-b": {
+          "name": "Ext 166 Model B"
+        }
+      }
+    },
+    "ext167": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 167",
+      "options": {
+        "baseURL": "https://api.ext167.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext167/model-a": {
+          "name": "Ext 167 Model A"
+        },
+        "ext167/model-b": {
+          "name": "Ext 167 Model B"
+        }
+      }
+    },
+    "ext168": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 168",
+      "options": {
+        "baseURL": "https://api.ext168.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext168/model-a": {
+          "name": "Ext 168 Model A"
+        },
+        "ext168/model-b": {
+          "name": "Ext 168 Model B"
+        }
+      }
+    },
+    "ext169": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 169",
+      "options": {
+        "baseURL": "https://api.ext169.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext169/model-a": {
+          "name": "Ext 169 Model A"
+        },
+        "ext169/model-b": {
+          "name": "Ext 169 Model B"
+        }
+      }
+    },
+    "ext170": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 170",
+      "options": {
+        "baseURL": "https://api.ext170.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext170/model-a": {
+          "name": "Ext 170 Model A"
+        },
+        "ext170/model-b": {
+          "name": "Ext 170 Model B"
+        }
+      }
+    },
+    "ext171": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 171",
+      "options": {
+        "baseURL": "https://api.ext171.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext171/model-a": {
+          "name": "Ext 171 Model A"
+        },
+        "ext171/model-b": {
+          "name": "Ext 171 Model B"
+        }
+      }
+    },
+    "ext172": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 172",
+      "options": {
+        "baseURL": "https://api.ext172.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext172/model-a": {
+          "name": "Ext 172 Model A"
+        },
+        "ext172/model-b": {
+          "name": "Ext 172 Model B"
+        }
+      }
+    },
+    "ext173": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 173",
+      "options": {
+        "baseURL": "https://api.ext173.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext173/model-a": {
+          "name": "Ext 173 Model A"
+        },
+        "ext173/model-b": {
+          "name": "Ext 173 Model B"
+        }
+      }
+    },
+    "ext174": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 174",
+      "options": {
+        "baseURL": "https://api.ext174.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext174/model-a": {
+          "name": "Ext 174 Model A"
+        },
+        "ext174/model-b": {
+          "name": "Ext 174 Model B"
+        }
+      }
+    },
+    "ext175": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 175",
+      "options": {
+        "baseURL": "https://api.ext175.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext175/model-a": {
+          "name": "Ext 175 Model A"
+        },
+        "ext175/model-b": {
+          "name": "Ext 175 Model B"
+        }
+      }
+    },
+    "ext176": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 176",
+      "options": {
+        "baseURL": "https://api.ext176.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext176/model-a": {
+          "name": "Ext 176 Model A"
+        },
+        "ext176/model-b": {
+          "name": "Ext 176 Model B"
+        }
+      }
+    },
+    "ext177": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 177",
+      "options": {
+        "baseURL": "https://api.ext177.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext177/model-a": {
+          "name": "Ext 177 Model A"
+        },
+        "ext177/model-b": {
+          "name": "Ext 177 Model B"
+        }
+      }
+    },
+    "ext178": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 178",
+      "options": {
+        "baseURL": "https://api.ext178.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext178/model-a": {
+          "name": "Ext 178 Model A"
+        },
+        "ext178/model-b": {
+          "name": "Ext 178 Model B"
+        }
+      }
+    },
+    "ext179": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 179",
+      "options": {
+        "baseURL": "https://api.ext179.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext179/model-a": {
+          "name": "Ext 179 Model A"
+        },
+        "ext179/model-b": {
+          "name": "Ext 179 Model B"
+        }
+      }
+    },
+    "ext180": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 180",
+      "options": {
+        "baseURL": "https://api.ext180.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext180/model-a": {
+          "name": "Ext 180 Model A"
+        },
+        "ext180/model-b": {
+          "name": "Ext 180 Model B"
+        }
+      }
+    },
+    "ext181": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 181",
+      "options": {
+        "baseURL": "https://api.ext181.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext181/model-a": {
+          "name": "Ext 181 Model A"
+        },
+        "ext181/model-b": {
+          "name": "Ext 181 Model B"
+        }
+      }
+    },
+    "ext182": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 182",
+      "options": {
+        "baseURL": "https://api.ext182.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext182/model-a": {
+          "name": "Ext 182 Model A"
+        },
+        "ext182/model-b": {
+          "name": "Ext 182 Model B"
+        }
+      }
+    },
+    "ext183": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 183",
+      "options": {
+        "baseURL": "https://api.ext183.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext183/model-a": {
+          "name": "Ext 183 Model A"
+        },
+        "ext183/model-b": {
+          "name": "Ext 183 Model B"
+        }
+      }
+    },
+    "ext184": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 184",
+      "options": {
+        "baseURL": "https://api.ext184.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext184/model-a": {
+          "name": "Ext 184 Model A"
+        },
+        "ext184/model-b": {
+          "name": "Ext 184 Model B"
+        }
+      }
+    },
+    "ext185": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 185",
+      "options": {
+        "baseURL": "https://api.ext185.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext185/model-a": {
+          "name": "Ext 185 Model A"
+        },
+        "ext185/model-b": {
+          "name": "Ext 185 Model B"
+        }
+      }
+    },
+    "ext186": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 186",
+      "options": {
+        "baseURL": "https://api.ext186.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext186/model-a": {
+          "name": "Ext 186 Model A"
+        },
+        "ext186/model-b": {
+          "name": "Ext 186 Model B"
+        }
+      }
+    },
+    "ext187": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 187",
+      "options": {
+        "baseURL": "https://api.ext187.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext187/model-a": {
+          "name": "Ext 187 Model A"
+        },
+        "ext187/model-b": {
+          "name": "Ext 187 Model B"
+        }
+      }
+    },
+    "ext188": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 188",
+      "options": {
+        "baseURL": "https://api.ext188.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext188/model-a": {
+          "name": "Ext 188 Model A"
+        },
+        "ext188/model-b": {
+          "name": "Ext 188 Model B"
+        }
+      }
+    },
+    "ext189": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 189",
+      "options": {
+        "baseURL": "https://api.ext189.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext189/model-a": {
+          "name": "Ext 189 Model A"
+        },
+        "ext189/model-b": {
+          "name": "Ext 189 Model B"
+        }
+      }
+    },
+    "ext190": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 190",
+      "options": {
+        "baseURL": "https://api.ext190.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext190/model-a": {
+          "name": "Ext 190 Model A"
+        },
+        "ext190/model-b": {
+          "name": "Ext 190 Model B"
+        }
+      }
+    },
+    "ext191": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 191",
+      "options": {
+        "baseURL": "https://api.ext191.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext191/model-a": {
+          "name": "Ext 191 Model A"
+        },
+        "ext191/model-b": {
+          "name": "Ext 191 Model B"
+        }
+      }
+    },
+    "ext192": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 192",
+      "options": {
+        "baseURL": "https://api.ext192.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext192/model-a": {
+          "name": "Ext 192 Model A"
+        },
+        "ext192/model-b": {
+          "name": "Ext 192 Model B"
+        }
+      }
+    },
+    "ext193": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 193",
+      "options": {
+        "baseURL": "https://api.ext193.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext193/model-a": {
+          "name": "Ext 193 Model A"
+        },
+        "ext193/model-b": {
+          "name": "Ext 193 Model B"
+        }
+      }
+    },
+    "ext194": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 194",
+      "options": {
+        "baseURL": "https://api.ext194.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext194/model-a": {
+          "name": "Ext 194 Model A"
+        },
+        "ext194/model-b": {
+          "name": "Ext 194 Model B"
+        }
+      }
+    },
+    "ext195": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 195",
+      "options": {
+        "baseURL": "https://api.ext195.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext195/model-a": {
+          "name": "Ext 195 Model A"
+        },
+        "ext195/model-b": {
+          "name": "Ext 195 Model B"
+        }
+      }
+    },
+    "ext196": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 196",
+      "options": {
+        "baseURL": "https://api.ext196.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext196/model-a": {
+          "name": "Ext 196 Model A"
+        },
+        "ext196/model-b": {
+          "name": "Ext 196 Model B"
+        }
+      }
+    },
+    "ext197": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 197",
+      "options": {
+        "baseURL": "https://api.ext197.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext197/model-a": {
+          "name": "Ext 197 Model A"
+        },
+        "ext197/model-b": {
+          "name": "Ext 197 Model B"
+        }
+      }
+    },
+    "ext198": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 198",
+      "options": {
+        "baseURL": "https://api.ext198.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext198/model-a": {
+          "name": "Ext 198 Model A"
+        },
+        "ext198/model-b": {
+          "name": "Ext 198 Model B"
+        }
+      }
+    },
+    "ext199": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 199",
+      "options": {
+        "baseURL": "https://api.ext199.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext199/model-a": {
+          "name": "Ext 199 Model A"
+        },
+        "ext199/model-b": {
+          "name": "Ext 199 Model B"
+        }
+      }
+    },
+    "ext200": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 200",
+      "options": {
+        "baseURL": "https://api.ext200.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext200/model-a": {
+          "name": "Ext 200 Model A"
+        },
+        "ext200/model-b": {
+          "name": "Ext 200 Model B"
+        }
+      }
+    },
+    "ext201": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 201",
+      "options": {
+        "baseURL": "https://api.ext201.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext201/model-a": {
+          "name": "Ext 201 Model A"
+        },
+        "ext201/model-b": {
+          "name": "Ext 201 Model B"
+        }
+      }
+    },
+    "ext202": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 202",
+      "options": {
+        "baseURL": "https://api.ext202.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext202/model-a": {
+          "name": "Ext 202 Model A"
+        },
+        "ext202/model-b": {
+          "name": "Ext 202 Model B"
+        }
+      }
+    },
+    "ext203": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 203",
+      "options": {
+        "baseURL": "https://api.ext203.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext203/model-a": {
+          "name": "Ext 203 Model A"
+        },
+        "ext203/model-b": {
+          "name": "Ext 203 Model B"
+        }
+      }
+    },
+    "ext204": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 204",
+      "options": {
+        "baseURL": "https://api.ext204.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext204/model-a": {
+          "name": "Ext 204 Model A"
+        },
+        "ext204/model-b": {
+          "name": "Ext 204 Model B"
+        }
+      }
+    },
+    "ext205": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 205",
+      "options": {
+        "baseURL": "https://api.ext205.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext205/model-a": {
+          "name": "Ext 205 Model A"
+        },
+        "ext205/model-b": {
+          "name": "Ext 205 Model B"
+        }
+      }
+    },
+    "ext206": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 206",
+      "options": {
+        "baseURL": "https://api.ext206.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext206/model-a": {
+          "name": "Ext 206 Model A"
+        },
+        "ext206/model-b": {
+          "name": "Ext 206 Model B"
+        }
+      }
+    },
+    "ext207": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 207",
+      "options": {
+        "baseURL": "https://api.ext207.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext207/model-a": {
+          "name": "Ext 207 Model A"
+        },
+        "ext207/model-b": {
+          "name": "Ext 207 Model B"
+        }
+      }
+    },
+    "ext208": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 208",
+      "options": {
+        "baseURL": "https://api.ext208.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext208/model-a": {
+          "name": "Ext 208 Model A"
+        },
+        "ext208/model-b": {
+          "name": "Ext 208 Model B"
+        }
+      }
+    },
+    "ext209": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 209",
+      "options": {
+        "baseURL": "https://api.ext209.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext209/model-a": {
+          "name": "Ext 209 Model A"
+        },
+        "ext209/model-b": {
+          "name": "Ext 209 Model B"
+        }
+      }
+    },
+    "ext210": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 210",
+      "options": {
+        "baseURL": "https://api.ext210.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext210/model-a": {
+          "name": "Ext 210 Model A"
+        },
+        "ext210/model-b": {
+          "name": "Ext 210 Model B"
+        }
+      }
+    },
+    "ext211": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 211",
+      "options": {
+        "baseURL": "https://api.ext211.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext211/model-a": {
+          "name": "Ext 211 Model A"
+        },
+        "ext211/model-b": {
+          "name": "Ext 211 Model B"
+        }
+      }
+    },
+    "ext212": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 212",
+      "options": {
+        "baseURL": "https://api.ext212.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext212/model-a": {
+          "name": "Ext 212 Model A"
+        },
+        "ext212/model-b": {
+          "name": "Ext 212 Model B"
+        }
+      }
+    },
+    "ext213": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 213",
+      "options": {
+        "baseURL": "https://api.ext213.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext213/model-a": {
+          "name": "Ext 213 Model A"
+        },
+        "ext213/model-b": {
+          "name": "Ext 213 Model B"
+        }
+      }
+    },
+    "ext214": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 214",
+      "options": {
+        "baseURL": "https://api.ext214.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext214/model-a": {
+          "name": "Ext 214 Model A"
+        },
+        "ext214/model-b": {
+          "name": "Ext 214 Model B"
+        }
+      }
+    },
+    "ext215": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 215",
+      "options": {
+        "baseURL": "https://api.ext215.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext215/model-a": {
+          "name": "Ext 215 Model A"
+        },
+        "ext215/model-b": {
+          "name": "Ext 215 Model B"
+        }
+      }
+    },
+    "ext216": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 216",
+      "options": {
+        "baseURL": "https://api.ext216.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext216/model-a": {
+          "name": "Ext 216 Model A"
+        },
+        "ext216/model-b": {
+          "name": "Ext 216 Model B"
+        }
+      }
+    },
+    "ext217": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 217",
+      "options": {
+        "baseURL": "https://api.ext217.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext217/model-a": {
+          "name": "Ext 217 Model A"
+        },
+        "ext217/model-b": {
+          "name": "Ext 217 Model B"
+        }
+      }
+    },
+    "ext218": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 218",
+      "options": {
+        "baseURL": "https://api.ext218.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext218/model-a": {
+          "name": "Ext 218 Model A"
+        },
+        "ext218/model-b": {
+          "name": "Ext 218 Model B"
+        }
+      }
+    },
+    "ext219": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 219",
+      "options": {
+        "baseURL": "https://api.ext219.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext219/model-a": {
+          "name": "Ext 219 Model A"
+        },
+        "ext219/model-b": {
+          "name": "Ext 219 Model B"
+        }
+      }
+    },
+    "ext220": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 220",
+      "options": {
+        "baseURL": "https://api.ext220.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext220/model-a": {
+          "name": "Ext 220 Model A"
+        },
+        "ext220/model-b": {
+          "name": "Ext 220 Model B"
+        }
+      }
+    },
+    "ext221": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 221",
+      "options": {
+        "baseURL": "https://api.ext221.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext221/model-a": {
+          "name": "Ext 221 Model A"
+        },
+        "ext221/model-b": {
+          "name": "Ext 221 Model B"
+        }
+      }
+    },
+    "ext222": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 222",
+      "options": {
+        "baseURL": "https://api.ext222.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext222/model-a": {
+          "name": "Ext 222 Model A"
+        },
+        "ext222/model-b": {
+          "name": "Ext 222 Model B"
+        }
+      }
+    },
+    "ext223": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 223",
+      "options": {
+        "baseURL": "https://api.ext223.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext223/model-a": {
+          "name": "Ext 223 Model A"
+        },
+        "ext223/model-b": {
+          "name": "Ext 223 Model B"
+        }
+      }
+    },
+    "ext224": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 224",
+      "options": {
+        "baseURL": "https://api.ext224.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext224/model-a": {
+          "name": "Ext 224 Model A"
+        },
+        "ext224/model-b": {
+          "name": "Ext 224 Model B"
+        }
+      }
+    },
+    "ext225": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 225",
+      "options": {
+        "baseURL": "https://api.ext225.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext225/model-a": {
+          "name": "Ext 225 Model A"
+        },
+        "ext225/model-b": {
+          "name": "Ext 225 Model B"
+        }
+      }
+    },
+    "ext226": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 226",
+      "options": {
+        "baseURL": "https://api.ext226.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext226/model-a": {
+          "name": "Ext 226 Model A"
+        },
+        "ext226/model-b": {
+          "name": "Ext 226 Model B"
+        }
+      }
+    },
+    "ext227": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 227",
+      "options": {
+        "baseURL": "https://api.ext227.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext227/model-a": {
+          "name": "Ext 227 Model A"
+        },
+        "ext227/model-b": {
+          "name": "Ext 227 Model B"
+        }
+      }
+    },
+    "ext228": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 228",
+      "options": {
+        "baseURL": "https://api.ext228.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext228/model-a": {
+          "name": "Ext 228 Model A"
+        },
+        "ext228/model-b": {
+          "name": "Ext 228 Model B"
+        }
+      }
+    },
+    "ext229": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 229",
+      "options": {
+        "baseURL": "https://api.ext229.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext229/model-a": {
+          "name": "Ext 229 Model A"
+        },
+        "ext229/model-b": {
+          "name": "Ext 229 Model B"
+        }
+      }
+    },
+    "ext230": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 230",
+      "options": {
+        "baseURL": "https://api.ext230.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext230/model-a": {
+          "name": "Ext 230 Model A"
+        },
+        "ext230/model-b": {
+          "name": "Ext 230 Model B"
+        }
+      }
+    },
+    "ext231": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 231",
+      "options": {
+        "baseURL": "https://api.ext231.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext231/model-a": {
+          "name": "Ext 231 Model A"
+        },
+        "ext231/model-b": {
+          "name": "Ext 231 Model B"
+        }
+      }
+    },
+    "ext232": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 232",
+      "options": {
+        "baseURL": "https://api.ext232.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext232/model-a": {
+          "name": "Ext 232 Model A"
+        },
+        "ext232/model-b": {
+          "name": "Ext 232 Model B"
+        }
+      }
+    },
+    "ext233": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 233",
+      "options": {
+        "baseURL": "https://api.ext233.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext233/model-a": {
+          "name": "Ext 233 Model A"
+        },
+        "ext233/model-b": {
+          "name": "Ext 233 Model B"
+        }
+      }
+    },
+    "ext234": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 234",
+      "options": {
+        "baseURL": "https://api.ext234.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext234/model-a": {
+          "name": "Ext 234 Model A"
+        },
+        "ext234/model-b": {
+          "name": "Ext 234 Model B"
+        }
+      }
+    },
+    "ext235": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 235",
+      "options": {
+        "baseURL": "https://api.ext235.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext235/model-a": {
+          "name": "Ext 235 Model A"
+        },
+        "ext235/model-b": {
+          "name": "Ext 235 Model B"
+        }
+      }
+    },
+    "ext236": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 236",
+      "options": {
+        "baseURL": "https://api.ext236.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext236/model-a": {
+          "name": "Ext 236 Model A"
+        },
+        "ext236/model-b": {
+          "name": "Ext 236 Model B"
+        }
+      }
+    },
+    "ext237": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 237",
+      "options": {
+        "baseURL": "https://api.ext237.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext237/model-a": {
+          "name": "Ext 237 Model A"
+        },
+        "ext237/model-b": {
+          "name": "Ext 237 Model B"
+        }
+      }
+    },
+    "ext238": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 238",
+      "options": {
+        "baseURL": "https://api.ext238.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext238/model-a": {
+          "name": "Ext 238 Model A"
+        },
+        "ext238/model-b": {
+          "name": "Ext 238 Model B"
+        }
+      }
+    },
+    "ext239": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 239",
+      "options": {
+        "baseURL": "https://api.ext239.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext239/model-a": {
+          "name": "Ext 239 Model A"
+        },
+        "ext239/model-b": {
+          "name": "Ext 239 Model B"
+        }
+      }
+    },
+    "ext240": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 240",
+      "options": {
+        "baseURL": "https://api.ext240.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext240/model-a": {
+          "name": "Ext 240 Model A"
+        },
+        "ext240/model-b": {
+          "name": "Ext 240 Model B"
+        }
+      }
+    },
+    "ext241": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 241",
+      "options": {
+        "baseURL": "https://api.ext241.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext241/model-a": {
+          "name": "Ext 241 Model A"
+        },
+        "ext241/model-b": {
+          "name": "Ext 241 Model B"
+        }
+      }
+    },
+    "ext242": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 242",
+      "options": {
+        "baseURL": "https://api.ext242.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext242/model-a": {
+          "name": "Ext 242 Model A"
+        },
+        "ext242/model-b": {
+          "name": "Ext 242 Model B"
+        }
+      }
+    },
+    "ext243": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 243",
+      "options": {
+        "baseURL": "https://api.ext243.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext243/model-a": {
+          "name": "Ext 243 Model A"
+        },
+        "ext243/model-b": {
+          "name": "Ext 243 Model B"
+        }
+      }
+    },
+    "ext244": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 244",
+      "options": {
+        "baseURL": "https://api.ext244.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext244/model-a": {
+          "name": "Ext 244 Model A"
+        },
+        "ext244/model-b": {
+          "name": "Ext 244 Model B"
+        }
+      }
+    },
+    "ext245": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 245",
+      "options": {
+        "baseURL": "https://api.ext245.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext245/model-a": {
+          "name": "Ext 245 Model A"
+        },
+        "ext245/model-b": {
+          "name": "Ext 245 Model B"
+        }
+      }
+    },
+    "ext246": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 246",
+      "options": {
+        "baseURL": "https://api.ext246.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext246/model-a": {
+          "name": "Ext 246 Model A"
+        },
+        "ext246/model-b": {
+          "name": "Ext 246 Model B"
+        }
+      }
+    },
+    "ext247": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 247",
+      "options": {
+        "baseURL": "https://api.ext247.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext247/model-a": {
+          "name": "Ext 247 Model A"
+        },
+        "ext247/model-b": {
+          "name": "Ext 247 Model B"
+        }
+      }
+    },
+    "ext248": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 248",
+      "options": {
+        "baseURL": "https://api.ext248.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext248/model-a": {
+          "name": "Ext 248 Model A"
+        },
+        "ext248/model-b": {
+          "name": "Ext 248 Model B"
+        }
+      }
+    },
+    "ext249": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 249",
+      "options": {
+        "baseURL": "https://api.ext249.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext249/model-a": {
+          "name": "Ext 249 Model A"
+        },
+        "ext249/model-b": {
+          "name": "Ext 249 Model B"
+        }
+      }
+    },
+    "ext250": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 250",
+      "options": {
+        "baseURL": "https://api.ext250.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext250/model-a": {
+          "name": "Ext 250 Model A"
+        },
+        "ext250/model-b": {
+          "name": "Ext 250 Model B"
+        }
+      }
+    },
+    "ext251": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 251",
+      "options": {
+        "baseURL": "https://api.ext251.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext251/model-a": {
+          "name": "Ext 251 Model A"
+        },
+        "ext251/model-b": {
+          "name": "Ext 251 Model B"
+        }
+      }
+    },
+    "ext252": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 252",
+      "options": {
+        "baseURL": "https://api.ext252.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext252/model-a": {
+          "name": "Ext 252 Model A"
+        },
+        "ext252/model-b": {
+          "name": "Ext 252 Model B"
+        }
+      }
+    },
+    "ext253": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 253",
+      "options": {
+        "baseURL": "https://api.ext253.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext253/model-a": {
+          "name": "Ext 253 Model A"
+        },
+        "ext253/model-b": {
+          "name": "Ext 253 Model B"
+        }
+      }
+    },
+    "ext254": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 254",
+      "options": {
+        "baseURL": "https://api.ext254.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext254/model-a": {
+          "name": "Ext 254 Model A"
+        },
+        "ext254/model-b": {
+          "name": "Ext 254 Model B"
+        }
+      }
+    },
+    "ext255": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 255",
+      "options": {
+        "baseURL": "https://api.ext255.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext255/model-a": {
+          "name": "Ext 255 Model A"
+        },
+        "ext255/model-b": {
+          "name": "Ext 255 Model B"
+        }
+      }
+    },
+    "ext256": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 256",
+      "options": {
+        "baseURL": "https://api.ext256.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext256/model-a": {
+          "name": "Ext 256 Model A"
+        },
+        "ext256/model-b": {
+          "name": "Ext 256 Model B"
+        }
+      }
+    },
+    "ext257": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 257",
+      "options": {
+        "baseURL": "https://api.ext257.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext257/model-a": {
+          "name": "Ext 257 Model A"
+        },
+        "ext257/model-b": {
+          "name": "Ext 257 Model B"
+        }
+      }
+    },
+    "ext258": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 258",
+      "options": {
+        "baseURL": "https://api.ext258.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext258/model-a": {
+          "name": "Ext 258 Model A"
+        },
+        "ext258/model-b": {
+          "name": "Ext 258 Model B"
+        }
+      }
+    },
+    "ext259": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 259",
+      "options": {
+        "baseURL": "https://api.ext259.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext259/model-a": {
+          "name": "Ext 259 Model A"
+        },
+        "ext259/model-b": {
+          "name": "Ext 259 Model B"
+        }
+      }
+    },
+    "ext260": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 260",
+      "options": {
+        "baseURL": "https://api.ext260.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext260/model-a": {
+          "name": "Ext 260 Model A"
+        },
+        "ext260/model-b": {
+          "name": "Ext 260 Model B"
+        }
+      }
+    },
+    "ext261": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 261",
+      "options": {
+        "baseURL": "https://api.ext261.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext261/model-a": {
+          "name": "Ext 261 Model A"
+        },
+        "ext261/model-b": {
+          "name": "Ext 261 Model B"
+        }
+      }
+    },
+    "ext262": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 262",
+      "options": {
+        "baseURL": "https://api.ext262.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext262/model-a": {
+          "name": "Ext 262 Model A"
+        },
+        "ext262/model-b": {
+          "name": "Ext 262 Model B"
+        }
+      }
+    },
+    "ext263": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 263",
+      "options": {
+        "baseURL": "https://api.ext263.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext263/model-a": {
+          "name": "Ext 263 Model A"
+        },
+        "ext263/model-b": {
+          "name": "Ext 263 Model B"
+        }
+      }
+    },
+    "ext264": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 264",
+      "options": {
+        "baseURL": "https://api.ext264.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext264/model-a": {
+          "name": "Ext 264 Model A"
+        },
+        "ext264/model-b": {
+          "name": "Ext 264 Model B"
+        }
+      }
+    },
+    "ext265": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 265",
+      "options": {
+        "baseURL": "https://api.ext265.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext265/model-a": {
+          "name": "Ext 265 Model A"
+        },
+        "ext265/model-b": {
+          "name": "Ext 265 Model B"
+        }
+      }
+    },
+    "ext266": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 266",
+      "options": {
+        "baseURL": "https://api.ext266.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext266/model-a": {
+          "name": "Ext 266 Model A"
+        },
+        "ext266/model-b": {
+          "name": "Ext 266 Model B"
+        }
+      }
+    },
+    "ext267": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 267",
+      "options": {
+        "baseURL": "https://api.ext267.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext267/model-a": {
+          "name": "Ext 267 Model A"
+        },
+        "ext267/model-b": {
+          "name": "Ext 267 Model B"
+        }
+      }
+    },
+    "ext268": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 268",
+      "options": {
+        "baseURL": "https://api.ext268.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext268/model-a": {
+          "name": "Ext 268 Model A"
+        },
+        "ext268/model-b": {
+          "name": "Ext 268 Model B"
+        }
+      }
+    },
+    "ext269": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 269",
+      "options": {
+        "baseURL": "https://api.ext269.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext269/model-a": {
+          "name": "Ext 269 Model A"
+        },
+        "ext269/model-b": {
+          "name": "Ext 269 Model B"
+        }
+      }
+    },
+    "ext270": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 270",
+      "options": {
+        "baseURL": "https://api.ext270.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext270/model-a": {
+          "name": "Ext 270 Model A"
+        },
+        "ext270/model-b": {
+          "name": "Ext 270 Model B"
+        }
+      }
+    },
+    "ext271": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 271",
+      "options": {
+        "baseURL": "https://api.ext271.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext271/model-a": {
+          "name": "Ext 271 Model A"
+        },
+        "ext271/model-b": {
+          "name": "Ext 271 Model B"
+        }
+      }
+    },
+    "ext272": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 272",
+      "options": {
+        "baseURL": "https://api.ext272.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext272/model-a": {
+          "name": "Ext 272 Model A"
+        },
+        "ext272/model-b": {
+          "name": "Ext 272 Model B"
+        }
+      }
+    },
+    "ext273": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 273",
+      "options": {
+        "baseURL": "https://api.ext273.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext273/model-a": {
+          "name": "Ext 273 Model A"
+        },
+        "ext273/model-b": {
+          "name": "Ext 273 Model B"
+        }
+      }
+    },
+    "ext274": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 274",
+      "options": {
+        "baseURL": "https://api.ext274.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext274/model-a": {
+          "name": "Ext 274 Model A"
+        },
+        "ext274/model-b": {
+          "name": "Ext 274 Model B"
+        }
+      }
+    },
+    "ext275": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 275",
+      "options": {
+        "baseURL": "https://api.ext275.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext275/model-a": {
+          "name": "Ext 275 Model A"
+        },
+        "ext275/model-b": {
+          "name": "Ext 275 Model B"
+        }
+      }
+    },
+    "ext276": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 276",
+      "options": {
+        "baseURL": "https://api.ext276.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext276/model-a": {
+          "name": "Ext 276 Model A"
+        },
+        "ext276/model-b": {
+          "name": "Ext 276 Model B"
+        }
+      }
+    },
+    "ext277": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 277",
+      "options": {
+        "baseURL": "https://api.ext277.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext277/model-a": {
+          "name": "Ext 277 Model A"
+        },
+        "ext277/model-b": {
+          "name": "Ext 277 Model B"
+        }
+      }
+    },
+    "ext278": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 278",
+      "options": {
+        "baseURL": "https://api.ext278.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext278/model-a": {
+          "name": "Ext 278 Model A"
+        },
+        "ext278/model-b": {
+          "name": "Ext 278 Model B"
+        }
+      }
+    },
+    "ext279": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 279",
+      "options": {
+        "baseURL": "https://api.ext279.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext279/model-a": {
+          "name": "Ext 279 Model A"
+        },
+        "ext279/model-b": {
+          "name": "Ext 279 Model B"
+        }
+      }
+    },
+    "ext280": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 280",
+      "options": {
+        "baseURL": "https://api.ext280.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext280/model-a": {
+          "name": "Ext 280 Model A"
+        },
+        "ext280/model-b": {
+          "name": "Ext 280 Model B"
+        }
+      }
+    },
+    "ext281": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 281",
+      "options": {
+        "baseURL": "https://api.ext281.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext281/model-a": {
+          "name": "Ext 281 Model A"
+        },
+        "ext281/model-b": {
+          "name": "Ext 281 Model B"
+        }
+      }
+    },
+    "ext282": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 282",
+      "options": {
+        "baseURL": "https://api.ext282.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext282/model-a": {
+          "name": "Ext 282 Model A"
+        },
+        "ext282/model-b": {
+          "name": "Ext 282 Model B"
+        }
+      }
+    },
+    "ext283": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 283",
+      "options": {
+        "baseURL": "https://api.ext283.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext283/model-a": {
+          "name": "Ext 283 Model A"
+        },
+        "ext283/model-b": {
+          "name": "Ext 283 Model B"
+        }
+      }
+    },
+    "ext284": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 284",
+      "options": {
+        "baseURL": "https://api.ext284.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext284/model-a": {
+          "name": "Ext 284 Model A"
+        },
+        "ext284/model-b": {
+          "name": "Ext 284 Model B"
+        }
+      }
+    },
+    "ext285": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 285",
+      "options": {
+        "baseURL": "https://api.ext285.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext285/model-a": {
+          "name": "Ext 285 Model A"
+        },
+        "ext285/model-b": {
+          "name": "Ext 285 Model B"
+        }
+      }
+    },
+    "ext286": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 286",
+      "options": {
+        "baseURL": "https://api.ext286.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext286/model-a": {
+          "name": "Ext 286 Model A"
+        },
+        "ext286/model-b": {
+          "name": "Ext 286 Model B"
+        }
+      }
+    },
+    "ext287": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 287",
+      "options": {
+        "baseURL": "https://api.ext287.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext287/model-a": {
+          "name": "Ext 287 Model A"
+        },
+        "ext287/model-b": {
+          "name": "Ext 287 Model B"
+        }
+      }
+    },
+    "ext288": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 288",
+      "options": {
+        "baseURL": "https://api.ext288.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext288/model-a": {
+          "name": "Ext 288 Model A"
+        },
+        "ext288/model-b": {
+          "name": "Ext 288 Model B"
+        }
+      }
+    },
+    "ext289": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 289",
+      "options": {
+        "baseURL": "https://api.ext289.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext289/model-a": {
+          "name": "Ext 289 Model A"
+        },
+        "ext289/model-b": {
+          "name": "Ext 289 Model B"
+        }
+      }
+    },
+    "ext290": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 290",
+      "options": {
+        "baseURL": "https://api.ext290.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext290/model-a": {
+          "name": "Ext 290 Model A"
+        },
+        "ext290/model-b": {
+          "name": "Ext 290 Model B"
+        }
+      }
+    },
+    "ext291": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 291",
+      "options": {
+        "baseURL": "https://api.ext291.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext291/model-a": {
+          "name": "Ext 291 Model A"
+        },
+        "ext291/model-b": {
+          "name": "Ext 291 Model B"
+        }
+      }
+    },
+    "ext292": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 292",
+      "options": {
+        "baseURL": "https://api.ext292.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext292/model-a": {
+          "name": "Ext 292 Model A"
+        },
+        "ext292/model-b": {
+          "name": "Ext 292 Model B"
+        }
+      }
+    },
+    "ext293": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 293",
+      "options": {
+        "baseURL": "https://api.ext293.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext293/model-a": {
+          "name": "Ext 293 Model A"
+        },
+        "ext293/model-b": {
+          "name": "Ext 293 Model B"
+        }
+      }
+    },
+    "ext294": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 294",
+      "options": {
+        "baseURL": "https://api.ext294.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext294/model-a": {
+          "name": "Ext 294 Model A"
+        },
+        "ext294/model-b": {
+          "name": "Ext 294 Model B"
+        }
+      }
+    },
+    "ext295": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 295",
+      "options": {
+        "baseURL": "https://api.ext295.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext295/model-a": {
+          "name": "Ext 295 Model A"
+        },
+        "ext295/model-b": {
+          "name": "Ext 295 Model B"
+        }
+      }
+    },
+    "ext296": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 296",
+      "options": {
+        "baseURL": "https://api.ext296.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext296/model-a": {
+          "name": "Ext 296 Model A"
+        },
+        "ext296/model-b": {
+          "name": "Ext 296 Model B"
+        }
+      }
+    },
+    "ext297": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 297",
+      "options": {
+        "baseURL": "https://api.ext297.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext297/model-a": {
+          "name": "Ext 297 Model A"
+        },
+        "ext297/model-b": {
+          "name": "Ext 297 Model B"
+        }
+      }
+    },
+    "ext298": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 298",
+      "options": {
+        "baseURL": "https://api.ext298.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext298/model-a": {
+          "name": "Ext 298 Model A"
+        },
+        "ext298/model-b": {
+          "name": "Ext 298 Model B"
+        }
+      }
+    },
+    "ext299": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 299",
+      "options": {
+        "baseURL": "https://api.ext299.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext299/model-a": {
+          "name": "Ext 299 Model A"
+        },
+        "ext299/model-b": {
+          "name": "Ext 299 Model B"
+        }
+      }
+    },
+    "ext300": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ext Provider 300",
+      "options": {
+        "baseURL": "https://api.ext300.ai/v1",
+        "apiKey": ""
+      },
+      "models": {
+        "ext300/model-a": {
+          "name": "Ext 300 Model A"
+        },
+        "ext300/model-b": {
+          "name": "Ext 300 Model B"
+        }
+      }
+    }
+  },
+  "plugins": [
+    "./plugins/freeai-teaming",
+    "./plugins/docs-automation"
+  ],
+  "mcp": {
+    "red-team": {
+      "command": "python",
+      "args": [
+        "mcp/servers/red-team.py"
+      ],
+      "type": "stdio"
+    },
+    "blue-team": {
+      "command": "python",
+      "args": [
+        "mcp/servers/blue-team.py"
+      ],
+      "type": "stdio"
+    },
+    "purple-team": {
+      "command": "python",
+      "args": [
+        "mcp/servers/purple-team.py"
+      ],
+      "type": "stdio"
+    },
+    "sdlc-apex": {
+      "command": "python",
+      "args": [
+        "mcp/servers/sdlc.py"
+      ],
+      "type": "stdio"
+    },
+    "docs": {
+      "command": "python",
+      "args": [
+        "mcp/servers/docs.py"
+      ],
+      "type": "stdio"
+    }
+  }
+}

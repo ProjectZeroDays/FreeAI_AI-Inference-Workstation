@@ -1,0 +1,4 @@
+interface:
+  display_name: "Elite Longterm Memory"
+  short_description: "Durable agent memory stack"
+  default_prompt: "Use $elite-longterm-memory to design or operate a durable Codex memory stack."

@@ -4,7 +4,9 @@
 # Drivers -> CUDA toolkit -> Docker -> FreeAI stack -> systemd -> firewall.
 #
 # Usage:
-#   sudo ./install-stack.sh                      # full provisioning
+#   sudo ./install-stack.sh                      # full provisioning (prompts for autonomous vs manual)
+#   SETUP_MODE=autonomous sudo ./install-stack.sh # autonomous, recommended, zero prompts
+#   SETUP_MODE=manual sudo ./install-stack.sh     # manual step-by-step
 #   ENABLE_CLOUDFLARED=1 sudo ./install-stack.sh # also install cloudflared
 #   NO_START=1 sudo ./install-stack.sh           # don't auto-start services
 #
@@ -30,6 +32,29 @@ REPO_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Default stack dir: the repo this script ships inside, unless overridden.
 [ -z "$STACK_DIR" ] && STACK_DIR="$REPO_ROOT"
+
+# ── Setup mode: autonomous (recommended) vs manual ────────────────
+SETUP_MODE="${SETUP_MODE:-}"  # autonomous | manual
+if [ -z "$SETUP_MODE" ] && [ -t 0 ]; then
+  echo
+  echo "╔══════════════════════════════════════════════════════════╗"
+  echo "║  FreeAI Initial Setup — Choose Configuration Mode       ║"
+  echo "╠══════════════════════════════════════════════════════════╣"
+  echo "║  [1] Autonomous — Recommended                           ║"
+  echo "║      Auto-detects GPU/RAM/CPU and applies optimal       ║"
+  echo "║      settings (gpu layers, ctx, providers). Zero       ║"
+  echo "║      prompts, uses existing .env keys if present.      ║"
+  echo "║  [2] Manual — Full Control                              ║"
+  echo "║      Step-by-step: you configure every provider key,   ║"
+  echo "║      GPU tuning, and GUI options interactively.        ║"
+  echo "╚══════════════════════════════════════════════════════════╝"
+  read -r -p "Select [1/2] (default 1): " _choice || _choice=1
+  case "$_choice" in 2|manual) SETUP_MODE=manual ;; *) SETUP_MODE=autonomous ;; esac
+fi
+[ -z "$SETUP_MODE" ] && SETUP_MODE=autonomous
+export FREEAI_AUTONOMOUS_SETUP=0
+[ "$SETUP_MODE" = "autonomous" ] && FREEAI_AUTONOMOUS_SETUP=1
+# Allow non-interactive override: SETUP_MODE=autonomous sudo ./install-stack.sh
 
 log() { echo "[stack] $*"; }
 REBOOT_REQUIRED=0
@@ -194,6 +219,19 @@ if [ "$ENABLE_CLOUDFLARED" = "1" ] && ! command -v cloudflared >/dev/null 2>&1; 
     | $SUDO tee /etc/apt/sources.list.d/cloudflared.list > /dev/null
   $SUDO apt-get update -y && $SUDO apt-get install -y cloudflared
   log "Next: cloudflared tunnel login && cloudflared tunnel create center"
+fi
+
+# ------------------------------------------------------- 9b. autoconfigure
+log "Running FreeAI autoconfigure ($SETUP_MODE)..."
+if [ "$SETUP_MODE" = "autonomous" ]; then
+  python3 "$REPO_ROOT/scripts/autoconfigure.py" --autonomous || log "autoconfigure autonomous: partial (check .env)"
+else
+  if [ -t 0 ]; then
+    python3 "$REPO_ROOT/scripts/autoconfigure.py" --manual || log "autoconfigure manual: cancelled"
+  else
+    log "Non-interactive manual requested but no TTY — falling back to autonomous"
+    python3 "$REPO_ROOT/scripts/autoconfigure.py" --autonomous || true
+  fi
 fi
 
 # ------------------------------------------------------------------ summary

@@ -1,0 +1,7 @@
+{
+  "name": "blender-animation",
+  "description": "Generate 3D animations using Blender in headless mode",
+  "version": "1.0.0",
+  "entry": "SKILL.md",
+  "tools": ["bash"]
+}

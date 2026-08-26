@@ -1,0 +1,37 @@
+{
+  "name": "codex-cli",
+  "version": "1.0.0",
+  "description": "Codex CLI with OpenRouter integration",
+  "main": "index.js",
+  "bin": {
+    "codex": "./cli.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/patch_openrouter.js",
+    "start": "node cli.js"
+  },
+  "keywords": [
+    "codex",
+    "openrouter",
+    "ai",
+    "llm"
+  ],
+  "author": "Hermes-Agent",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "config": {
+    "openrouter": {
+      "apiKey": "YOUR_API_KEY_HERE",
+      "models": [
+        "poolside/laguna-xs.2:free",
+        "baidu/cobuddy:free",
+        "nvidia/nemotron-3-super-120b-a12b:free",
+        "baidu/qianfan-ocr-fast:free"
+      ],
+      "defaultModel": "poolside/laguna-xs.2:free",
+      "proxyPort": 8080
+    }
+  }
+}

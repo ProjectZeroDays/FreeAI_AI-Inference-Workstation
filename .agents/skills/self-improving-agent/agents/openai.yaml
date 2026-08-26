@@ -1,0 +1,4 @@
+interface:
+  display_name: "Self Improving Agent"
+  short_description: "Log learnings and errors"
+  default_prompt: "Use $self-improving-agent to capture learnings, errors, feature requests, or corrections in .learnings/."

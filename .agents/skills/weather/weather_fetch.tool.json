@@ -1,0 +1,36 @@
+{
+  "name": "weather_fetch",
+  "description": "Fetch weather for a location with caching and automatic fallback",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "location": {
+        "type": "string",
+        "description": "City name (e.g., 'Raleigh', 'New York', 'San Francisco')",
+        "default": "Raleigh"
+      }
+    }
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Formatted weather string"
+      },
+      "source": {
+        "type": "string",
+        "enum": ["wttr.in", "open-meteo", "cache"],
+        "description": "Data source"
+      },
+      "temp_f": {
+        "type": "number",
+        "description": "Temperature in Fahrenheit"
+      },
+      "error": {
+        "type": "boolean",
+        "description": "True if there was an error"
+      }
+    }
+  }
+}

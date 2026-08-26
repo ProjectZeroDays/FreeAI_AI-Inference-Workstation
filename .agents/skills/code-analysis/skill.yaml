@@ -1,0 +1,145 @@
+name: code-analysis-skills
+version: 1.1.0
+description: >
+  A Git-history *self-reflection* tool. By default analyses ONLY commits
+  authored by the current local Git user; analysing other developers requires
+  a deliberate, second opt-in. Produces DESCRIPTIVE statistics about commit
+  cadence, file-change patterns, code-style markers, and code-quality
+  artefacts (bug-fix commits, reverts, complexity).
+
+  Intended use: self-reflection by a developer on their own repository, or
+  opt-in, consent-based team retrospectives where every included developer
+  is named in `consented_authors`. Output is a narrow, biased proxy — code
+  review, design, mentoring, on-call, and operations are invisible to Git
+  history.
+
+  Structural safeguards in this skill:
+    * `acknowledge_usage_policy: true` is required to run; there is NO
+      environment-variable bypass.
+    * Self-scope mode is the default; cross-author analysis requires both
+      `multi_author_team_retro: true` AND a non-empty `consented_authors`
+      list.
+    * No composite 0–100 score, no S/A/B/C/D/E/F letter band, no "verdict"
+      sentence, and no leaderboard or cross-author comparison table is
+      rendered in any output format.
+
+  This tool MUST NOT be used for performance reviews, ranking individual
+  workers, compensation / promotion / discipline decisions, or any form of
+  employee surveillance. Supports PDF, HTML, Markdown, and JSON output.
+author: reky
+license: MIT
+acceptLicenseTerms: true
+tags:
+  - code-analysis
+  - git
+  - git-history-reflection
+  - code-quality
+  - commit-patterns
+  - pdf-report
+
+runtime: python
+entry: src/main.py
+
+# ─── Usage policy ────────────────────────────────────────────────────────────
+# This skill processes per-developer Git activity data. The agent should:
+#   1. Refuse to invoke this skill for evaluating, ranking, comparing, or
+#      surveilling employees or non-consenting contributors.
+#   2. Only invoke it when the user has stated informed consent from every
+#      analyzed developer (or is analyzing their own repository).
+#   3. Always pass `acknowledge_usage_policy: true` after the user confirms.
+usage_policy: |
+  This skill produces DESCRIPTIVE statistics about Git history only.
+  Do NOT use the output for performance reviews, ranking, compensation,
+  promotion, discipline, surveillance, or any HR decision. Run only with
+  the informed consent of every analyzed developer.
+
+parameters:
+  - name: repo_path
+    type: string
+    description: >
+      Path to a specific Git repository, or a parent directory to scan for all
+      .git repositories. Required.
+    required: true
+
+  - name: acknowledge_usage_policy
+    type: boolean
+    description: >
+      REQUIRED. Must be set to true to confirm that (1) the caller has read
+      the usage policy, (2) every developer whose Git history will be analyzed
+      has given informed consent, and (3) the output will NOT be used for
+      performance reviews, ranking, compensation, discipline, surveillance, or
+      any HR decision. The tool refuses to run otherwise.
+    default: false
+    required: true
+
+  - name: scan_all_repos
+    type: boolean
+    description: >
+      If true, recursively scan the repo_path directory for all .git repositories.
+      Self-scope filtering still applies inside every discovered repo.
+    default: false
+
+  - name: multi_author_team_retro
+    type: boolean
+    description: >
+      Opt out of self-scope mode and run a fully-consented multi-author team
+      retrospective. Requires a non-empty `consented_authors` list. When
+      false (the default) analysers are locked to the current local Git
+      user's identity and other authors in the repository are skipped.
+    default: false
+
+  - name: consented_authors
+    type: list
+    description: >
+      Required when `multi_author_team_retro` is true. List the name or email
+      of every developer who has given informed consent to be included in
+      the retrospective. The tool refuses to run an implicit whole-repository
+      person-level analysis: every analysed author MUST appear here.
+    default: []
+
+  - name: since
+    type: string
+    description: >
+      Start date for analysis (ISO format, e.g., '2024-01-01').
+    default: ""
+
+  - name: until
+    type: string
+    description: >
+      End date for analysis (ISO format, e.g., '2024-12-31').
+    default: ""
+
+  - name: branch
+    type: string
+    description: >
+      Branch to analyze. Defaults to the current active branch.
+    default: ""
+
+  - name: output_format
+    type: string
+    description: >
+      Output format(s): 'json', 'markdown', 'html', 'pdf', or comma-separated
+      combination like 'markdown,html,pdf' for multiple outputs.
+    default: "markdown"
+
+  - name: output_path
+    type: string
+    description: >
+      Base output file path. For multiple formats, extensions are auto-appended.
+    default: ""
+
+outputs:
+  - name: report
+    type: string
+    description: The generated reflection report (primary format).
+  - name: metrics
+    type: object
+    description: >
+      Structured metrics data, ALWAYS scoped to either the current local Git
+      user (default) or the explicitly listed `consented_authors`. Each
+      per-author entry carries an `interpretation_notice` field that
+      downstream consumers must surface alongside the data. Per-author
+      results never contain a composite score, letter grade, or verdict.
+  - name: reports
+    type: object
+    description: Dict of all generated reports keyed by format name. Each rendered report opens with a usage notice and never contains a leaderboard or cross-author comparison table.

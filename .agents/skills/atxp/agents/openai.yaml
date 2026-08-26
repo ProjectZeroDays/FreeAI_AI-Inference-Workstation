@@ -1,0 +1,4 @@
+interface:
+  display_name: "ATXP Tools"
+  short_description: "Paid API tools for agents"
+  default_prompt: "Use $atxp to run an ATXP-powered search, media, email, or account workflow."
