@@ -559,7 +559,7 @@ python evals/run_eval.py   # golden-task eval sweep (needs router up; MOCK_LLM=1
 
 Suite map: router unit (classifier/switcher/cache/limiter) - router API via Flask test client (mock backend) - coherence (degenerate detector + retry) - agents (profiles/memory/metrics via TestClient) - workflow (validation/retries/definitions) - autonomous SDLC (full lifecycle, fix loop, cancellation, sandbox safety) - optimizer (mode decisions) - presets (CRUD/apply/idle expiry/cap). Golden-task evals live outside pytest: they score real router output quality per task class.
 
-CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (offline smoke) - docs.yml (auto-generate workflows.json) - docker-publish.yml (5 images to GHCR on tags) - release.yml (source bundle on tags) - local-build.yml (builds all 5 images and uploads artifact tarballs instead of pushing to GHCR - useful for forks or while GHCR pushes are unavailable).
+CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (offline smoke) - docs.yml (auto-generate workflows.json) - docker-publish.yml (5 images to GHCR on tags) - release.yml (source bundle on tags) - local-build.yml (image tarball artifacts) - iso-build.yml (FreeAIOS ISO remaster on dispatch/tags; ISO artifact + <2GiB split parts on release) (builds all 5 images and uploads artifact tarballs instead of pushing to GHCR - useful for forks or while GHCR pushes are unavailable).
 
 > Note: if Actions shows failures reading "account is locked due to a billing issue", no job starts at all (even local-build.yml) - that is GitHub-side billing; resolve at github.com -> Settings -> Billing and every workflow resumes automatically with zero repo changes.
 

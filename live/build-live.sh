@@ -23,7 +23,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 command -v xorriso >/dev/null || { echo "need xorriso";  exit 1; }
 [ -f "$UBUNTU_ISO" ] || { echo "ISO not found: $UBUNTU_ISO"; exit 1; }
 
-WORK="$(mktemp -d /tmp/freeaios.XXXXXX)"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/freeaios.XXXXXX")"
 SRC="$WORK/src"          # extracted original
 NEW="$WORK/new"          # modified tree
 trap 'rm -rf "$WORK"' EXIT
