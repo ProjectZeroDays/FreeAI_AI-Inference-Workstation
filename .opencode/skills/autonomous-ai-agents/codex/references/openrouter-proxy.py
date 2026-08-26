@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 OpenRouter Proxy for Codex CLI
 Run this proxy to enable Codex to work with OpenRouter via binary patching.
