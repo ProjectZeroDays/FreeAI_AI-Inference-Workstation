@@ -91,9 +91,13 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Designer](docs/screenshots/workflow-designer.png) | ![Providers panel](docs/screenshots/dashboard-providers.png) |
 | 3-step pipeline (architecture -> codegen -> tests) w/ step config | 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings |
 
-| FreeAI UI - 8-model roster picker | Dashboard - model shelf |
-|---|---|
-| ![8-model roster picker](docs/screenshots/freeai-ui.png) | ![Model shelf](docs/screenshots/dashboard-full.png) |
+| FreeAI UI - 8-model roster picker |
+|---|
+| ![8-model roster picker](docs/screenshots/freeai-ui.png) |
+
+| Dashboard - model shelf |
+|---|
+| ![Model shelf](docs/screenshots/dashboard-full.png) |
 
 | Full Dashboard (every panel) |
 |---|
