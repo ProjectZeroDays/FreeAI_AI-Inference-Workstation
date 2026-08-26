@@ -26,11 +26,13 @@ command -v xorriso >/dev/null || { echo "need xorriso";  exit 1; }
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/freeaios.XXXXXX")"
 SRC="$WORK/src"          # extracted original
 NEW="$WORK/new"          # modified tree
-trap 'rm -rf "$WORK"' EXIT
+trap 'chmod -R u+w "$WORK" 2>/dev/null; rm -rf "$WORK"' EXIT
 
 echo "[iso] extracting original ISO..."
 xorriso -osirrox on -indev "$UBUNTU_ISO" -extract / "$SRC" >/dev/null 2>&1
+chmod -R u+w "$SRC" 2>/dev/null || true
 cp -a "$SRC" "$NEW"
+chmod -R u+w "$NEW" 2>/dev/null || true
 
 # ---------------------------------------------------------------- repo payload
 mkdir -p "$NEW/freeai"
