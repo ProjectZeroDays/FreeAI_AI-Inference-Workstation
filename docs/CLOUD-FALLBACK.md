@@ -77,6 +77,27 @@ repo — so a cloud deployment behaves exactly like the workstation.
 - for Vast/GCP spot: keep models on the provider volume so re-boots skip
   the ~70 GB download
 
+## Scale-out alternative: exo cluster (Apple Silicon)
+
+[exo](https://github.com/exo-explore/exo) clusters devices (Macs via
+MLX + RDMA/Thunderbolt) into one inference endpoint with
+OpenAI/Claude/Ollama-compatible APIs on `:52415`.
+
+**Not integrated by default — and deliberately so**: on Linux exo is
+CPU-only today, which regresses vs the CUDA llama.cpp path. It becomes
+interesting only when Apple Silicon boxes join the LAN (e.g. Mac
+Studio cluster for 70B+ MLX models). At that point no code is needed —
+add a registry entry:
+
+```json
+{"id": "deepseek-v3-exo", "backend": "openai",
+ "endpoint": "http://<mac-studio>:52415/v1/chat/completions",
+ "role": "frontier fallback"}
+```
+
+The router's fallback chain treats it like any other backend. Revisit
+if/when exo ships Linux NVIDIA GPU support (tracked upstream).
+
 ## Security hardening (cloud-exposed boxes)
 
 `hardware/install-stack.sh` already: enables UFW (SSH + 8030 dashboard

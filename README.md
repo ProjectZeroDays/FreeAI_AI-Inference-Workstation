@@ -96,15 +96,15 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Dashboard full](docs/screenshots/dashboard-full.png) |
 | Alerts, GPU, services, clients, providers, runs, files, settings, model shelf |
 
-| FreeToken Desktop Console |
-|---|
-| ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
-| Console UI — edge runtime on RTX 30/40/50 |
-
 | Dashboard - timed idle window |
 |---|
 | ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
 | Eco enforced (6% util, 198W/2400MHz), idle banner w/ auto-restore countdown |
+
+| FreeToken Desktop Console |
+|---|
+| ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
+| Console UI — edge runtime on RTX 30/40/50 |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
