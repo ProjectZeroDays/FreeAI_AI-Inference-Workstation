@@ -5,6 +5,32 @@
 ![python](https://img.shields.io/badge/python-3.10%2B-informational)
 ![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)
 
+
+> **The world's most complete self-hosted AI workstation.**  
+> **Local models. Autonomous agents. Full SDLC automation.**  
+> **One-line spec → full project. One URL → all clients.**
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" width="48%" alt="FreeAI Dashboard" />
+  <img src="docs/screenshots/freeai-ui.png" width="48%" alt="FreeAI UI" />
+</p>
+
+> **5-Minute Quick Start** — pick one:
+
+```bash
+# Bare metal (recommended, auto-detects 4090/Z790 and configures)
+curl -fsSL https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_Ubuntu-AI-Inference-Workstation/main/hardware/install-stack.sh | bash
+# Or: SETUP_MODE=autonomous sudo ./hardware/install-stack.sh
+
+# Docker (any host with NVIDIA Docker)
+docker compose up -d --build
+
+# Live ISO (no install)
+# Download freeaios-amd64.iso from Releases → boot → Install FreeAI
+```
+
+> **Try before you clone:** `MOCK_LLM=1` runs the entire stack without a GPU (`make test` is fully offline).
+
 Production-grade, self-hosted **AI inference workstation stack**: GGUF coder models on NVIDIA GPUs, a task-classifying model router with fallback chains, a multi-agent REST layer, a workflow engine, **autonomous SDLC agents** that turn a one-line spec into a packaged project, a presets/settings control plane, an AI power optimizer, self-healing watchdogs, and a full XFCE + VNC remote desktop. Deployable bare-metal, via Docker Compose, Kubernetes, cloud GPU providers, or as a Live ISO.
 
 ---
@@ -135,6 +161,45 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | **Evals** | golden-task harness (`evals/golden_tasks.json`) - `run_eval.py` scores router answers vs expectations incl. reviewer-model pass |
 | **Tooling** | `freeai-cli` (14 subcommands) - Makefile - MkDocs site - auto-docs generator - GitHub Actions CI (py/bash/js/json gates) + docker publish + release bundling |
 | **Desktop** | XFCE + TigerVNC + noVNC (compose `--profile desktop`) |
+
+
+### Why FreeAI vs Alternatives
+
+| Feature | **FreeAI** | LM Studio | OpenWebUI | Ollama | vLLM | LocalAI | TextGen WebUI |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Multi-backend (llama.cpp + vLLM + FreeToken MoE 290B+) | ✔ | ✖ | ✖ | ✖ | ✔ | ✖ | ✖ |
+| Router w/ fallback chains + degenerate retry + cache | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| Autonomous SDLC (plan→code→test→fix→doc→package) | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| Workflow engine + designer | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| Full desktop OS (XFCE+VNC/noVNC) + Live ISO | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| GPU optimizer (eco/balanced/perf) + watchdogs | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| 300+ providers (OpenAI/Anthropic/Google/OpenRouter/venice/agnes/zen/HF) | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| Red/Blue/Purple autonomous teaming | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+| One-command bare-metal/cloud/K8s/ISO deploy | ✔ | ✖ | ✖ | ✖ | ✖ | ✖ | ✖ |
+
+*FreeAI is the only stack that ships all of the above in one repo.*
+
+### Use Cases
+
+- **One-line spec → shippable project:** `freeai.py auto-start "Build a FastAPI notes service with tests" --watch`
+- **Multi-model fallback:** Local 9B Q6_K → cloud GPT-4o → Venice uncensored → FreeToken 290B MoE, auto
+- **24/7 workstation:** Full remote XFCE desktop via noVNC (6080) + dashboard (8030) from anywhere (TailScale/Cloudflare)
+- **Enterprise RAG:** Qdrant + ingest watcher + top-K cache for codebase/docs automation
+- **Autonomous teaming:** Red attacks, Blue hardens, Purple validates and bridges to JIRA-ready tickets
+
+### Beginner Mode
+
+New to self-hosting? Start here:
+
+```bash
+# 1. One model, one chat — no router complexity
+docker compose up -d llama dashboard
+# Open http://localhost:8030 → Chat with freeai/qwen3.6-12b-heretic
+
+# 2. When ready, enable the full stack:
+docker compose --profile rag --profile desktop up -d
+python scripts/autoconfigure.py --autonomous  # auto-tunes for your GPU
+```
 
 ## 4. Architecture
 
