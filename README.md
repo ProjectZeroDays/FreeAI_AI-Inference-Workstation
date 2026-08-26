@@ -242,7 +242,7 @@ above works today; clearing billing turns on `docker-publish`, `release`, and
 | **Recommended** | 16 GB (RTX 4070 Ti SUPER / 4080) | 64 GB DDR5-6000 | 1 TB OS + 2 TB models | Full 8-model roster Q6_K on disk w/ instant hot-swap (`/admin/model-switch`; `--profile llama2` keeps a 2nd shard resident), full SDLC loops 24/7 |
 | Headroom | 24 GB (RTX 4090 / 3090) | 96-128 GB | +4 TB models | Larger coders + MTP speculative decoding, vLLM coexistence |
 
-Verified parts list (MPN/ASIN): [hardware/parts-list.md](hardware/parts-list.md) - assembly: [hardware/BUILD.md](hardware/BUILD.md) - build-vs-cloud economics: [hardware/LOCAL-DEPLOY.md](hardware/LOCAL-DEPLOY.md).
+Verified parts list (MPN/ASIN): [hardware/PARTS-LIST.md](hardware/PARTS-LIST.md) - assembly: [hardware/BUILD.md](hardware/BUILD.md) - build-vs-cloud economics: [hardware/LOCAL-DEPLOY.md](hardware/LOCAL-DEPLOY.md).
 
 ## 8. Install and Deploy Handbook
 
@@ -718,7 +718,7 @@ Full matrix: [ROADMAP.md](ROADMAP.md). Headliners:
 | docs/OPTIMIZATION-AUDIT.md | high-impact scale/reliability audit: logging, config, watchdogs, model lifecycle, networking, RAG |
 | docs/BUILD-SHEET.md | workstation build (i9-14900KF/RTX 4090/128GB DDR5), GPU tier + model performance tables, power envelope |
 | docs/FIRST-BOOT-GUIDE.md | 10-step bring-up: BIOS -> Ubuntu -> CUDA -> installer -> registry -> services -> dashboard -> noVNC |
-| hardware/parts-list.md | verified workstation SKUs |
+| hardware/PARTS-LIST.md | verified workstation SKUs |
 | hardware/BUILD.md | assembly + Ubuntu install walkthrough |
 | hardware/LOCAL-DEPLOY.md | min requirements, build-vs-cloud economics |
 | CHANGELOG.md | release notes |

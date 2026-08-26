@@ -48,7 +48,7 @@ jobs:
         run: |
           mkdir -p dist/deploy-kit
           cp hardware/install-stack.sh hardware/gpu-power-tune.sh \
-             hardware/setup-remote-access.sh hardware/parts-list.md \
+             hardware/setup-remote-access.sh hardware/PARTS-LIST.md \
              hardware/BUILD.md hardware/LOCAL-DEPLOY.md dist/deploy-kit/
           tar -czf "dist/deploy-kit-${GITHUB_REF_NAME}.tar.gz" -C dist deploy-kit
 

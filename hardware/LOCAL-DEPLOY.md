@@ -25,7 +25,7 @@ CUDA toolkit (for source builds), Docker optional.
 ## The recommended build (verified MPNs)
 
 Full table with prices and store references:
-[parts-list.md](parts-list.md). Summary:
+[PARTS-LIST.md](PARTS-LIST.md). Summary:
 
 Ryzen 9 7900 · NH-D15S · ASUS TUF B650-PLUS WIFI · GIGABYTE RTX 4070
 Ti SUPER Gaming OC **16G** · 64GB DDR5-6000 CL30 EXPO (`F5-6000J3040G32GX2-FX5`)

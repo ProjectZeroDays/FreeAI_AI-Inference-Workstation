@@ -4,7 +4,7 @@ Physical assembly + OS install for the always-on AI workstation.
 Software stack provisioning is automated by `install-stack.sh` —
 you only touch a terminal once Ubuntu is on the machine.
 
-Parts: see [parts-list.md](parts-list.md).
+Parts: see [PARTS-LIST.md](PARTS-LIST.md).
 
 ---
 
