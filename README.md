@@ -89,15 +89,15 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Designer](docs/screenshots/workflow-designer.png) | ![Providers panel](docs/screenshots/dashboard-providers.png) |
 | 3-step pipeline (architecture -> codegen -> tests) w/ step config | 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings |
 
-| FreeToken @ GitHub (7.2k★) | FreeToken Desktop Console |
-|---|---|
-| ![FreeToken GitHub](docs/screenshots/freetoken-github.png) | ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
-| Repo overview — Apache-2.0, 290B MoE | Console UI — edge runtime on RTX 30/40/50 |
-
 | Full Dashboard (every panel) |
 |---|
 | ![Dashboard full](docs/screenshots/dashboard-full.png) |
 | Alerts, GPU, services, clients, providers, runs, files, settings, model shelf |
+
+| FreeToken Desktop Console |
+|---|
+| ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
+| Console UI — edge runtime on RTX 30/40/50 |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
