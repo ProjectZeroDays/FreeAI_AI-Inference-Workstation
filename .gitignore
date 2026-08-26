@@ -23,3 +23,5 @@ site/
 backups/
 age.key
 config/secrets.enc.yaml
+
+config/runtime-state.json

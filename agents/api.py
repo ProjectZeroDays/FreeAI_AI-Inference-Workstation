@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 import requests
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 try:
@@ -20,6 +21,15 @@ DEFAULT_PROFILE = _CFG.get("default_profile", "balanced")
 MEMORY_MAX_TURNS = int(_CFG.get("memory_max_turns", 20))
 
 app = FastAPI(title="Unified Agent API", version="1.1")
+
+# The standalone FreeAI UI (ui/freeai.html) is served from its own origin and
+# calls these endpoints directly from the browser - allow it.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 _METRICS = {"calls_total": 0, "errors_total": 0}
 _MLOCK = threading.Lock()

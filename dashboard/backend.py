@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """FreeAI Dashboard — GPU telemetry, service health, alerts."""
 import json
-import json
+import math
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import time
@@ -14,6 +15,11 @@ from flask import Flask, jsonify, request, send_from_directory, Response
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
+
+# SAMPLE_TELEMETRY=1 -> plausible simulated GPU numbers for docs/demos on
+# GPU-less machines (matches MOCK_LLM philosophy). Real nvidia-smi wins
+# whenever it is present and this flag is unset.
+SAMPLE_TELEMETRY = os.environ.get("SAMPLE_TELEMETRY", "") == "1"
 
 AUTH_TOKEN = os.environ.get("DASHBOARD_AUTH_TOKEN", "").strip()
 UPLOAD_DIR = os.environ.get(
@@ -242,7 +248,34 @@ _GPU_FIELDS = ("utilization.gpu,memory.used,memory.total,"
                "temperature.gpu,power.draw,clocks.current.sm")
 
 
+def _idle_active():
+    try:
+        with open(os.path.join(ROOT_DIR, "config",
+                               "runtime-settings.json")) as f:
+            return bool(json.load(f).get("idle", {}).get("active"))
+    except (OSError, ValueError):
+        return False
+
+
+def _sample_gpu_stats():
+    """Simulated telemetry for docs/demos (SAMPLE_TELEMETRY=1)."""
+    if _idle_active():
+        # deterministic eco values (matches docs captions)
+        return {"utilization": 6, "memory_used": 812,
+                "memory_total": 16376, "temperature": 41,
+                "power_watts": 198.0, "clock_mhz": 2400}
+    util, power, clock, temp = 74, 418.0, 2610, 67
+    used, total = 11240, 16376
+    drift = int(round(5 * math.sin(time.time() / 18)))
+    return {"utilization": max(0, min(100, util + drift)),
+            "memory_used": used, "memory_total": total,
+            "temperature": temp, "power_watts": power,
+            "clock_mhz": clock}
+
+
 def get_gpu_stats():
+    if SAMPLE_TELEMETRY:
+        return _sample_gpu_stats()
     try:
         out = subprocess.check_output(
             ["nvidia-smi", f"--query-gpu={_GPU_FIELDS}",
@@ -272,15 +305,23 @@ def get_gpu_stats():
                 "temperature": 0, "power_watts": 0.0, "clock_mhz": 0}
 
 
+def _port_open(port, host="127.0.0.1"):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(0.25)
+        return s.connect_ex((host, port)) == 0
+
+
 def listening_ports():
     try:
         out = subprocess.check_output(
             ["ss", "-tuln"], stderr=subprocess.DEVNULL).decode()
     except Exception:
-        out = ""
+        out = ""  # non-Linux dev boxes: fall back to TCP probes below
 
     def up(port):
-        return f":{port}" in out
+        if out:
+            return f":{port}" in out
+        return _port_open(port)
 
     base = {
         "router": up(8010),
@@ -299,6 +340,10 @@ def listening_ports():
         "opencode": up(3000),
         "zcode": up(5000),
     })
+    if SAMPLE_TELEMETRY:
+        # demo mode simulates the inference backends too
+        base["llama"] = True
+        base["vllm"] = True
     return base
 
 
@@ -503,6 +548,27 @@ def delete_preset(name):
     return jsonify({"status": "deleted"})
 
 
+def _publish_power_mode(mode):
+    """Publish power mode immediately on preset apply (optimizer takes
+    over on live boxes); keeps the dashboard badge truthful in demos."""
+    path = os.path.join(ROOT_DIR, "config", "runtime-state.json")
+    try:
+        state = {}
+        if os.path.exists(path):
+            with open(path) as f:
+                state = json.load(f)
+    except (OSError, ValueError):
+        state = {}
+    state.update({"mode": mode, "since": time.time(),
+                  "reason": "preset-apply"})
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            json.dump(state, f, indent=2)
+    except OSError:
+        pass
+
+
 @app.route("/api/presets/<path:name>/apply", methods=["POST"])
 def apply_preset(name):
     body = request.get_json(silent=True) or {}
@@ -545,6 +611,8 @@ def apply_preset(name):
 
     _save_opt_settings(new_settings)
     bump_settings_version()
+    _publish_power_mode("eco" if duration_min is not None
+                        else applied_profile)
 
     gpu_applied, gpu_err = True, ""
     if not new_settings.get("auto_management", True) \
