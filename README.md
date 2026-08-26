@@ -64,6 +64,11 @@ The stack answers one question: *how do I run capable coding models on my own GP
 
 ## 2. Screenshots
 
+| TokugawaOS GRUB Boot Menu |
+|---|
+| ![Boot menu](docs/screenshots/boot-menu.png) |
+| Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
+
 | Tokugawa Dashboard - active load | Dashboard - timed idle window |
 |---|---|
 | ![Dashboard active](docs/screenshots/dashboard.png) | ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
@@ -89,10 +94,10 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![FreeToken GitHub](docs/screenshots/freetoken-github.png) | ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
 | Repo overview — Apache-2.0, 290B MoE | Console UI — edge runtime on RTX 30/40/50 |
 
-| Full Dashboard (every panel) | TokugawaOS GRUB Boot Menu |
-|---|---|
-| ![Dashboard full](docs/screenshots/dashboard-full.png) | ![Boot menu](docs/screenshots/boot-menu.png) |
-| Alerts, GPU, services, clients, providers, runs, files, settings, model shelf | Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
+| Full Dashboard (every panel) |
+|---|
+| ![Dashboard full](docs/screenshots/dashboard-full.png) |
+| Alerts, GPU, services, clients, providers, runs, files, settings, model shelf |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
