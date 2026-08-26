@@ -4,6 +4,9 @@
 ![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)
 ![python](https://img.shields.io/badge/python-3.10%2B-informational)
 ![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)
+![release](https://img.shields.io/github/v/release/ProjectZeroDays/FreeAI_Ubuntu-AI-Inference-Workstation?label=release)
+![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)
+![coverage](https://img.shields.io/badge/coverage-88%20tests-brightgreen)
 
 
 > **The world's most complete self-hosted AI workstation.**  
@@ -29,6 +32,7 @@ docker compose up -d --build
 # Download freeaios-amd64.iso from Releases → boot → Install FreeAI
 ```
 
+> **Full docs:** https://projectzerodays.github.io/FreeAI_Ubuntu-AI-Inference-Workstation/  
 > **Try before you clone:** `MOCK_LLM=1` runs the entire stack without a GPU (`make test` is fully offline).
 
 Production-grade, self-hosted **AI inference workstation stack**: GGUF coder models on NVIDIA GPUs, a task-classifying model router with fallback chains, a multi-agent REST layer, a workflow engine, **autonomous SDLC agents** that turn a one-line spec into a packaged project, a presets/settings control plane, an AI power optimizer, self-healing watchdogs, and a full XFCE + VNC remote desktop. Deployable bare-metal, via Docker Compose, Kubernetes, cloud GPU providers, or as a Live ISO.
