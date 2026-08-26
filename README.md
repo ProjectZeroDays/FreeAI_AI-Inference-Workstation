@@ -91,6 +91,10 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Designer](docs/screenshots/workflow-designer.png) | ![Providers panel](docs/screenshots/dashboard-providers.png) |
 | 3-step pipeline (architecture -> codegen -> tests) w/ step config | 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings |
 
+| FreeAI UI - 8-model roster picker | Dashboard - model shelf |
+|---|---|
+| ![8-model roster picker](docs/screenshots/freeai-ui.png) | ![Model shelf](docs/screenshots/dashboard-full.png) |
+
 | Full Dashboard (every panel) |
 |---|
 | ![Dashboard full](docs/screenshots/dashboard-full.png) |
@@ -235,12 +239,6 @@ above works today; clearing billing turns on `docker-publish`, `release`, and
 | Headroom | 24 GB (RTX 4090 / 3090) | 96-128 GB | +4 TB models | Larger coders + MTP speculative decoding, vLLM coexistence |
 
 Verified parts list (MPN/ASIN): [hardware/parts-list.md](hardware/parts-list.md) - assembly: [hardware/BUILD.md](hardware/BUILD.md) - build-vs-cloud economics: [hardware/LOCAL-DEPLOY.md](hardware/LOCAL-DEPLOY.md).
-
-Model selection at a glance — full roster in the FreeAI UI picker, live model shelf on the dashboard (see §2 for captions):
-
-| FreeAI UI - 8-model roster picker | Dashboard - model shelf |
-|---|---|
-| ![8-model roster picker](docs/screenshots/freeai-ui.png) | ![Model shelf](docs/screenshots/dashboard-full.png) |
 
 ## 8. Install and Deploy Handbook
 
