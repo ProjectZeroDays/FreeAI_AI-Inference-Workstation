@@ -79,15 +79,15 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![Tokugawa UI](docs/screenshots/tokugawa-ui.png) | ![UI output](docs/screenshots/tokugawa-ui-output.png) |
 | Model presets + agent picker + prompt console | Router response: model_used, task_type, confidence, elapsed_ms |
 
-| Workflow Designer | tokugawa-cli |
+| tokugawa-cli | tokugawa-cli providers + live test |
 |---|---|
-| ![Designer](docs/screenshots/workflow-designer.png) | ![CLI](docs/screenshots/cli.png) |
-| 3-step pipeline (architecture -> codegen -> tests) w/ step config | Real --help output: 14 subcommands |
+| ![CLI](docs/screenshots/cli.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
+| Real --help output: 14 subcommands | Real `providers` listing + `provider-test openai` |
 
-| External Providers panel | tokugawa-cli providers + live test |
+| Workflow Designer | External Providers panel |
 |---|---|
-| ![Providers panel](docs/screenshots/dashboard-providers.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
-| 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings | Real `providers` listing + `provider-test openai` |
+| ![Designer](docs/screenshots/workflow-designer.png) | ![Providers panel](docs/screenshots/dashboard-providers.png) |
+| 3-step pipeline (architecture -> codegen -> tests) w/ step config | 21+ hosted APIs as backends: KEYED/NO KEY badges, fallback flags, Test pings |
 
 | FreeToken @ GitHub (7.2k★) | FreeToken Desktop Console |
 |---|---|
