@@ -8,5 +8,5 @@ Self-hosted LLM operations stack:
 - **Dashboard** (:8030) — GPU telemetry, alerts, service health
 - **llama.cpp** (:9001) / **vLLM** (:9002) — GGUF inference backends
 
-See [Architecture](architecture.md), [API Reference](api.md),
-[Deployment](deployment.md), [Troubleshooting](troubleshooting.md).
+See [Architecture](ARCHITECTURE.md), [API Reference](API.md),
+[Deployment](DEPLOYMENT.md), [Troubleshooting](TROUBLESHOOTING.md).

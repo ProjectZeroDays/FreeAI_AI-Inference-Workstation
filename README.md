@@ -75,10 +75,10 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | ![CLI](docs/screenshots/cli.png) | ![CLI providers](docs/screenshots/cli-providers.png) |
 | Real --help output: 14 subcommands | Real `providers` listing + `provider-test openai` |
 
-| FreeAI Dashboard - active load | Dashboard - timed idle window |
-|---|---|
-| ![Dashboard active](docs/screenshots/dashboard.png) | ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
-| 74% util, alerts panel, service badges, settings + presets | Eco enforced (6% util, 198W/2400MHz), idle banner w/ auto-restore countdown |
+| FreeAI Dashboard - active load |
+|---|
+| ![Dashboard active](docs/screenshots/dashboard.png) |
+| 74% util, alerts panel, service badges, settings + presets |
 
 | FreeAI UI | UI in use (refactor via moe-13b) |
 |---|---|
@@ -99,6 +99,11 @@ The stack answers one question: *how do I run capable coding models on my own GP
 |---|
 | ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
 | Console UI — edge runtime on RTX 30/40/50 |
+
+| Dashboard - timed idle window |
+|---|
+| ![Dashboard idle](docs/screenshots/dashboard-idle.png) |
+| Eco enforced (6% util, 198W/2400MHz), idle banner w/ auto-restore countdown |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
@@ -146,7 +151,7 @@ raises alerts, writes runtime-settings.json consumed by all services.
 
 **Autonomous run flow:** spec -> plan JSON -> per-task code blocks (`=== FILE: path ===`) -> sandboxed writes -> verifier (shell tools or static scan) -> fix loop fed real errors -> reviewer verdict -> docs generation -> tarball artifact -> download via API/CLI.
 
-**Settings propagation:** dashboard writes `config/runtime-settings.json` -> optimizer reacts within 60s, autonomous API per-request, router at restart, llama launcher via `config/llama.env` on "Save + restart llama". See `docs/architecture.md` for the full table.
+**Settings propagation:** dashboard writes `config/runtime-settings.json` -> optimizer reacts within 60s, autonomous API per-request, router at restart, llama launcher via `config/llama.env` on "Save + restart llama". See `docs/ARCHITECTURE.md` for the full table.
 
 ## 5. Ports and Services
 
@@ -445,7 +450,7 @@ Layering: defaults < config/config.json < config/providers.json (external backen
 
 ## 11. API Reference
 
-Condensed; full curl examples in docs/api.md.
+Condensed; full curl examples in docs/API.md.
 
 ### Router :8010
 
@@ -582,7 +587,7 @@ CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (of
 | Dashboard zeros | nvidia-smi missing/no GPU in container |
 | Actions startup failures: billing | github.com -> Settings -> Billing (account lock), then re-run |
 
-More: docs/troubleshooting.md.
+More: docs/TROUBLESHOOTING.md.
 
 ## 18. Security Notes
 
@@ -608,12 +613,12 @@ Full matrix: [ROADMAP.md](ROADMAP.md). Headliners:
 
 | Doc | Contents |
 |---|---|
-| docs/api.md | full endpoint reference + curl |
-| docs/architecture.md | diagrams, request flows, settings interconnection |
-| docs/model-switching.md | classifier -> chain -> overrides tuning guide |
-| docs/autonomous-agents.md | SDLC lifecycle, safety model, API/CLI |
-| docs/deployment.md | bare-metal / compose / k8s / profiles / dev mode |
-| docs/troubleshooting.md | symptom -> fix table |
+| docs/API.md | full endpoint reference + curl |
+| docs/ARCHITECTURE.md | diagrams, request flows, settings interconnection |
+| docs/MODEL-SWITCHING.md | classifier -> chain -> overrides tuning guide |
+| docs/AUTONOMOUS-AGENTS.md | SDLC lifecycle, safety model, API/CLI |
+| docs/DEPLOYMENT.md | bare-metal / compose / k8s / profiles / dev mode |
+| docs/TROUBLESHOOTING.md | symptom -> fix table |
 | docs/ENHANCEMENT-PLAN.md | shipped vs planned matrix |
 | docs/CODEX-INTEGRATION.md | OpenCode vs JCode host choice, Codex feature port map |
 | docs/GAP-ANALYSIS-CODEX.md | capability gap matrix vs Codex |
