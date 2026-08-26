@@ -5,8 +5,8 @@
   "version_tag": "latest",
   "disk": 250,
   "env": {
-    "PROVISIONING_SCRIPT": "https://github.com/ProjectZeroDays/Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack/releases/latest/download/unified-ai-stack-v1.2.0.tar.gz",
-    "ONSTART_SCRIPT": "https://raw.githubusercontent.com/ProjectZeroDays/Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack/main/vastai/onstart.sh",
+    "PROVISIONING_SCRIPT": "https://github.com/ProjectZeroDays/FreeAI/releases/latest/download/unified-ai-stack-v1.2.0.tar.gz",
+    "ONSTART_SCRIPT": "https://raw.githubusercontent.com/ProjectZeroDays/FreeAI/main/vastai/onstart.sh",
 
     "OPEN_BUTTON_TOKEN": "1",
     "OPEN_BUTTON_PORT": "1111",

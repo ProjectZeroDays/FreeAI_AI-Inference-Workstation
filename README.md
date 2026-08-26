@@ -1,4 +1,4 @@
-# Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack
+# FreeAI
 
 ![version](https://img.shields.io/badge/version-1.2.0-blue)
 ![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)
@@ -176,8 +176,8 @@ Fastest paths (details in [Section 8](#8-install-and-deploy-handbook)):
 
 **Bare metal (Ubuntu 24.04 + NVIDIA):**
 ```bash
-git clone https://github.com/ProjectZeroDays/Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack.git
-cd Ubuntu-Desktop_XFCE_TigerVNC_noVNC_FreeAI_llama.cpp_Opencode_Unified-AI-Stack
+git clone https://github.com/ProjectZeroDays/FreeAI.git
+cd FreeAI
 sudo ./hardware/install-stack.sh          # drivers->CUDA->Docker->stack->systemd->UFW
 bash models/auto-download-models.sh       # ~15GB of GGUFs, resumable
 ```
