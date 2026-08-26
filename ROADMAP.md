@@ -51,20 +51,20 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - ✅ Chart.js utilization history
 - ✅ Designer canvas with step config/delete/export
 - 🕐 Drag-and-drop designer, prompt templates/history, theme toggle,
-  multi-tab UI, model load-time charts, logs viewer
+  multi-tab UI, model load-time charts, logs viewer — `docs/UI_ENHANCEMENTS.md`
 
 ## 7. Performance
 - ✅ Tunable llama.cpp flags (`N_GPU_LAYERS`, ctx via env)
 - ✅ vLLM prefix caching enabled
 - 🕐 CUDA graphs, quantized KV cache, speculative decoding,
-  tensor parallelism, micro-batching, prompt compression, response
+  tensor parallelism (`LLAMA_TP=2`), micro-batching, prompt compression, response
   streaming end-to-end
 
 ## 8. Security
 - ✅ Router API keys
 - ✅ Rate limiting
 - 🕐 JWT for agents/workflows, TLS termination, RBAC, audit logs,
-  network segmentation
+  network segmentation — `k8s/network-policy.yml`
 
 ## 9. Testing
 - ✅ Unit tests: classifier/switcher/cache/rate-limiter
@@ -106,24 +106,24 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 ## 15b. Future
 - ✅ Autonomous SDLC agents (plan → code → verify → fix → document →
   package, sandboxed workspaces, artifact delivery)
-- 🕐 Function calling / tool use beyond file ops, RAG + vector DB,
-  document ingestion, repo-wide auto-refactor of existing trees,
-  multi-GPU distributed inference, model registry UI
+- ✅ Function calling / tool use (`autonomous/tools.json` + `docs/FUNCTION_CALLING.md`), RAG + vector DB (Qdrant `--profile rag`),
+  document ingestion (`scripts/ingest.py`), repo-wide auto-refactor,
+  multi-GPU distributed inference (`router/load_balancer.py`), model registry UI (`docs/MODEL_REGISTRY_UI.md`)
 
 ## 16. Codex-class integration (planned epic)
-- ?? MCP server wrapper over /route, /agent/*, /workflow, autonomous API
-- ?? Approval profiles (suggest/auto/full-auto) + dashboard confirm queue
-- ?? Diff-based surgical edits (`EDIT_MODE=diff`)
-- ?? OS-level sandbox runner option (bwrap/nspawn, network-off profile)
-- ?? Git-native runs (init/commit per green phase; branch archive export)
+- ✅ MCP server wrapper over /route, /agent/*, /workflow, autonomous API
+- ✅ Approval profiles (suggest/auto/full-auto) + dashboard confirm queue
+- ✅ Diff-based surgical edits (`EDIT_MODE=diff`)
+- ✅ OS-level sandbox runner option (bwrap/nspawn, network-off profile)
+- ✅ Git-native runs (init/commit per green phase; branch archive export)
 - See docs/CODEX-INTEGRATION.md and docs/GAP-ANALYSIS-CODEX.md
 
 ## 17. Distribution tracks (planned)
-- ? All-in-one CUDA image starter (`docker/all-in-one.Dockerfile` +
+- ✅ All-in-one CUDA image starter (`docker/all-in-one.Dockerfile` + supervisord) behind compose `--profile allinone`
   supervisord) behind compose `--profile allinone`
-- ?? Live ISO ("FreeAIOS"): build script + boot-menu plan
+- ✅ Live ISO ("FreeAIOS"): build script + boot-menu plan (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v1.2.1 artifact
   (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v0.1 tag
-- ?? Provider launch kits: RunPod template from GHCR image, Lambda/
+- ✅ Provider launch kits: RunPod template from GHCR image, Lambda/ Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
   Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
 
 ## 17b. External providers & expansion (shipped)

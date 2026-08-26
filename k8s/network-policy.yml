@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: freeai-backend }
+spec:
+  podSelector: { matchLabels: { app: freeai-router } }
+  policyTypes: [Ingress]
+  ingress:
+  - from: [{ podSelector: { matchLabels: { app: freeai-dashboard } } }, { podSelector: { matchLabels: { app: freeai-agents } } }]
+    ports: [{ port: 8010 }]

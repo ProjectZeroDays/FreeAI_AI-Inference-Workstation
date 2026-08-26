@@ -20,6 +20,41 @@ nav:
   - Codex Integration: CODEX-INTEGRATION.md
   - Deployment Plans: DEPLOYMENT-PLANS.md
   - Gap Analysis: GAP-ANALYSIS-CODEX.md
+  - Function Calling: FUNCTION_CALLING.md
+  - MCP: MCP.md
+  - Secrets: SECRETS.md
+  - Log Streaming: LOG_STREAMING.md
+  - Model Registry Ui: MODEL_REGISTRY_UI.md
+  - Performance Advanced: PERFORMANCE_ADVANCED.md
+  - Security Advanced: SECURITY_ADVANCED.md
+  - Ui Enhancements: UI_ENHANCEMENTS.md
+  - Vscode Extension: VSCODE_EXTENSION.md
 use_directory_urls: false
 theme:
-  name: mkdocs
+  name: material
+  palette:
+    - scheme: slate
+      primary: slate
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+extra_css:
+  - stylesheets/extra.css

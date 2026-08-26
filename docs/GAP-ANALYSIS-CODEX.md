@@ -11,7 +11,7 @@ against publicly understood Codex agentic-coding behavior. Gap sizes:
 | Frontier model quality | hosted frontier LLMs | 12–13B local GGUF | 🔴 (capability ceiling) | inherent to local; mitigate with better prompts/roles, or bridge to hosted APIs via provider adapter |
 | Multi-model fallback | managed server-side | ✅ router chain + degenerate retry | 🟢 | — |
 | Context window | ~200K tokens | 4–32K (llama.cpp ctx) | 🔴 | raise `LLAMA_CTX` w/ KV quant; repo-map compression instead of raw files |
-| Streaming everywhere | ✅ | router sync-only today | 🟡 | SSE passthrough in `/route` (backend streams already supported) |
+| Streaming everywhere | ✅ | ✅ SSE + WS streaming | 🟢 | SSE passthrough in `/route` (backend streams already supported) |
 
 ## Agent loop
 
@@ -28,11 +28,11 @@ against publicly understood Codex agentic-coding behavior. Gap sizes:
 | Capability | Codex | Ours | Gap | Path |
 |---|---|---|---|---|
 | Approval profiles (suggest/auto/full-auto) | ✅ tri-mode UX | global shell flag | 🔴 | per-run approval enum + dashboard confirm queue |
-| OS-level sandboxing | seccomp/landlock, network-off | path guards + timeouts + workspace root | 🔴 | bwrap/nspawn runner; default-deny network profile |
-| Diff/surgical patch application | apply_patch | full-file rewrite blocks | 🔴 | unified-diff parser + applier (`EDIT_MODE=diff`) |
-| Git-native operation | branch/commit/PR flows | git absent from agent context | 🔴 | init repo per run; commit per green phase; export bundle = branch archive |
-| Tool plugin ecosystem / MCP | MCP client+server | REST only | 🔴 | ship MCP server wrapper over existing APIs |
-| Network egress control for generated code | policy-managed | none | 🔴 | same sandbox work as above |
+| OS-level sandboxing | seccomp/landlock, network-off | ✅ bwrap/nspawn + `autonomous/sandbox_runner.py` | 🟢 | bwrap/nspawn runner; default-deny network profile |
+| Diff/surgical patch application | apply_patch | ✅ unified-diff `EDIT_MODE=diff` (`autonomous/diff_edit.py`) | 🟢 | unified-diff parser + applier (`EDIT_MODE=diff`) |
+| Git-native operation | branch/commit/PR flows | ✅ init/commit per phase + archive (`autonomous/git_native.py`) | 🟢 | init repo per run; commit per green phase; export bundle = branch archive |
+| Tool plugin ecosystem / MCP | MCP client+server | ✅ `mcp/server.py` (`:8090`) | 🟢 | ship MCP server wrapper over existing APIs |
+| Network egress control for generated code | policy-managed | ✅ network-off sandbox profile | 🟢 | same sandbox work as above |
 
 ## Product surface
 
@@ -40,7 +40,7 @@ against publicly understood Codex agentic-coding behavior. Gap sizes:
 |---|---|---|---|---|
 | IDE/desktop integration | VSCode + CLI | OpenCode/JCode manifests, UI console | 🟡 | MCP server + provider preset (see CODEX-INTEGRATION.md) |
 | Cloud + CLI + CI surfaces | ✅ | CLI + API + compose/K8s | 🟡 | GitHub Action calling autonomous API on issues |
-| Telemetry/eval harness | internal | metrics counters only | 🔴 | prompt-regression suite: golden tasks scored by reviewer model |
+| Telemetry/eval harness | internal | ✅ golden tasks + `evals/prompt_regression.py` | 🟢 | prompt-regression suite: golden tasks scored by reviewer model |
 | Cost guardrails | hosted billing | power tuner saves watts | 🟢 (opex) | token accounting when usage fields land |
 
 ## Verdict
