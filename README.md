@@ -228,10 +228,11 @@ Verify: `python3 freeai.py status` - open `http://localhost:8030`.
 | **Cloud: RunPod / any Docker host** | **Ready now (build locally)** | `docker compose --profile allinone up -d --build` | GHCR prebuilt image pending CI (blocker below) |
 | **Live ISO (FreeAIOS)** | **Builder ready - compile on any Ubuntu host** | `live/build-live.sh` (Subiquity autoinstall remaster) | Boot menu: **Install FreeAI (wipes disk, stack first-boot)** / Try Live / Rescue; needs one build run + network for NVIDIA driver |
 
-**Known blocker (GitHub-side):** the account billing lock stops Actions from
-publishing GHCR images and release bundles. Workarounds until cleared:
-`docker compose build` locally, or SSH + `install-stack.sh`. Everything else
-above works today; clearing billing turns on `docker-publish`, `release`, and
+**Known blocker (GitHub-side):** the account billing lock stops ALL Actions
+jobs from starting (no GHCR images, no release bundles, no artifact builds).
+Workarounds until cleared: `docker compose build` locally, or SSH +
+`install-stack.sh`. Everything else above works today; clearing billing at
+github.com -> Settings -> Billing turns on `docker-publish`, `release`, and
 `auto-release` with zero repo changes.
 
 ## 7. Hardware Requirements
@@ -558,9 +559,9 @@ python evals/run_eval.py   # golden-task eval sweep (needs router up; MOCK_LLM=1
 
 Suite map: router unit (classifier/switcher/cache/limiter) - router API via Flask test client (mock backend) - coherence (degenerate detector + retry) - agents (profiles/memory/metrics via TestClient) - workflow (validation/retries/definitions) - autonomous SDLC (full lifecycle, fix loop, cancellation, sandbox safety) - optimizer (mode decisions) - presets (CRUD/apply/idle expiry/cap). Golden-task evals live outside pytest: they score real router output quality per task class.
 
-CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (offline smoke) - docs.yml (auto-generate workflows.json) - docker-publish.yml (5 images to GHCR on tags) - release.yml (source bundle on tags) - local-build.yml (builds all 5 images and uploads artifact tarballs instead of pushing to GHCR — use this while the account has an Actions billing lock).
+CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (offline smoke) - docs.yml (auto-generate workflows.json) - docker-publish.yml (5 images to GHCR on tags) - release.yml (source bundle on tags) - local-build.yml (builds all 5 images and uploads artifact tarballs instead of pushing to GHCR - useful for forks or while GHCR pushes are unavailable).
 
-> Note: if Actions shows startup failures reading account locked due to a billing issue, that is GitHub-side billing - resolve at github.com -> Settings -> Billing; until then local-build.yml still produces runnable image tarballs as workflow artifacts.
+> Note: if Actions shows failures reading "account is locked due to a billing issue", no job starts at all (even local-build.yml) - that is GitHub-side billing; resolve at github.com -> Settings -> Billing and every workflow resumes automatically with zero repo changes.
 
 ## 16. Performance Tuning Guide
 
