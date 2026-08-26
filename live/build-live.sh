@@ -163,18 +163,40 @@ echo "[iso] repacking (UEFI + BIOS hybrid)..."
 ISOLINUX_MBR="/usr/lib/ISOLINUX/isohdpfx.bin"
 [ -f "$ISOLINUX_MBR" ] || ISOLINUX_MBR="/usr/lib/syslinux/modules/bios/isohdpfx.bin"
 
-xorriso -as mkisofs -r \
-  -V FREEAI_OS \
-  -o "$OUT" \
-  -J -joliet-long -l \
-  -isohybrid-mbr "$ISOLINUX_MBR" \
-  -partition_offset 16 --mbr-force-bootable \
-  -append_partition 2 28732ac11ff8d211ba4278a28f82efef "$NEW/EFI/boot/efiboot.img" \
-  -appended_part_as_gpt \
-  -e '--interval:appended_partition_2:::' \
-  -no-emul-boot \
-  --protective-msdos-label \
-  "$NEW"
+# Find EFI partition image (path varies by Ubuntu point release)
+EFI_IMG=""
+for cand in "$NEW/EFI/boot/efiboot.img" "$NEW/boot/grub/efi.img" "$NEW/EFI/BOOT/efiboot.img" "$NEW/casper/efi.img"; do
+  [ -f "$cand" ] && EFI_IMG="$cand" && break
+done
+if [ -z "$EFI_IMG" ]; then
+  EFI_IMG=$(find "$NEW" -maxdepth 4 -name "*.img" -type f | xargs grep -l "EFI" 2>/dev/null | head -n1 || true)
+  [ -z "$EFI_IMG" ] && EFI_IMG=$(find "$NEW" -name "efiboot.img" -o -name "efi.img" 2>/dev/null | head -n1 || true)
+fi
+if [ -n "$EFI_IMG" ]; then
+  echo "[iso] EFI image: $EFI_IMG"
+  xorriso -as mkisofs -r \
+    -V FREEAI_OS \
+    -o "$OUT" \
+    -J -joliet-long -l \
+    -isohybrid-mbr "$ISOLINUX_MBR" \
+    -partition_offset 16 --mbr-force-bootable \
+    -append_partition 2 28732ac11ff8d211ba4278a28f82efef "$EFI_IMG" \
+    -appended_part_as_gpt \
+    -e '--interval:appended_partition_2:::' \
+    -no-emul-boot \
+    --protective-msdos-label \
+    "$NEW"
+else
+  echo "[iso] WARN: no EFI image found — building BIOS-only ISO"
+  xorriso -as mkisofs -r \
+    -V FREEAI_OS \
+    -o "$OUT" \
+    -J -joliet-long -l \
+    -isohybrid-mbr "$ISOLINUX_MBR" \
+    -partition_offset 16 --mbr-force-bootable \
+    --protective-msdos-label \
+    "$NEW"
+fi
 
 echo "[iso] built: $OUT ($(du -h "$OUT" | cut -f1))"
 echo "[iso] boot menu:"
