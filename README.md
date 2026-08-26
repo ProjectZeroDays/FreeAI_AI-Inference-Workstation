@@ -43,6 +43,7 @@ Production-grade, self-hosted **AI inference workstation stack**: GGUF coder mod
 - [14. Remote Access](#14-remote-access)
 - [15. Testing and Validation](#15-testing-and-validation)
 - [16. Performance Tuning Guide](#16-performance-tuning-guide)
+  - [16b. Context Window Presets (Auto-Tuning Profiles)](#16b-context-window-presets-auto-tuning-profiles)
 - [17. Troubleshooting](#17-troubleshooting)
 - [18. Security Notes](#18-security-notes)
 - [19. Roadmap and Future Implementations](#19-roadmap-and-future-implementations)
@@ -290,7 +291,7 @@ GPU nodeSelector + tolerations (llama/vLLM), HPAs on router/agents/workflow (CPU
 | Hetzner GPU / OVH | same as Lambda; UFW included |
 | AWS g5/g6, Azure NC, GCP G2 (spot) | Terraform module (roadmap); eco optimizer shines here |
 
-Details: [docs/DEPLOYMENT-PLANS.md](docs/DEPLOYMENT-PLANS.md).
+Details: [docs/DEPLOYMENT-PLANS.md](docs/DEPLOYMENT-PLANS.md) - fallback modes (local router -> cloud inference, or full cloud stack) + spot resilience + firewall/fail2ban hardening: [docs/CLOUD-FALLBACK.md](docs/CLOUD-FALLBACK.md).
 
 ### 8.5 Live ISO
 
@@ -569,6 +570,94 @@ CI (.github/workflows): ci.yml (compile/syntax/JSON gates) - workflow-ci.yml (of
 6. **Cache**: leave CACHE_ENABLED on; prompts with identical task+agent+text return instantly.
 7. **vLLM**: enable only when you need HF-hosted models concurrently - it owns VRAM; prefix caching is on.
 
+## 16b. Context Window Presets (Auto-Tuning Profiles)
+
+Three preset levels tie context size to VRAM budget, KV-cache strategy,
+GPU layers, router weights, hot-model pool, SDLC concurrency, and RAG
+chunking. Machine-readable below: a settings-dashboard client (or AI
+agent) can parse this block and apply every parameter programmatically
+via `POST /api/settings` + `LLAMA_EXTRA_ARGS`.
+
+```yaml
+context_presets:
+
+  # --------------------------------
+  # LEVEL 1 - 16K CONTEXT (stable + fast)
+  # --------------------------------
+  level_1_16k:
+    description: "Stable + fast preset for 9B models on RTX 4090."
+    ctx_size: 16384
+    gpu_layers: 40
+    kv_cache: "full_vram"
+    batch_size: 64
+    offload: false
+    recommended_models: [qwen3.5-9b, qwen3.5-thinking-9b, claude-code-9b, qwythos-9b, qwythos-v2, qwable-9b]
+    router_adjustments: {reasoning_weight: 0.5, coding_weight: 0.7, heavy_model_weight: 0.0}
+    rag: {chunk_size: 768, chunk_overlap: 96, top_k: 8}
+    sdlc: {max_parallel_agents: 4}
+
+  # --------------------------------
+  # LEVEL 2 - 32K CONTEXT (high capacity)
+  # --------------------------------
+  level_2_32k:
+    description: "High-capacity preset for large documents, RAG, and long coding sessions."
+    ctx_size: 32768
+    gpu_layers: 36
+    kv_cache: "expanded_vram"
+    batch_size: 48
+    offload: false
+    recommended_models: [qwen3.5-9b, qwen3.5-thinking-9b, qwen3.6-12b, moe-13b]
+    router_adjustments: {reasoning_weight: 0.6, coding_weight: 0.6, heavy_model_weight: 0.2}
+    rag: {chunk_size: 1024, chunk_overlap: 128, top_k: 10}
+    sdlc: {max_parallel_agents: 3}
+
+  # --------------------------------
+  # LEVEL 3 - 64K CONTEXT (experimental)
+  # --------------------------------
+  level_3_64k:
+    description: "Ultra-long contexts. Reduced GPU layers for stability; hybrid KV offload to RAM."
+    ctx_size: 65536
+    gpu_layers: 28
+    kv_cache: "hybrid_offload"
+    batch_size: 16
+    offload: true
+    recommended_models: [qwen3.5-thinking-9b, moe-13b]
+    router_adjustments: {reasoning_weight: 0.7, coding_weight: 0.4, heavy_model_weight: 0.4}
+    rag: {chunk_size: 1536, chunk_overlap: 192, top_k: 12}
+    sdlc: {max_parallel_agents: 2}
+
+llama_cpp_flags:
+  level_1_16k: ["--ctx-size 16384", "--gpu-layers 40", "--flash-attn", "--batch-size 64"]
+  level_2_32k: ["--ctx-size 32768", "--gpu-layers 36", "--flash-attn", "--batch-size 48"]
+  level_3_64k: ["--ctx-size 65536", "--gpu-layers 28", "--flash-attn", "--batch-size 16", "--no-kv-offload"]
+
+hot_model_pool:
+  level_1_16k: [qwen3.5-9b, qwen3.5-thinking-9b, claude-code-9b]
+  level_2_32k: [qwen3.5-9b, qwen3.5-thinking-9b, moe-13b]
+  level_3_64k: [qwen3.5-thinking-9b, moe-13b]
+
+router_weights:
+  level_1_16k: {code: 0.7, reasoning: 0.5, heavy: 0.0}
+  level_2_32k: {code: 0.6, reasoning: 0.6, heavy: 0.2}
+  level_3_64k: {code: 0.4, reasoning: 0.7, heavy: 0.4}
+
+agent_personas:
+  level_1_16k: {coder: {max_tokens: 2048}, architect: {max_tokens: 4096}, reviewer: {max_tokens: 2048}}
+  level_2_32k: {coder: {max_tokens: 4096}, architect: {max_tokens: 8192}, reviewer: {max_tokens: 4096}}
+  level_3_64k: {coder: {max_tokens: 8192}, architect: {max_tokens: 16384}, reviewer: {max_tokens: 8192}}
+
+rag_config:
+  level_1_16k: {chunk_size: 768, chunk_overlap: 96, top_k: 8}
+  level_2_32k: {chunk_size: 1024, chunk_overlap: 128, top_k: 10}
+  level_3_64k: {chunk_size: 1536, chunk_overlap: 192, top_k: 12}
+```
+
+> Model ids match `registry/registry.json` (§12). `moe-13b` is the
+> L3.1 2×8B MoE — Mixtral-class routing, 2 experts active per token.
+> Apply a level by: settings panel (`LLAMA_CTX` + `max_concurrent_runs`)
+> + `LLAMA_EXTRA_ARGS` flags above + registry role weights; the 1M-ctx
+> Qwythos models ignore these ceilings (raise `LLAMA_CTX` directly).
+
 ## 17. Troubleshooting
 
 | Symptom | Fix |
@@ -623,6 +712,10 @@ Full matrix: [ROADMAP.md](ROADMAP.md). Headliners:
 | docs/CODEX-INTEGRATION.md | OpenCode vs JCode host choice, Codex feature port map |
 | docs/GAP-ANALYSIS-CODEX.md | capability gap matrix vs Codex |
 | docs/DEPLOYMENT-PLANS.md | Live ISO / all-in-one / provider rollout plans |
+| docs/CLOUD-FALLBACK.md | Vast/RunPod/Lambda/Hetzner/Paperspace/AWS/Azure/GCP - Mode A (cloud inference) + Mode B (full cloud) + spot resilience + hardening |
+| docs/OPTIMIZATION-AUDIT.md | high-impact scale/reliability audit: logging, config, watchdogs, model lifecycle, networking, RAG |
+| docs/BUILD-SHEET.md | workstation build (i9-14900KF/RTX 4090/128GB DDR5), GPU tier + model performance tables, power envelope |
+| docs/FIRST-BOOT-GUIDE.md | 10-step bring-up: BIOS -> Ubuntu -> CUDA -> installer -> registry -> services -> dashboard -> noVNC |
 | hardware/parts-list.md | verified workstation SKUs |
 | hardware/BUILD.md | assembly + Ubuntu install walkthrough |
 | hardware/LOCAL-DEPLOY.md | min requirements, build-vs-cloud economics |

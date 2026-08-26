@@ -164,12 +164,22 @@ $SUDO dpkg-reconfigure -f noninteractive unattended-upgrades \
   > /dev/null 2>&1 || true
 $SUDO timedatectl set-ntp true 2>/dev/null || true
 
+# ---- fail2ban (SSH brute-force protection, default sshd jail) ----
+log "Installing fail2ban..."
+$SUDO apt-get install -y fail2ban > /dev/null 2>&1 || true
+$SUDO systemctl enable --now fail2ban 2>/dev/null || true
+
 # -------------------------------------------------------------- 8. firewall
 if [ "$ENABLE_UFW" = "1" ]; then
   log "Configuring UFW (SSH + dashboard + autonomous only)..."
   $SUDO ufw allow OpenSSH
   $SUDO ufw allow 8030/tcp   # dashboard
   $SUDO ufw allow 8050/tcp   # autonomous SDLC
+  # desktop profile remote access (opt-in via ENABLE_DESKTOP_PORTS=1)
+  if [ "$ENABLE_DESKTOP_PORTS" = "1" ]; then
+    $SUDO ufw allow 5901/tcp   # TigerVNC
+    $SUDO ufw allow 6080/tcp   # noVNC (web client)
+  fi
   # router :8010 and llama.cpp :9001 intentionally NOT exposed
   $SUDO ufw --force enable
 fi

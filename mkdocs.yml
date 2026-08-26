@@ -9,6 +9,10 @@ nav:
   - API Reference: API.md
   - Model Switching: MODEL-SWITCHING.md
   - Deployment: DEPLOYMENT.md
+  - Cloud Fallback: CLOUD-FALLBACK.md
+  - Optimization Audit: OPTIMIZATION-AUDIT.md
+  - Build Sheet: BUILD-SHEET.md
+  - First Boot Guide: FIRST-BOOT-GUIDE.md
   - RAG: RAG.md
   - WebSocket: WEBSOCKET.md
   - Troubleshooting: TROUBLESHOOTING.md
