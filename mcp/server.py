@@ -6,6 +6,32 @@ ROUTER = os.environ.get("ROUTER_URL", "http://localhost:8010")
 AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTO_API = os.environ.get("AUTO_API", "http://localhost:8050")
+MCP_API_KEY = os.environ.get("MCP_API_KEY", "")
+
+def _check_auth():
+    """Verify API key if MCP_API_KEY is configured."""
+    if not MCP_API_KEY:
+        return None
+    provided = (request.headers.get("X-API-Key") or 
+                request.headers.get("X-Auth-Token") or 
+                request.headers.get("Authorization", "").replace("Bearer ", ""))
+    if provided != MCP_API_KEY:
+        return jsonify({"error": "unauthorized"}), 401
+    return None
+
+@app.before_request
+def guard():
+    """Authentication gate for all endpoints except /health."""
+    if request.path == "/health":
+        return None
+    auth_result = _check_auth()
+    if auth_result:
+        return auth_result
+    return None
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok", "auth_required": bool(MCP_API_KEY)})
 
 @app.route("/mcp/tools", methods=["GET"])
 def tools():
@@ -24,7 +50,17 @@ def call():
     if tool not in mapping:
         return jsonify({"error": "unknown tool"}), 400
     url, payload = mapping[tool]
-    r = requests.post(url, json=payload, timeout=120)
+    
+    # Forward authentication to downstream services
+    headers = {}
+    if MCP_API_KEY:
+        auth_header = (request.headers.get("X-API-Key") or 
+                      request.headers.get("X-Auth-Token") or 
+                      request.headers.get("Authorization", "").replace("Bearer ", ""))
+        if auth_header:
+            headers["X-API-Key"] = auth_header
+    
+    r = requests.post(url, json=payload, headers=headers, timeout=120)
     return jsonify(r.json()), r.status_code
 
 if __name__ == "__main__":
