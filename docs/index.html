@@ -210,6 +210,88 @@
     .chat-launcher svg { width: 26px; height: 26px; }
     @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 50px; height: 50px; } }
 
+    /* ── Chat Panel ── */
+    .chat-panel {
+      display: none; position: fixed; bottom: 92px; right: 24px;
+      width: 420px; max-width: calc(100vw - 48px);
+      background: #0d1530; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+      z-index: 95; flex-direction: column;
+      animation: chatIn .28s cubic-bezier(.23,1,.32,1);
+    }
+    @keyframes chatIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+    .chat-panel.open { display: flex; }
+    .chat-panel-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.07);
+      background: rgba(255,255,255,.02);
+    }
+    .chat-panel-logo {
+      width: 30px; height: 30px; background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+      border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .chat-panel-logo svg { width: 17px; height: 17px; }
+    .chat-panel-title { font-size: 14px; font-weight: 600; color: #f1f6ff; }
+    .chat-panel-status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #22c55e; font-weight: 500; margin-top: 1px; }
+    .chat-panel-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+    .chat-panel-close {
+      margin-left: auto; width: 30px; height: 30px; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08); border-radius: 8px;
+      color: rgba(241,246,255,.4); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
+    }
+    .chat-panel-close:hover { background: rgba(255,255,255,.1); color: #f1f6ff; }
+    .chat-panel-close svg { width: 13px; height: 13px; }
+    .chat-panel-tabs { display: flex; background: rgba(255,255,255,.03); border-bottom: 1px solid rgba(255,255,255,.07); padding: 4px; }
+    .chat-tab-btn {
+      flex: 1; padding: 7px 12px; font-size: 12px; font-weight: 500;
+      color: rgba(241,246,255,.4); background: none; border: none; cursor: pointer;
+      border-radius: 7px; transition: all .2s; font-family: inherit;
+    }
+    .chat-tab-btn:hover { color: rgba(241,246,255,.7); }
+    .chat-tab-btn.active { background: #0241e3; color: #fff; box-shadow: 0 2px 8px rgba(2,65,227,.4); }
+    .chat-panel-body { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent; }
+    .chat-panel-body::-webkit-scrollbar { width: 4px; }
+    .chat-panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+    .chat-msg { display: flex; gap: 7px; align-items: flex-end; animation: msgIn .25s cubic-bezier(.23,1,.32,1); }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .chat-msg.user { flex-direction: row-reverse; }
+    .chat-msg-avatar { width: 22px; height: 22px; flex-shrink: 0; background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .chat-msg-avatar svg { width: 12px; height: 12px; }
+    .chat-msg-bubble { max-width: 82%; padding: 9px 13px; border-radius: 13px; font-size: 13px; line-height: 1.55; }
+    .chat-msg.bot .chat-msg-bubble { background: #111b3a; border: 1px solid rgba(255,255,255,.07); border-top-left-radius: 3px; color: #f1f6ff; }
+    .chat-msg.user .chat-msg-bubble { background: #0241e3; border-top-right-radius: 3px; }
+    .typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+    .typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: rgba(241,246,255,.35); animation: dotBounce 1.2s ease-in-out infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes dotBounce { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
+    .chat-panel-input { padding: 10px 14px 14px; border-top: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.02); }
+    .chat-input-wrap {
+      position: relative; background: #111b3a; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px; padding: 10px 40px 10px 14px; transition: border-color .2s, box-shadow .2s;
+    }
+    .chat-input-wrap:focus-within { border-color: rgba(92,139,255,.45); box-shadow: 0 0 0 3px rgba(92,139,255,.1); }
+    .chat-input-field { width: 100%; background: none; border: none; outline: none; color: #f1f6ff; font-size: 13px; font-family: inherit; resize: none; line-height: 1.5; }
+    .chat-input-field::placeholder { color: rgba(241,246,255,.3); }
+    .chat-send-btn {
+      position: absolute; right: 7px; bottom: 7px; width: 28px; height: 28px;
+      background: #0241e3; border: none; border-radius: 7px; color: #fff;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .15s, transform .15s;
+    }
+    .chat-send-btn:hover { background: #033ad1; transform: scale(1.05); }
+    .chat-send-btn svg { width: 13px; height: 13px; }
+    .chat-privacy { margin-top: 7px; font-size: 11px; color: rgba(241,246,255,.3); text-align: center; line-height: 1.5; }
+    .chat-privacy a { color: rgba(241,246,255,.5); text-decoration: underline; }
+    .chat-privacy a:hover { color: #f1f6ff; }
+
+    @media (max-width: 480px) {
+      .chat-panel { bottom: 80px; right: 12px; left: 12px; width: auto; max-width: none; border-radius: 18px; }
+      .chat-launcher { bottom: 14px; right: 14px; }
+    }
+
     /* ── Buttons ── */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
@@ -305,99 +387,115 @@
     .hero-stat .num { font-size: 32px; font-weight: 800; color: var(--text-primary); letter-spacing: -.02em; }
     .hero-stat .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
 
-    /* ── Ask Intelligence Composer (Applivery-style) ── */
-    .composer-section {
+    /* ── Lead Dialog (Applivery-style chatbot popup) ── */
+    .lead-section {
       padding: 0 0 80px;
       background: var(--bg-canvas);
     }
-    .composer-demo {
-      max-width: 720px; margin: 0 auto;
+    .lead-demo {
+      max-width: 440px; margin: 0 auto;
     }
-    .composer {
-      display: flex; flex-direction: column; gap: var(--space-3);
-      width: 100%; padding: var(--space-4);
-      background: var(--bg-elev-1);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-3xl);
-      box-shadow: var(--shadow-lg);
-      transition: border-color .3s ease, box-shadow .3s ease;
+    .lead-dialog {
+      background: #0b1227;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.05);
     }
-    .composer:focus-within {
-      border-color: var(--border-brand);
-      box-shadow: var(--shadow-lg), var(--shadow-glow);
+    [data-theme="light"] .lead-dialog { background: #f8faff; border-color: var(--border); }
+    .lead-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
-    .composer-preview {
-      display: flex; align-items: center; gap: var(--space-3);
-      padding: var(--space-3) var(--space-4);
-      min-height: 44px;
+    [data-theme="light"] .lead-header { border-bottom-color: var(--border); }
+    .lead-orb {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
-    .composer-preview .typing-dots {
-      display: flex; gap: 4px; align-items: center;
+    .lead-orb svg { width: 16px; height: 16px; }
+    .lead-title-group { flex: 1; }
+    .lead-title { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -.01em; }
+    [data-theme="light"] .lead-title { color: var(--text-primary); }
+    .lead-status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #4ade80; margin-top: 1px; }
+    .lead-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+    .lead-close {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,.08); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.5); transition: background .15s, color .15s;
     }
-    .composer-preview .typing-dots span {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--primary);
-      animation: typing-bounce 1.2s infinite;
+    .lead-close:hover { background: rgba(255,255,255,.14); color: #fff; }
+    [data-theme="light"] .lead-close { background: var(--bg-elev-2); color: var(--text-muted); }
+    [data-theme="light"] .lead-close:hover { background: var(--bg-elev-3); color: var(--text-primary); }
+    .lead-close svg { width: 14px; height: 14px; }
+    .lead-tabs {
+      display: flex; margin: 12px 20px 0;
+      background: rgba(255,255,255,.06); border-radius: 10px; padding: 3px;
     }
-    .composer-preview .typing-dots span:nth-child(2) { animation-delay: .2s; }
-    .composer-preview .typing-dots span:nth-child(3) { animation-delay: .4s; }
-    @keyframes typing-bounce { 0%,60%,100%{opacity:.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-3px)} }
-    .composer-preview .status-text {
-      font-size: var(--fs-small); color: var(--text-muted);
+    [data-theme="light"] .lead-tabs { background: var(--bg-elev-2); }
+    .lead-tab {
+      flex: 1; padding: 7px 0; border-radius: 8px;
+      font-size: 13px; font-weight: 500; text-align: center;
+      color: rgba(255,255,255,.55); border: none; background: transparent;
+      cursor: pointer; transition: all .18s;
     }
-    .composer-message {
-      display: flex; justify-content: flex-end;
-      margin-bottom: var(--space-2);
+    [data-theme="light"] .lead-tab { color: var(--text-tertiary); }
+    .lead-tab.active { background: #0241e3; color: #fff; box-shadow: 0 2px 8px rgba(2,65,227,.4); }
+    .lead-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; min-height: 140px; }
+    .lead-msg { display: flex; gap: 8px; align-items: flex-start; }
+    .lead-msg-orb {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
     }
-    .composer-message .msg-bubble {
-      background: var(--primary-600);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: var(--radius-xl);
-      font-size: var(--fs-body);
-      max-width: 80%;
-      text-align: left;
+    .lead-msg-orb svg { width: 11px; height: 11px; }
+    .lead-msg-bubble {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px; border-top-left-radius: 4px;
+      padding: 10px 14px; font-size: 14px; line-height: 1.5;
+      color: rgba(255,255,255,.85);
     }
-    [data-theme="dark"] .composer-message .msg-bubble {
-      background: #0241e3;
+    [data-theme="light"] .lead-msg-bubble { background: var(--bg-elev-2); border-color: var(--border); color: var(--text-secondary); }
+    .lead-input-area { padding: 0 20px 16px; }
+    .lead-input-wrap {
+      display: flex; align-items: flex-end; gap: 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; padding: 10px 12px;
+      transition: border-color .2s, background .2s;
     }
-    .composer-fields {
-      display: flex; align-items: center; gap: var(--space-2);
+    .lead-input-wrap:focus-within { border-color: rgba(92,139,255,.5); background: rgba(255,255,255,.08); }
+    [data-theme="light"] .lead-input-wrap { background: var(--bg); border-color: var(--border); }
+    [data-theme="light"] .lead-input-wrap:focus-within { border-color: var(--primary); }
+    .lead-input {
+      flex: 1; background: none; border: none; outline: none;
+      font-size: 14px; color: #fff; font-family: inherit;
     }
-    .composer-tool {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: var(--radius-pill);
-      color: var(--text-tertiary); transition: background .16s ease, color .16s ease;
-      cursor: pointer; border: none; background: transparent;
+    .lead-input::placeholder { color: rgba(255,255,255,.35); }
+    [data-theme="light"] .lead-input { color: var(--text-primary); }
+    [data-theme="light"] .lead-input::placeholder { color: var(--text-muted); }
+    .lead-send {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #0241e3; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background .15s, transform .15s;
     }
-    .composer-tool:hover { background: var(--secondary-soft); color: var(--text-primary); }
-    .composer-tool svg { width: 16px; height: 16px; }
-    .composer-agents {
-      display: inline-flex; align-items: center; gap: 5px;
-      height: 32px; padding: 0 10px;
-      border-radius: var(--radius-pill);
-      font-size: var(--fs-small); font-weight: 500;
-      color: var(--text-tertiary);
-      white-space: nowrap;
-      transition: background .16s ease, color .16s ease;
-      border: none; background: transparent; cursor: pointer;
+    .lead-send:hover { background: #0137c4; transform: scale(1.08); }
+    .lead-send:active { transform: scale(.95); }
+    .lead-send svg { width: 14px; height: 14px; }
+    .lead-footer {
+      padding: 0 20px 14px;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: rgba(255,255,255,.35);
     }
-    .composer-agents:hover { background: var(--secondary-soft); color: var(--text-primary); }
-    .composer-agents svg { width: 14px; height: 14px; }
-    .composer-send {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; margin-left: auto;
-      border-radius: var(--radius-pill);
-      background: var(--primary-soft); color: var(--primary);
-      transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .16s var(--ease-out);
-      border: none; cursor: pointer;
-    }
-    [data-theme="dark"] .composer-send {
-      background: #0241e3; color: #fff;
-    }
-    .composer-send:hover { background: var(--primary-hover); }
-    .composer-send:active { transform: scale(.94); }
-    .composer-send svg { width: 14px; height: 14px; }
+    [data-theme="light"] .lead-footer { color: var(--text-muted); }
+    .lead-footer svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .lead-footer a { color: rgba(255,255,255,.55); text-decoration: underline; }
+    [data-theme="light"] .lead-footer a { color: var(--primary); }
 
     /* ── Marquee ── */
     .marquee-wrap { overflow: hidden; padding: 20px 0; background: var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -928,35 +1026,52 @@
     </div>
   </section>
 
-  <!-- ── Ask Intelligence Composer Demo ── -->
-  <section class="composer-section">
+  <!-- ── Lead Dialog (Applivery-style) ── -->
+  <section class="lead-section">
     <div class="container">
-      <div class="composer-demo reveal">
-        <div class="composer" id="composer">
-          <!-- Message history -->
-          <div class="composer-message">
-            <div class="msg-bubble" id="userMsg">Which devices are exposed to CVE-2026-4102?</div>
+      <div class="lead-demo reveal">
+        <div class="lead-dialog">
+          <div class="lead-header">
+            <div class="lead-orb">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </div>
+            <div class="lead-title-group">
+              <div class="lead-title">FreeAI Intelligence</div>
+              <div class="lead-status"><span class="lead-status-dot"></span>Online</div>
+            </div>
+            <button class="lead-close" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
-          <div class="composer-preview" id="typingPreview" style="display:none">
-            <div class="typing-dots"><span></span><span></span><span></span></div>
-            <span class="status-text" id="statusText">Scanning 4,812 devices...</span>
+          <div class="lead-tabs">
+            <button class="lead-tab active">Early access</button>
+            <button class="lead-tab">Talk to a specialist</button>
           </div>
-          <div class="composer-fields">
-            <span style="font-size:var(--fs-h4);color:var(--text-tertiary);pointer-events:none" id="composerPlaceholder" data-i18n="composer-placeholder">Ask FreeAI</span>
-            <button class="composer-tool" title="Add attachment">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-            </button>
-            <button class="composer-tool" title="Browse skills">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            </button>
-            <button class="composer-agents" id="agentsBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Agents
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="composer-send" id="sendBtn" title="Send">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
+          <div class="lead-body">
+            <div class="lead-msg">
+              <div class="lead-msg-orb">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+              </div>
+              <div class="lead-msg-bubble">Hi — let's get you into this summer's Europe rollout. Three taps and your email, about 30 seconds.</div>
+            </div>
+            <div class="lead-msg">
+              <div class="lead-msg-orb">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+              </div>
+              <div class="lead-msg-bubble">First things first — where should we send your early-access invite?</div>
+            </div>
+          </div>
+          <div class="lead-input-area">
+            <div class="lead-input-wrap">
+              <input class="lead-input" type="email" placeholder="you@company.com" aria-label="Work email" />
+              <button class="lead-send" aria-label="Send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="lead-footer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>FreeAI will use your details only to answer this request. <a href="#">Privacy Policy</a></span>
           </div>
         </div>
       </div>
@@ -1446,12 +1561,45 @@ docker compose --profile allinone up -d
   </section>
 
   <!-- ── Footer ── -->
+  <!-- Chat Panel -->
+  <div class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat with FreeAI">
+    <div class="chat-panel-header">
+      <div class="chat-panel-logo">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/>
+          <path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/>
+        </svg>
+      </div>
+      <div>
+        <div class="chat-panel-title">FreeAI Intelligence</div>
+        <div class="chat-panel-status">Online</div>
+      </div>
+      <button class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="chat-panel-tabs" role="tablist" aria-label="What do you need?">
+      <button class="chat-tab-btn active" data-tab="early-access" role="tab" aria-selected="true">Early access</button>
+      <button class="chat-tab-btn" data-tab="specialist" role="tab" aria-selected="false">Talk to a specialist</button>
+    </div>
+    <div class="chat-panel-body" id="chatPanelBody" aria-live="polite"></div>
+    <div class="chat-panel-input">
+      <div class="chat-input-wrap">
+        <textarea class="chat-input-field" id="chatInputField" rows="2" placeholder="you@company.com" data-i18n-placeholder="chat-placeholder"></textarea>
+        <button class="chat-send-btn" id="chatSendBtn" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 11 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="chat-privacy">FreeAI will use your details only to answer this request. <a href="#">Privacy Policy</a></div>
+    </div>
+  </div>
+
   <!-- Floating chat launcher -->
-  <a href="chatbot.html" class="chat-launcher" aria-label="Open chat" title="Chat with FreeAI">
+  <button class="chat-launcher" id="chatLauncher" aria-label="Chat with FreeAI Intelligence" title="Chat with FreeAI">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
-  </a>
+  </button>
 
   <footer class="footer">
     <div class="footer-inner">
@@ -1588,61 +1736,34 @@ docker compose --profile allinone up -d
       intMarquee.appendChild(a);
     });
 
-    // ── Composer: typing animation ──
-    const typingPreview = document.getElementById('typingPreview');
-    const statusText = document.getElementById('statusText');
-    const userMsg = document.getElementById('userMsg');
-    const sendBtn = document.getElementById('sendBtn');
-    const composerPlaceholder = document.getElementById('composerPlaceholder');
-
-    const statusMessages = [
-      'Scanning 4,812 devices...',
-      'Cross-referencing CVE database...',
-      'Analyzing 24 agent responses...',
-      'Generating compliance report...',
-      'Checking 321 provider endpoints...',
-    ];
-    const aiResponses = [
-      'Based on the scan, 12 devices are exposed: 5 macOS, 4 Windows, 3 Linux. Critical: CVE-2026-4102 affects 3 MacBooks in Paris office.',
-      'The agent pipeline completed 7 phases: plan → code → verify (14 tests pass) → fix → review → document → package. Artifact: /tmp/freai-project-2847.tar.gz',
-      'Security scan found 2 high-severity issues. Applied auto-patch: 1. Fixed path traversal in upload handler. 2. Added input validation to API endpoints.',
-    ];
-    let aiIdx = 0;
-
-    function simulateTyping() {
-      // Show typing indicator
-      typingPreview.style.display = 'flex';
-      userMsg.style.display = 'none';
-      statusText.textContent = statusMessages[statusIdx % statusMessages.length];
-      statusIdx++;
-
-      // After 2.5s, show response and reset
-      setTimeout(() => {
-        typingPreview.style.display = 'none';
-        userMsg.style.display = 'block';
-        userMsg.textContent = aiResponses[aiIdx % aiResponses.length];
-        aiIdx++;
-      }, 2500);
+    // ── Mobile menu toggle ──
+    const menuToggle = document.getElementById('menuToggle');
+    const mobilePanel = document.getElementById('mobilePanel');
+    if (menuToggle && mobilePanel) {
+      menuToggle.addEventListener('click', () => {
+        const open = mobilePanel.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', open);
+      });
+      mobilePanel.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+          mobilePanel.classList.remove('open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!mobilePanel.contains(e.target) && !menuToggle.contains(e.target)) {
+          mobilePanel.classList.remove('open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
 
-    // Auto-cycle the composer demo
-    setInterval(simulateTyping, 5000);
-
-    // Send button interaction
-    sendBtn.addEventListener('click', () => {
-      const placeholder = composerPlaceholder.textContent;
-      if (placeholder && placeholder !== 'Ask FreeAI') return;
-      userMsg.textContent = placeholder || 'Which devices are exposed to CVE-2026-4102?';
-      simulateTyping();
-    });
-
-    // Composer focus: show placeholder
-    const composer = document.getElementById('composer');
-    composer.addEventListener('focus', () => {
-      composerPlaceholder.style.opacity = '0';
-    });
-    composer.addEventListener('blur', () => {
-      composerPlaceholder.style.opacity = '1';
+    // ── Lead dialog: tab switching ──
+    document.querySelectorAll('.lead-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.lead-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
     });
 
     // ── i18n translations ──
@@ -1786,6 +1907,138 @@ docker compose --profile allinone up -d
         applyLang(lang);
       });
     });
+
+    // ── Chat Panel ──
+    const chatPanel = document.getElementById('chatPanel');
+    const chatLauncher = document.getElementById('chatLauncher');
+    const chatPanelClose = document.getElementById('chatPanelClose');
+    const chatPanelBody = document.getElementById('chatPanelBody');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatInputField = document.getElementById('chatInputField');
+    const tabBtns = document.querySelectorAll('.chat-tab-btn');
+    let currentChatTab = 'early-access';
+    let chatOpen = false;
+    let chatMessageTimer = null;
+
+    function openChat() {
+      chatOpen = true;
+      chatPanel.classList.add('open');
+      chatLauncher.style.opacity = '0';
+      chatLauncher.style.pointerEvents = 'none';
+      setTimeout(() => { chatLauncher.style.display = 'none'; }, 200);
+      chatInputField.focus();
+      if (!chatPanelBody.children.length) playChatMessages(currentChatTab);
+    }
+
+    function closeChat() {
+      chatOpen = false;
+      chatPanel.classList.remove('open');
+      chatLauncher.style.display = '';
+      setTimeout(() => { chatLauncher.style.opacity = '1'; chatLauncher.style.pointerEvents = ''; }, 10);
+    }
+
+    function playChatMessages(tab) {
+      const list = tab === 'early-access'
+        ? [
+            { type: 'bot', text: 'Hi \u2014 let\'s get you into the FreeAI rollout.', delay: 350 },
+            { type: 'bot', text: 'A few details and your work email, about 30 seconds.', delay: 900 },
+            { type: 'bot', text: 'First things first \u2014 where should we send your early-access invite?', delay: 1400 },
+          ]
+        : [
+            { type: 'bot', text: 'Hi \u2014 want to talk to a FreeAI specialist?', delay: 350 },
+            { type: 'bot', text: 'Tell us about your workload and we\'ll match you with the right engineer.', delay: 900 },
+            { type: 'bot', text: 'First things first \u2014 what\'s your email?', delay: 1400 },
+          ];
+
+      clearTimeout(chatMessageTimer);
+      chatPanelBody.innerHTML = '';
+      list.forEach((m, i) => {
+        const tid = setTimeout(() => appendChatMsg(m.type, m.text), m.delay);
+        chatMessageTimer = tid;
+      });
+    }
+
+    function appendChatMsg(type, text) {
+      const row = document.createElement('div');
+      row.className = 'chat-msg ' + type;
+      if (type === 'bot') {
+        const av = document.createElement('div');
+        av.className = 'chat-msg-avatar';
+        av.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/><path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/></svg>';
+        row.appendChild(av);
+      }
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-msg-bubble';
+      bubble.textContent = text;
+      row.appendChild(bubble);
+      chatPanelBody.appendChild(row);
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+    }
+
+    function showTyping() {
+      const row = document.createElement('div');
+      row.className = 'chat-msg bot';
+      row.id = 'typingIndicator';
+      const av = document.createElement('div');
+      av.className = 'chat-msg-avatar';
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/><path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/></svg>';
+      row.appendChild(av);
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-msg-bubble';
+      bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+      row.appendChild(bubble);
+      chatPanelBody.appendChild(row);
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+    }
+
+    function removeTyping() {
+      const t = document.getElementById('typingIndicator');
+      if (t) t.remove();
+    }
+
+    function sendChatMsg() {
+      const text = chatInputField.value.trim();
+      if (!text) return;
+      appendChatMsg('user', text);
+      chatInputField.value = '';
+      chatInputField.style.height = 'auto';
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          removeTyping();
+          const resp = currentChatTab === 'early-access'
+            ? 'Thanks! We\'ll send your invite to that address shortly.'
+            : 'Got it \u2014 a specialist will reach out within 24 hours.';
+          appendChatMsg('bot', resp);
+        }, 1100);
+      }, 300);
+    }
+
+    chatSendBtn.addEventListener('click', sendChatMsg);
+    chatInputField.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+    });
+    chatInputField.addEventListener('input', () => {
+      chatInputField.style.height = 'auto';
+      chatInputField.style.height = Math.min(chatInputField.scrollHeight, 100) + 'px';
+    });
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        currentChatTab = btn.dataset.tab;
+        clearTimeout(chatMessageTimer);
+        playChatMessages(currentChatTab);
+      });
+    });
+
+    chatLauncher.addEventListener('click', openChat);
+    chatPanelClose.addEventListener('click', closeChat);
+
+    // Close on Escape
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatOpen) closeChat(); });
   </script>
 </body>
 </html>
