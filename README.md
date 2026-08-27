@@ -947,7 +947,7 @@ Roster (registry/registry.json):
 
 UFW opens only 22/8030/8050. Router (8010) and llama (9001) stay off the public internet by design; reach them via tailnet. noVNC desktop: compose `--profile desktop`, port 6080.
 
-**Public HTTPS:** `--profile tls` serves `https://<host>:8443` (internal cert by default). For a real domain with automatic ACME certs: set `FREEAI_DOMAIN` + `ACME_EMAIL` in `.env`, swap the caddy volume to `docker/Caddyfile.public`, and publish 80/443. The **autonomous API** is reachable through the gateway behind basic auth (`AUTOAUTH_USER`/`AUTOAUTH_HASH` - bcrypt via `docker run --rm caddy caddy hash-password`); dashboard settings writes are blocked at the gateway (LAN/tailnet only).
+**Public HTTPS:** `--profile tls` serves `https://<host>:8443` (internal cert by default). For a real domain with automatic ACME certs: set `FREEAI_DOMAIN` + `ACME_EMAIL` in `.env`, swap the caddy volume to `docker/Caddyfile.public`, and publish 80/443. The **autonomous API** is reachable through the gateway behind basic auth — **REQUIRED:** set `AUTOAUTH_HASH` (bcrypt via `docker run --rm caddy caddy hash-password --plaintext 'your-secure-password'`) before starting the TLS profile; the service will fail to start if unset. Dashboard settings writes are blocked at the gateway (LAN/tailnet only).
 
 ## 15. Testing and Validation
 
