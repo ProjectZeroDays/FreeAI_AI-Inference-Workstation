@@ -13,13 +13,27 @@ const path = require('path');
 const pattern = process.argv[2] || 'test/**/*.test.js';
 const repoRoot = process.cwd();
 
-const cmd = `node --test ${pattern}`;
+// Validate the pattern to prevent command injection
+// Allow only safe characters for glob patterns: alphanumeric, /, *, ?, ., -, _
+// Reject shell metacharacters: ; | & $ ` ( ) < > \ " ' space (unless escaped)
+const dangerousChars = /[;&|`$()<>\\"\'\s]/;
+if (dangerousChars.test(pattern)) {
+  console.error('FAIL: Invalid test pattern. Pattern contains shell metacharacters.');
+  console.error('Allowed characters: alphanumeric, /, *, ?, ., -, _');
+  console.error('Provided pattern: ' + pattern);
+  process.exit(1);
+}
+
+// Use array-based execution with shell: false to prevent command injection
+// Use -- to mark end of options and prevent pattern from being interpreted as Node CLI arguments
+const args = ['--test', '--', pattern];
 
 try {
-  const output = execSync(cmd, {
+  const output = execSync('node', args, {
     cwd: repoRoot,
     stdio: ['pipe', 'pipe', 'pipe'],
     timeout: 120000,
+    shell: false,  // Explicitly disable shell execution
     env: (() => {
       const e = Object.assign({}, process.env, {
         NODE_ENV: 'test',
