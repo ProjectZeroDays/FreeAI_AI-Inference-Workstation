@@ -342,5 +342,5 @@ class HtmlReporter(BaseReporter):
 
     def generate(self, metrics: Dict) -> str:
         """Generate an HTML report using Jinja2 template."""
-        template = Template(HTML_TEMPLATE)
+        template = Template(HTML_TEMPLATE, autoescape=True)
         return template.render(metrics=metrics)
