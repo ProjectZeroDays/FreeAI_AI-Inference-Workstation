@@ -202,12 +202,12 @@ def invoke_agent(name: str, req: AgentRequest):
 
     model = req.model or AGENT_MODELS[name]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     prompts = {
         "orchestrator": f"""You are the ORCHESTRATOR. Decompose this task and produce a structured plan.
-
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Task: {req.prompt}
+{_ctx}Task: {req.prompt}
 
 Output a JSON plan with:
 - objectives (list)
@@ -217,9 +217,7 @@ Output a JSON plan with:
 - risk_factors (list)""",
 
         "explorer": f"""You are the EXPLORER. Analyze the codebase at the given path.
-
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Path: {req.prompt}
+{_ctx}Path: {req.prompt}
 
 Produce:
 - High-level architecture summary
@@ -229,18 +227,14 @@ Produce:
 - Potential coupling issues""",
 
         "oracle": f"""You are the ORACLE. Provide deep technical analysis.
-
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Target: {req.prompt}
+{_ctx}Target: {req.prompt}
 Question: {req.prompt}
 
 Think critically. Consider trade-offs, edge cases, and long-term implications.
 Deliver a well-reasoned analysis with confidence levels.""",
 
         "council": f"""You are the COUNCIL. Simulate multiple expert opinions.
-
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Question: {req.prompt}
+{_ctx}Question: {req.prompt}
 
 Role-play 3 different experts (architect, engineer, product) giving their perspective.
 Then synthesize a consensus recommendation with reasoning.""",
