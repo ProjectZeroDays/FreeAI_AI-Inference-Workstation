@@ -254,16 +254,23 @@ function _extractLLM(corpus) {
     // Use execSync + curl for truly synchronous HTTP. Node's http.request() is
     // async and its callbacks cannot fire inside a synchronous spin-wait loop
     // because execSync blocks the event loop.
-    var curlCmd = 'curl -s -m 10 -X POST'
-      + ' -H "Content-Type: application/json"'
-      + ' -H "Authorization: Bearer ' + nodeSecret + '"'
-      + ' -d ' + JSON.stringify(postData).replace(/'/g, "'\\''")
-      + ' ' + JSON.stringify(url);
-
-    var execSync = require('child_process').execSync;
+    var execFileSync = require('child_process').execFileSync;
     var stdout = '';
     try {
-      stdout = execSync(curlCmd, {
+      stdout = execFileSync('curl', [
+        '-s',
+        '-m',
+        '10',
+        '-X',
+        'POST',
+        '-H',
+        'Content-Type: application/json',
+        '-H',
+        'Authorization: Bearer ' + nodeSecret,
+        '-d',
+        postData,
+        url
+      ], {
         timeout: 12000,
         windowsHide: true,
         stdio: ['pipe', 'pipe', 'pipe'],
