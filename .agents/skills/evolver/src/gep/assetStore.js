@@ -9,6 +9,7 @@ function ensureDir(dir) {
 
 function readJsonIfExists(filePath, fallback) {
   try {
+    if (filePath.includes('..') || path.isAbsolute(filePath)) return fallback;
     if (!fs.existsSync(filePath)) return fallback;
     const raw = fs.readFileSync(filePath, 'utf8');
     if (!raw.trim()) return fallback;

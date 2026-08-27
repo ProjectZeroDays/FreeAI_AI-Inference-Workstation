@@ -323,7 +323,13 @@ function fileTransportSend(message, opts) {
   const dir = (opts && opts.dir) || defaultA2ADir();
   const subdir = path.join(dir, 'outbox');
   ensureDir(subdir);
-  const filePath = path.join(subdir, message.message_type + '.jsonl');
+  const resolvedSubdir = path.resolve(subdir);
+  const resolvedFilePath = path.resolve(resolvedSubdir, message.message_type + '.jsonl');
+  const relativePath = path.relative(resolvedSubdir, resolvedFilePath);
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    throw new Error('Invalid file path');
+  }
+  const filePath = resolvedFilePath;
   fs.appendFileSync(filePath, JSON.stringify(message) + '\n', 'utf8');
   return { ok: true, path: filePath };
 }

@@ -30,7 +30,9 @@ function listFilesRec(dir) {
   const out = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const ent of entries) {
-    const p = path.join(dir, ent.name);
+    const p = path.resolve(dir, ent.name);
+    const rel = path.relative(dir, p);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) continue;
     if (ent.isDirectory()) out.push(...listFilesRec(p));
     else if (ent.isFile()) out.push(p);
   }
@@ -103,7 +105,13 @@ function copyEntry(spec, outDirAbs) {
     const files = listFilesRec(srcAbs);
     for (const abs of files) {
       const rel = normalizePosix(path.relative(REPO_ROOT, abs));
-      copyFile(abs, path.join(outDirAbs, rel));
+      const outDirAbsResolved = path.resolve(outDirAbs);
+      const destAbsResolved = path.resolve(outDirAbs, rel);
+      const relativeCheck = path.relative(outDirAbsResolved, destAbsResolved);
+      if (relativeCheck.startsWith('..') || path.isAbsolute(relativeCheck)) {
+        throw new Error('Invalid file path');
+      }
+      copyFile(abs, destAbsResolved);
       copied.push(rel);
     }
   }

@@ -26,8 +26,17 @@ function writePromptArtifact({ memoryDir, cycleId, runId, prompt, meta }) {
   const safeCycle = String(cycleId || 'cycle').replace(/[^a-zA-Z0-9_\-#]/g, '_');
   const safeRun = String(runId || Date.now()).replace(/[^a-zA-Z0-9_\-]/g, '_');
   const base = `gep_prompt_${safeCycle}_${safeRun}`;
-  const promptPath = path.join(dir, base + '.txt');
-  const metaPath = path.join(dir, base + '.json');
+  const baseResolved = path.resolve(dir);
+  const promptPath = path.resolve(baseResolved, base + '.txt');
+  const metaPath = path.resolve(baseResolved, base + '.json');
+  const promptRelative = path.relative(baseResolved, promptPath);
+  const metaRelative = path.relative(baseResolved, metaPath);
+  if (promptRelative.startsWith('..') || path.isAbsolute(promptRelative)) {
+    throw new Error('bridge: invalid path');
+  }
+  if (metaRelative.startsWith('..') || path.isAbsolute(metaRelative)) {
+    throw new Error('bridge: invalid path');
+  }
 
   fs.writeFileSync(promptPath, String(prompt || ''), 'utf8');
   fs.writeFileSync(

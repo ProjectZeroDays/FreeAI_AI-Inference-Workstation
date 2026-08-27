@@ -1,8 +1,9 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
-import { join, extname } from 'path';
+import { join, extname, resolve, relative } from 'path';
 
 export function readJson(filePath) {
   try {
+    if (filePath.includes('..') || resolve(filePath) !== filePath) return null;
     return JSON.parse(readFileSync(filePath, 'utf-8'));
   } catch {
     return null;
@@ -10,6 +11,7 @@ export function readJson(filePath) {
 }
 
 export function readText(filePath) {
+  if (filePath.includes('..') || resolve(filePath) !== filePath) return null;
   try {
     return readFileSync(filePath, 'utf-8');
   } catch {
@@ -21,9 +23,13 @@ export function findFiles(dir, extensions, maxDepth = 4, depth = 0) {
   if (depth > maxDepth || !existsSync(dir)) return [];
   const results = [];
   try {
+    const baseResolved = resolve(dir);
     for (const entry of readdirSync(dir)) {
       if (entry.startsWith('.') || entry === 'node_modules' || entry === 'dist' || entry === 'build') continue;
       const full = join(dir, entry);
+      const fullResolved = resolve(full);
+      const rel = relative(baseResolved, fullResolved);
+      if (rel.startsWith('..') || resolve(rel) === rel) continue;
       try {
         const stat = statSync(full);
         if (stat.isDirectory()) {
@@ -38,7 +44,12 @@ export function findFiles(dir, extensions, maxDepth = 4, depth = 0) {
 }
 
 export function detectFramework(cwd) {
-  const pkg = readJson(join(cwd, 'package.json'));
+  const cwdResolved = resolve(cwd);
+  const targetPath = join(cwd, 'package.json');
+  const targetResolved = resolve(targetPath);
+  const rel = relative(cwdResolved, targetResolved);
+  if (rel.startsWith('..') || resolve(rel) === rel) return { framework: null, pkg: null };
+  const pkg = readJson(targetResolved);
   if (!pkg) return { framework: null, pkg: null };
   const deps = { ...pkg.dependencies, ...pkg.devDependencies };
   let framework = 'vanilla';

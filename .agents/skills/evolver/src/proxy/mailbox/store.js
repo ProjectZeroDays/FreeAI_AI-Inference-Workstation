@@ -45,6 +45,7 @@ function appendLine(filePath, obj) {
 }
 
 function readLines(filePath) {
+  if (filePath.includes('..') || path.isAbsolute(filePath)) throw new Error('Invalid file path');
   if (!fs.existsSync(filePath)) return [];
   const content = fs.readFileSync(filePath, 'utf8');
   const lines = content.split('\n');
@@ -63,10 +64,14 @@ class MailboxStore {
   constructor(dataDir) {
     if (!dataDir) throw new Error('dataDir is required');
     if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-    this.dataDir = dataDir;
+    this.dataDir = path.resolve(dataDir);
 
-    this._messagesFile = path.join(dataDir, 'messages.jsonl');
-    this._stateFile = path.join(dataDir, 'state.json');
+    const messagesFile = path.resolve(this.dataDir, 'messages.jsonl');
+    const stateFile = path.resolve(this.dataDir, 'state.json');
+    if (path.relative(this.dataDir, messagesFile).startsWith('..') || path.isAbsolute(path.relative(this.dataDir, messagesFile))) throw new Error('Invalid file path');
+    if (path.relative(this.dataDir, stateFile).startsWith('..') || path.isAbsolute(path.relative(this.dataDir, stateFile))) throw new Error('Invalid file path');
+    this._messagesFile = messagesFile;
+    this._stateFile = stateFile;
 
     // in-memory indexes
     this._messages = new Map();          // id -> message object
