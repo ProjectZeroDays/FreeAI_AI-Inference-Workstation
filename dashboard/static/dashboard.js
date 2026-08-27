@@ -67,6 +67,31 @@ async function loadSettings() {
     $("ctx").value = s.llama_ctx;
     $("max-runs").value = s.max_concurrent_runs;
 
+    // Browser settings
+    const br = s.browser || {};
+    const brStealth = br.stealth || {};
+    const brAnon = br.anonymity || {};
+    const brHeal = br.healing || {};
+    const brMx = br.manifestx || {};
+    const brCdp = br.cdp || {};
+    const brObs = br.observability || {};
+    const brVp = br.viewport || {};
+    $("br-stealth").checked = brStealth.enable !== false;
+    $("br-cdp").checked = brCdp.enabled !== false;
+    $("br-healing").checked = brHeal.max_retries > 0;
+    $("br-manifestx").checked = brMx.enabled !== false;
+    $("br-mode").value = brAnon.mode || "none";
+    $("br-headless").checked = br.headless !== false;
+    $("br-retries").value = brHeal.max_retries || 5;
+    $("br-backoff").value = brHeal.retry_backoff || 1.5;
+    $("br-viewport-w").value = brVp.width || 1920;
+    $("br-viewport-h").value = brVp.height || 1080;
+    $("br-screenshot-fail").checked = brHeal.screenshot_on_fail !== false;
+    $("br-scroll-view").checked = brHeal.scroll_into_view !== false;
+    $("br-adaptive-sel").checked = brHeal.adaptive_selectors !== false;
+    $("br-dom-mirror").checked = brObs.dom_mirror === true;
+    $("br-port").value = br.api_port || 8180;
+
     $("current-mode").textContent =
       `current: ${data.current_power_mode}` +
       (s.auto_management ? " (auto)" : " (manual)");
@@ -249,7 +274,47 @@ function collectSettings() {
     repeat_penalty: parseFloat($("rpen").value),
     repeat_last_n: parseInt($("rlastn").value, 10),
     llama_ctx: parseInt($("ctx").value, 10),
-    max_concurrent_runs: parseInt($("max-runs").value, 10)
+    max_concurrent_runs: parseInt($("max-runs").value, 10),
+    // Knight-Shade browser settings
+    browser: {
+      stealth: {
+        enable: $("br-stealth").checked,
+        randomize_fingerprint: true,
+        mask_webdriver: true,
+        fake_headers: true,
+        override_navigator: true,
+        canvas_noise: true,
+        webgl_noise: true,
+        audio_noise: true,
+      },
+      anonymity: {
+        mode: $("br-mode").value,
+        tor_socks_port: 9150,
+      },
+      healing: {
+        max_retries: parseInt($("br-retries").value, 10),
+        retry_backoff: parseFloat($("br-backoff").value),
+        adaptive_selectors: $("br-adaptive-sel").checked,
+        screenshot_on_fail: $("br-screenshot-fail").checked,
+        scroll_into_view: $("br-scroll-view").checked,
+      },
+      manifestx: {
+        enabled: $("br-manifestx").checked,
+        god_mode: true,
+      },
+      cdp: {
+        enabled: $("br-cdp").checked,
+      },
+      observability: {
+        dom_mirror: $("br-dom-mirror").checked,
+      },
+      viewport: {
+        width: parseInt($("br-viewport-w").value, 10),
+        height: parseInt($("br-viewport-h").value, 10),
+      },
+      headless: $("br-headless").checked,
+      api_port: parseInt($("br-port").value, 10),
+    }
   };
 }
 
