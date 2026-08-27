@@ -59,22 +59,22 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
 ## Architecture
 
 ```
-                    ┌─────────────────────────────────────────────────────────┐
-                    │              FreeAI Dashboard (:8080)               │
-                    │        Flask + Chart.js + SSE + Authentication      │
-                    ├─────────────────────────┬─────────────────┬───────────┤
-                    │  Router  │ Agents   │ Workflow │   Autonomous       │
-                    │  :8010   │ :8020    │  :8040   │      :8050         │
-                    │          │          │          │                    │
-                    │ classify │ plan→code│ chain    │ 7-phase SDLC       │
-                    │ fallback │ verify  │ validate │  real compilation  │
-                    │ cache    │ fix     │ template │  auto-package      │
-                    ├─────────────────────────┴─────────────────┴───────────┤
-                    │              MCP Registry (40+ servers)              │
-                    │    Aikido · SendGrid · Twilio · Telegram · WhatsApp  │
+                    ┌───────────────────────────────────────────────────────┐
+                    │              FreeAI Dashboard (:8080)                 │
+                    │        Flask + Chart.js + SSE + Authentication        │
+                    ├───────────────────────────┬────────────────┬──────────┤
+                    │  Router  │ Agents    │ Workflow │      Autonomous     │
+                    │  :8010   │ :8020     │  :8040   │       :8050         │
+                    │          │           │          │                     │
+                    │ classify │ plan→code │ chain    │   7-phase SDLC      │
+                    │ fallback │ verify    │ validate │   real compilation  │
+                    │ cache    │ fix       │ template │   auto-package      │
+                    ├───────────────────────────┴────────────────┴──────────┤
+                    │              MCP Registry (40+ servers)               │
+                    │    Aikido · SendGrid · Twilio · Telegram · WhatsApp   │
                     ├───────────────────────────────────────────────────────┤
-                    │            GPU Inference Layer                       │
-                    │    llama.cpp (:9001) · vLLM (:9002) · FreeToken (:9100)│
+                    │                  GPU Inference Layer                  │
+                    │ llama.cpp  (:9001) · vLLM (:9002) · FreeToken (:9100) │
                     └───────────────────────────────────────────────────────┘
 ```
 
