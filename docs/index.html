@@ -3,13 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FreeAI — Unified AI Workstation</title>
-  <meta name="description" content="Self-hosted AI inference workstation with GPU serving, autonomous agents, security scanning, and builder tools." />
-  <meta property="og:title" content="FreeAI — Unified AI Workstation" />
-  <meta property="og:description" content="Local models. Autonomous agents. Full SDLC automation. One self-hosted stack." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%235c8bff'/><stop offset='100%25' stop-color='%238a70f6'/></linearGradient></defs><polygon points='50,8 88,50 50,92 12,50' fill='url(%23g)' opacity='0.95'/><circle cx='50' cy='50' r='10' fill='%234ade80' opacity='0.9'/></svg>" />
+  <title>FreeAI — AI Intelligence</title>
+  <meta name="description" content="FreeAI Intelligence — Early access to the unified AI workstation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -18,2146 +13,390 @@
       --primary: #0241e3;
       --primary-hover: #0137c4;
       --primary-soft: rgba(2, 65, 227, .1);
-      --primary-50: #EEF4FF;
-      --primary-100: #DBE7FF;
-      --primary-200: #B8CFFF;
-      --primary-600: #0241E3;
-      --primary-900: #010258;
-      --secondary: #010258;
-      --secondary-soft: rgba(1, 2, 88, .08);
-      --navy-50: #F1F6FF;
-      --navy-100: #E2E8F4;
-      --navy-400: #8A98BA;
-      --navy-800: #0B1638;
-      --navy-900: #010258;
-      --accent: #0237C2;
-      --accent-light: #6691F1;
-      --canvas: #F1F6FF;
-      --bg: #FFFFFF;
-      --bg-canvas: #F1F6FF;
-      --bg-elev-1: #FFFFFF;
-      --bg-elev-2: #F6F9FF;
-      --bg-elev-3: #ECF1FB;
-      --text-primary: #010258;
-      --text-secondary: #2A3866;
-      --text-tertiary: #5A6A95;
-      --text-muted: #8A98BA;
-      --border: #E2E8F4;
-      --border-strong: #C9D3E8;
-      --border-brand: rgba(2, 65, 227, .32);
-      --success: #16A34A;
-      --success-soft: #DCFCE7;
-      --warning: #D97706;
-      --warning-soft: #FEF3C7;
-      --danger: #DC2626;
-      --danger-soft: #FEE2E2;
-      --info: #0241E3;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --radius-xl: 18px;
-      --radius-2xl: 24px;
-      --radius-3xl: 28px;
-      --radius-pill: 9999px;
-      --shadow-sm: 0 1px 2px rgba(1, 2, 88, .06);
-      --shadow-md: 0 4px 12px rgba(1, 2, 88, .08);
-      --shadow-lg: 0 16px 40px rgba(1, 2, 88, .12);
-      --shadow-glow: 0 0 0 4px rgba(2, 65, 227, .18);
-      --space-2: 8px;
-      --space-3: 12px;
-      --space-4: 16px;
-      --space-5: 20px;
-      --space-6: 24px;
-      --space-8: 32px;
-      --space-10: 40px;
-      --space-12: 48px;
-      --font-sans: "Outfit", system-ui, -apple-system, sans-serif;
-      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-      --fs-display: 56px;
-      --fs-h1: 40px;
-      --fs-h2: 28px;
-      --fs-h3: 20px;
-      --fs-h4: 17px;
-      --fs-body: 15px;
-      --fs-small: 13px;
-      --fs-micro: 11px;
-      --lh-tight: 1.15;
-      --lh-snug: 1.35;
-      --lh-normal: 1.55;
-      --fw-medium: 500;
-      --fw-semibold: 600;
-      --ease-out: cubic-bezier(.23, 1, .32, 1);
-      --ai-grad: linear-gradient(100deg, var(--primary-600) 8%, #7c5cf0 92%);
-      --ai-violet: #7c5cf0;
-      --ai-violet-soft: rgba(124, 92, 240, .12);
-      --header-glass: rgba(255, 255, 255, .82);
-      --glass-border: var(--border);
-      --glow-core: rgba(2, 65, 227, .1);
-    }
-    [data-theme="dark"] {
-      --bg: #060a18;
-      --bg-canvas: #04070f;
-      --bg-elev-1: #0e1630;
-      --bg-elev-2: #121b3a;
-      --bg-elev-3: #1b2750;
       --text-primary: #f1f6ff;
       --text-secondary: #c9d3e8;
-      --text-tertiary: #a5b4dc;
       --text-muted: #8a98ba;
       --border: rgba(150, 170, 255, .13);
-      --border-strong: rgba(150, 170, 255, .26);
-      --border-brand: rgba(92, 139, 255, .45);
-      --primary: #5c8bff;
-      --primary-hover: #7da2ff;
-      --primary-soft: rgba(92, 139, 255, .13);
-      --secondary-soft: rgba(255, 255, 255, .06);
-      --success: #4ade80;
-      --success-soft: rgba(74, 222, 128, .14);
-      --warning: #fbbf24;
-      --warning-soft: rgba(251, 191, 36, .14);
-      --danger: #f87171;
-      --danger-soft: rgba(248, 113, 113, .15);
-      --info: #5c8bff;
-      --info-soft: rgba(92, 139, 255, .16);
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
-      --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
-      --shadow-lg: 0 24px 60px rgba(0, 0, 0, .55);
-      --shadow-glow: 0 0 0 4px rgba(92, 139, 255, .24);
-      --header-glass: rgba(5, 8, 20, .88);
-      --glass-border: rgba(150, 170, 255, .13);
-      --glow-core: rgba(2, 65, 227, .32);
-      --ai-grad: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
-      --ai-violet: #8a70f6;
-      --ai-violet-soft: rgba(138, 112, 246, .16);
+      --bg: #060a18;
+      --panel: #0c1530;
+      --radius: 14px;
+      --radius-sm: 10px;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
     body {
       background: var(--bg);
       color: var(--text-secondary);
-      font: var(--fw-medium) var(--fs-body) / var(--lh-normal) var(--font-sans);
+      font-family: "Outfit", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
-    img, svg { display: block; max-width: 100%; }
-    ::selection { background: var(--primary-100); color: var(--primary-900); }
-    [data-theme="dark"] ::selection { background: var(--primary); color: #fff; }
 
-    /* ── Theme Toggle — clean moon icon, no square boundary ── */
-    .theme-toggle {
-      width: 40px; height: 40px; border-radius: var(--radius-md);
-      display: grid; place-items: center;
-      color: var(--text-muted); transition: background .15s, color .15s;
-      cursor: pointer; border: 1px solid var(--border);
-    }
-    .theme-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
-    .theme-toggle svg { width: 18px; height: 18px; }
-    .theme-toggle .icon-moon { display: none; }
-    .theme-toggle .icon-sun  { display: block; }
-    [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
-    [data-theme="dark"] .theme-toggle .icon-sun  { display: none; }
-
-    /* ── Nav ── */
-    .nav {
+    /* ── Top nav ── */
+    .topnav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: var(--header-glass);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      height: 56px;
+      background: rgba(6, 10, 24, .85);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 24px;
     }
-    .nav-inner {
-      max-width: 1200px; margin: 0 auto;
-      display: flex; align-items: center; gap: var(--space-4);
-      padding: 0 var(--space-8); height: 64px;
+    .topnav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 16px; color: var(--text-primary);
     }
-    .nav-logo {
-      display: flex; align-items: center; gap: var(--space-2);
-      font-weight: 700; font-size: 18px; color: var(--text-primary);
-      white-space: nowrap;
+    .topnav-brand-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6);
+      display: grid; place-items: center; flex-shrink: 0;
     }
-    .nav-logo svg { flex-shrink: 0; }
-    .nav-links {
-      display: flex; gap: 2px; margin-left: auto;
-      flex-wrap: wrap; align-items: center;
+    .topnav-brand-icon svg { width: 16px; height: 16px; }
+    .topnav-links { display: flex; gap: 4px; margin-left: auto; }
+    .topnav-link {
+      padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); transition: all .15s;
     }
-    .nav-link {
-      padding: 6px 12px; border-radius: var(--radius-md);
-      font-size: var(--fs-small); font-weight: 500;
-      color: var(--text-tertiary); transition: all .15s;
-      white-space: nowrap;
+    .topnav-link:hover { color: var(--text-primary); background: rgba(255,255,255,.05); }
+    .topnav-github {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      background: var(--primary); color: #fff; transition: background .15s;
+      margin-left: 8px;
     }
-    .nav-link:hover { color: var(--text-primary); background: var(--secondary-soft); text-decoration: none; }
-    .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
-    .menu-toggle {
-      display: none; background: none; border: none; cursor: pointer;
-      width: 40px; height: 40px; border-radius: var(--radius-md);
-      align-items: center; justify-content: center; color: var(--text-secondary);
-      transition: background .15s;
+    .topnav-github:hover { background: var(--primary-hover); }
+    .topnav-github svg { width: 14px; height: 14px; }
+
+    /* ── Hero / Chat layout ── */
+    .hero-chat {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      padding-top: 56px;
     }
-    .menu-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
-    .menu-toggle svg { width: 22px; height: 22px; }
-    .chat-launcher {
-      position: fixed; bottom: 24px; right: 24px;
-      width: 44px; height: 44px;
-      background: #0241e3; border: none; border-radius: 12px;
-      color: #fff; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(2,65,227,.4), 0 2px 6px rgba(0,0,0,.3);
+    .hero-chat-inner {
+      flex: 1;
       display: flex; align-items: center; justify-content: center;
-      transition: all .2s cubic-bezier(.23,1,.32,1); z-index: 90;
+      padding: 40px 24px;
+      background:
+        radial-gradient(800px 500px at 20% 20%, rgba(92,139,255,.10), transparent 60%),
+        radial-gradient(600px 400px at 80% 80%, rgba(138,112,246,.08), transparent 60%),
+        var(--bg);
     }
-    .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(2,65,227,.5); }
-    .chat-launcher:active { transform: scale(.95); }
-    .chat-launcher svg { width: 20px; height: 20px; }
-    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 42px; height: 42px; } }
 
-    /* ── Chat Panel ── */
-    .chat-panel {
-      display: none; position: fixed; bottom: 88px; right: 24px;
-      width: 400px; max-width: calc(100vw - 48px);
-      background: #0c1530; border: 1px solid rgba(255,255,255,.08);
-      border-radius: 22px; overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04);
-      z-index: 95; flex-direction: column;
+    /* ── Chat card ── */
+    .chat-card {
+      width: 100%; max-width: 520px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
     }
-    .chat-panel.open { display: flex; }
-    .chat-panel-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+    .chat-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 20px 16px;
+      border-bottom: 1px solid var(--border);
       background: rgba(255,255,255,.02);
     }
-    .chat-panel-logo {
-      width: 30px; height: 30px; background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    .chat-orb {
+      width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6);
+      display: grid; place-items: center;
     }
-    .chat-panel-logo svg { width: 16px; height: 16px; }
-    .chat-panel-title { font-size: 14px; font-weight: 600; color: #f1f6ff; }
-    .chat-panel-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #22c55e; font-weight: 500; margin-top: 1px; }
-    .chat-panel-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 5px #22c55e; }
-    .chat-panel-close {
-      margin-left: auto; width: 28px; height: 28px; background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08); border-radius: 7px;
-      color: rgba(241,246,255,.4); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
+    .chat-orb svg { width: 20px; height: 20px; }
+    .chat-title-group { flex: 1; }
+    .chat-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .chat-status {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: #22c55e; font-weight: 500; margin-top: 2px;
     }
-    .chat-panel-close:hover { background: rgba(255,255,255,.1); color: #f1f6ff; }
-    .chat-panel-close svg { width: 12px; height: 12px; }
-    .chat-panel-tabs { display: flex; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); padding: 4px; }
-    .chat-tab-btn {
-      flex: 1; padding: 7px 12px; font-size: 12px; font-weight: 500;
-      color: rgba(241,246,255,.4); background: none; border: none; cursor: pointer;
-      border-radius: 7px; transition: all .2s; font-family: inherit;
+    .chat-status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #22c55e; box-shadow: 0 0 6px #22c55e;
+      animation: pulse-dot 1.5s infinite;
     }
-    .chat-tab-btn:hover { color: rgba(241,246,255,.7); }
-    .chat-tab-btn.active { background: #0241e3; color: #fff; box-shadow: 0 2px 8px rgba(2,65,227,.4); }
-    .chat-panel-body { flex: 1; overflow-y: auto; padding: 14px 14px 8px; display: flex; flex-direction: column; gap: 8px; }
-    .chat-msg { display: flex; gap: 7px; align-items: flex-end; }
-    .chat-msg-avatar { width: 22px; height: 22px; flex-shrink: 0; background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-    .chat-msg-avatar svg { width: 12px; height: 12px; }
-    .chat-msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.55; background: #111b3a; border: 1px solid rgba(255,255,255,.06); color: #f1f6ff; border-top-left-radius: 3px; }
-    .chat-panel-input { padding: 10px 14px 14px; border-top: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.02); }
-    .chat-input-wrap {
-      position: relative; background: #111b3a; border: 1px solid rgba(255,255,255,.1);
-      border-radius: 14px; padding: 10px 40px 10px 14px; transition: border-color .2s;
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .chat-close {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--border);
+      color: var(--text-muted); cursor: pointer;
+      display: grid; place-items: center; transition: all .15s;
     }
-    .chat-input-wrap:focus-within { border-color: rgba(92,139,255,.4); }
-    .chat-input-field { width: 100%; background: none; border: none; outline: none; color: #f1f6ff; font-size: 13px; font-family: inherit; resize: none; line-height: 1.5; }
-    .chat-input-field::placeholder { color: rgba(241,246,255,.3); }
-    .chat-send-btn {
-      position: absolute; right: 7px; bottom: 7px; width: 26px; height: 26px;
-      background: #0241e3; border: none; border-radius: 50%; color: #fff;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: background .15s, transform .15s;
-    }
-    .chat-send-btn:hover { background: #033ad1; transform: scale(1.05); }
-    .chat-send-btn svg { width: 12px; height: 12px; }
-    .chat-privacy { margin-top: 6px; font-size: 11px; color: rgba(241,246,255,.3); text-align: center; line-height: 1.5; }
-    .chat-privacy a { color: rgba(241,246,255,.5); text-decoration: underline; }
+    .chat-close:hover { background: rgba(255,255,255,.1); color: var(--text-primary); }
+    .chat-close svg { width: 14px; height: 14px; }
 
-    @media (max-width: 480px) {
-      .chat-panel { bottom: 76px; right: 10px; left: 10px; width: auto; max-width: none; border-radius: 16px; }
-      .chat-launcher { bottom: 14px; right: 14px; }
-    }
-    @keyframes chatIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
-    .chat-panel.open { display: flex; }
-    .chat-panel-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.07);
+    /* ── Tabs ── */
+    .chat-tabs {
+      display: flex; gap: 4px; padding: 10px 20px 0;
       background: rgba(255,255,255,.02);
     }
-    .chat-panel-logo {
-      width: 30px; height: 30px; background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
-      border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    .chat-tab {
+      flex: 1; padding: 8px 12px; border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      color: rgba(241,246,255,.35); background: none; border: none;
+      cursor: pointer; transition: all .2s; font-family: inherit;
     }
-    .chat-panel-logo svg { width: 17px; height: 17px; }
-    .chat-panel-title { font-size: 14px; font-weight: 600; color: #f1f6ff; }
-    .chat-panel-status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #22c55e; font-weight: 500; margin-top: 1px; }
-    .chat-panel-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-    .chat-panel-close {
-      margin-left: auto; width: 30px; height: 30px; background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08); border-radius: 8px;
-      color: rgba(241,246,255,.4); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
+    .chat-tab:hover { color: rgba(241,246,255,.6); }
+    .chat-tab.active { background: var(--primary); color: #fff; }
+
+    /* ── Messages ── */
+    .chat-body {
+      padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      min-height: 180px;
     }
-    .chat-panel-close:hover { background: rgba(255,255,255,.1); color: #f1f6ff; }
-    .chat-panel-close svg { width: 13px; height: 13px; }
-    .chat-panel-tabs { display: flex; background: rgba(255,255,255,.03); border-bottom: 1px solid rgba(255,255,255,.07); padding: 4px; }
-    .chat-tab-btn {
-      flex: 1; padding: 7px 12px; font-size: 12px; font-weight: 500;
-      color: rgba(241,246,255,.4); background: none; border: none; cursor: pointer;
-      border-radius: 7px; transition: all .2s; font-family: inherit;
+    .chat-msg { display: flex; gap: 8px; align-items: flex-end; }
+    .chat-msg-avatar {
+      width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+      background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6);
+      display: grid; place-items: center;
     }
-    .chat-tab-btn:hover { color: rgba(241,246,255,.7); }
-    .chat-tab-btn.active { background: #0241e3; color: #fff; box-shadow: 0 2px 8px rgba(2,65,227,.4); }
-    .chat-panel-body { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.1) transparent; }
-    .chat-panel-body::-webkit-scrollbar { width: 4px; }
-    .chat-panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
-    .chat-msg { display: flex; gap: 7px; align-items: flex-end; animation: msgIn .25s cubic-bezier(.23,1,.32,1); }
-    @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-    .chat-msg.user { flex-direction: row-reverse; }
-    .chat-msg-avatar { width: 22px; height: 22px; flex-shrink: 0; background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-    .chat-msg-avatar svg { width: 12px; height: 12px; }
-    .chat-msg-bubble { max-width: 82%; padding: 9px 13px; border-radius: 13px; font-size: 13px; line-height: 1.55; }
-    .chat-msg.bot .chat-msg-bubble { background: #111b3a; border: 1px solid rgba(255,255,255,.07); border-top-left-radius: 3px; color: #f1f6ff; }
-    .chat-msg.user .chat-msg-bubble { background: #0241e3; border-top-right-radius: 3px; }
+    .chat-msg-avatar svg { width: 14px; height: 14px; }
+    .chat-msg-bubble {
+      max-width: 85%; padding: 10px 14px; border-radius: 14px;
+      font-size: 13.5px; line-height: 1.55;
+      background: #111b3a; border: 1px solid rgba(255,255,255,.06);
+      color: #f1f6ff; border-top-left-radius: 4px;
+    }
     .typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
-    .typing-dots span { width: 5px; height: 5px; border-radius: 50%; background: rgba(241,246,255,.35); animation: dotBounce 1.2s ease-in-out infinite; }
+    .typing-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-muted); animation: bounce 1.2s infinite;
+    }
     .typing-dots span:nth-child(2) { animation-delay: .2s; }
     .typing-dots span:nth-child(3) { animation-delay: .4s; }
-    @keyframes dotBounce { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-4px); opacity: 1; } }
-    .chat-panel-input { padding: 10px 14px 14px; border-top: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.02); }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+
+    /* ── Input ── */
+    .chat-input-area {
+      padding: 0 20px 16px;
+    }
     .chat-input-wrap {
-      position: relative; background: #111b3a; border: 1px solid rgba(255,255,255,.12);
-      border-radius: 14px; padding: 10px 40px 10px 14px; transition: border-color .2s, box-shadow .2s;
-    }
-    .chat-input-wrap:focus-within { border-color: rgba(92,139,255,.45); box-shadow: 0 0 0 3px rgba(92,139,255,.1); }
-    .chat-input-field { width: 100%; background: none; border: none; outline: none; color: #f1f6ff; font-size: 13px; font-family: inherit; resize: none; line-height: 1.5; }
-    .chat-input-field::placeholder { color: rgba(241,246,255,.3); }
-    .chat-send-btn {
-      position: absolute; right: 7px; bottom: 7px; width: 28px; height: 28px;
-      background: #0241e3; border: none; border-radius: 7px; color: #fff;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: background .15s, transform .15s;
-    }
-    .chat-send-btn:hover { background: #033ad1; transform: scale(1.05); }
-    .chat-send-btn svg { width: 13px; height: 13px; }
-    .chat-privacy { margin-top: 7px; font-size: 11px; color: rgba(241,246,255,.3); text-align: center; line-height: 1.5; }
-    .chat-privacy a { color: rgba(241,246,255,.5); text-decoration: underline; }
-    .chat-privacy a:hover { color: #f1f6ff; }
-
-    @media (max-width: 480px) {
-      .chat-panel { bottom: 80px; right: 12px; left: 12px; width: auto; max-width: none; border-radius: 18px; }
-      .chat-launcher { bottom: 14px; right: 14px; }
-    }
-
-    /* ── Page-wide Applivery dark theme ── */
-    body {
-      background: #0b1530;
-      color: #f1f6ff;
-    }
-    [data-theme="light"] body { background: var(--navy-50); color: var(--text-primary); }
-    .section {
-      padding: 80px 24px;
-      background: #0b1530;
-      border-top: 1px solid rgba(255,255,255,.05);
-    }
-    [data-theme="light"] .section { background: var(--navy-50); }
-    .section:nth-child(even) { background: #091025; }
-    [data-theme="light"] .section:nth-child(even) { background: #fff; }
-    .section-head { text-align: center; max-width: 680px; margin: 0 auto 48px; }
-    .section-title { font-size: clamp(24px,3.5vw,40px); font-weight: 700; letter-spacing: -.02em; margin-bottom: 12px; line-height: 1.2; }
-    .section-sub { font-size: 16px; color: rgba(241,246,255,.5); line-height: 1.6; }
-    [data-theme="light"] .section-sub { color: var(--text-secondary); }
-    .feature-card {
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
-      border-radius: 16px; padding: 28px; transition: border-color .2s, background .2s;
-    }
-    .feature-card:hover { border-color: rgba(92,139,255,.3); background: rgba(255,255,255,.05); }
-    [data-theme="light"] .feature-card { background: #fff; border-color: var(--border); }
-    [data-theme="light"] .feature-card:hover { border-color: var(--primary-200); }
-    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
-    .feature-grid.centered { justify-content: center; }
-    .feature-icon { font-size: 22px; margin-bottom: 14px; display: block; }
-    .feature-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #f1f6ff; }
-    [data-theme="light"] .feature-card h3 { color: var(--text-primary); }
-    .feature-card p { font-size: 13px; color: rgba(241,246,255,.5); line-height: 1.6; }
-    [data-theme="light"] .feature-card p { color: var(--text-secondary); }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
-      color: rgba(92,139,255,.9); margin-bottom: 16px;
-    }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block; }
-    .grad { background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
-      height: 52px; padding: 0 var(--space-6);
-      border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: var(--fw-semibold);
-      white-space: nowrap; transition: transform .16s var(--ease-out), background .2s, border-color .2s, box-shadow .2s;
-      cursor: pointer; border: 1px solid transparent;
-    }
-    .btn:active { transform: scale(.97); }
-    .btn--primary {
-      background: var(--primary-600); color: #fff;
-      box-shadow: inset 0 1px rgba(255,255,255,.18), 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(2,65,227,.35);
-    }
-    [data-theme="dark"] .btn--primary {
-      background: #0241e3; color: #fff;
-      box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(2,65,227,.3);
-    }
-    .btn--primary:hover { background: var(--primary-hover); }
-    .btn--secondary {
-      background: var(--bg); color: var(--text-primary);
-      border: 1px solid var(--border-strong); box-shadow: var(--shadow-sm);
-    }
-    .btn--secondary:hover { background: var(--bg-elev-2); border-color: var(--navy-400); }
-    [data-theme="dark"] .btn--secondary { background: var(--bg-elev-1); }
-    .btn--ghost {
-      background: rgba(255,255,255,.08); color: #fff;
-      border: 1px solid rgba(255,255,255,.22);
-    }
-    .btn--ghost:hover { background: rgba(255,255,255,.15); }
-    .btn--sm { height: 40px; padding: 0 var(--space-5); border-radius: var(--radius-md); font-size: var(--fs-small); }
-
-    /* ── Pills ── */
-    .pill {
-      display: inline-flex; align-items: center; gap: var(--space-2);
-      height: 26px; padding: 0 var(--space-3);
-      border-radius: var(--radius-pill); font-size: var(--fs-micro);
-      font-weight: var(--fw-semibold); letter-spacing: .02em; white-space: nowrap; flex-shrink: 0;
-    }
-    .pill--brand { background: var(--primary-soft); color: var(--primary); }
-    .pill--success { background: var(--success-soft); color: var(--success); }
-    .pill--neutral { background: var(--bg-elev-3); color: var(--text-tertiary); }
-    .dot { width: 6px; height: 6px; border-radius: 50%; }
-
-    /* ── Container & Sections ── */
-    .container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px,4vw,32px); }
-    .section { padding-block: clamp(88px,10vw,136px); }
-    .section-head { max-width: 720px; margin: 0 auto clamp(48px,6vw,72px); text-align: center; }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: var(--space-2);
-      font-size: var(--fs-micro); font-weight: var(--fw-semibold);
-      letter-spacing: .12em; text-transform: uppercase; color: var(--primary); margin-bottom: var(--space-4);
-    }
-    .section-title {
-      font-size: clamp(34px,5vw,60px); font-weight: var(--fw-medium); line-height: var(--lh-tight);
-      letter-spacing: -.025em; color: var(--text-primary); text-wrap: balance;
-    }
-    .section-sub {
-      margin-top: var(--space-4); font-size: var(--fs-h4); line-height: var(--lh-normal);
-      color: var(--text-tertiary); text-wrap: pretty;
-    }
-    .grad {
-      background: var(--ai-grad); -webkit-background-clip: text; background-clip: text;
-      color: transparent;
-    }
-
-    /* ── Hero ── */
-    .hero {
-      padding: 160px 0 100px; text-align: center;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(92,139,255,.10) 0%, transparent 70%),
-        var(--bg-canvas);
-    }
-    [data-theme="light"] .hero {
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(2,65,227,.05) 0%, transparent 70%),
-        var(--canvas);
-    }
-    .hero h1 {
-      font-size: clamp(40px,6vw,72px); font-weight: 700; line-height: var(--lh-tight);
-      letter-spacing: -.035em; margin-bottom: var(--space-6); color: var(--text-primary);
-    }
-    .hero p {
-      font-size: 18px; color: var(--text-secondary); max-width: 580px;
-      margin: 0 auto var(--space-8); line-height: var(--lh-normal);
-    }
-    .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
-    .hero-stats {
-      display: flex; justify-content: center; gap: clamp(24px,4vw,56px);
-      margin-top: 72px; padding-top: 48px;
-      border-top: 1px solid var(--border); flex-wrap: wrap;
-    }
-    .hero-stat { text-align: center; }
-    .hero-stat .num { font-size: 32px; font-weight: 800; color: var(--text-primary); letter-spacing: -.02em; }
-    .hero-stat .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
-
-    /* ── Lead Dialog (Applivery-style chatbot popup) ── */
-    .lead-section {
-      padding: 0 0 80px;
-      background: var(--bg-canvas);
-    }
-    .lead-demo {
-      max-width: 440px; margin: 0 auto;
-    }
-    .lead-dialog {
-      background: #0b1227;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.05);
-    }
-    [data-theme="light"] .lead-dialog { background: #f8faff; border-color: var(--border); }
-    .lead-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 16px 20px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    [data-theme="light"] .lead-header { border-bottom-color: var(--border); }
-    .lead-orb {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .lead-orb svg { width: 16px; height: 16px; }
-    .lead-title-group { flex: 1; }
-    .lead-title { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -.01em; }
-    [data-theme="light"] .lead-title { color: var(--text-primary); }
-    .lead-status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #4ade80; margin-top: 1px; }
-    .lead-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
-    .lead-close {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(255,255,255,.08); border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,.5); transition: background .15s, color .15s;
-    }
-    .lead-close:hover { background: rgba(255,255,255,.14); color: #fff; }
-    [data-theme="light"] .lead-close { background: var(--bg-elev-2); color: var(--text-muted); }
-    [data-theme="light"] .lead-close:hover { background: var(--bg-elev-3); color: var(--text-primary); }
-    .lead-close svg { width: 14px; height: 14px; }
-    .lead-tabs {
-      display: flex; margin: 12px 20px 0;
-      background: rgba(255,255,255,.06); border-radius: 10px; padding: 3px;
-    }
-    [data-theme="light"] .lead-tabs { background: var(--bg-elev-2); }
-    .lead-tab {
-      flex: 1; padding: 7px 0; border-radius: 8px;
-      font-size: 13px; font-weight: 500; text-align: center;
-      color: rgba(255,255,255,.55); border: none; background: transparent;
-      cursor: pointer; transition: all .18s;
-    }
-    [data-theme="light"] .lead-tab { color: var(--text-tertiary); }
-    .lead-tab.active { background: #0241e3; color: #fff; box-shadow: 0 2px 8px rgba(2,65,227,.4); }
-    .lead-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; min-height: 140px; }
-    .lead-msg { display: flex; gap: 8px; align-items: flex-start; }
-    .lead-msg-orb {
-      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
-      display: flex; align-items: center; justify-content: center; margin-top: 2px;
-    }
-    .lead-msg-orb svg { width: 11px; height: 11px; }
-    .lead-msg-bubble {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 12px; border-top-left-radius: 4px;
-      padding: 10px 14px; font-size: 14px; line-height: 1.5;
-      color: rgba(255,255,255,.85);
-    }
-    [data-theme="light"] .lead-msg-bubble { background: var(--bg-elev-2); border-color: var(--border); color: var(--text-secondary); }
-    .lead-input-area { padding: 0 20px 16px; }
-    .lead-input-wrap {
-      display: flex; align-items: flex-end; gap: 8px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 14px; padding: 10px 12px;
-      transition: border-color .2s, background .2s;
-    }
-    .lead-input-wrap:focus-within { border-color: rgba(92,139,255,.5); background: rgba(255,255,255,.08); }
-    [data-theme="light"] .lead-input-wrap { background: var(--bg); border-color: var(--border); }
-    [data-theme="light"] .lead-input-wrap:focus-within { border-color: var(--primary); }
-    .lead-input {
-      flex: 1; background: none; border: none; outline: none;
-      font-size: 14px; color: #fff; font-family: inherit;
-    }
-    .lead-input::placeholder { color: rgba(255,255,255,.35); }
-    [data-theme="light"] .lead-input { color: var(--text-primary); }
-    [data-theme="light"] .lead-input::placeholder { color: var(--text-muted); }
-    .lead-send {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: #0241e3; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: background .15s, transform .15s;
-    }
-    .lead-send:hover { background: #0137c4; transform: scale(1.08); }
-    .lead-send:active { transform: scale(.95); }
-    .lead-send svg { width: 14px; height: 14px; }
-    .lead-footer {
-      padding: 0 20px 14px;
-      display: flex; align-items: center; gap: 6px;
-      font-size: 11px; color: rgba(255,255,255,.35);
-    }
-    [data-theme="light"] .lead-footer { color: var(--text-muted); }
-    .lead-footer svg { width: 12px; height: 12px; flex-shrink: 0; }
-    .lead-footer a { color: rgba(255,255,255,.55); text-decoration: underline; }
-    [data-theme="light"] .lead-footer a { color: var(--primary); }
-
-    /* ── Marquee ── */
-    .marquee-wrap { overflow: hidden; padding: 20px 0; background: var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .marquee { display: flex; gap: 48px; animation: marquee 40s linear infinite; white-space: nowrap; }
-    .marquee span { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em; }
-    .marquee span em { font-style: normal; color: var(--primary); }
-    @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-    /* ── Logo Marquee (services/integrations) ── */
-    .logo-marquee-wrap { overflow: hidden; padding: 16px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
-    [data-theme="dark"] .logo-marquee-wrap { background: var(--bg-canvas); }
-    .logo-marquee { display: flex; gap: 56px; animation: logo-marquee 60s linear infinite; white-space: nowrap; align-items: center; }
-    .logo-marquee-item {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13px; font-weight: 600; color: var(--text-muted);
-      opacity: .6; transition: opacity .2s, color .2s;
-      text-decoration: none; flex-shrink: 0;
-    }
-    .logo-marquee-item:hover { opacity: 1; color: var(--text-primary); text-decoration: none; }
-    .logo-marquee-item svg { width: 20px; height: 20px; flex-shrink: 0; }
-    @keyframes logo-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-    /* ── Trusted ── */
-    .trusted { padding: 20px 0; text-align: center; border-bottom: 1px solid var(--border); }
-    .trusted p { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 12px; }
-    .logo-strip { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; align-items: center; opacity: .5; }
-    .logo-strip span { font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
-
-    /* ── Feature Cards — EXACT Applivery sizing ── */
-    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-    .feature-grid.centered { justify-content: center; }
-    .feature-grid.centered .feature-card { max-width: 380px; }
-    .feature-card {
-      background: var(--bg-elev-1);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 28px;
-      transition: border-color .15s var(--ease-out), transform .15s var(--ease-out), box-shadow .15s var(--ease-out);
-      display: flex; flex-direction: column;
-    }
-    .feature-card:hover {
-      border-color: var(--border-strong);
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-    }
-    .feature-card > * { flex: 1; }
-    .feature-icon {
-      width: 48px; height: 48px; border-radius: var(--radius-lg);
-      display: grid; place-items: center; font-size: 22px; margin-bottom: 16px; flex-shrink: 0;
-    }
-    .feature-card h3 { font-size: var(--fs-h3); font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-    .feature-card p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
-    .feature-card pre {
-      background: var(--bg-canvas); border-radius: var(--radius-md);
-      padding: 14px; font-size: 12px; margin-top: 12px; overflow-x: auto;
-      font-family: var(--font-mono); color: var(--text-secondary);
-      border: 1px solid var(--border); line-height: 1.6; flex: none;
-    }
-    .feature-card code { font-family: var(--font-mono); }
-
-    /* ── Glow Panel — Applivery exact ── */
-    .glow-panel {
-      --bb-border: conic-gradient(from var(--bb-angle), #1ed6ff 0deg, #5c8bff 120deg, #8a70f6 240deg, #1ed6ff 360deg);
-      --gp-radius: var(--radius-3xl);
-      position: relative; isolation: isolate;
-      border-radius: var(--gp-radius);
-      animation: bb-turn 3.5s linear infinite;
-      overflow: hidden;
-    }
-    .glow-panel::before {
-      content: '';
-      position: absolute; inset: -9px; z-index: 0;
-      border-radius: calc(var(--gp-radius) + 9px);
-      background: var(--bb-border);
-      filter: blur(24px);
-      opacity: .37;
-      pointer-events: none;
-    }
-    .glow-panel::after {
-      content: '';
-      position: absolute; inset: 0; z-index: 1;
-      border-radius: inherit;
-      background: var(--bg-elev-1);
-      pointer-events: none;
-    }
-    .glow-panel > * { position: relative; z-index: 2; }
-    @property --bb-angle { syntax: "<angle>"; initial-value: 0deg; inherits: true; }
-    @keyframes bb-turn { to { --bb-angle: 360deg; } }
-
-    /* ── Reveal Animation ── */
-    .reveal {
-      opacity: 0; transform: translateY(16px);
-      transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
-      transition-delay: var(--reveal-delay, 0ms);
-    }
-    .reveal.is-visible { opacity: 1; transform: none; }
-
-    /* ── Float Animation ── */
-    @keyframes float-y { 0%,to{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-    .float { animation: float-y 4s ease-in-out infinite; }
-
-    /* ── Pillars ── */
-    .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-    .pillar {
-      background: var(--bg-elev-1); border: 1px solid var(--border);
-      border-radius: var(--radius-xl); padding: 32px;
-    }
-    .pillar-num { font-size: 48px; font-weight: 800; color: var(--bg-elev-3); line-height: 1; margin-bottom: 12px; }
-    .pillar h3 { font-size: var(--fs-h3); font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-    .pillar p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
-
-    /* ── Integration Marquee Grid ── */
-    .integration-marquee-wrap { overflow: hidden; padding: 4px 0; }
-    .integration-marquee { display: flex; gap: 24px; animation: int-marquee 45s linear infinite; white-space: nowrap; }
-    .integration-marquee-item {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--bg-elev-1); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 8px 14px;
-      flex-shrink: 0; min-width: 160px;
-      transition: border-color .15s, transform .15s, box-shadow .15s;
-      text-decoration: none;
-    }
-    .integration-marquee-item:hover {
-      border-color: var(--primary); transform: translateY(-2px);
-      box-shadow: var(--shadow-md); text-decoration: none;
-    }
-    .integration-marquee-item .im-icon { width: 20px; height: 20px; flex-shrink: 0; }
-    .integration-marquee-item .im-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
-    .integration-marquee-item .im-desc { font-size: 10px; color: var(--text-muted); }
-    @keyframes int-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-    /* ── Steps ── */
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; counter-reset: step; }
-    .step {
-      position: relative; padding: 28px; background: var(--bg-elev-1);
-      border: 1px solid var(--border); border-radius: var(--radius-xl);
-    }
-    .step::before {
-      counter-increment: step; content: counter(step);
-      position: absolute; top: -14px; left: 24px;
-      background: var(--ai-grad); color: #fff;
-      font-size: 13px; font-weight: 800; width: 28px; height: 28px;
-      border-radius: 50%; display: grid; place-items: center;
-    }
-    .step h3 { font-size: var(--fs-h4); font-weight: 600; margin-bottom: 8px; margin-top: 8px; color: var(--text-primary); }
-    .step p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
-
-    /* ── Nav brand ── */
-    .nav-brand { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
-    .nav-brand-sub { font-size: 13px; font-weight: 400; color: var(--primary); margin-left: 6px; }
-
-    /* ── Footer brand ── */
-    .footer-brand-sub { font-size: 12px; font-weight: 400; color: var(--primary); margin-left: 6px; }
-
-    /* ── Applivery-style SDLC Diagram ── */
-    .sdlc-diagram {
-      background: linear-gradient(135deg, rgba(14,22,48,.95) 0%, rgba(6,10,24,.98) 100%);
-      border: 1px solid rgba(92,139,255,.2);
-      border-radius: var(--radius-3xl);
-      padding: clamp(24px,4vw,48px);
-      position: relative; overflow: hidden;
-    }
-    [data-theme="light"] .sdlc-diagram {
-      background: linear-gradient(135deg, var(--bg-elev-2) 0%, var(--bg-elev-1) 100%);
-      border-color: var(--border);
-    }
-    .sdlc-diagram::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 50% 60% at 50% 30%, rgba(92,139,255,.1) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .sdlc-diagram > * { position: relative; z-index: 1; }
-
-    /* Tabs */
-    .sdlc-tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
-    .sdlc-tab {
-      padding: 8px 20px; border-radius: 100px;
-      font-size: 13px; font-weight: 500;
-      border: 1px solid var(--border);
-      background: var(--bg-elev-1);
-      color: var(--text-tertiary);
-      cursor: pointer; transition: all .15s;
-    }
-    .sdlc-tab:hover { border-color: var(--primary); color: var(--text-primary); }
-    .sdlc-tab.active {
-      background: var(--primary-soft);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Prompt banner */
-    .sdlc-prompt {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: rgba(245,158,11,.1);
-      border: 1px solid rgba(245,158,11,.3);
-      border-radius: 100px;
-      padding: 8px 20px;
-      font-size: 13px; color: #fbbf24;
-      margin: 0 auto 24px;
-    }
-    [data-theme="light"] .sdlc-prompt {
-      background: rgba(245,158,11,.08);
-      border-color: rgba(245,158,11,.2);
-      color: #d97706;
-    }
-
-    /* Orchestrator */
-    .sdlc-orchestrator { text-align: center; margin-bottom: 24px; }
-    .orch-node {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
-      border-radius: 100px;
-      padding: 10px 24px;
-      font-size: 14px; font-weight: 600; color: #fff;
-      box-shadow: 0 4px 20px rgba(92,139,255,.3);
-    }
-    .orch-icon { font-size: 16px; }
-
-    /* Agents grid */
-    .sdlc-agents {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .agent-node { text-align: center; }
-    .agent-icon {
-      width: 48px; height: 48px;
-      margin: 0 auto 10px;
-      border-radius: var(--radius-lg);
-      background: var(--bg-elev-1);
-      border: 1px solid var(--border);
-      display: grid; place-items: center;
-      font-size: 22px;
       position: relative;
+      background: #111b3a; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px; padding: 12px 48px 12px 16px;
+      transition: border-color .2s;
     }
-    .agent-icon.verified { border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.08); }
-    .agent-check {
-      position: absolute; top: -4px; right: -4px;
-      width: 16px; height: 16px;
-      background: #4ade80; border-radius: 50%;
-      font-size: 10px; color: #060a18;
+    .chat-input-wrap:focus-within { border-color: rgba(92,139,255,.5); box-shadow: 0 0 0 3px rgba(92,139,255,.12); }
+    .chat-input {
+      width: 100%; background: none; border: none; outline: none;
+      color: var(--text-primary); font-size: 14px; font-family: inherit;
+      resize: none; line-height: 1.5;
+    }
+    .chat-input::placeholder { color: rgba(241,246,255,.25); }
+    .chat-send {
+      position: absolute; right: 10px; bottom: 10px;
+      width: 30px; height: 30px; border-radius: 9px;
+      background: var(--primary); border: none; cursor: pointer;
       display: grid; place-items: center;
-      font-weight: 700;
+      color: #fff; transition: all .15s;
     }
-    .agent-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 4px; }
-    .agent-status { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+    .chat-send:hover { background: var(--primary-hover); transform: scale(1.05); }
+    .chat-send svg { width: 14px; height: 14px; }
 
-    /* Footer bar */
-    .sdlc-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg-elev-1);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 14px 20px;
-      gap: 16px;
-    }
-    .sdlc-footer-left { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); }
-    .orch-icon-small { font-size: 16px; }
-    .sdlc-approve {
-      padding: 10px 24px;
-      background: #0241e3;
-      color: #fff;
-      border: none; border-radius: var(--radius-md);
-      font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: background .15s, transform .15s;
-    }
-    .sdlc-approve:hover { background: #0137c4; transform: translateY(-1px); }
-
-    /* ── CTA Section ── */
-    .cta-section {
-      text-align: center; padding: clamp(80px,10vw,120px) 24px;
-      background: linear-gradient(135deg, #0e1630 0%, #060a18 100%);
+    /* ── Privacy footer ── */
+    .chat-footer {
+      padding: 10px 20px 14px;
       border-top: 1px solid var(--border);
-      position: relative; overflow: hidden;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--text-muted);
     }
-    [data-theme="light"] .cta-section {
-      background: linear-gradient(135deg, var(--primary-600) 0%, #5b21b6 100%);
+    .chat-footer svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .chat-footer a { color: var(--text-muted); text-decoration: underline; }
+    .chat-footer a:hover { color: var(--text-primary); }
+
+    /* ── Feature strip below chat ── */
+    .feature-strip {
+      padding: 32px 24px 40px;
+      background: rgba(255,255,255,.01);
+      border-top: 1px solid var(--border);
     }
-    .cta-section::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,139,255,.08) 0%, transparent 70%);
-      pointer-events: none;
+    .feature-strip-inner {
+      max-width: 720px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
     }
-    .cta-section > * { position: relative; z-index: 1; }
-    .cta-section h2 { font-size: clamp(28px,4vw,48px); font-weight: 700; margin-bottom: var(--space-4); letter-spacing: -.02em; color: #fff; }
-    .cta-section p { color: rgba(255,255,255,.65); font-size: 17px; margin-bottom: 40px; max-width: 480px; margin-left: auto; margin-right: auto; }
-    .cta-section .btn--primary { background: #fff; color: #010258; box-shadow: 0 8px 24px rgba(0,0,0,.2); font-weight: 700; }
-    .cta-section .btn--primary:hover { background: #f0f4ff; }
-    .cta-section .btn--ghost { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.2); }
-    .cta-section .btn--ghost:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.35); }
+    .feature-strip-item { text-align: center; }
+    .feature-strip-icon {
+      width: 40px; height: 40px; border-radius: 10px; margin: 0 auto 10px;
+      background: var(--primary-soft); display: grid; place-items: center;
+      color: var(--primary); font-size: 18px;
+    }
+    .feature-strip-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .feature-strip-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
     /* ── Footer ── */
     .footer {
-      padding: 64px 0 32px; border-top: 1px solid var(--border);
-      background: #050a18;
-    }
-    [data-theme="light"] .footer { background: var(--navy-900); }
-    .footer-inner {
-      max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px);
-    }
-    .footer-grid {
-      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
-      align-items: start;
-    }
-    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
-    @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
-    .footer-brand-area { display: flex; flex-direction: column; }
-    .footer-brand { font-size: 22px; font-weight: 700; color: #f1f6ff; margin-bottom: 12px; letter-spacing: -.02em; }
-    .footer-tagline { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 20px; max-width: 260px; }
-    .footer-cta-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 20px; border-radius: 10px;
-      background: #0241e3; color: #fff; font-size: 13px; font-weight: 600;
-      text-decoration: none; transition: background .15s, transform .15s;
-      border: none; cursor: pointer; font-family: inherit;
-    }
-    .footer-cta-btn:hover { background: #033ad1; transform: translateY(-1px); }
-    .footer-cta-btn svg { width: 14px; height: 14px; }
-    .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 12px; letter-spacing: -.02em; }
-    .footer-tag { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 20px; max-width: 260px; }
-    .footer-cta {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 20px; border-radius: 10px;
-      background: #0241e3; color: #fff; font-size: 13px; font-weight: 600;
-      text-decoration: none; transition: background .15s, transform .15s;
-      border: none; cursor: pointer; font-family: inherit;
-    }
-    .footer-cta:hover { background: #033ad1; transform: translateY(-1px); }
-    .footer-cta svg { width: 14px; height: 14px; }
-    .footer-nav {}
-    .footer-col h2 {
-      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
-      color: rgba(241,246,255,.3); margin: 0 0 14px;
-    }
-    .footer-title {
-      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
-      color: rgba(241,246,255,.3); margin-bottom: 14px;
-    }
-    .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; }
-    .footer-links a {
-      color: rgba(241,246,255,.55); font-size: 13px; text-decoration: none;
-      transition: color .15s;
-    }
-    .footer-links a:hover { color: #f1f6ff; }
-    .footer-bottom {
-      margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.06);
-      display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 24px;
-    }
-    .footer-trust { display: flex; align-items: center; gap: 10px; }
-    .footer-iso { width: 28px; height: 28px; opacity: .5; }
-    .footer-copyright { font-size: 12px; color: rgba(241,246,255,.3); }
-
-    /* ── Language Dropdown ── */
-    .lang-dropdown { position: relative; }
-    .lang-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      height: 40px; padding: 0 10px;
-      border-radius: var(--radius-md);
-      font-size: var(--fs-small); font-weight: 500;
-      color: var(--text-tertiary);
-      background: var(--bg-elev-1);
-      border: 1px solid var(--border);
-      cursor: pointer; transition: all .15s;
-    }
-    .lang-btn:hover { color: var(--text-primary); border-color: var(--border-strong); }
-    .lang-btn svg { width: 16px; height: 16px; }
-    .lang-btn .chevron { width: 12px; height: 12px; transition: transform .15s; }
-    .lang-dropdown.open .lang-btn .chevron { transform: rotate(180deg); }
-    .lang-menu {
-      position: absolute; top: calc(100% + 8px); right: 0;
-      min-width: 160px;
-      background: var(--bg-elev-1);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-lg);
-      opacity: 0; visibility: hidden;
-      transform: translateY(-8px);
-      transition: all .15s var(--ease-out);
-      z-index: 200;
-      overflow: hidden;
-    }
-    .lang-dropdown.open .lang-menu {
-      opacity: 1; visibility: visible; transform: translateY(0);
-    }
-    .lang-menu-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 16px;
-      font-size: var(--fs-small); font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer; transition: background .1s, color .1s;
-    }
-    .lang-menu-item:hover { background: var(--secondary-soft); color: var(--text-primary); }
-    .lang-menu-item.active { color: var(--primary); }
-    .lang-menu-item .check { width: 14px; height: 14px; opacity: 0; }
-    .lang-menu-item.active .check { opacity: 1; }
-    .lang-menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
-
-    /* ── Mobile panel ── */
-    .mobile-panel {
-      display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
-      z-index: 99; background: var(--bg); overflow-y: auto;
-      padding: var(--space-6);
-      animation: slideDown .2s var(--ease-out);
-    }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    .mobile-panel.open { display: flex; flex-direction: column; gap: var(--space-4); }
-    .mobile-nav { display: flex; flex-direction: column; gap: 2px; }
-    .mobile-link {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 16px; border-radius: var(--radius-md);
-      font-size: var(--fs-body); font-weight: 500; color: var(--text-secondary);
-      text-decoration: none; transition: background .15s, color .15s;
+      font-size: 12px; color: var(--text-muted);
     }
-    .mobile-link:hover { background: var(--secondary-soft); color: var(--text-primary); }
-    .mobile-link svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .mobile-actions { display: flex; flex-direction: column; gap: var(--space-3); padding-top: var(--space-4); border-top: 1px solid var(--border); }
-    .mobile-actions .lang-dropdown { width: 100%; }
-    .mobile-actions .lang-btn { width: 100%; justify-content: flex-start; }
-    .mobile-actions .btn--primary { width: 100%; justify-content: center; }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: var(--text-muted); transition: color .15s; }
+    .footer-links a:hover { color: var(--text-primary); }
+    .footer-cta {
+      background: var(--primary); color: #fff; padding: 6px 14px;
+      border-radius: 8px; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background .15s;
+    }
+    .footer-cta:hover { background: var(--primary-hover); }
 
     /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .menu-toggle { display: flex; }
-      .nav-links { display: none; }
-      .nav-inner { padding: 0 var(--space-4); }
-      .hero-stats { gap: 20px; flex-wrap: wrap; }
-      .hero h1 { font-size: 36px; }
-      .section { padding: 64px 20px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .reveal { transform: none; transition: opacity .25s ease; }
-      .float { animation: none; }
-      .glow-panel { animation: none; }
-      .marquee, .logo-marquee, .integration-marquee { animation-duration: 200s; }
+    @media (max-width: 600px) {
+      .feature-strip-inner { grid-template-columns: 1fr; }
+      .topnav-links { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── Navigation ── -->
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="/" class="nav-logo">
-        <span class="nav-brand">FreeAI</span>
-        <span class="nav-brand-sub">AI Intelligence</span>
-      </a>
-       <div class="nav-links">
-         <a href="#why-now" class="nav-link" data-i18n="nav-why-now">AI Intelligence</a>
-         <a href="#capabilities" class="nav-link" data-i18n="nav-capabilities">Features</a>
-         <a href="#agents" class="nav-link" data-i18n="nav-agents">Integrations</a>
-         <a href="#how-it-works" class="nav-link" data-i18n="nav-how-works">AI Agents</a>
-         <a href="deploy.html" class="nav-link" data-i18n="nav-deploy">Deploy</a>
-         <a href="#install" class="nav-link" data-i18n="nav-install">Install</a>
-         <a href="#faq" class="nav-link" data-i18n="nav-faq">FAQ</a>
-       </div>
-      <div class="nav-actions">
-        <!-- Language dropdown -->
-        <div class="lang-dropdown" id="langDropdown">
-          <button class="lang-btn" id="langBtn" aria-label="Select language">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            <span id="langLabel">EN</span>
-            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="lang-menu" id="langMenu">
-            <div class="lang-menu-item active" data-lang="en"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>English</div>
-            <div class="lang-menu-item" data-lang="es"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Español</div>
-            <div class="lang-menu-item" data-lang="de"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Deutsch</div>
-            <div class="lang-menu-item" data-lang="fr"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Français</div>
-            <div class="lang-menu-item" data-lang="it"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Italiano</div>
-            <div class="lang-menu-item" data-lang="pt"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Português</div>
-            <div class="lang-menu-item" data-lang="ja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>日本語</div>
-            <div class="lang-menu-item" data-lang="ko"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>한국어</div>
-            <div class="lang-menu-item" data-lang="zh"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>中文</div>
-            <div class="lang-menu-divider"></div>
-            <div class="lang-menu-item" data-lang="ar"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>العربية</div>
-          </div>
-        </div>
-        <!-- Theme toggle — clean moon icon, no border square -->
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-        <!-- GitHub button — Applivery light theme blue -->
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;box-shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(2,65,227,.25);height:40px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          GitHub
-        </a>
+  <!-- ── Top Nav ── -->
+  <nav class="topnav">
+    <a href="/" class="topnav-brand">
+      <div class="topnav-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
       </div>
-    </div>
-    <!-- Mobile menu toggle -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-  </nav>
-
-  <!-- ── Mobile Panel ── -->
-  <div class="mobile-panel" id="mobilePanel" role="navigation" aria-label="Mobile">
-    <nav class="mobile-nav">
-      <a href="#dashboards" class="mobile-link" data-i18n="nav-dashboards">Dashboards <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#skills" class="mobile-link" data-i18n="nav-skills">Skills <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#plugins" class="mobile-link" data-i18n="nav-plugins">Plugins <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#mcps" class="mobile-link" data-i18n="nav-mcps">MCPs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#extensions" class="mobile-link" data-i18n="nav-extensions">Extensions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#workflows" class="mobile-link" data-i18n="nav-workflows">Workflows <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="deploy.html" class="mobile-link" data-i18n="nav-deploy">Deploy <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#install" class="mobile-link" data-i18n="nav-install">Install <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-      <a href="#faq" class="mobile-link" data-i18n="nav-faq">FAQ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
-    </nav>
-    <div class="mobile-actions">
-      <div class="lang-dropdown" id="langDropdownMobile">
-        <button class="lang-btn" id="langBtnMobile" aria-label="Select language">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <span id="langLabelMobile">EN</span>
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="lang-menu" id="langMenuMobile">
-          <div class="lang-menu-item active" data-lang="en"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>English</div>
-          <div class="lang-menu-item" data-lang="es"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Español</div>
-          <div class="lang-menu-item" data-lang="de"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Deutsch</div>
-          <div class="lang-menu-item" data-lang="fr"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Français</div>
-          <div class="lang-menu-item" data-lang="it"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Italiano</div>
-          <div class="lang-menu-item" data-lang="pt"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Português</div>
-          <div class="lang-menu-item" data-lang="ja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>日本語</div>
-          <div class="lang-menu-item" data-lang="ko"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>한국어</div>
-          <div class="lang-menu-item" data-lang="zh"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>中文</div>
-          <div class="lang-menu-divider"></div>
-          <div class="lang-menu-item" data-lang="ar"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>العربية</div>
-        </div>
-      </div>
-      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      FreeAI
+    </a>
+    <div class="topnav-links">
+      <a href="/wiki-dashboard" class="topnav-link">Dashboard</a>
+      <a href="/skills" class="topnav-link">Skills</a>
+      <a href="/providers" class="topnav-link">Providers</a>
+      <a href="/desktop" class="topnav-link">Desktop</a>
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="topnav-github" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
         GitHub
       </a>
     </div>
-  </div>
+  </nav>
 
-  <!-- ── Hero ── -->
-  <section class="hero">
-    <div class="container">
-      <div class="eyebrow">
-        <span class="dot" style="background:var(--success)"></span>
-        v1.3.0 — Autonomous SDLC Agents &amp; Aikido Security
-      </div>
-      <h1 class="reveal" data-i18n="hero-tagline">The AI workstation<br/><span class="grad">that thinks ahead.</span></h1>
-      <p class="reveal" style="transition-delay:.1s" data-i18n="hero-sub">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
-      <div class="hero-actions reveal" style="transition-delay:.2s">
-        <a href="#install" class="btn btn--primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span data-i18n="hero-btn-install">Install FreeAI</span>
-        </a>
-        <a href="/wiki-dashboard" class="btn btn--secondary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
-          <span data-i18n="hero-btn-docs">Read Docs</span>
-        </a>
-      </div>
-      <div class="hero-stats reveal" style="transition-delay:.3s">
-        <div class="hero-stat"><div class="num">174</div><div class="label">Features</div></div>
-        <div class="hero-stat"><div class="num">55+</div><div class="label">Skills</div></div>
-        <div class="hero-stat"><div class="num">5</div><div class="label">MCP Servers</div></div>
-        <div class="hero-stat"><div class="num">24</div><div class="label">Agents</div></div>
-        <div class="hero-stat"><div class="num">22</div><div class="label">Integrations</div></div>
-        <div class="hero-stat"><div class="num">3</div><div class="label">Plugins</div></div>
-        <div class="hero-stat"><div class="num">6</div><div class="label">Extensions</div></div>
-        <div class="hero-stat"><div class="num">40+</div><div class="label">MCPs</div></div>
-        <div class="hero-stat"><div class="num">100+</div><div class="label">Settings</div></div>
-      </div>
-    </div>
-  </section>
+  <!-- ── Hero + Chat ── -->
+  <main class="hero-chat">
+    <div class="hero-chat-inner">
+      <div class="chat-card">
+        <!-- Header -->
+        <div class="chat-card-header">
+          <div class="chat-orb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <div class="chat-title-group">
+            <div class="chat-title">FreeAI Intelligence</div>
+            <div class="chat-status"><span class="chat-status-dot"></span>Online</div>
+          </div>
+          <button class="chat-close" aria-label="Close" onclick="this.closest('.chat-card').style.opacity='0.5'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
 
-  <!-- ── Lead Dialog (Applivery-style) ── -->
-  <section class="lead-section">
-    <div class="container">
-      <div class="lead-demo reveal">
-        <div class="lead-dialog">
-          <div class="lead-header">
-            <div class="lead-orb">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <!-- Tabs -->
+        <div class="chat-tabs">
+          <button class="chat-tab active" onclick="switchTab(this)">Early access</button>
+          <button class="chat-tab" onclick="switchTab(this)">Talk to a specialist</button>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-body" id="chatBody">
+          <div class="chat-msg">
+            <div class="chat-msg-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
             </div>
-            <div class="lead-title-group">
-              <div class="lead-title">FreeAI Intelligence</div>
-              <div class="lead-status"><span class="lead-status-dot"></span>Online</div>
+            <div class="chat-msg-bubble">Hi — let's get you into this summer's Europe rollout. Three taps and your email, about 30 seconds.</div>
+          </div>
+          <div class="chat-msg">
+            <div class="chat-msg-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
             </div>
-            <button class="lead-close" aria-label="Close">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <div class="chat-msg-bubble">First things first — where should we send your early-access invite?</div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrap">
+            <input class="chat-input" id="chatInput" type="email" placeholder="you@company.com" autocomplete="email" />
+            <button class="chat-send" aria-label="Send" onclick="sendMessage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
           </div>
-          <div class="lead-tabs">
-            <button class="lead-tab active">Early access</button>
-            <button class="lead-tab">Talk to a specialist</button>
-          </div>
-          <div class="lead-body">
-            <div class="lead-msg">
-              <div class="lead-msg-orb">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
-              </div>
-              <div class="lead-msg-bubble">Hi — let's get you into this summer's Europe rollout. Three taps and your email, about 30 seconds.</div>
-            </div>
-            <div class="lead-msg">
-              <div class="lead-msg-orb">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
-              </div>
-              <div class="lead-msg-bubble">First things first — where should we send your early-access invite?</div>
-            </div>
-          </div>
-          <div class="lead-input-area">
-            <div class="lead-input-wrap">
-              <input class="lead-input" type="email" placeholder="you@company.com" aria-label="Work email" />
-              <button class="lead-send" aria-label="Send">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="lead-footer">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>FreeAI will use your details only to answer this request. <a href="#">Privacy Policy</a></span>
-          </div>
+        </div>
+
+        <!-- Privacy -->
+        <div class="chat-footer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>FreeAI will use your details only to answer this request. <a href="#">Privacy Policy</a></span>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ── Provider Logo Marquee ── -->
-  <div class="logo-marquee-wrap">
-    <div class="logo-marquee" id="logoMarquee"></div>
-  </div>
-
-  <!-- ── Trusted By ── -->
-  <div class="trusted">
-    <p data-i18n="trusted-label">Powered by leading AI infra</p>
-    <div class="logo-strip" id="logoStrip">
-      <span style="color:#10a37f">OpenAI</span>
-      <span style="color:#FF4B5C">Anthropic</span>
-      <span style="color:#FCD34D">llama.cpp</span>
-      <span style="color:#7C5CFC">vLLM</span>
-      <span style="color:#0ea5e9">Playwright</span>
-      <span style="color:#2496ED">Docker</span>
-      <span style="color:#fff">GitHub</span>
-      <span style="color:#0ea5e9">FastAPI</span>
-    </div>
-  </div>
-
-  <!-- ── Dashboards ── -->
-  <section class="section" id="dashboards">
-    <div class="section-head reveal">
-      <div class="eyebrow">Dashboards</div>
-      <h2 class="section-title">Every operational view,<br/><span class="grad">one dashboard.</span></h2>
-      <p class="section-sub">Real-time telemetry, log streams, skill management, and the FreeToken desktop console — all in one interface.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card reveal" style="--reveal-delay:0ms">
-        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
-        <h3>Wiki Dashboard</h3>
-        <p>3-column scroll-spy layout with filterable page TOC, live section highlighting, and AI chatbot for repo-only Q&A.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:50ms">
-        <div class="feature-icon" style="background:rgba(34,197,94,.12)">⬡</div>
-        <h3>Logs Dashboard</h3>
-        <p>15 simulated services with live log injection every 3s. Text/JSON export, pattern search, and AI help modal.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:100ms">
-        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
-        <h3>Network Dashboard</h3>
-        <p>12 telemetry cards — upload/download speeds, VPN/Tor/DNSCrypt status, IPv4/IPv6. Drag-drop reorder, 5s live refresh.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:150ms">
-        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
-        <h3>FreeToken Desktop</h3>
-        <p>Draggable web cards for edge runtime config, skill/MCP/plugin links, telemetry insights, and per-card recommendations.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:200ms">
-        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬢</div>
-        <h3>Blog &amp; Forum</h3>
-        <p>Community-driven content. JSON-backed posts and threads with dark/light theme matching the dashboard.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:250ms">
-        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
-        <h3>Provider Config</h3>
-        <p>22 providers, 10 clients, cross-installable skills/MCPs/plugins/agents. One config file, all clients updated.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Skills ── -->
-  <section class="section" id="skills" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-    <div class="section-head reveal">
-      <div class="eyebrow">Skills</div>
-      <h2 class="section-title">55+ expert skills,<br/><span class="grad">one click to install.</span></h2>
-      <p class="section-sub">From quantum C2 to creative generation, from shell scripting to music synthesis — skills are peer-reviewed, versioned, and shareable.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card reveal" style="--reveal-delay:0ms">
-        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚔</div>
-        <h3>Red Team (14)</h3>
-        <p>APT hunting, exploit research, social engineering, LotL techniques, evasion, payload generation.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:50ms">
-        <div class="feature-icon" style="background:rgba(34,197,94,.12)">🛡</div>
-        <h3>Blue Team (12)</h3>
-        <p>Hardening, compliance (NIST/FedRAMP/DOD), SIEM integration, incident response, forensic analysis.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:100ms">
-        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
-        <h3>Purple Team (7)</h3>
-        <p>Red↔blue orchestration, control validation, remediation bridging, autonomous validation.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:150ms">
-        <div class="feature-icon" style="background:rgba(14,165,233,.12)">⬡</div>
-        <h3>Creative (18)</h3>
-        <p>ASCII art, architecture diagrams, pixel art, manim videos, ComfyUI, p5.js, songwriting.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:200ms">
-        <div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div>
-        <h3>DevOps (10)</h3>
-        <p>CI/CD, Docker, Kubernetes, Terraform, monitoring, Kanban orchestration, webhook subscriptions.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:250ms">
-        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟁</div>
-        <h3>MLOps (8)</h3>
-        <p>Model serving (vLLM, llama.cpp), fine-tuning (SFT/DPO/RFT), evaluation harness, RAG pipelines.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Plugins ── -->
-  <section class="section" id="plugins">
-    <div class="section-head reveal">
-      <div class="eyebrow">Plugins</div>
-      <h2 class="section-title">Plug in what you need.<br/><span class="grad">Remove what you don't.</span></h2>
-      <p class="section-sub">Plugin system with 6+ core plugins and a marketplace. Zero-downtime updates, version-pinned, and sandboxed.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
-        <h3>CI/CD Plugin</h3>
-        <p>GitHub Actions, Docker publish, release bundling — triggered on push or schedule. Zero-downtime deployments.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:50ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
-        <h3>Watcher Plugin</h3>
-        <p>File-system watcher for config changes, model downloads, and RAG document ingestion.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
-        <h3>Backup Plugin</h3>
-        <p>Config snapshot, registry export, weekly retention (keep 10). One-command restore.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:150ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
-        <h3>Watchdog Plugin</h3>
-        <p>Supervisor loop (10s), health agent (30s), recovery agent (15s). systemd units with auto-restart.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
-        <h3>Marketplace</h3>
-        <p>Browse, install, and share plugins. Version-pinned installs with rollback support.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:250ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
-        <h3>Scheduler</h3>
-        <p>Cron-driven daily cleanup, weekly backup, timed idle windows with auto-restore on activity.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── MCPs with moving integration marquee ── -->
-  <section class="section" id="mcps" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-    <div class="section-head reveal">
-      <div class="eyebrow">MCP Servers</div>
-      <h2 class="section-title">40+ MCP servers,<br/><span class="grad">zero config hassle.</span></h2>
-      <p class="section-sub">Pre-configured servers for memory, code intelligence, browser automation, search, LLM access, and more — all wired into the router.</p>
-    </div>
-    <!-- Moving integration marquee -->
-    <div class="integration-marquee-wrap">
-      <div class="integration-marquee" id="integrationMarquee"></div>
-    </div>
-  </section>
-
-  <!-- ── Extensions ── -->
-  <section class="section" id="extensions">
-    <div class="section-head reveal">
-      <div class="eyebrow">Extensions</div>
-      <h2 class="section-title">Extend the workstation<br/><span class="grad">without limits.</span></h2>
-      <p class="section-sub">Custom extensions for VS Code, Cursor, and CLI — unified config, shared skills, and one-click install from the dashboard.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card reveal" style="--reveal-delay:0ms">
-        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
-        <h3>Cursor Extensions</h3>
-        <p>SKILL.md editor, skill catalog browser, pattern monitor — all from within Cursor.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:50ms">
-        <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
-        <h3>VS Code</h3>
-        <p>Project navigation, model selection, agent runner — open any FreeAI project instantly.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:100ms">
-        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
-        <h3>CLI Extensions</h3>
-        <p>freeai-cli with 14 subcommands: providers, test, deploy, skills, mcp, agents, workflow.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:150ms">
-        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
-        <h3>Desktop App</h3>
-        <p>Native Electron app with tray icon, auto-update, and system-wide model routing.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:200ms">
-        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
-        <h3>Browser Extension</h3>
-        <p>Highlight any text, send to FreeAI for analysis, save as skill snippet.</p>
-      </div>
-      <div class="feature-card reveal" style="--reveal-delay:250ms">
-        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
-        <h3>Mobile App</h3>
-        <p>iOS and Android with full feature parity — monitor agents, trigger workflows, view logs.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Workflows ── -->
-  <section class="section" id="workflows" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-    <div class="section-head reveal">
-      <div class="eyebrow">Workflows</div>
-      <h2 class="section-title">Chain agents into<br/><span class="grad">production pipelines.</span></h2>
-      <p class="section-sub">Visual workflow designer with validation, templates, audit logs, and export/import. From one-shot prompts to scheduled automation.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
-        <h3>Visual Designer</h3>
-        <p>Drag-and-drop pipeline builder. Sequential + parallel steps, conditional branching, error handling.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:50ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
-        <h3>Templates</h3>
-        <p>4 shipped templates: code review, deployment, security scan, RAG ingestion. Create your own.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
-        <h3>Audit Log</h3>
-        <p>JSONL audit trail for every run. Re-run, replay, and export pipeline history.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:150ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
-        <h3>SDLC Pipeline</h3>
-        <p>plan → code → verify (real compilers/tests) → fix → review → document → package. One spec, full project.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
-        <h3>Security Pipeline</h3>
-        <p>Semgrep → Bandit → Safety → Trivy → auto-patch → verify. CI-ready with pass/fail gates.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:250ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
-        <h3>Cron Automation</h3>
-        <p>Scheduled runs: daily reports, nightly backups, weekly audits, morning briefings. Delivery to any platform.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Architecture Pillars ── -->
-  <section class="section">
-    <div class="section-head reveal">
-      <div class="eyebrow">Architecture</div>
-      <h2 class="section-title">One platform,<br/>four pillars.</h2>
-      <p class="section-sub">Built on what FreeAI delivers — a unified stack that grows with you.</p>
-    </div>
-    <div class="pillars">
-      <div class="pillar reveal" style="--reveal-delay:0ms">
-        <div class="pillar-num">01</div>
-        <h3>Model Intelligence</h3>
-        <p>Every model state understood in context — latency, cost, capacity, and fallback chains across 22 providers.</p>
-      </div>
-      <div class="pillar reveal" style="--reveal-delay:100ms">
-        <div class="pillar-num">02</div>
-        <h3>Agent Automation</h3>
-        <p>24 agents deployed, updated, and retired by policy — across every framework and language.</p>
-      </div>
-      <div class="pillar reveal" style="--reveal-delay:200ms">
-        <div class="pillar-num">03</div>
-        <h3>Security by Operation</h3>
-        <p>Security embedded in daily operations — not bolted on afterwards. Aikido + pentest + auto-patch.</p>
-      </div>
-      <div class="pillar reveal" style="--reveal-delay:300ms">
-        <div class="pillar-num">04</div>
-        <h3>Developer Experience</h3>
-        <p>Infra that feels invisible to the people building on it. One dashboard, one config, one stack.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Get Started ── -->
-  <section class="section" id="install">
-    <div class="section-head reveal">
-      <div class="eyebrow">Get Started</div>
-      <h2 class="section-title">Live in minutes.<br/><span class="grad">Smarter every week.</span></h2>
-      <p class="section-sub">Three steps to a fully autonomous AI workstation.</p>
-    </div>
-    <div class="steps">
-      <div class="step reveal" style="--reveal-delay:0ms">
-        <h3>Flip the switch</h3>
-        <p>Runs on the stack you already use. Clone, install deps, and launch. No new infrastructure required.</p>
-      </div>
-      <div class="step reveal" style="--reveal-delay:100ms">
-        <h3>It learns your logic</h3>
-        <p>Providers, agents, skills, MCPs — modeled deeply enough to predict fallbacks, costs, and capacity.</p>
-      </div>
-      <div class="step reveal" style="--reveal-delay:200ms">
-        <h3>It acts with guardrails</h3>
-        <p>Approvals, rate limits, full history. Autonomy you can audit. Auto-restart on failure built in.</p>
-      </div>
-      <div class="step reveal" style="--reveal-delay:300ms">
-        <h3>Scale when ready</h3>
-        <p>Salad GPU rental, Vast.ai instances, or bare-metal. Same stack, different compute.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Deploy Methods ── -->
-  <section class="section" id="deploy-methods" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-    <div class="section-head reveal">
-      <div class="eyebrow">Deploy</div>
-      <h2 class="section-title">Choose your path.</h2>
-      <p class="section-sub">Local, Docker, or cloud — same stack, different runtime. <a href="deploy.html" style="color:var(--primary)">View all deploy options →</a></p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:var(--primary-soft)">🐧</div>
-        <h3>Bare Metal</h3>
-        <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
-sudo ./hardware/install-stack.sh
-bash models/auto-download-models.sh</code></pre>
-        <p style="margin-top:12px">Drivers → CUDA → Docker → stack → systemd → UFW. Auto-detects GPU and configures everything.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(34,197,94,.12)">🐳</div>
-        <h3>Docker Compose</h3>
-        <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
-docker compose --profile allinone up -d
-# Open http://localhost:8030</code></pre>
-        <p style="margin-top:12px">Any host with NVIDIA Docker. Split or all-in-one profiles.</p>
-      </div>
-      <div class="feature-card glow-panel reveal" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
-        <div class="feature-icon" style="background:rgba(168,85,247,.12)">☁️</div>
-        <h3>Cloud &amp; Live ISO</h3>
-        <p>Kubernetes manifests, Vast.ai templates, RunPod kits, Hetzner bare-metal. Also bootable as a Live ISO — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes.</p>
-        <pre style="margin-top:12px"><code>docker pull ghcr.io/freeai/freeai:latest
-# or boot freeaios-amd64.iso</code></pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Builder Agents ── -->
-  <section class="section" id="agents">
-    <div class="section-head reveal">
-      <div class="eyebrow">Builder Agents</div>
-      <h2 class="section-title">Generate complete projects</h2>
-      <p class="section-sub">Describe what you need in plain language — FreeAI builder agents scaffold the complete project with code, tests, and docs.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card reveal" style="--reveal-delay:0ms"><div class="feature-icon" style="background:rgba(59,130,246,.12)">⟐</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:50ms"><div class="feature-icon" style="background:rgba(139,92,246,.12)">⬡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:100ms"><div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:150ms"><div class="feature-icon" style="background:rgba(16,185,129,.12)">◉</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:200ms"><div class="feature-icon" style="background:rgba(245,158,11,.12)">◷</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:250ms"><div class="feature-icon" style="background:rgba(249,115,22,.12)">⬢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:300ms"><div class="feature-icon" style="background:rgba(236,72,153,.12)">✦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:350ms"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◐</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
-    </div>
-  </section>
-
-  <!-- ── Security ── -->
-  <section class="section" id="security" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
-    <div class="section-head reveal">
-      <div class="eyebrow">Security</div>
-      <h2 class="section-title">Secure by default.</h2>
-      <p class="section-sub">Professional-grade security scanning, vulnerability management, and compliance tracking built in from day one.</p>
-    </div>
-    <div class="feature-grid centered">
-      <div class="feature-card reveal" style="--reveal-delay:0ms"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◈</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:50ms"><div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy — comprehensive SAST/DAST scanning.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:100ms"><div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:150ms"><div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:200ms"><div class="feature-icon" style="background:rgba(56,189,248,.12)">◉</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:250ms"><div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
-    </div>
-  </section>
-
-  <!-- ── FAQ ── -->
-  <section class="section" id="faq">
-    <div class="section-head reveal">
-      <div class="eyebrow">FAQ</div>
-      <h2 class="section-title">Frequently asked questions</h2>
-    </div>
-    <div class="feature-grid centered" style="margin-top:40px">
-      <div class="feature-card reveal" style="--reveal-delay:0ms"><h3>Do I need a GPU?</h3><p>No — use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:50ms"><h3>How many providers are supported?</h3><p>22+ hosted APIs including OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, and more via the provider adapter system.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:100ms"><h3>Can I use this for production?</h3><p>Yes — FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:150ms"><h3>Is it open source?</h3><p>Yes — MIT licensed. Full source at <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" target="_blank">GitHub</a>.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:200ms"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" target="_blank">docs</a> for details.</p></div>
-      <div class="feature-card reveal" style="--reveal-delay:250ms"><h3>Can I connect my own models?</h3><p>Yes — any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
-    </div>
-  </section>
-
-  <!-- ── Autonomous SDLC Diagram ── -->
-  <section class="section" id="sdlc" style="background:var(--bg-canvas);">
-    <div class="container" style="max-width:1100px;">
-      <div class="sdlc-diagram reveal">
-        <!-- Top tabs -->
-        <div class="sdlc-tabs">
-          <span class="sdlc-tab active">Fullstack App</span>
-          <span class="sdlc-tab">Website</span>
-          <span class="sdlc-tab">CRM</span>
-          <span class="sdlc-tab">Chatbot</span>
-          <span class="sdlc-tab">Sales Pipeline</span>
+    <!-- Feature strip -->
+    <div class="feature-strip">
+      <div class="feature-strip-inner">
+        <div class="feature-strip-item">
+          <div class="feature-strip-icon">⬡</div>
+          <div class="feature-strip-title">Local Models</div>
+          <div class="feature-strip-desc">Run Qwen, DeepSeek, Llama locally on your GPU with zero cloud dependency.</div>
         </div>
-        <!-- Prompt banner -->
-        <div class="sdlc-prompt">
-          <span class="sdlc-prompt-icon">🤖</span>
-          Build a FastAPI notes service with auth, tests, and docs
+        <div class="feature-strip-item">
+          <div class="feature-strip-icon">◈</div>
+          <div class="feature-strip-title">Autonomous Agents</div>
+          <div class="feature-strip-desc">24 agents across red/blue/purple teaming, SDLC, and builder workflows.</div>
         </div>
-        <!-- Orchestrator -->
-        <div class="sdlc-orchestrator">
-          <div class="orch-node">
-            <span class="orch-icon">⚡</span>
-            <span>IT Lead</span>
-          </div>
-        </div>
-        <!-- Agent nodes -->
-        <div class="sdlc-agents">
-          <div class="agent-node">
-            <div class="agent-icon verified">
-              <span>📋</span>
-              <span class="agent-check">✓</span>
-            </div>
-            <div class="agent-label">COMPLIANCE</div>
-            <div class="agent-status">Spec validated — FastAPI + SQLAlchemy</div>
-          </div>
-          <div class="agent-node">
-            <div class="agent-icon verified">
-              <span>🔒</span>
-              <span class="agent-check">✓</span>
-            </div>
-            <div class="agent-label">SECURITY</div>
-            <div class="agent-status">JWT auth, CSRF tokens, input sanitization</div>
-          </div>
-          <div class="agent-node">
-            <div class="agent-icon verified">
-              <span>🧪</span>
-              <span class="agent-check">✓</span>
-            </div>
-            <div class="agent-label">VERIFY</div>
-            <div class="agent-status">14 tests pass, coverage 92%</div>
-          </div>
-          <div class="agent-node">
-            <div class="agent-icon">
-              <span>🔍</span>
-            </div>
-            <div class="agent-label">IMPACT</div>
-            <div class="agent-status">standing by</div>
-          </div>
-          <div class="agent-node">
-            <div class="agent-icon verified">
-              <span>📝</span>
-              <span class="agent-check">✓</span>
-            </div>
-            <div class="agent-label">DOCUMENT</div>
-            <div class="agent-status">README + API docs generated</div>
-          </div>
-          <div class="agent-node">
-            <div class="agent-icon verified">
-              <span>📦</span>
-              <span class="agent-check">✓</span>
-            </div>
-            <div class="agent-label">PACKAGE</div>
-            <div class="agent-status">tarball ready — 3.2MB</div>
-          </div>
-        </div>
-        <!-- Footer bar -->
-        <div class="sdlc-footer">
-          <div class="sdlc-footer-left">
-            <span class="orch-icon-small">⚡</span>
-            <span>Day-one kit ready — project shipped sealed</span>
-          </div>
-          <button class="sdlc-approve">Approve</button>
+        <div class="feature-strip-item">
+          <div class="feature-strip-icon">⬢</div>
+          <div class="feature-strip-title">Full Stack</div>
+          <div class="feature-strip-desc">Router, workflow engine, MCP registry, and desktop — one self-hosted stack.</div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- ── CTA ── -->
-  <section class="cta-section">
-    <div class="container">
-      <h2 data-i18n="cta-title">Ready to build with AI?</h2>
-      <p data-i18n="cta-sub">Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.</p>
-      <div class="hero-actions">
-        <a href="#install" class="btn btn--primary" data-i18n="cta-btn-primary">Get Started Free</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--ghost" target="_blank" data-i18n="cta-btn-secondary">Star on GitHub</a>
-      </div>
-    </div>
-  </section>
+  </main>
 
   <!-- ── Footer ── -->
-  <!-- Chat Panel -->
-  <div class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat with FreeAI">
-    <div class="chat-panel-header">
-      <div class="chat-panel-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
-      </div>
-      <div>
-        <div class="chat-panel-title">FreeAI Intelligence</div>
-        <div class="chat-panel-status">Online</div>
-      </div>
-      <button class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="chat-panel-tabs" role="tablist" aria-label="What do you need?">
-      <button class="chat-tab-btn active" data-tab="early-access" role="tab" aria-selected="true">Early access</button>
-      <button class="chat-tab-btn" data-tab="specialist" role="tab" aria-selected="false">Talk to a specialist</button>
-    </div>
-    <div class="chat-panel-body" id="chatPanelBody" aria-live="polite">
-      <div class="chat-msg">
-        <div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div>
-        <div class="chat-msg-bubble">Hi — let's get you into this summer's Europe rollout. Three taps and your email, about 30 seconds.</div>
-      </div>
-      <div class="chat-msg">
-        <div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div>
-        <div class="chat-msg-bubble">First things first — where should we send your early-access invite?</div>
-      </div>
-    </div>
-    <div class="chat-panel-input">
-      <div class="chat-input-wrap">
-        <textarea class="chat-input-field" id="chatInputField" rows="2" placeholder="you@company.com" data-i18n-placeholder="chat-placeholder"></textarea>
-        <button class="chat-send-btn" id="chatSendBtn" aria-label="Send">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 11 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-      <div class="chat-privacy">FreeAI will use your details only to answer this request. <a href="#">Privacy Policy</a></div>
-    </div>
-  </div>
-
-  <!-- Floating chat launcher -->
-  <button class="chat-launcher" id="chatLauncher" aria-label="Chat with FreeAI Intelligence" title="Chat with FreeAI">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-  </button>
-
   <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-grid">
-        <!-- Brand column -->
-        <div class="footer-brand-area">
-          <div class="footer-brand">FreeAI</div>
-          <p class="footer-tagline">Unified AI inference workstation. Manage, secure, and automate every model — automatically.</p>
-          <a href="deploy.html" class="footer-cta-btn">
-            Get FreeAI
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
-        <!-- On this page -->
-        <div class="footer-col">
-          <h2>On this page</h2>
-          <ul class="footer-links">
-            <li><a href="#why-now">Why now</a></li>
-            <li><a href="#capabilities">Capabilities</a></li>
-            <li><a href="#agents">Agents</a></li>
-            <li><a href="#how-it-works">How it works</a></li>
-          </ul>
-        </div>
-        <!-- Community -->
-        <div class="footer-col">
-          <h2>Community</h2>
-          <ul class="footer-links">
-            <li><a href="/blog">Blog</a></li>
-            <li><a href="/forum">Forum</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div>
-        <!-- Legal -->
-        <div class="footer-col">
-          <h2>Legal</h2>
-          <ul class="footer-links">
-            <li><a href="#">Privacy</a></li>
-            <li><a href="#">Terms</a></li>
-            <li><a href="#">Security</a></li>
-          </ul>
-        </div>
-      </div>
-      <!-- Bottom bar -->
-      <div class="footer-bottom">
-        <span class="footer-copyright">\u00a9 2026 FreeAI \u00b7 Unified AI Workstation \u00b7 MIT License</span>
-        <span class="footer-copyright" style="color:rgba(241,246,255,.25)">AI is not just a chatbot — it's an operational layer.</span>
-      </div>
+    <span>&#169; 2026 FreeAI &middot; Unified AI Workstation &middot; MIT License</span>
+    <div class="footer-links">
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>
+      <a href="/wiki-dashboard">Docs</a>
+      <a href="deploy.html" class="footer-cta">Install &#8594;</a>
     </div>
   </footer>
 
   <script>
-    // ── Theme toggle ──
-    const html = document.documentElement;
-    const toggle = document.getElementById('themeToggle');
-    const saved = localStorage.getItem('theme');
-    if (saved) html.dataset.theme = saved;
-    toggle.addEventListener('click', () => {
-      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', html.dataset.theme);
-    });
-
-    // ── Language dropdown ──
-    const langDropdown = document.getElementById('langDropdown');
-    const langBtn = document.getElementById('langBtn');
-    const langMenu = document.getElementById('langMenu');
-    const langLabel = document.getElementById('langLabel');
-    langBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      langDropdown.classList.toggle('open');
-    });
-    document.addEventListener('click', () => langDropdown.classList.remove('open'));
-    langMenu.addEventListener('click', (e) => {
-      const item = e.target.closest('.lang-menu-item');
-      if (!item || item.classList.contains('divider')) return;
-      const lang = item.dataset.lang;
-      langLabel.textContent = lang.toUpperCase();
-      langMenu.querySelectorAll('.lang-menu-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-      langDropdown.classList.remove('open');
-    });
-
-    // ── Reveal on scroll ──
-    const revealElements = document.querySelectorAll('.reveal');
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    revealElements.forEach(el => revealObserver.observe(el));
-
-    // ── Provider logo marquee ──
-    const logoData = [
-      { name: 'OpenAI',      url: 'https://openai.com',          color: '#10a37f', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.982 7.023a.899.899 0 0 0-.775-.598l-5.754-.554-1.434-5.7A.901.901 0 0 0 15.17.5L8.832 3.323a.95.95 0 0 0-.107.04L2.702 6.13a.902.902 0 0 0-.54.624L.122 13.06a.95.95 0 0 0 .03.764l2.673 5.988a.904.904 0 0 0 .624.54l6.327 1.595 6.55-2.954a.904.904 0 0 0 .483-.54l2.673-5.988.03-.063z"/></svg>' },
-      { name: 'Anthropic',   url: 'https://anthropic.com',       color: '#FF4B5C', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
-      { name: 'llama.cpp',   url: 'https://github.com/ggerganov/llama.cpp', color: '#FCD34D', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12l2-4 2 4-2 4z" fill="#060606"/></svg>' },
-      { name: 'vLLM',        url: 'https://vllm.ai',             color: '#7C5CFC', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/></svg>' },
-      { name: 'OpenRouter',  url: 'https://openrouter.ai',       color: '#000',     svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8" stroke="#fff" stroke-width="2"/></svg>' },
-      { name: 'Hermes',      url: 'https://github.com/NousResearch', color: '#0EA5E9', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l4.59-4.59L16 10l-6 6z"/></svg>' },
-      { name: 'OpenClaw',    url: 'https://github.com/steipete/openclaw', color: '#8B5CF6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
-      { name: 'OpenCode',    url: 'https://github.com/opencode-ai', color: '#22C55E', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8l-3 4 3 4M15 8l3 4-3 4" stroke="#fff" stroke-width="2" fill="none"/></svg>' },
-      { name: 'MimoCode',    url: 'https://mimocode.ai',         color: '#F59E0B', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
-      { name: 'JCode',       url: 'https://jcode.ai',            color: '#EC4899', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12h8" stroke="#fff" stroke-width="2"/></svg>' },
-      { name: 'ZCode',       url: 'https://zcode.ai',            color: '#06B6D4', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2"/></svg>' },
-      { name: 'NVIDIA',      url: 'https://nvidia.com',          color: '#76B900', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
-      { name: 'Salad',       url: 'https://salad.com',           color: '#6366F1', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 1 8 0" stroke="#fff" stroke-width="2" fill="none"/></svg>' },
-      { name: 'Vast.ai',     url: 'https://vast.ai',             color: '#F97316', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-5 5v5l5 5 5-5V7l-5-5z"/></svg>' },
-      { name: 'RunPod',      url: 'https://runpod.io',           color: '#FBBF24', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
-      { name: 'Hostinger',   url: 'https://hostinger.com',       color: '#673DE6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>' },
-      { name: 'DigitalOcean',url: 'https://digitalocean.com',    color: '#0080FF', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
-      { name: 'Docker',      url: 'https://docker.com',          color: '#2496ED', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM7.5 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM19.5 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM6 10.5h12a1.5 1.5 0 0 1 0 3H6a1.5 1.5 0 0 1 0-3zM3 8.5h3a1.5 1.5 0 0 1 0 3H3a1.5 1.5 0 0 1 0-3zM18 8.5h3a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 1 0-3z"/></svg>' },
-      { name: 'Kubernetes',  url: 'https://kubernetes.io',       color: '#326CE5', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-3 6h6l-3 6-3-6H12z"/><circle cx="12" cy="20" r="2"/></svg>' },
-      { name: 'Ubuntu',      url: 'https://ubuntu.com',          color: '#E95420', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
-      { name: 'Kali',        url: 'https://kali.org',            color: '#557C9C', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>' },
-      { name: 'NixOS',       url: 'https://nixos.org',           color: '#5277C3', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,20 2,20" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
-      { name: 'Kodachi',     url: 'https://www.kodachi.com',     color: '#00FF88', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
-    ];
-
-    // Build provider logo marquee (doubled for seamless loop)
-    const logoMarquee = document.getElementById('logoMarquee');
-    const allLogos = [...logoData, ...logoData];
-    allLogos.forEach(l => {
-      const a = document.createElement('a');
-      a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-      a.className = 'logo-marquee-item';
-      a.innerHTML = `<svg viewBox="0 0 24 24" fill="${l.color}">${l.svg}</svg><span>${l.name}</span>`;
-      logoMarquee.appendChild(a);
-    });
-
-    // ── Integration marquee (moving icons + names) ──
-    const integrations = [
-      { name: 'Memory',    desc: 'Cross-session recall', color: '#5c8bff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>' },
-      { name: 'Code Intel', desc: 'AST-based search', color: '#7c5cf0', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none"/></svg>' },
-      { name: 'Browser',   desc: 'Headless automation', color: '#0ea5e9', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="3" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4"/></svg>' },
-      { name: 'Web Search', desc: 'Google, Brave, DDG', color: '#f59e0b', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none"/></svg>' },
-      { name: 'LLM Access', desc: 'OpenAI, Anthropic', color: '#10a37f', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
-      { name: 'Email',     desc: 'IMAP/SMTP', color: '#ef4444', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg>' },
-      { name: 'Airtable',  desc: 'CRUD, filters', color: '#7c5cf0', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h4v4H7V7zm6 0h4v4h-4V7zm-6 6h4v4H7v-4zm6 0h4v4h-4v-4z"/></svg>' },
-      { name: 'Telegram',  desc: 'Bot API', color: '#0088cc', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>' },
-      { name: 'GitHub',    desc: 'PRs, issues', color: '#fff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>' },
-      { name: 'Notion',    desc: 'Pages, databases', color: '#fff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v16H4zM13 4h7v16h-7z"/></svg>' },
-      { name: 'Azure',     desc: 'AI Search, AKS', color: '#0078d4', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12l9-8 9 8-9 8-9-8z"/></svg>' },
-      { name: 'Aikido',    desc: 'Security scans', color: '#ef4444', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>' },
-      { name: 'Docker',    desc: 'Containers', color: '#2496ed', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="5" height="5" rx="1"/><rect x="8" y="10" width="5" height="5" rx="1"/><rect x="14" y="10" width="5" height="5" rx="1"/><rect x="5" y="5" width="5" height="5" rx="1"/><rect x="11" y="5" width="5" height="5" rx="1"/><path d="M2 18h20v2H2z"/></svg>' },
-      { name: 'Kubernetes', desc: 'Orchestration', color: '#326ce5', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>' },
-      { name: 'Ubuntu',    desc: 'Linux OS', color: '#e95420', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
-      { name: 'Kali',      desc: 'Pentesting', color: '#557c9c', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>' },
-      { name: 'NixOS',     desc: 'Functional OS', color: '#5277c3', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,20 2,20" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
-      { name: 'Kodachi',   desc: 'Privacy OS', color: '#00ff88', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
-      { name: 'Salad',     desc: 'GPU Cloud', color: '#6366f1', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 1 8 0" stroke="#fff" stroke-width="1.5" fill="none"/></svg>' },
-      { name: 'Vast.ai',   desc: 'GPU Instances', color: '#f97316', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-5 5v5l5 5 5-5V7l-5-5z"/></svg>' },
-      { name: 'RunPod',    desc: 'ML Deployments', color: '#fbbf24', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
-      { name: 'Hostinger', desc: 'Web Hosting', color: '#673de6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>' },
-      { name: 'DigitalOcean', desc: 'Cloud Infra', color: '#0080ff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
-      { name: 'NVIDIA',    desc: 'CUDA GPUs', color: '#76b900', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
-    ];
-    const intMarquee = document.getElementById('integrationMarquee');
-    const allInts = [...integrations, ...integrations]; // double for seamless loop
-    allInts.forEach(item => {
-      const a = document.createElement('a');
-      a.href = '#'; a.className = 'integration-marquee-item';
-      a.innerHTML = `<svg class="im-icon" viewBox="0 0 24 24" fill="${item.color}">${item.svg}</svg><div><div class="im-name">${item.name}</div><div class="im-desc">${item.desc}</div></div>`;
-      intMarquee.appendChild(a);
-    });
-
-    // ── Mobile menu toggle ──
-    const menuToggle = document.getElementById('menuToggle');
-    const mobilePanel = document.getElementById('mobilePanel');
-    if (menuToggle && mobilePanel) {
-      menuToggle.addEventListener('click', () => {
-        const open = mobilePanel.classList.toggle('open');
-        menuToggle.setAttribute('aria-expanded', open);
-      });
-      mobilePanel.querySelectorAll('.mobile-link').forEach(link => {
-        link.addEventListener('click', () => {
-          mobilePanel.classList.remove('open');
-          menuToggle.setAttribute('aria-expanded', 'false');
-        });
-      });
-      document.addEventListener('click', (e) => {
-        if (!mobilePanel.contains(e.target) && !menuToggle.contains(e.target)) {
-          mobilePanel.classList.remove('open');
-          menuToggle.setAttribute('aria-expanded', 'false');
-        }
-      });
+    function switchTab(btn) {
+      document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const body = document.getElementById('chatBody');
+      if (btn.textContent === 'Talk to a specialist') {
+        body.innerHTML = '<div class="chat-msg"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">A specialist will reach out within 24 hours. Drop your email and we\'ll schedule a call.</div></div>';
+      } else {
+        body.innerHTML = '<div class="chat-msg"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">Hi \u2014 let\'s get you into this summer\'s Europe rollout. Three taps and your email, about 30 seconds.</div></div><div class="chat-msg"><div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">First things first \u2014 where should we send your early-access invite?</div></div>';
+      }
     }
 
-    // ── Lead dialog: tab switching ──
-    document.querySelectorAll('.lead-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.lead-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-      });
-    });
-
-    // ── i18n translations ──
-    const i18n = {
-      en: {
-        'nav-dashboards': 'Dashboards', 'nav-skills': 'Skills', 'nav-plugins': 'Plugins',
-        'nav-mcps': 'MCPs', 'nav-extensions': 'Extensions', 'nav-workflows': 'Workflows',
-        'nav-deploy': 'Deploy', 'nav-install': 'Install', 'nav-faq': 'FAQ',
-        'hero-tagline': 'The AI workstation<br/><span class="grad">that thinks ahead.</span>',
-        'hero-sub': 'FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.',
-        'hero-btn-install': 'Install FreeAI', 'hero-btn-docs': 'Read Docs',
-        'composer-placeholder': 'Ask FreeAI',
-        'cta-title': 'Ready to build with AI?',
-        'cta-sub': 'Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.',
-        'cta-btn-primary': 'Get Started Free', 'cta-btn-secondary': 'Star on GitHub',
-        'trusted-label': 'Powered by leading AI infra',
-        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Unified AI Workstation \u00b7 MIT License',
-        'footer-home': 'Home', 'footer-install': 'Install', 'footer-faq': 'FAQ',
-        'footer-deploy': 'Deploy', 'footer-docs': 'Documentation',
-        'footer-bug': 'Report a Bug', 'footer-github': 'GitHub',
-      },
-      es: {
-        'nav-dashboards': 'Paneles', 'nav-skills': 'Habilidades', 'nav-plugins': 'Plugins',
-        'nav-mcps': 'MCPs', 'nav-extensions': 'Extensiones', 'nav-workflows': 'Flujos',
-        'nav-deploy': 'Desplegar', 'nav-install': 'Instalar', 'nav-faq': 'FAQ',
-        'hero-tagline': 'La estaci\u00f3n de IA<br/><span class="grad">que piensa adelante.</span>',
-        'hero-sub': 'FreeAI unifica servicio de modelos optimizado para GPU, agentes SDLC aut\u00f3nomos, escaneos de seguridad y herramientas de construcci\u00f3n — todo en un stack auto-alojado.',
-        'hero-btn-install': 'Instalar FreeAI', 'hero-btn-docs': 'Leer Docs',
-        'composer-placeholder': 'Preguntar a FreeAI',
-        'cta-title': '\u00bfListo para construir con IA?',
-        'cta-sub': '\u00danete a desarrolladores que usan FreeAI para construir, asegurar y escalar aplicaciones de IA — en su propio hardware.',
-        'cta-btn-primary': 'Empezar Gratis', 'cta-btn-secondary': 'Star en GitHub',
-        'trusted-label': 'Impulsado por infra AI líder',
-        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Estaci\u00f3n de Trabajo IA Unificada \u00b7 Licencia MIT',
-        'footer-home': 'Inicio', 'footer-install': 'Instalar', 'footer-faq': 'FAQ',
-        'footer-deploy': 'Desplegar', 'footer-docs': 'Documentaci\u00f3n',
-        'footer-bug': 'Reportar Bug', 'footer-github': 'GitHub',
-      },
-      de: {
-        'nav-dashboards': 'Dashboards', 'nav-skills': 'F\u00e4higkeiten', 'nav-plugins': 'Plugins',
-        'nav-mcps': 'MCPs', 'nav-extensions': 'Erweiterungen', 'nav-workflows': 'Workflows',
-        'nav-deploy': 'Deployen', 'nav-install': 'Installieren', 'nav-faq': 'FAQ',
-        'hero-tagline': 'Die AI-Workstation<br/><span class="grad">die mitdenkt.</span>',
-        'hero-sub': 'FreeAI vereint GPU-optimiertes Modellserving, autonome SDLC-Agenten, Sicherheits-Scans und Builder-Tools — alles in einem selbst gehosteten Stack.',
-        'hero-btn-install': 'FreeAI installieren', 'hero-btn-docs': 'Dokumentation',
-        'composer-placeholder': 'FreeAI fragen',
-        'cta-title': 'Bereit, mit KI zu bauen?',
-        'cta-sub': 'Schlie\u00dfen Sie sich Entwicklern an, die FreeAI nutzen, um KI-Anwendungen zu bauen, zu sichern und zu skalieren — auf ihrer eigenen Hardware.',
-        'cta-btn-primary': 'Kostenlos starten', 'cta-btn-secondary': 'Auf GitHub starren',
-        'trusted-label': 'Angetrieben von f\u00fchrender KI-Infra',
-        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Vereinheitlichte KI-Workstation \u00b7 MIT-Lizenz',
-        'footer-home': 'Startseite', 'footer-install': 'Installieren', 'footer-faq': 'FAQ',
-        'footer-deploy': 'Deployen', 'footer-docs': 'Dokumentation',
-        'footer-bug': 'Bug melden', 'footer-github': 'GitHub',
-      },
-      fr: {
-        'nav-dashboards': 'Tableaux de bord', 'nav-skills': 'Comp\u00e9tences', 'nav-plugins': 'Plugins',
-        'nav-mcps': 'MCPs', 'nav-extensions': 'Extensions', 'nav-workflows': 'Workflows',
-        'nav-deploy': 'D\u00e9ployer', 'nav-install': 'Installer', 'nav-faq': 'FAQ',
-        'hero-tagline': 'La station de travail IA<br/><span class="grad">qui anticipe.</span>',
-        'hero-sub': 'FreeAI unifie le service de mod\u00e8les optimis\u00e9 GPU, les agents SDLC autonomes, la s\u00e9curit\u00e9 et les outils de d\u00e9veloppement — tout dans une stack auto-h\u00e9berg\u00e9e.',
-        'hero-btn-install': 'Installer FreeAI', 'hero-btn-docs': 'Lire la doc',
-        'composer-placeholder': 'Demander \u00e0 FreeAI',
-        'cta-title': 'Pr\u00eat \u00e0 construire avec l\'IA?',
-        'cta-sub': 'Rejoignez les d\u00e9veloppeurs qui utilisent FreeAI pour construire, s\u00e9curiser et mettre \u00e0 l\'\u00e9chelle des applications IA — sur leur propre mat\u00e9riel.',
-        'cta-btn-primary': 'Commencer gratuitement', 'cta-btn-secondary': 'Star sur GitHub',
-        'trusted-label': 'Propuls\u00e9 par les meilleures infra IA',
-        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Station de travail IA unifi\u00e9e \u00b7 Licence MIT',
-        'footer-home': 'Accueil', 'footer-install': 'Installer', 'footer-faq': 'FAQ',
-        'footer-deploy': 'D\u00e9ployer', 'footer-docs': 'Documentation',
-        'footer-bug': 'Signaler un bug', 'footer-github': 'GitHub',
-      },
-      ja: {
-        'nav-dashboards': 'ダッシュボード', 'nav-skills': 'スキル', 'nav-plugins': 'プラグイン',
-        'nav-mcps': 'MCPs', 'nav-extensions': '拡張', 'nav-workflows': 'ワークフロー',
-        'nav-deploy': 'デプロイ', 'nav-install': 'インストール', 'nav-faq': 'FAQ',
-        'hero-tagline': 'AIワークステーション<br/><span class="grad">先読み思考。</span>',
-        'hero-sub': 'FreeAIはGPU最適化モデルサービング、自律型SDLCエージェント、セキュリティスキャン、ビルダーツールを1つの自己ホスト型スタックに統合します。',
-        'hero-btn-install': 'FreeAIをインストール', 'hero-btn-docs': 'ドキュメント',
-        'composer-placeholder': 'FreeAIに質問',
-        'cta-title': 'AIで構築する準備はできましたか？',
-        'cta-sub': 'FreeAIを使ってAIアプリケーションを構築、保護、スケールアップする開発者に加わりましょう。',
-        'cta-btn-primary': '無料で始める', 'cta-btn-secondary': 'GitHubでスター',
-        'trusted-label': '主要なAIインフラにより駆動',
-        'footer-copy': '\u00a9 2026 FreeAI \u00b7 統一AIワークステーション \u00b7 MITライセンス',
-        'footer-home': 'ホーム', 'footer-install': 'インストール', 'footer-faq': 'FAQ',
-        'footer-deploy': 'デプロイ', 'footer-docs': 'ドキュメント',
-        'footer-bug': 'バグを報告', 'footer-github': 'GitHub',
-      },
-      ar: {
-        'nav-dashboards': 'لوحة التحكم', 'nav-skills': 'المهارات', 'nav-plugins': 'الإضافات',
-        'nav-mcps': 'MCPs', 'nav-extensions': 'الإضافات', 'nav-workflows': 'سير العمل',
-        'nav-deploy': 'النشر', 'nav-install': 'التثبيت', 'nav-faq': 'الأسئلة',
-        'hero-tagline': 'محطة عمل الذكاء<br/><span class="grad">التي تفكر مسبقاً.</span>',
-        'hero-sub': 'FreeAI يوحّد خدمة النماذج المحسّنة لـ GPU، وكوادر SDLC الذاتية، وفحص الأمان، وأدوات البناء — كل ذلك في مجموعة مستضافة ذاتياً.',
-        'hero-btn-install': 'تثبيت FreeAI', 'hero-btn-docs': 'اقرأ المستندات',
-        'composer-placeholder': 'اسأل FreeAI',
-        'cta-title': 'هل أنت مستعد للبناء بالذكاء الاصطناعي؟',
-        'cta-sub': 'انضم إلى المطورين الذين يستخدمون FreeAI لبناء وتأمين وتوسيع تطبيقات الذكاء الاصطناعي — على عتادهم الخاص.',
-        'cta-btn-primary': 'ابدأ مجاناً', 'cta-btn-secondary': 'نجمة على GitHub',
-        'trusted-label': 'مدعوم من أفضل بنية الذكاء الاصطناعي',
-        'footer-copy': '\u00a9 2026 FreeAI \u00b7 محطة عمل الذكاء الموحدة \u00b7 رخصة MIT',
-        'footer-home': 'الرئيسية', 'footer-install': 'التثبيت', 'footer-faq': 'الأسئلة',
-        'footer-deploy': 'النشر', 'footer-docs': 'المستندات',
-        'footer-bug': 'الإبلاغ عن خطأ', 'footer-github': 'GitHub',
-      },
-    };
-
-    function applyLang(lang) {
-      const t = i18n[lang] || i18n.en;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        if (t[key] !== undefined) {
-          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            el.placeholder = t[key];
-          } else {
-            el.innerHTML = t[key];
-          }
-        }
-      });
-      document.querySelectorAll('[data-i18n-attr]').forEach(el => {
-        const key = el.dataset.i18nAttr;
-        const attr = el.dataset.i18nAttrKey || 'title';
-        if (t[key] !== undefined) el.setAttribute(attr, t[key]);
-      });
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-      localStorage.setItem('lang', lang);
-    }
-
-    // Initialize language
-    const savedLang = localStorage.getItem('lang') || 'en';
-    langLabel.textContent = savedLang.toUpperCase();
-    applyLang(savedLang);
-    langMenu.querySelector(`[data-lang="${savedLang}"]`)?.classList.add('active');
-
-    // Apply translations on language select
-    langMenu.querySelectorAll('.lang-menu-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const lang = item.dataset.lang;
-        langLabel.textContent = lang.toUpperCase();
-        applyLang(lang);
-      });
-    });
-
-    // ── Chat Panel ──
-    const chatPanel = document.getElementById('chatPanel');
-    const chatLauncher = document.getElementById('chatLauncher');
-    const chatPanelClose = document.getElementById('chatPanelClose');
-    const chatPanelBody = document.getElementById('chatPanelBody');
-    const chatSendBtn = document.getElementById('chatSendBtn');
-    const chatInputField = document.getElementById('chatInputField');
-    const tabBtns = document.querySelectorAll('.chat-tab-btn');
-    let chatOpen = false;
-
-    function openChat() {
-      chatOpen = true;
-      chatPanel.classList.add('open');
-      chatLauncher.style.opacity = '0';
-      chatLauncher.style.pointerEvents = 'none';
-      setTimeout(() => { chatLauncher.style.display = 'none'; }, 200);
-      chatInputField.focus();
-    }
-
-    function closeChat() {
-      chatOpen = false;
-      chatPanel.classList.remove('open');
-      chatLauncher.style.display = '';
-      setTimeout(() => { chatLauncher.style.opacity = '1'; chatLauncher.style.pointerEvents = ''; }, 10);
-    }
-
-    function sendChatMsg() {
-      const text = chatInputField.value.trim();
-      if (!text) return;
-      // User message
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const val = input.value.trim();
+      if (!val) return;
+      const body = document.getElementById('chatBody');
       const uRow = document.createElement('div');
       uRow.className = 'chat-msg';
-      uRow.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:3px;">' + text + '</div>';
-      chatPanelBody.appendChild(uRow);
-      chatInputField.value = '';
-      chatInputField.style.height = 'auto';
-      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-      // Typing indicator
-      const tRow = document.createElement('div');
-      tRow.className = 'chat-msg';
-      tRow.id = 'chatTyping';
-      tRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
-      chatPanelBody.appendChild(tRow);
-      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      uRow.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:4px;margin-left:auto;">' + val + '</div>';
+      body.appendChild(uRow);
+      input.value = '';
+      body.scrollTop = body.scrollHeight;
       setTimeout(() => {
-        const tEl = document.getElementById('chatTyping');
-        if (tEl) tEl.remove();
-        const resp = document.createElement('div');
-        resp.className = 'chat-msg';
-        resp.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">Thanks! We\'ll be in touch shortly.</div>';
-        chatPanelBody.appendChild(resp);
-        chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-      }, 1200);
+        const rRow = document.createElement('div');
+        rRow.className = 'chat-msg';
+        rRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">Thanks! We\'ll be in touch shortly.</div>';
+        body.appendChild(rRow);
+        body.scrollTop = body.scrollHeight;
+      }, 1000);
     }
-
-    chatSendBtn.addEventListener('click', sendChatMsg);
-    chatInputField.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); }
+    document.getElementById('chatInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
-    chatInputField.addEventListener('input', () => {
-      chatInputField.style.height = 'auto';
-      chatInputField.style.height = Math.min(chatInputField.scrollHeight, 100) + 'px';
-    });
-
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-      });
-    });
-
-    chatLauncher.addEventListener('click', openChat);
-    chatPanelClose.addEventListener('click', closeChat);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatOpen) closeChat(); });
   </script>
 </body>
 </html>

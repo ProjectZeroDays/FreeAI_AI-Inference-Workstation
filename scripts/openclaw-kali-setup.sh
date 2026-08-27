@@ -56,6 +56,78 @@ TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
 OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
 SSH_KEY_NAME="${SSH_KEY_NAME:-kali_openclaw}"
 SSH_KEY_PATH="${HOME}/.ssh/${SSH_KEY_NAME}"
+PW_AUTH_FALLBACK="${PW_AUTH_FALLBACK:-true}"  # Allow password auth during setup
+
+# ── Step 0b: Disable Password Auth Fallback (cleanup) ────────────────────────
+disable_password_fallback() {
+    if [[ "${PW_AUTH_FALLBACK}" != "true" ]]; then
+        return 0
+    fi
+    info "=== Step 0b: Re-disabling Password Auth ==="
+
+    local changed=0
+
+    if [ -f /etc/ssh/sshd_config.d/50-cloud-init.conf ]; then
+        sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' \
+            /etc/ssh/sshd_config.d/50-cloud-init.conf 2>/dev/null || true
+        changed=1
+    fi
+
+    if grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config 2>/dev/null; then
+        sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' \
+            /etc/ssh/sshd_config
+        changed=1
+    fi
+
+    # Remove any ad-hoc line we added
+    sed -i '/^PasswordAuthentication yes$/d' /etc/ssh/sshd_config 2>/dev/null || true
+
+    if [ "$changed" -eq 1 ]; then
+        systemctl restart sshd
+        success "Password auth re-disabled — key-only access enforced"
+    else
+        success "Password auth already disabled"
+    fi
+    echo ""
+}
+
+# ── Step 0: Enable Password Auth Fallback (if needed) ─────────────────────────
+enable_password_fallback() {
+    if [[ "${PW_AUTH_FALLBACK}" != "true" ]]; then
+        return 0
+    fi
+    info "=== Step 0: Enabling Password Auth Fallback ==="
+    info "Temporarily enabling password auth so key-based setup can complete."
+    info "Password auth will be re-disabled at the end of this script."
+    echo ""
+
+    local changed=0
+
+    # Enable in 50-cloud-init.conf (Hostinger/Cloud providers)
+    if [ -f /etc/ssh/sshd_config.d/50-cloud-init.conf ]; then
+        sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' \
+            /etc/ssh/sshd_config.d/50-cloud-init.conf 2>/dev/null || true
+        grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config.d/50-cloud-init.conf 2>/dev/null && changed=1
+    fi
+
+    # Enable in main sshd_config
+    if ! grep -q "^PasswordAuthentication" /etc/ssh/sshd_config 2>/dev/null; then
+        echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+        changed=1
+    elif grep -q "PasswordAuthentication no" /etc/ssh/sshd_config 2>/dev/null; then
+        sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' \
+            /etc/ssh/sshd_config
+        changed=1
+    fi
+
+    if [ "$changed" -eq 1 ]; then
+        systemctl restart sshd
+        success "Password auth enabled for setup"
+    else
+        warn "Password auth may already be enabled"
+    fi
+    echo ""
+}
 
 # ── Step 1: Generate SSH Key Pair (run LOCALLY before connecting to VPS) ─────
 generate_ssh_keys() {
@@ -476,6 +548,7 @@ main() {
     info "Running setup steps..."
     echo ""
 
+    enable_password_fallback
     generate_ssh_keys
     secure_server
     install_openclaw
@@ -487,6 +560,7 @@ main() {
     setup_allowlist
     create_service
     verify_setup
+    disable_password_fallback
 
     echo ""
     info "Setup complete! Your AI hacking rig is ready."
