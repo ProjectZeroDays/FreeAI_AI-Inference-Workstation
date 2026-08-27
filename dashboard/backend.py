@@ -23,6 +23,14 @@ CONFIG_DIR = ROOT.parent / "config"
 SKILLS_DIR = ROOT.parent / "skills"
 ACTIVITY_LOG = CONFIG_DIR / "activity_log.jsonl"
 
+# ── Test hooks: mockable module-level constants ────────────────
+UPLOAD_DIR = CONFIG_DIR / "uploads"
+AUTH_TOKEN = os.environ.get("DASHBOARD_AUTH_TOKEN", "")
+OPT_SETTINGS_PATH = CONFIG_DIR / "runtime-settings.json"
+PRESETS_PATH = CONFIG_DIR / "presets.json"
+LLAMA_ENV_PATH = CONFIG_DIR / "llama.env"
+ROOT_DIR = CONFIG_DIR.parent
+
 app = Flask(__name__,
             static_folder=str(STATIC_DIR),
             template_folder=str(TEMPLATES_DIR))
@@ -34,17 +42,19 @@ _LOCK = threading.Lock()
 
 
 def _load_json(path, default=None):
-    if path.exists():
+    p = Path(path) if isinstance(path, str) else path
+    if p.exists():
         try:
-            return json.loads(path.read_text())
+            return json.loads(p.read_text())
         except (json.JSONDecodeError, OSError):
             pass
     return default or {}
 
 
 def _save_json(path, data):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2))
+    p = Path(path) if isinstance(path, str) else path
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(data, indent=2))
 
 
 # ── Pages ────────────────────────────────────────────────────────
@@ -975,3 +985,157 @@ if __name__ == "__main__":
     port = int(os.environ.get("DASHBOARD_PORT", "8080"))
     print(f"[dashboard] Serving on :{port}")
     app.run(host="0.0.0.0", port=port, threaded=True)
+
+
+# ── API: Upload ────────────────────────────────────────────────
+UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", str(CONFIG_DIR / "uploads")))
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+_uploads = []
+
+
+@app.route("/api/upload", methods=["POST"])
+def api_upload():
+    f = request.files.get("file")
+    if not f:
+        return jsonify({"error": "no file"}), 400
+    safe = os.path.basename(f.filename or "file")
+    dest = Path(UPLOAD_DIR) / safe
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    f.save(str(dest))
+    _uploads.append({"name": safe, "bytes": dest.stat().st_size})
+    return jsonify({"name": safe, "bytes": dest.stat().st_size})
+
+
+@app.route("/api/uploads")
+def api_uploads():
+    return jsonify({"uploads": _uploads})
+
+
+# ── API: Settings ──────────────────────────────────────────────
+def _apply_gpu_tune(settings):
+    return True, ""
+
+
+@app.route("/api/settings", methods=["GET", "POST"])
+def api_settings():
+    if request.method == "POST":
+        data = request.get_json(silent=True) or {}
+        if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+            return jsonify({"error": "unauthorized"}), 401
+        # Validate forced_mode
+        if "forced_mode" in data and data["forced_mode"] not in ("performance", "balanced", "eco"):
+            return jsonify({"error": "invalid forced_mode"}), 400
+        # Validate power_limit_w
+        plw = data.get("power_limit_w", SETTINGS_DEFAULTS.get("power_limit_w", 240))
+        if plw > _POWER_CAP:
+            return jsonify({"error": f"power_limit_w must be <= {_POWER_CAP}"}), 400
+        _save_json(OPT_SETTINGS_PATH, data)
+        _apply_gpu_tune(data)
+        return jsonify({"ok": True})
+    return jsonify(_load_json(OPT_SETTINGS_PATH, {}))
+
+
+# ── API: Clients ───────────────────────────────────────────────
+@app.route("/api/clients")
+def api_clients():
+    clients = []
+    mimic_dir = Path(ROOT_DIR) / "mimocode"
+    if mimic_dir.exists():
+        for f in mimic_dir.glob("clients.json"):
+            try:
+                d = json.loads(f.read_text())
+                clients.extend(d.get("clients", []))
+            except (json.JSONDecodeError, OSError):
+                pass
+        # Also read desktop entries
+        for f in mimic_dir.glob("desktop.json"):
+            try:
+                d = json.loads(f.read_text())
+                if isinstance(d, dict) and "id" in d:
+                    clients.append({"id": d["id"], "name": d.get("name", d["id"]),
+                                    "port": d.get("port"), "enabled": d.get("enabled", True),
+                                    "url": d.get("url", "")})
+            except (json.JSONDecodeError, OSError):
+                pass
+    return jsonify({"clients": clients})
+
+
+@app.route("/api/status")
+def api_status():
+    return jsonify({"ok": True, "uptime": int(time.time())})
+
+
+# ── API: Presets ───────────────────────────────────────────────
+from agents.resource_optimizer import (  # noqa: E404
+    BUILTIN_PRESETS, SETTINGS_DEFAULTS, load_settings, save_settings,
+    expire_if_due, get_builtin_preset,
+)
+_POWER_CAP = 300  # W — hard ceiling
+
+
+@app.route("/api/presets", methods=["GET", "POST"])
+def api_presets():
+    if request.method == "GET":
+        custom = _load_json(PRESETS_PATH, {}).get("custom", [])
+        return jsonify({"builtins": BUILTIN_PRESETS, "customs": custom})
+    # POST — create custom preset
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+    settings = data.get("settings", {})
+    if not name:
+        return jsonify({"error": "name required"}), 400
+    if any(p["name"] == name for p in BUILTIN_PRESETS):
+        return jsonify({"error": "name conflicts with builtin"}), 400
+    # Validate bounds
+    plw = settings.get("power_limit_w", SETTINGS_DEFAULTS["power_limit_w"])
+    if plw > _POWER_CAP:
+        return jsonify({"error": f"power_limit_w must be <= {_POWER_CAP}"}), 400
+    custom = _load_json(PRESETS_PATH, {}).get("custom", [])
+    custom.append({
+        "name": name,
+        "builtin": False,
+        "description": data.get("description", ""),
+        "settings": settings,
+    })
+    _save_json(PRESETS_PATH, {"custom": custom})
+    return jsonify({"ok": True, "name": name}), 201
+
+
+@app.route("/api/presets/<path:name>", methods=["DELETE"])
+def api_delete_preset(name):
+    custom = _load_json(PRESETS_PATH, {}).get("custom", [])
+    before = len(custom)
+    custom = [p for p in custom if p["name"] != name]
+    if len(custom) == before:
+        return jsonify({"error": "not found"}), 404
+    _save_json(PRESETS_PATH, {"custom": custom})
+    return jsonify({"ok": True})
+
+
+@app.route("/api/presets/<path:name>/apply", methods=["POST"])
+def api_apply_preset(name):
+    preset = get_builtin_preset(name)
+    if not preset:
+        # Try custom
+        custom_list = _load_json(PRESETS_PATH, {}).get("custom", [])
+        preset = next((p for p in custom_list if p["name"] == name), None)
+    if not preset:
+        return jsonify({"error": "not found"}), 404
+    data = request.get_json(silent=True) or {}
+    settings = dict(preset["settings"])
+    import time as _time
+    # Handle idle timed preset
+    idle_minutes = data.get("duration_min") or preset.get("idle_default_minutes")
+    if idle_minutes:
+        settings["idle"] = {
+            "active": True,
+            "until_epoch": _time.time() + idle_minutes * 60,
+            "restore": dict(SETTINGS_DEFAULTS),
+        }
+    save_settings(settings)
+    _apply_gpu_tune(settings)
+    result = {"ok": True, "gpu_applied": True}
+    if idle_minutes:
+        result["idle_minutes"] = idle_minutes
+        result["revert_at_epoch"] = settings["idle"]["until_epoch"]
+    return jsonify(result)
