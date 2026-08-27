@@ -4,8 +4,10 @@ Provides REST API endpoints and serves static HTML pages.
 """
 import json
 import os
+import random
 import threading
 import time
+import uuid
 from pathlib import Path
 
 try:
@@ -389,6 +391,298 @@ def save_browser_settings():
 def reset_browser_settings():
     _save_browser_config(dict(BROWSER_DEFAULTS))
     return jsonify({"ok": True, "settings": BROWSER_DEFAULTS})
+
+
+# ── Page Routes ──────────────────────────────────────────────────
+@app.route("/subagents")
+def subagents_page():
+    return render_template("subagents.html")
+
+
+@app.route("/training")
+def training_page():
+    return render_template("training.html")
+
+
+@app.route("/memory")
+def memory_page():
+    return render_template("memory.html")
+
+
+@app.route("/gateway")
+def gateway_page():
+    return render_template("gateway.html")
+
+
+@app.route("/automations")
+def automations_page():
+    return render_template("automations.html")
+
+
+@app.route("/wiki-dashboard")
+def wiki_dashboard_page():
+    return render_template("wiki-dashboard.html")
+
+
+@app.route("/blog")
+def blog_page():
+    return render_template("blog.html")
+
+
+@app.route("/forum")
+def forum_page():
+    return render_template("forum.html")
+
+
+@app.route("/logs")
+def logs_page():
+    return render_template("logs.html")
+
+
+# ── API: Subagents ────────────────────────────────────────────────
+_SUBAGENTS = []
+_SUBAGENT_LOCK = threading.Lock()
+_TRAINING_DATA = {
+    "datasets": [],
+    "jobs": {"sft": [], "dpo": [], "abr": []},
+    "models": [],
+}
+_TRAINING_LOCK = threading.Lock()
+
+
+@app.route("/api/subagents", methods=["GET"])
+def api_subagents():
+    with _SUBAGENT_LOCK:
+        return jsonify(_SUBAGENTS)
+
+
+@app.route("/api/subagents", methods=["POST"])
+def api_create_subagent():
+    data = request.get_json(silent=True) or {}
+    desc = data.get("description", "untitled task")
+    roles = data.get("roles", "all")
+    parallel = min(int(data.get("parallel", 3)), 8)
+    model = data.get("model", "auto")
+    pipeline = data.get("pipeline", "scaffold")
+    timeout = int(data.get("timeout", 30))
+    steps = data.get("steps", [])
+
+    role_map = {
+        "all": ["explorer", "coder", "reviewer", "researcher", "architect"],
+        "coder": ["coder"],
+        "explorer": ["explorer"],
+        "researcher": ["researcher"],
+        "reviewer": ["reviewer"],
+        "architect": ["architect"],
+    }
+    selected_roles = role_map.get(roles, ["explorer", "coder"])
+    count = min(parallel, len(selected_roles))
+    task_id = str(uuid.uuid4())[:8]
+    spawned = []
+
+    for i in range(count):
+        sa_id = f"{task_id}-{i:02d}"
+        role = selected_roles[i % len(selected_roles)]
+        sa = {
+            "id": sa_id,
+            "task_id": task_id,
+            "name": f"{role.capitalize()} #{i+1}",
+            "role": role,
+            "pipeline": pipeline,
+            "model": model,
+            "status": "running",
+            "progress": 0,
+            "created_at": time.time(),
+            "description": desc[:80],
+        }
+        spawned.append(sa)
+
+    with _SUBAGENT_LOCK:
+        _SUBAGENTS.extend(spawned)
+
+    def _simulate(sa):
+        for p in range(0, 101, random.randint(5, 15)):
+            time.sleep(random.uniform(0.5, 2))
+            with _SUBAGENT_LOCK:
+                for s in _SUBAGENTS:
+                    if s["id"] == sa["id"]:
+                        s["progress"] = min(p, 100)
+                        if p >= 100:
+                            s["status"] = random.choice(["done", "done", "done", "failed"])
+                        break
+
+    threading.Thread(target=_simulate, args=(spawned[0],), daemon=True).start()
+    if len(spawned) > 1:
+        threading.Thread(target=_simulate, args=(spawned[1],), daemon=True).start()
+
+    return jsonify({"task_id": task_id, "subagents_launched": len(spawned), "subagents": spawned})
+
+
+@app.route("/api/subagents/<sa_id>", methods=["DELETE"])
+def api_delete_subagent(sa_id):
+    with _SUBAGENT_LOCK:
+        before = len(_SUBAGENTS)
+        _SUBAGENTS[:] = [s for s in _SUBAGENTS if s["id"] != sa_id]
+    return jsonify({"removed": before - len(_SUBAGENTS)})
+
+
+@app.route("/api/subagents/<sa_id>/pause", methods=["POST"])
+def api_pause_subagent(sa_id):
+    with _SUBAGENT_LOCK:
+        for s in _SUBAGENTS:
+            if s["id"] == sa_id:
+                s["status"] = "paused"
+                return jsonify({"ok": True})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/subagents/<sa_id>/resume", methods=["POST"])
+def api_resume_subagent(sa_id):
+    with _SUBAGENT_LOCK:
+        for s in _SUBAGENTS:
+            if s["id"] == sa_id:
+                s["status"] = "running"
+                return jsonify({"ok": True})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/subagents/<sa_id>/log")
+def api_subagent_log(sa_id):
+    return jsonify({
+        "id": sa_id,
+        "logs": [
+            {"time": "14:32:01", "level": "info", "msg": "Subagent initialized"},
+            {"time": "14:32:02", "level": "info", "msg": "Loading context from persistent memory"},
+            {"time": "14:32:03", "level": "ok", "msg": "Context loaded: 3 memories recalled"},
+            {"time": "14:32:05", "level": "info", "msg": "Starting task execution"},
+        ]
+    })
+
+
+# ── API: Training ─────────────────────────────────────────────────
+@app.route("/api/training", methods=["GET"])
+def api_training_status():
+    with _TRAINING_LOCK:
+        return jsonify(_TRAINING_DATA)
+
+
+@app.route("/api/training/datasets", methods=["GET"])
+def api_datasets():
+    with _TRAINING_LOCK:
+        return jsonify(_TRAINING_DATA["datasets"])
+
+
+@app.route("/api/training/datasets", methods=["POST"])
+def api_upload_dataset():
+    name = request.form.get("name", "untitled")
+    fmt = request.form.get("format", "jsonl")
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+    ds_id = str(uuid.uuid4())[:8]
+    with _TRAINING_LOCK:
+        _TRAINING_DATA["datasets"].append({
+            "id": ds_id,
+            "name": name,
+            "format": fmt,
+            "samples": random.randint(100, 10000),
+            "created_at": time.time(),
+        })
+    return jsonify({"id": ds_id, "name": name, "format": fmt, "samples": 1234})
+
+
+@app.route("/api/training/datasets/<ds_id>", methods=["DELETE"])
+def api_delete_dataset(ds_id):
+    with _TRAINING_LOCK:
+        _TRAINING_DATA["datasets"] = [d for d in _TRAINING_DATA["datasets"] if d["id"] != ds_id]
+    return jsonify({"deleted": True})
+
+
+@app.route("/api/training/jobs", methods=["POST"])
+def api_create_job():
+    data = request.get_json(silent=True) or {}
+    jtype = data.get("type", "sft")
+    job_id = str(uuid.uuid4())[:8]
+    job = {
+        "id": job_id,
+        "type": jtype,
+        "model": data.get("base_model", "unknown"),
+        "dataset": data.get("dataset_id", ""),
+        "name": data.get("name", jtype + "-" + job_id),
+        "status": "queued",
+        "progress": 0,
+        "created_at": time.time(),
+    }
+    with _TRAINING_LOCK:
+        _TRAINING_DATA["jobs"][jtype].append(job)
+
+    def _run():
+        for p in range(0, 101, random.randint(3, 10)):
+            time.sleep(random.uniform(0.3, 1.5))
+            with _TRAINING_LOCK:
+                job["progress"] = min(p, 100)
+                if p >= 100:
+                    job["status"] = random.choice(["done", "failed"])
+                    if job["status"] == "done" and jtype == "sft":
+                        _TRAINING_DATA["models"].append({
+                            "id": str(uuid.uuid4())[:8],
+                            "name": job["name"],
+                            "base_model": job["model"],
+                            "method": "sft",
+                            "samples": 1234,
+                            "created_at": time.time(),
+                        })
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"job_id": job_id, "status": "queued"})
+
+
+@app.route("/api/training/abliterate", methods=["POST"])
+def api_abliterate():
+    data = request.get_json(silent=True) or {}
+    job_id = str(uuid.uuid4())[:8]
+    job = {
+        "id": job_id,
+        "model": data.get("model", "unknown"),
+        "strategy": data.get("strategy", "boundary_inversion"),
+        "status": "running",
+        "progress": 0,
+        "created_at": time.time(),
+    }
+    with _TRAINING_LOCK:
+        _TRAINING_DATA["jobs"]["abr"].append(job)
+
+    def _run():
+        for p in range(0, 101, random.randint(5, 15)):
+            time.sleep(random.uniform(0.3, 1))
+            with _TRAINING_LOCK:
+                job["progress"] = min(p, 100)
+                if p >= 100:
+                    job["status"] = "done"
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"job_id": job_id, "status": "running"})
+
+
+@app.route("/api/training/models", methods=["GET"])
+def api_models():
+    with _TRAINING_LOCK:
+        return jsonify(_TRAINING_DATA["models"])
+
+
+@app.route("/api/training/models/<mid>", methods=["DELETE"])
+def api_delete_model(mid):
+    with _TRAINING_LOCK:
+        _TRAINING_DATA["models"] = [m for m in _TRAINING_DATA["models"] if m["id"] != mid]
+    return jsonify({"deleted": True})
+
+
+@app.route("/api/training/models/<mid>/deploy", methods=["POST"])
+def api_deploy_model(mid):
+    with _TRAINING_LOCK:
+        for m in _TRAINING_DATA["models"]:
+            if m["id"] == mid:
+                return jsonify({"ok": True, "endpoint": "http://localhost:9001/v1/completions", "model": m["name"]})
+    return jsonify({"error": "not found"}), 404
 
 
 if __name__ == "__main__":
