@@ -27,3 +27,10 @@ config/secrets.enc.yaml
 config/runtime-state.json
 config/browser.json
 config/activity_log.jsonl
+
+# Temp scripts
+_*.py
+_tmp/
+
+# Runtime PID files
+.runs/*.pid
