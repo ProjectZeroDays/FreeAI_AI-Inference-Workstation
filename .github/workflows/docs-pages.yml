@@ -3,7 +3,7 @@ name: docs-pages
 on:
   push:
     branches: [main]
-    paths: [docs/**, mkdocs.yml, README.md]
+    paths: [docs/**, mkdocs.yml, README.md, docs/index.html]
   workflow_dispatch:
 
 permissions:

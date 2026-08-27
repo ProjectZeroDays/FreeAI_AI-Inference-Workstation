@@ -1,50 +1,70 @@
-site_name: Unified GPU Inference Stack
-site_description: FreeAI Router, Agent API, Workflow Engine, Dashboard
+site_name: FreeAI — Unified AI Workstation
+site_description: Build, secure, and scale AI applications on your own hardware. Router, agents, workflows, security, and builder tools.
+site_url: https://projectzeroai.github.io/unified-ai-stack
+repo_url: https://github.com/ProjectZeroAI/unified-ai-stack
+repo_name: ProjectZeroAI/unified-ai-stack
+
 nav:
   - Home: INDEX.md
+  - Quick Start: FIRST-BOOT-GUIDE.md
   - Architecture: ARCHITECTURE.md
-  - Autonomous SDLC: AUTONOMOUS-AGENTS.md
-  - External Providers: PROVIDERS.md
-  - Stack Rating: STACK_RATING.md
   - API Reference: API.md
+  - Autonomous SDLC: AUTONOMOUS-AGENTS.md
   - Model Switching: MODEL-SWITCHING.md
-  - Deployment: DEPLOYMENT.md
-  - Cloud Fallback: CLOUD-FALLBACK.md
-  - Optimization Audit: OPTIMIZATION-AUDIT.md
-  - Build Sheet: BUILD-SHEET.md
-  - First Boot Guide: FIRST-BOOT-GUIDE.md
-  - RAG: RAG.md
+  - Providers: PROVIDERS.md
+  - MCP Registry: MCP.md
+  - RAG & Vector DB: RAG.md
   - WebSocket: WEBSOCKET.md
-  - Troubleshooting: TROUBLESHOOTING.md
-  - Enhancement Plan: ENHANCEMENT-PLAN.md
-  - Codex Integration: CODEX-INTEGRATION.md
-  - Deployment Plans: DEPLOYMENT-PLANS.md
-  - Gap Analysis: GAP-ANALYSIS-CODEX.md
   - Function Calling: FUNCTION_CALLING.md
-  - MCP: MCP.md
-  - Secrets: SECRETS.md
   - Log Streaming: LOG_STREAMING.md
-  - Model Registry Ui: MODEL_REGISTRY_UI.md
-  - Performance Advanced: PERFORMANCE_ADVANCED.md
-  - Security Advanced: SECURITY_ADVANCED.md
-  - Ui Enhancements: UI_ENHANCEMENTS.md
-  - Vscode Extension: VSCODE_EXTENSION.md
-use_directory_urls: false
+  - Deployment: DEPLOYMENT.md
+  - Deployment Plans: DEPLOYMENT-PLANS.md
+  - Cloud Fallback: CLOUD-FALLBACK.md
+  - Security:
+      - Security Overview: SECURITY_ADVANCED.md
+      - Aikido Integration: AIKIDO-INTEGRATION.md
+      - Pentest Agent: PENTEST-AGENT.md
+      - Dependency Manager: DEPENDENCY-MANAGER.md
+      - Secrets Management: SECRETS.md
+      - Codex Integration: CODEX-INTEGRATION.md
+  - Builder Agents:
+      - Builders Overview: BUILDERS-OVERVIEW.md
+      - Fullstack App Builder: BUILDERS-FULLSTACK.md
+      - Website Builder: BUILDERS-WEBSITE.md
+      - CRM Builder: BUILDERS-CRM.md
+      - Chatbot Builders: BUILDERS-CHATBOTS.md
+      - Sales Pipeline: BUILDERS-SALES.md
+      - Marketing Agent: BUILDERS-MARKETING.md
+  - Communication:
+      - Comms Overview: COMMS-OVERVIEW.md
+      - Email (SendGrid/Twilio): COMMS-EMAIL.md
+      - Telegram: COMMS-TELEGRAM.md
+      - WhatsApp Business: COMMS-WHATSAPP.md
+      - Signal: COMMS-SIGNAL.md
+      - Gmail (Hermes): COMMS-GMAIL.md
+  - Performance:
+      - Optimization Audit: OPTIMIZATION-AUDIT.md
+      - Advanced Performance: PERFORMANCE_ADVANCED.md
+  - UI & Dashboard:
+      - Dashboard Guide: UI_ENHANCEMENTS.md
+      - Model Registry UI: MODEL_REGISTRY_UI.md
+      - VSCode Extension: VSCODE_EXTENSION.md
+  - Stack Rating: STACK_RATING.md
+  - Build Sheet: BUILD-SHEET.md
+  - Enhancement Plan: ENHANCEMENT-PLAN.md
+  - Gap Analysis: GAP-ANALYSIS-CODEX.md
+  - Troubleshooting: TROUBLESHOOTING.md
+  - Roadmap: ROADMAP.md
+  - TODO: TODO.md
+
 theme:
   name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
   palette:
-    - scheme: slate
-      primary: slate
-      accent: cyan
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-    - scheme: default
-      primary: indigo
-      accent: cyan
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
+    scheme: default
+    primary: cyan
+    accent: lime
   font:
     text: Inter
     code: JetBrains Mono
@@ -53,8 +73,61 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
-    - search.suggest
+    - navigation.tracking
     - search.highlight
+    - search.suggest
     - content.code.copy
+    - content.tabs.link
+    - toc.follow
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
 extra_css:
   - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/ai-badge.js
+
+markdown_extensions:
+  - toc:
+      permalink: true
+      permalink_title: Anchor link
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - mkdocs-simple-hooks:
+      hooks:
+        on_post_build:
+          - docs.generate_docs:main
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ProjectZeroAI/unified-ai-stack
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/projectzeroai/freeai
+  analytics:
+    provider: Plausible
+    domain: freeai.dev
+  version:
+    provider: mike

@@ -1,91 +1,250 @@
-/* FreeAI OLED — matches dashboard + README hero */
+/* FreeAI MkDocs — Light SaaS Theme (Applivery-inspired) */
+
 :root {
-  --freeai-bg: #0a0e1a;
-  --freeai-surface: #111827;
-  --freeai-card: #161e2e;
-  --freeai-border: #1e2d4a;
-  --freeai-cyan: #22d3ee;
-  --freeai-cyan-dim: #0891b2;
-  --freeai-amber: #f59e0b;
-  --freeai-green: #10b981;
-  --freeai-text: #e2e8f0;
-  --freeai-muted: #94a3b8;
+  --md-primary-fg-color:        #0ea5e9;
+  --md-primary-fg-color--light: #38bdf8;
+  --md-primary-fg-color--dark:  #0284c7;
+  --md-accent-fg-color:         #22c55e;
+  --md-accent-fg-color--light:  #4ade80;
+  --md-accent-fg-color--dark:   #16a34a;
+  --md-default-bg-color:        #FAFAFA;
+  --md-default-bg-color--light: #F1F5F9;
+  --md-default-bg-color--lighter:#FFFFFF;
+  --md-typeset-fg-color:        #0F172A;
+  --md-typeset-color:           #64748B;
+  --md-code-bg-color:           #F1F5F9;
+  --md-code-fg-color:           #0ea5e9;
+  --md-border-color:            rgba(15,23,42,.1);
+  --md-border-strong:           rgba(15,23,42,.18);
+  --md-radius:                  16px;
+  --md-radius-sm:               10px;
+  --brand-gradient-start:       #0ea5e9;
+  --brand-gradient-end:         #22c55e;
 }
 
-[data-md-color-scheme="slate"] {
-  --md-default-bg-color: var(--freeai-bg);
-  --md-default-fg-color: var(--freeai-text);
-  --md-primary-fg-color: #0f172a;
-  --md-primary-bg-color: var(--freeai-text);
-  --md-accent-fg-color: var(--freeai-cyan);
-  --md-typeset-a-color: var(--freeai-cyan);
-  --md-code-bg-color: #0f172a;
-  --md-code-fg-color: #e2e8f0;
-  --md-footer-bg-color: #020617;
+/* ── Typography ── */
+md-typeset {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  color: var(--md-typeset-fg-color);
+  font-size: 16px;
 }
 
-.md-header {
-  background: linear-gradient(135deg, #0f172a 0%, #111827 50%, #0a0e1a 100%);
-  border-bottom: 1px solid var(--freeai-border);
-}
-
-.md-header__title { font-weight: 700; letter-spacing: -0.02em; }
-.md-header__topic { color: var(--freeai-cyan); }
-
-.md-nav__link--active, .md-nav__link:hover { color: var(--freeai-cyan) !important; }
-
-.md-typeset h1 {
-  color: #f1f5f9;
+md-typeset h1, md-typeset h2, md-typeset h3, md-typeset h4 {
   font-weight: 800;
-  border-bottom: 2px solid var(--freeai-border);
-  padding-bottom: 0.4em;
+  letter-spacing: -.02em;
+  color: var(--md-typeset-fg-color);
 }
-.md-typeset h2 { color: #e2e8f0; border-bottom: 1px solid #1e293b; }
-.md-typeset h3 { color: var(--freeai-cyan); }
+
+md-typeset h1 { font-size: 2.2rem; margin-bottom: .6em; }
+md-typeset h2 { font-size: 1.6rem; margin-bottom: .5em; border-bottom: none; padding-bottom: 0; }
+md-typeset h3 { font-size: 1.25rem; margin-bottom: .4em; }
+
+md-typeset p { color: var(--md-typeset-color); line-height: 1.7; }
+
+/* ── Cards / Admonitions ── */
+.md-typeset .admonition,
+.md-typeset details {
+  border: 1px solid var(--md-border-color);
+  border-radius: var(--md-radius);
+  background: var(--md-default-bg-color--lighter);
+  box-shadow: 0 2px 12px rgba(15,23,42,.06);
+}
+
+.md-typeset .admonition-title,
+.md-typeset details > summary {
+  background: transparent;
+  border-bottom: 1px solid var(--md-border-color);
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--md-radius) var(--md-radius) 0 0;
+  color: var(--md-typeset-fg-color);
+}
+
+/* ── Code blocks ── */
+.md-typeset pre {
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-border-color);
+  border-radius: var(--md-radius);
+  box-shadow: 0 1px 4px rgba(15,23,42,.06);
+}
 
 .md-typeset code {
-  background: #0f172a;
-  border: 1px solid var(--freeai-border);
-  color: #7dd3fc;
+  background: rgba(14,165,233,.1);
+  color: var(--md-primary-fg-color);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: .875em;
 }
 
 .md-typeset pre > code {
-  background: #0f172a;
-  border: 1px solid var(--freeai-border);
+  background: transparent;
+  color: var(--md-typeset-fg-color);
+  padding: 0;
 }
 
-.md-typeset .admonition {
-  background: var(--freeai-card);
-  border-color: var(--freeai-border);
+/* ── Tables ── */
+.md-typeset table {
+  border-radius: var(--md-radius);
+  border: 1px solid var(--md-border-color);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(15,23,42,.05);
 }
 
-.md-typeset table:not([class]) {
-  background: var(--freeai-card);
-  border: 1px solid var(--freeai-border);
-}
-.md-typeset table:not([class]) th {
-  background: #0f172a;
-  color: var(--freeai-cyan);
+.md-typeset table th {
+  background: var(--md-default-bg-color--light);
+  color: var(--brand-gradient-end);
+  border-bottom: 1px solid var(--md-border-color);
+  font-weight: 700;
 }
 
-.md-footer { background: #020617; border-top: 1px solid var(--freeai-border); }
-
-/* Hero callout on INDEX.md */
-.hero {
-  background: linear-gradient(135deg, #0f172a, #111827);
-  border: 1px solid var(--freeai-border);
-  border-radius: 12px;
-  padding: 1.5em;
-  margin: 1.5em 0;
+.md-typeset table td {
+  border-bottom: 1px solid var(--md-border-color);
+  color: var(--md-typeset-fg-color);
 }
-.hero strong { color: var(--freeai-cyan); }
 
-/* Badges row */
-.badges img { margin-right: 6px; }
+.md-typeset table tr:last-child td { border-bottom: none; }
 
-/* Screenshot gallery */
-.gallery img {
-  border: 1px solid var(--freeai-border);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+/* ── Navigation ── */
+.md-nav__item a {
+  color: var(--md-typeset-color);
+  border-radius: var(--md-radius-sm);
+  transition: color .15s ease, background .15s ease;
+  font-size: 14px;
+}
+
+.md-nav__item a:hover {
+  color: var(--md-primary-fg-color);
+  background: rgba(14,165,233,.06);
+  text-decoration: none;
+}
+
+.md-nav__item a[data-md-state='active'] {
+  color: var(--brand-gradient-end);
+  font-weight: 600;
+}
+
+/* ── Search ── */
+.md-search__input {
+  background: var(--md-default-bg-color--light);
+  border: 1px solid var(--md-border-color);
+  color: var(--md-typeset-fg-color);
+  border-radius: var(--md-radius);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.md-search__input::placeholder { color: var(--md-typeset-color); }
+.md-search__input:hover { border-color: var(--md-border-strong); }
+.md-search__input:focus { border-color: var(--md-primary-fg-color); box-shadow: 0 0 0 3px rgba(14,165,233,.12); }
+
+/* ── Footer ── */
+.md-footer {
+  background: var(--md-default-bg-color--light);
+  border-top: 1px solid var(--md-border-color);
+}
+
+.md-footer__inner {
+  color: var(--md-typeset-color);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--md-default-bg-color); }
+::-webkit-scrollbar-thumb { background: var(--md-border-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--md-typeset-color); }
+
+/* ── Links ── */
+.md-typeset a {
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  transition: color .15s;
+}
+.md-typeset a:hover {
+  color: var(--brand-gradient-end);
+  text-decoration: underline;
+}
+
+/* ── Highlight ── */
+.md-typeset mark {
+  background: rgba(34,197,94,.18);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+/* ── Buttons ── */
+.md-typeset .md-button {
+  border: 1px solid var(--md-border-strong);
+  border-radius: var(--md-radius-sm);
+  background: var(--md-default-bg-color--lighter);
+  color: var(--md-typeset-fg-color);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 18px;
+  transition: all .15s;
+}
+.md-typeset .md-button:hover {
+  background: var(--md-typeset-fg-color);
+  color: #fff;
+  border-color: var(--md-typeset-fg-color);
+  text-decoration: none;
+}
+.md-typeset .md-button--primary {
+  background: var(--md-typeset-fg-color);
+  color: #fff;
+  border-color: var(--md-typeset-fg-color);
+}
+.md-typeset .md-button--primary:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+}
+
+/* ── Aikido / Security badges ── */
+.md-typeset .aikido-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(14,165,233,.08);
+  border: 1px solid rgba(14,165,233,.25);
+  color: var(--md-primary-fg-color);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s ease;
+}
+.md-typeset .aikido-badge:hover { background: rgba(14,165,233,.14); }
+
+/* ── Builder agent callout ── */
+.md-typeset .builder-callout {
+  background: linear-gradient(135deg, rgba(14,165,233,.06), rgba(34,197,94,.06));
+  border: 1px solid var(--md-border-color);
+  border-left: 3px solid var(--md-accent-fg-color);
+  border-radius: var(--md-radius);
+  padding: 14px 18px;
+  margin: 12px 0;
+}
+.md-typeset .builder-callout summary {
+  font-weight: 600;
+  color: var(--md-typeset-fg-color);
+}
+
+/* ── Horizontal rule ── */
+.md-typeset hr {
+  border-color: var(--md-border-color);
+  margin: 2rem 0;
+}
+
+/* ── Definition list ── */
+.md-typeset dl dt {
+  font-weight: 700;
+  color: var(--md-typeset-fg-color);
+}
+.md-typeset dl dd {
+  color: var(--md-typeset-color);
+}
+
+/* ── Selection ── */
+.md-typeset ::selection {
+  background: rgba(14,165,233,.2);
 }
