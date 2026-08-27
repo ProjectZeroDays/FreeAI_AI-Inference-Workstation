@@ -792,19 +792,50 @@
 
     /* ── Footer ── */
     .footer {
-      padding: 40px 0; border-top: 1px solid var(--border);
-      background: #0b1225;
+      padding: 64px 0 32px; border-top: 1px solid var(--border);
+      background: #050a18;
     }
     [data-theme="light"] .footer { background: var(--navy-900); }
     .footer-inner {
       max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px);
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
     }
-    .footer-brand { font-weight: 700; font-size: 16px; color: #f1f6ff; }
-    .footer-copy { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 4px; }
-    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-    .footer-links a { color: rgba(255,255,255,.5); font-size: 13px; transition: color .15s; }
-    .footer-links a:hover { color: #f1f6ff; text-decoration: none; }
+    .footer-grid {
+      display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+    @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
+    .footer-brand-col {}
+    .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 12px; letter-spacing: -.02em; }
+    .footer-tag { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 20px; max-width: 260px; }
+    .footer-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: 10px;
+      background: #0241e3; color: #fff; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background .15s, transform .15s;
+      border: none; cursor: pointer; font-family: inherit;
+    }
+    .footer-cta:hover { background: #033ad1; transform: translateY(-1px); }
+    .footer-cta svg { width: 14px; height: 14px; }
+    .footer-nav {}
+    .footer-col {}
+    .footer-title {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(241,246,255,.3); margin-bottom: 14px;
+    }
+    .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; }
+    .footer-links a {
+      color: rgba(241,246,255,.55); font-size: 13px; text-decoration: none;
+      transition: color .15s;
+    }
+    .footer-links a:hover { color: #f1f6ff; }
+    .footer-bottom {
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .footer-trust { display: flex; align-items: center; gap: 10px; }
+    .footer-iso { width: 28px; height: 28px; opacity: .5; }
+    .footer-copyright { font-size: 12px; color: rgba(241,246,255,.3); }
 
     /* ── Language Dropdown ── */
     .lang-dropdown { position: relative; }
@@ -901,17 +932,15 @@
         <span class="nav-brand">FreeAI</span>
         <span class="nav-brand-sub">AI Intelligence</span>
       </a>
-      <div class="nav-links">
-        <a href="#dashboards" class="nav-link" data-i18n="nav-dashboards">Dashboards</a>
-        <a href="#skills" class="nav-link" data-i18n="nav-skills">Skills</a>
-        <a href="#plugins" class="nav-link" data-i18n="nav-plugins">Plugins</a>
-        <a href="#mcps" class="nav-link" data-i18n="nav-mcps">MCPs</a>
-        <a href="#extensions" class="nav-link" data-i18n="nav-extensions">Extensions</a>
-        <a href="#workflows" class="nav-link" data-i18n="nav-workflows">Workflows</a>
-        <a href="deploy.html" class="nav-link" data-i18n="nav-deploy">Deploy</a>
-        <a href="#install" class="nav-link" data-i18n="nav-install">Install</a>
-        <a href="#faq" class="nav-link" data-i18n="nav-faq">FAQ</a>
-      </div>
+       <div class="nav-links">
+         <a href="#why-now" class="nav-link" data-i18n="nav-why-now">AI Intelligence</a>
+         <a href="#capabilities" class="nav-link" data-i18n="nav-capabilities">Features</a>
+         <a href="#agents" class="nav-link" data-i18n="nav-agents">Integrations</a>
+         <a href="#how-it-works" class="nav-link" data-i18n="nav-how-works">AI Agents</a>
+         <a href="deploy.html" class="nav-link" data-i18n="nav-deploy">Deploy</a>
+         <a href="#install" class="nav-link" data-i18n="nav-install">Install</a>
+         <a href="#faq" class="nav-link" data-i18n="nav-faq">FAQ</a>
+       </div>
       <div class="nav-actions">
         <!-- Language dropdown -->
         <div class="lang-dropdown" id="langDropdown">
@@ -1603,18 +1632,48 @@ docker compose --profile allinone up -d
 
   <footer class="footer">
     <div class="footer-inner">
-      <div>
-        <div class="footer-brand">FreeAI <span class="footer-brand-sub">AI Intelligence</span></div>
-        <div class="footer-copy" data-i18n="footer-copy">\u00a9 2026 FreeAI \u00b7 Unified AI Workstation \u00b7 MIT License</div>
+      <div class="footer-grid">
+        <div class="footer-brand-area">
+          <div class="footer-brand">FreeAI <span class="footer-brand-sub">AI Intelligence</span></div>
+          <p class="footer-tagline">Unified endpoint management with a brain. Manage, protect and update every device — automatically.</p>
+          <a href="deploy.html" class="btn btn--primary btn--sm" style="margin-top:16px;height:38px;font-size:13px;">Get FreeAI
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="footer-col">
+          <h2>On this page</h2>
+          <ul class="footer-links">
+            <li><a href="#why-now">Why now</a></li>
+            <li><a href="#capabilities">Capabilities</a></li>
+            <li><a href="#agents">Agents</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Company</h2>
+          <ul class="footer-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#careers">Careers</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h2>Legal</h2>
+          <ul class="footer-links">
+            <li><a href="https://www.applivery.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy</a></li>
+            <li><a href="#terms">Terms</a></li>
+            <li><a href="#security">Security</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="footer-links">
-        <a href="/" data-i18n="footer-home">Home</a>
-        <a href="#install" data-i18n="footer-install">Install</a>
-        <a href="#faq" data-i18n="footer-faq">FAQ</a>
-        <a href="deploy.html" data-i18n="footer-deploy">Deploy</a>
-        <a href="/wiki-dashboard" target="_blank" data-i18n="footer-docs">Documentation</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues" data-i18n="footer-bug">Report a Bug</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" data-i18n="footer-github">GitHub</a>
+      <div class="footer-bottom">
+        <div class="footer-trust">
+          <span>© 2026 FreeAI · Unified AI Workstation · MIT License</span>
+        </div>
+        <div class="footer-trust">
+          <svg class="footer-iso" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>ISO 27001 certified</span>
+        </div>
       </div>
     </div>
   </footer>
