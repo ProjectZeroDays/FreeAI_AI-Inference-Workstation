@@ -63,10 +63,34 @@ def safe_name(raw: str, max_len: int = 96) -> str:
 
 
 def norm_addr(raw: str) -> str:
+    """Normalize and validate a hexadecimal address string.
+    
+    Args:
+        raw: Input string that should represent a hexadecimal address
+        
+    Returns:
+        Normalized address string with '0x' prefix
+        
+    Raises:
+        ValueError: If the input is not a valid hexadecimal address
+    """
     raw = raw.strip()
+    # Remove 0x prefix if present for validation
     if raw.lower().startswith("0x"):
-        return raw.lower()
-    return "0x" + raw.lower()
+        hex_part = raw[2:]
+    else:
+        hex_part = raw
+    
+    # Validate that the remaining part contains only hexadecimal characters
+    # This prevents command injection via radare2's semicolon command separator
+    # and shell escape sequences (e.g., "0;!touch /tmp/marker")
+    if not hex_part:
+        raise ValueError(f"Empty hexadecimal address: {raw!r}")
+    
+    if not re.match(r'^[0-9a-fA-F]+$', hex_part):
+        raise ValueError(f"Invalid hexadecimal address (contains non-hex characters): {raw!r}")
+    
+    return "0x" + hex_part.lower()
 
 
 def parse_int_addr(raw: str) -> int | None:
@@ -122,6 +146,15 @@ def scan_failures(root: Path, limit: int | None = None) -> list[Failure]:
                 entry = (row.get("entry") or "").strip()
                 if not entry:
                     continue
+                
+                # Validate that entry is a valid hexadecimal address
+                # This prevents command injection attacks via malicious TSV entries
+                try:
+                    norm_addr(entry)
+                except ValueError as e:
+                    print(f"warning: skipping invalid entry in {failure_file}: {e}", file=sys.stderr)
+                    continue
+                
                 failures.append(
                     Failure(
                         target_dir=target_dir,
