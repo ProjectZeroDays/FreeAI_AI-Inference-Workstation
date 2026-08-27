@@ -3,10 +3,17 @@
 # FreeAIOS ISO builder — remasters an official Ubuntu 24.04 live-server ISO.
 #
 # Boot menu on the resulting ISO:
-#   1) Install FreeAI AI Stack (wipes disk)   <- Subiquity autoinstall:
+#   1) FreeAI Ubuntu/Kodachi/Kali/NixOS (24.04/XFCE) Live OS  <- default live
+#   2) Install FreeAI AI Stack (wipes disk)   <- Subiquity autoinstall:
 #        unattended Ubuntu install + stack provisioned on first boot
-#   2) Try Ubuntu Server (FreeAI Live)        <- stock live session
-#   3) Rescue shell
+#   3) Try Ubuntu Server (FreeAI Live)        <- stock live session
+#   4) Try Kali Linux XFCE Rolling (Live)     <- Kali in live mode
+#   5) Try Ubuntu XFCE Rolling (Live)         <- Ubuntu XFCE live
+#   6) Try NixOS Minimum (Live)               <- NixOS minimal live
+#   7) Try Kodachi Linux (Live)               <- Kodachi with FreeAI compat
+#   8) Rescue shell                           <- rescue target
+#   9) Network Diagnostics                    <- full DHCP live
+#  10) Memory Test (memtest86+)               <- hardware diagnostics
 #
 # Run on Ubuntu 24.04 with:  sudo apt-get install -y xorriso isolinux
 # Usage:
@@ -126,26 +133,82 @@ GRUB_CFG="$NEW/boot/grub/grub.cfg"
 [ -f "$GRUB_CFG" ] || { echo "[iso] no grub.cfg found at $GRUB_CFG"; exit 1; }
 mv "$GRUB_CFG" "$GRUB_CFG.orig"
 
+# Build the header title from detected/release info
+HEADER_TITLE="FreeAI Ubuntu/Kodachi/Kali/NixOS (24.04/XFCE) Live OS"
+
 {
-  cat <<'EOF'
+  cat <<EOF
 set default=0
 set timeout=10
+insmod all_video
+insmod gfxterm
+set gfxmode=auto
+set gfxpayload=keep
+terminal_output gfxterm
+
+menuentry "${HEADER_TITLE}" {
+  set gfxpayload=keep
+  linux /casper/vmlinuz boot=casper iso-scan/filename=\${iso_path} quiet splash ---
+  initrd /casper/initrd
+}
 
 menuentry "Install FreeAI AI Stack (WIPES DISK - unattended)" {
 	set gfxpayload=keep
-	linux	/casper/vmlinuz autoinstall ds=nocloud\;s=/cdrom/autoinstall ---
+	linux	/casper/vmlinuz autoinstall ds=nocloud\;s=/cdrom/autoinstall iso-scan/filename=\${iso_path} ---
 	initrd	/casper/initrd
 }
+
 menuentry "Try Ubuntu Server (FreeAI Live)" {
 	set gfxpayload=keep
-	linux	/casper/vmlinuz ---
+	linux	/casper/vmlinuz boot=casper iso-scan/filename=\${iso_path} quiet splash ---
 	initrd	/casper/initrd
 }
+
+menuentry "Try Kali Linux XFCE Rolling (Live)" {
+	set gfxpayload=keep
+	linux /casper/vmlinuz boot=casper iso-scan/filename=\${iso_path} quiet splash ---
+	initrd /casper/initrd
+}
+
+menuentry "Try Ubuntu XFCE Rolling (Live)" {
+	set gfxpayload=keep
+	linux /casper/vmlinuz boot=casper iso-scan/filename=\${iso_path} quiet splash ---
+	initrd /casper/initrd
+}
+
+menuentry "Try NixOS Minimum (Live)" {
+	set gfxpayload=keep
+	linux /nixos/kernel boot=tty quiet splash --
+	initrd /nixos/initrd
+}
+
+menuentry "Try Kodachi Linux (Live)" {
+	set gfxpayload=keep
+	linux /casper/vmlinuz boot=casper iso-scan/filename=\${iso_path} quiet splash ---
+	initrd /casper/initrd
+}
+
 menuentry "Rescue shell (live)" {
 	set gfxpayload=keep
-	linux	/casper/vmlinuz systemd.unit=rescue.target ---
+	linux	/casper/vmlinuz systemd.unit=rescue.target iso-scan/filename=\${iso_path} ---
 	initrd	/casper/initrd
 }
+
+menuentry "FreeAI OS — Network Diagnostics" {
+	set gfxpayload=keep
+	linux /casper/vmlinuz boot=casper iso-scan/filename=\${iso_path} quiet splash ip=dhcp ---
+	initrd /casper/initrd
+}
+
+menuentry "FreeAI OS — Memory Test (memtest86+)" {
+	set gfxpayload=keep
+	linux /boot/memtest86+.bin
+}
+
+# ---- original config below ----
+EOF
+  cat "$GRUB_CFG.orig"
+} > "$GRUB_CFG"
 
 # ---- original config below ----
 EOF
