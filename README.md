@@ -1,36 +1,182 @@
-# FreeAI
+# FreeAI — Unified AI Workstation
 
-![version](https://img.shields.io/badge/version-1.2.0-blue)
-![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)
-![python](https://img.shields.io/badge/python-3.10%2B-informational)
-![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)
-![release](https://img.shields.io/github/v/release/ProjectZeroDays/FreeAI_Ubuntu-AI-Inference-Workstation?label=release)
-![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)
-![coverage](https://img.shields.io/badge/coverage-88%20tests-brightgreen)
+> **The AI workstation that thinks ahead.** Local models, autonomous agents, full SDLC automation — one self-hosted stack.
 
+<div align="center">
 
-> **The world's most complete self-hosted AI workstation.**  
-> **Local models. Autonomous agents. Full SDLC automation.**  
-> **One-line spec → full project. One URL → all clients.**
+[![version](https://img.shields.io/badge/version-1.3.0-blue)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases)
+[![python](https://img.shields.io/badge/python-3.10%2B-informational)](https://www.python.org/)
+[![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)](https://developer.nvidia.com/cuda)
+[![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)](#15-testing-and-validation)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/pkgs/container/freeai)
 
-<p align="center">
-  <img src="docs/screenshots/dashboard.png" width="48%" alt="FreeAI Dashboard" />
-  <img src="docs/screenshots/freeai-ui.png" width="48%" alt="FreeAI UI" />
-</p>
+**Docs:** [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation) · **Dashboard:** `http://localhost:8030`
 
-> **5-Minute Quick Start** — pick one:
+</div>
+
+---
+
+## Quick Start
 
 ```bash
-# Bare metal (recommended, auto-detects 4090/Z790 and configures)
-curl -fsSL https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_Ubuntu-AI-Inference-Workstation/main/hardware/install-stack.sh | bash
-# Or: SETUP_MODE=autonomous sudo ./hardware/install-stack.sh
+# Install (auto-detects GPU, configures everything)
+curl -fsSL https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/main/hardware/install-stack.sh | bash
 
-# Docker (any host with NVIDIA Docker)
-docker compose up -d --build
+# Or Docker (any host with NVIDIA Docker)
+docker compose --profile allinone up -d
 
-# Live ISO (no install)
-# Download freeaios-amd64.iso from Releases → boot → Install FreeAI
+# Or Live ISO (no install needed)
+# Download from Releases → boot → Try FreeAI Ubuntu/Kodachi/Kali/NixOS
 ```
+
+> **No GPU?** Set `MOCK_LLM=1` — the full stack runs on CPU for development and testing.
+
+---
+
+## What's Inside
+
+FreeAI is a **production-grade, self-hosted AI inference workstation** that unifies everything you need to run capable coding models 24/7 on your own hardware — with agents that actually ship work.
+
+| Pillar | What It Does |
+|---|---|
+| **Model Router** (:8010) | Classifies each prompt, routes to the best healthy backend, falls back automatically, caches repeats, blocks repetition loops |
+| **Autonomous Agents** (:8020 / :8050) | Plan → code → verify with real compilers/tests → fix → review → document → package. 7-phase SDLC with session memory |
+| **Workflow Engine** (:8040) | Visual pipeline designer with validation, templates, audit logs, export/import |
+| **Security** | Aikido integration, pentest agents, auto-patching, dependency management (21+ providers, 33 security skills) |
+| **Builder Agents** | Generate fullstack apps, websites, CRMs, chatbots, sales pipelines from natural language specs |
+| **Communication Stack** | Email (SendGrid, Gmail, Proton), SMS (Twilio), Telegram, WhatsApp, Signal — all agents can send |
+| **MCP Registry** | 40+ pre-configured servers for memory, code intelligence, browser automation, search, LLM access |
+| **GPU Inference** | llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) — local GGUF serving with 21+ hosted API bridges |
+| **Desktop** | Full XFCE + TigerVNC remote desktop, accessible from anywhere via noVNC (:6080) |
+| **Live ISO** | Bootable FreeAIOS — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes |
+
+---
+
+## Architecture
+
+```
+                    ┌─────────────────────────────────────────────────────┐
+                    │              FreeAI Dashboard (:8030)               │
+                    │        Flask + Chart.js + SSE + Authentication      │
+                    ├──────────┬──────────┬──────────┬────────────────────┤
+                    │  Router  │ Agents   │ Workflow │   Autonomous       │
+                    │  :8010   │ :8020    │  :8040   │      :8050         │
+                    │          │          │          │                    │
+                    │ classify │ plan→code│ chain    │ 7-phase SDLC       │
+                    │ fallback │ verify  │ validate │  real compilation  │
+                    │ cache    │ fix     │ template │  auto-package      │
+                    ├──────────┴──────────┴──────────┴────────────────────┤
+                    │              MCP Registry (40+ servers)              │
+                    │    Aikido · SendGrid · Twilio · Telegram · WhatsApp  │
+                    ├─────────────────────────────────────────────────────┤
+                    │            GPU Inference Layer                       │
+                    │    llama.cpp (:9001) · vLLM (:9002) · FreeToken (:9100)│
+                    └─────────────────────────────────────────────────────┘
+```
+
+---
+
+## Deploy Anywhere
+
+| Method | Command | Best For |
+|---|---|---|
+| **Bare Metal** | `curl -fsSL install-stack.sh \| bash` | Production servers with NVIDIA GPUs |
+| **Docker Compose** | `docker compose --profile allinone up -d` | Any host with NVIDIA Docker |
+| **Kubernetes** | `kubectl apply -f k8s/` | Cloud-native deployments |
+| **Vast.ai** | Custom template (32GB+ VRAM) | On-demand GPU instances |
+| **Live ISO** | Boot `freeaios-amd64.iso` | No-install, bootable workstation |
+
+---
+
+## Key Features
+
+### Model Router
+- **21+ providers** — OpenAI, Anthropic, DeepSeek, Gemini, OpenRouter, Venice, Agnes AI, and more
+- **Task-aware classification** — confidence-scored routing per prompt type
+- **Automatic fallback chains** — if the primary fails, tries the next in line
+- **Degenerate output detection** — catches repetition loops before they waste tokens
+- **LRU response cache** — `X-Cache: HIT/MISS` headers, per-model TTL
+
+### Autonomous SDLC Agents
+```bash
+# One-line spec → complete shipped project
+python freeai.py auto-start "Build a FastAPI notes service with auth and tests" --watch
+```
+- **7 phases**: plan → code → verify (real compilers/tests) → fix → review → document → package
+- **Real verification**: `compileall`, `pytest`→`unittest`, `node --check` inside sandboxed workspaces
+- **Artifact download**: tarball with full project, ready to deploy
+
+### Builder Agents
+Generate complete projects from natural language:
+- **Fullstack apps** — FastAPI+React, Django+Next.js, Laravel+Vue
+- **Websites** — landing pages, portfolios, SaaS sites
+- **CRMs** — contacts, deals, tasks, email integration
+- **Chatbots** — FAQ bots, ticketing, knowledge-base powered
+- **Sales pipelines** — lead capture, CRM sync, email sequences
+- **Marketing agents** — multi-channel campaigns with A/B testing
+
+### Security
+- **Aikido integration** — scan code, test apps, auto-patch from the dashboard
+- **Pentest agents** — Semgrep, Bandit, Safety, Trivy (SAST/DAST)
+- **Auto-patch** — generate and apply safe fixes for critical/high vulnerabilities
+- **33 security skills** — 14 Red Team, 12 Blue Team, 7 Purple Team
+- **API key rotation** — up to 10 keys per provider, auto-pause on 429
+
+### Communication Stack
+All agents can send notifications through any channel:
+- **Email**: SendGrid, Gmail (OAuth), Proton Mail (SMTP)
+- **SMS**: Twilio
+- **Messaging**: Telegram, WhatsApp Business, Signal
+
+---
+
+## Service Ports
+
+| Service | Port | Description |
+|---|---|---|
+| Dashboard | `8030` | Web UI + REST API |
+| Router | `8010` | AI model routing engine |
+| Agents | `8020` | Agent API |
+| Workflow | `8040` | Workflow engine |
+| Autonomous | `8050` | SDLC automation |
+| llama.cpp | `9001` | Local GGUF inference |
+| vLLM | `9002` | High-throughput serving |
+| FreeToken | `9100` | Edge MoE engine |
+| JupyterLab | `8888` | Interactive Python |
+| OpenCode | `3000` | OpenCode web UI |
+| Desktop (VNC) | `6080` | XFCE remote desktop |
+
+---
+
+## Hardware Requirements
+
+| Requirement | Minimum | Recommended |
+|---|---|---|
+| **GPU** | None (MOCK_LLM=1) | NVIDIA RTX 4090 / 32GB VRAM |
+| **RAM** | 8 GB | 32 GB+ |
+| **Storage** | 20 GB | 100 GB+ (models + workspaces) |
+| **OS** | Ubuntu 22.04+ | Ubuntu 24.04 LTS |
+| **CUDA** | — | CUDA 12.x |
+
+---
+
+## Documentation
+
+- **Full docs**: [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation)
+- **Wiki**: http://localhost:8030/wiki-dashboard
+- **Blog**: http://localhost:8030/blog
+- **Forum**: http://localhost:8030/forum
+- **API Reference**: [API.md](docs/API.md)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+Built with ❤️ by the FreeAI team.
+
 
 > **Full docs:** https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/  
 > **Try before you clone:** `MOCK_LLM=1` runs the entire stack without a GPU (`make test` is fully offline).
