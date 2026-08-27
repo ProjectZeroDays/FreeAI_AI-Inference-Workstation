@@ -127,6 +127,9 @@ def test_metrics_incr_and_read():
 def test_metrics_latency_recorded():
     """Test that metrics_latency records sum and count."""
     router_mod.app.config["TESTING"] = True
+    # Reset to isolate from other tests
+    router_mod.METRICS["latency_sum_ms"] = 0.0
+    router_mod.METRICS["latency_count"] = 0
     router_mod.metrics_latency(42.5)
     assert router_mod.METRICS["latency_sum_ms"] == 42.5
     assert router_mod.METRICS["latency_count"] == 1
