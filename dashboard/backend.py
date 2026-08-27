@@ -439,6 +439,11 @@ def logs_page():
     return render_template("logs.html")
 
 
+@app.route("/network")
+def network_page():
+    return render_template("network.html")
+
+
 # ── API: Subagents ────────────────────────────────────────────────
 _SUBAGENTS = []
 _SUBAGENT_LOCK = threading.Lock()
@@ -683,6 +688,287 @@ def api_deploy_model(mid):
             if m["id"] == mid:
                 return jsonify({"ok": True, "endpoint": "http://localhost:9001/v1/completions", "model": m["name"]})
     return jsonify({"error": "not found"}), 404
+
+
+# ── API: Memory ───────────────────────────────────────────────────
+_MEMORY_STATE = {
+    "preferences": {
+        "auto_remember": True,
+        "share_with_agents": True,
+        "auto_create_skills": True,
+        "retention_days": 365,
+        "max_memories_per_context": 20,
+    },
+    "projects": [
+        {"name": "unified-ai-stack", "last_active": "2 min ago", "context": "Working on dashboard redesign, landing page, and new features."},
+        {"name": "quantum-c2", "last_active": "3 days ago", "context": "C2 framework — implementing stealth modules and updating dashboards."},
+    ],
+    "environment": {
+        "os": "Windows 11",
+        "python": "3.14.0",
+        "working_dir": "unified-ai-stack",
+        "dashboard_port": 8030,
+        "router_port": 8010,
+        "skills_count": 55,
+    },
+    "sessions": [],
+    "learnings": [],
+    "stats": {"memories": 42, "context_windows": 3, "sessions": 12, "recalls": 87},
+}
+_MEMORY_LOCK = threading.Lock()
+
+
+@app.route("/api/memory", methods=["GET"])
+def api_memory_get():
+    with _MEMORY_LOCK:
+        return jsonify(_MEMORY_STATE)
+
+
+@app.route("/api/memory/preferences", methods=["GET", "POST"])
+def api_memory_preferences():
+    with _MEMORY_LOCK:
+        if request.method == "POST":
+            data = request.get_json(silent=True) or {}
+            for k, v in data.items():
+                if k in _MEMORY_STATE["preferences"]:
+                    _MEMORY_STATE["preferences"][k] = v
+            return jsonify({"ok": True, "preferences": _MEMORY_STATE["preferences"]})
+        return jsonify(_MEMORY_STATE["preferences"])
+
+
+@app.route("/api/memory/projects", methods=["GET", "POST"])
+def api_memory_projects():
+    with _MEMORY_LOCK:
+        if request.method == "POST":
+            data = request.get_json(silent=True) or {}
+            _MEMORY_STATE["projects"].append({
+                "name": data.get("name", "untitled"),
+                "last_active": "just now",
+                "context": data.get("context", ""),
+            })
+            return jsonify({"ok": True, "projects": _MEMORY_STATE["projects"]})
+        return jsonify(_MEMORY_STATE["projects"])
+
+
+@app.route("/api/memory/projects/<name>", methods=["DELETE"])
+def api_memory_delete_project(name):
+    with _MEMORY_LOCK:
+        before = len(_MEMORY_STATE["projects"])
+        _MEMORY_STATE["projects"] = [p for p in _MEMORY_STATE["projects"] if p["name"] != name]
+        return jsonify({"deleted": before - len(_MEMORY_STATE["projects"])})
+
+
+@app.route("/api/memory/learnings", methods=["GET", "POST"])
+def api_memory_learnings():
+    with _MEMORY_LOCK:
+        if request.method == "POST":
+            data = request.get_json(silent=True) or {}
+            _MEMORY_STATE["learnings"].append({
+                "id": str(uuid.uuid4())[:8],
+                "title": data.get("title", "Untitled Learning"),
+                "body": data.get("body", ""),
+                "recurrences": data.get("recurrences", 1),
+                "created_at": time.time(),
+            })
+            return jsonify({"ok": True, "learnings": _MEMORY_STATE["learnings"]})
+        return jsonify(_MEMORY_STATE["learnings"])
+
+
+@app.route("/api/memory/stats", methods=["GET"])
+def api_memory_stats():
+    with _MEMORY_LOCK:
+        return jsonify(_MEMORY_STATE["stats"])
+
+
+# ── API: Automations ──────────────────────────────────────────────
+_AUTOMATIONS = {
+    "jobs": [
+        {"id": "1", "name": "Daily Security Report", "cron": "0 8 * * *", "type": "report", "enabled": True, "delivery": ["telegram", "email"], "last_run": "2026-08-27T08:00:00Z", "next_run": "2026-08-28T08:00:00Z"},
+        {"id": "2", "name": "Nightly Backup", "cron": "0 2 * * *", "type": "backup", "enabled": True, "delivery": ["telegram"], "last_run": "2026-08-27T02:00:00Z", "next_run": "2026-08-28T02:00:00Z"},
+        {"id": "3", "name": "Weekly Security Audit", "cron": "0 3 * * 0", "type": "audit", "enabled": True, "delivery": ["email", "discord"], "last_run": "2026-08-23T03:00:00Z", "next_run": "2026-08-30T03:00:00Z"},
+        {"id": "4", "name": "Morning Briefing", "cron": "0 7 * * *", "type": "briefing", "enabled": True, "delivery": ["telegram", "slack"], "last_run": "2026-08-27T07:00:00Z", "next_run": "2026-08-28T07:00:00Z"},
+        {"id": "5", "name": "Every 6h Scan", "cron": "0 */6 * * *", "type": "scan", "enabled": True, "delivery": ["telegram"], "last_run": "2026-08-27T12:00:00Z", "next_run": "2026-08-27T18:00:00Z"},
+        {"id": "6", "name": "Weekly Report", "cron": "0 9 * * 1", "type": "report", "enabled": True, "delivery": ["email", "whatsapp"], "last_run": "2026-08-25T09:00:00Z", "next_run": "2026-09-01T09:00:00Z"},
+    ],
+    "history": [],
+    "stats": {"total_runs": 847, "success_rate": 98.5, "platforms_connected": 4},
+}
+_AUTOMATION_LOCK = threading.Lock()
+
+
+@app.route("/api/automations", methods=["GET"])
+def api_automations_list():
+    with _AUTOMATION_LOCK:
+        return jsonify(_AUTOMATIONS)
+
+
+@app.route("/api/automations", methods=["POST"])
+def api_automation_create():
+    data = request.get_json(silent=True) or {}
+    job_id = str(uuid.uuid4())[:8]
+    job = {
+        "id": job_id,
+        "name": data.get("name", "Untitled Job"),
+        "cron": data.get("cron", "0 0 * * *"),
+        "type": data.get("type", "custom"),
+        "enabled": True,
+        "delivery": data.get("delivery", ["telegram"]),
+        "last_run": None,
+        "next_run": data.get("next_run"),
+    }
+    with _AUTOMATION_LOCK:
+        _AUTOMATIONS["jobs"].append(job)
+    return jsonify({"ok": True, "job": job})
+
+
+@app.route("/api/automations/<job_id>/toggle", methods=["POST"])
+def api_automation_toggle(job_id):
+    with _AUTOMATION_LOCK:
+        for j in _AUTOMATIONS["jobs"]:
+            if j["id"] == job_id:
+                j["enabled"] = not j["enabled"]
+                return jsonify({"ok": True, "enabled": j["enabled"]})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/automations/<job_id>/run", methods=["POST"])
+def api_automation_run_now(job_id):
+    import random
+    with _AUTOMATION_LOCK:
+        for j in _AUTOMATIONS["jobs"]:
+            if j["id"] == job_id:
+                success = random.choice([True, True, True, False])
+                entry = {
+                    "job_id": job_id,
+                    "job_name": j["name"],
+                    "triggered_at": time.time(),
+                    "status": "success" if success else "failed",
+                    "duration_ms": random.randint(500, 15000),
+                }
+                _AUTOMATIONS["history"].insert(0, entry)
+                if len(_AUTOMATIONS["history"]) > 50:
+                    _AUTOMATIONS["history"] = _AUTOMATIONS["history"][:50]
+                return jsonify({"ok": True, "entry": entry})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/automations/<job_id>", methods=["DELETE"])
+def api_automation_delete(job_id):
+    with _AUTOMATION_LOCK:
+        before = len(_AUTOMATIONS["jobs"])
+        _AUTOMATIONS["jobs"] = [j for j in _AUTOMATIONS["jobs"] if j["id"] != job_id]
+        return jsonify({"deleted": before - len(_AUTOMATIONS["jobs"])})
+
+
+@app.route("/api/automations/history", methods=["GET"])
+def api_automation_history():
+    with _AUTOMATION_LOCK:
+        return jsonify(_AUTOMATIONS["history"])
+
+
+@app.route("/api/automations/stats", methods=["GET"])
+def api_automation_stats():
+    with _AUTOMATION_LOCK:
+        return jsonify(_AUTOMATIONS["stats"])
+
+
+# ── API: Gateway ──────────────────────────────────────────────────
+_GATEWAY = {
+    "platforms": {
+        "telegram": {"connected": True, "bot_name": "@FreeAI_Bot", "messages_routed": 1247},
+        "discord": {"connected": False, "bot_name": None, "messages_routed": 0},
+        "slack": {"connected": False, "bot_name": None, "messages_routed": 0},
+        "whatsapp": {"connected": True, "bot_name": "FreeAI", "messages_routed": 834},
+        "signal": {"connected": False, "bot_name": None, "messages_routed": 0},
+        "cli": {"connected": True, "bot_name": None, "messages_routed": 5621},
+    },
+    "messages": [],
+    "voice_memos": [],
+    "stats": {"total_routed": 7702, "platforms_connected": 3, "avg_latency_ms": 45},
+}
+_GATEWAY_LOCK = threading.Lock()
+
+
+@app.route("/api/gateway", methods=["GET"])
+def api_gateway_get():
+    with _GATEWAY_LOCK:
+        return jsonify(_GATEWAY)
+
+
+@app.route("/api/gateway/platforms", methods=["GET"])
+def api_gateway_platforms():
+    with _GATEWAY_LOCK:
+        return jsonify(_GATEWAY["platforms"])
+
+
+@app.route("/api/gateway/platforms/<name>/connect", methods=["POST"])
+def api_gateway_connect(name):
+    with _GATEWAY_LOCK:
+        if name in _GATEWAY["platforms"]:
+            _GATEWAY["platforms"][name]["connected"] = True
+            return jsonify({"ok": True, "platform": name, "connected": True})
+    return jsonify({"error": "unknown platform"}), 404
+
+
+@app.route("/api/gateway/platforms/<name>/disconnect", methods=["POST"])
+def api_gateway_disconnect(name):
+    with _GATEWAY_LOCK:
+        if name in _GATEWAY["platforms"]:
+            _GATEWAY["platforms"][name]["connected"] = False
+            return jsonify({"ok": True, "platform": name, "connected": False})
+    return jsonify({"error": "unknown platform"}), 404
+
+
+@app.route("/api/gateway/messages", methods=["GET", "POST"])
+def api_gateway_messages():
+    with _GATEWAY_LOCK:
+        if request.method == "POST":
+            data = request.get_json(silent=True) or {}
+            msg = {
+                "id": str(uuid.uuid4())[:8],
+                "platform": data.get("platform", "cli"),
+                "direction": "outgoing",
+                "content": data.get("content", ""),
+                "timestamp": time.time(),
+            }
+            _GATEWAY["messages"].insert(0, msg)
+            if len(_GATEWAY["messages"]) > 100:
+                _GATEWAY["messages"] = _GATEWAY["messages"][:100]
+            return jsonify({"ok": True, "message": msg})
+        return jsonify(_GATEWAY["messages"][:20])
+
+
+@app.route("/api/gateway/voice/transcribe", methods=["POST"])
+def api_gateway_voice_transcribe():
+    data = request.get_json(silent=True) or {}
+    # Simulate transcription
+    text = data.get("transcript", "Voice memo transcribed successfully.")
+    memo = {
+        "id": str(uuid.uuid4())[:8],
+        "transcript": text,
+        "platform": data.get("platform", "cli"),
+        "timestamp": time.time(),
+    }
+    with _GATEWAY_LOCK:
+        _GATEWAY["voice_memos"].insert(0, memo)
+    return jsonify({"ok": True, "memo": memo})
+
+
+@app.route("/api/gateway/stats", methods=["GET"])
+def api_gateway_stats():
+    with _GATEWAY_LOCK:
+        return jsonify(_GATEWAY["stats"])
+
+
+@app.route("/api/gateway/transfer", methods=["POST"])
+def api_gateway_transfer():
+    data = request.get_json(silent=True) or {}
+    return jsonify({
+        "ok": True,
+        "transferred_from": data.get("from", "unknown"),
+        "transferred_to": data.get("to", "cli"),
+        "message_count": data.get("message_count", 1),
+    })
 
 
 if __name__ == "__main__":

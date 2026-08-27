@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Network Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .net-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; padding: 24px; overflow-y: auto; height: calc(100vh - 68px); }
+    .net-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; transition: border-color .15s, transform .15s; position: relative;
+    }
+    .net-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+    .net-card.dragging { opacity: 0.6; border-color: var(--accent-2); }
+    .net-card .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .net-card .card-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+    .net-card .card-icon { font-size: 18px; }
+    .net-card .card-actions { display: flex; gap: 4px; }
+    .card-actions button {
+      width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--muted); cursor: pointer;
+      display: grid; place-items: center; font-size: 13px; transition: all .15s;
+      position: relative;
+    }
+    .card-actions button:hover { border-color: var(--accent-2); color: var(--accent-2); }
+    .card-actions button .tooltip {
+      display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px 8px; font-size: 11px; white-space: nowrap; color: var(--text); z-index: 10;
+    }
+    .card-actions button:hover .tooltip { display: block; }
+    .card-body { display: flex; flex-direction: column; gap: 8px; }
+    .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+    .metric-label { font-size: 12px; color: var(--muted-2); }
+    .metric-value { font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .metric-value.up { color: var(--accent); }
+    .metric-value.down { color: var(--accent-2); }
+    .metric-value.warn { color: var(--warn); }
+    .metric-value.err { color: var(--danger); }
+    .metric-value.ok { color: var(--accent); }
+    .metric-value.off { color: var(--muted-2); }
+    .speed-chart { height: 60px; display: flex; align-items: flex-end; gap: 2px; margin-top: 8px; }
+    .speed-bar { flex: 1; border-radius: 2px 2px 0 0; min-width: 3px; transition: height .3s; }
+    .speed-bar.upload { background: linear-gradient(180deg, var(--accent), rgba(34,197,94,.3)); }
+    .speed-bar.download { background: linear-gradient(180deg, var(--accent-2), rgba(56,189,248,.3)); }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px;
+      border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .status-badge.on { background: rgba(34,197,94,.12); color: var(--accent); border: 1px solid rgba(34,197,94,.3); }
+    .status-badge.off { background: rgba(148,163,184,.08); color: var(--muted-2); border: 1px solid var(--border); }
+    .status-badge.error { background: rgba(239,68,68,.12); color: var(--danger); border: 1px solid rgba(239,68,68,.3); }
+    .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .status-badge.on .dot { background: var(--accent); animation: pulse 1.5s infinite; }
+    .status-badge.off .dot { background: var(--muted-2); }
+    .status-badge.error .dot { background: var(--danger); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .progress-bar { height: 4px; background: var(--bg-soft); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+    .progress-fill { height: 100%; border-radius: 2px; transition: width .5s; }
+    .progress-fill.green { background: var(--accent); }
+    .progress-fill.blue { background: var(--accent-2); }
+    .progress-fill.yellow { background: var(--warn); }
+    .progress-fill.red { background: var(--danger); }
+    .drag-handle { cursor: grab; color: var(--muted-2); font-size: 14px; user-select: none; }
+    .drag-handle:active { cursor: grabbing; }
+    .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--muted-2); }
+    /* Drag drop styles */
+    .net-grid.sortable-ghost { opacity: 0.4; }
+    .net-grid.sortable-chosen { opacity: 0.8; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Network</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> Model Training</a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Persistent Memory</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+        <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+        <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/network" class="nav-item active"><span class="nav-dot"></span> Network</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main" style="padding:0;overflow:hidden">
+      <header class="topbar">
+        <div>
+          <h1>Network Telemetry</h1>
+          <p>Real-time network status, VPN/proxy/Tor/DNSCrypt status, bandwidth monitoring</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill" id="net-overall">active</span>
+          <span id="timestamp" class="muted"></span>
+        </div>
+      </header>
+
+      <div class="net-grid" id="net-grid">
+        <!-- Cards populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WIKI_BASE = '/wiki-dashboard';
+    const NET_API = '/api/network';
+
+    // ── Card definitions ─────────────────────────────────────────────
+    const CARDS = [
+      {
+        id: 'speed',
+        title: 'Upload / Download Speed',
+        icon: '⬡',
+        wiki: WIKI_BASE + '#speed',
+        settings: { refreshRate: '1s', bandwidthLimit: 'unlimited' },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row">
+              <span class="metric-label">⬆ Upload</span>
+              <span class="metric-value up">${d.uploadSpeed}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill green" style="width:${d.uploadPct}%"></div></div>
+            <div class="metric-row">
+              <span class="metric-label">⬇ Download</span>
+              <span class="metric-value down">${d.downloadSpeed}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill blue" style="width:${d.downloadPct}%"></div></div>
+            <div class="speed-chart">
+              ${d.uploadHistory.map((v,i) => `<div class="speed-bar upload" style="height:${v*60}px" title="Upload ${v.toFixed(1)} Mbps"></div>`).join('')}
+              ${d.downloadHistory.map((v,i) => `<div class="speed-bar download" style="height:${v*60}px" title="Download ${v.toFixed(1)} Mbps"></div>`).join('')}
+            </div>
+          </div>`
+      },
+      {
+        id: 'bandwidth',
+        title: 'Bandwidth Usage',
+        icon: '◈',
+        wiki: WIKI_BASE + '#bandwidth',
+        settings: { period: '24h', cap: '1TB' },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">Upload (24h)</span><span class="metric-value up">${d.up24h}</span></div>
+            <div class="metric-row"><span class="metric-label">Download (24h)</span><span class="metric-value down">${d.down24h}</span></div>
+            <div class="metric-row"><span class="metric-label">Total (24h)</span><span class="metric-value">${d.total24h}</span></div>
+            <div class="metric-row"><span class="metric-label">Monthly</span><span class="metric-value">${d.monthly}</span></div>
+            <div class="progress-bar"><div class="progress-fill ${d.monthlyPct>80?'red':d.monthlyPct>50?'yellow':'green'}" style="width:${d.monthlyPct}%"></div></div>
+            <div class="metric-row"><span class="metric-label">Monthly cap</span><span class="metric-value">${d.monthlyPct}% used</span></div>
+          </div>`
+      },
+      {
+        id: 'vpn',
+        title: 'VPN Status',
+        icon: '🛡',
+        wiki: WIKI_BASE + '#vpn',
+        settings: { mode: 'auto', killSwitch: true },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row">
+              <span class="metric-label">Status</span>
+              <span class="status-badge ${d.active?'on':'off'}"><span class="dot"></span>${d.active?'Connected':'Disconnected'}</span>
+            </div>
+            <div class="metric-row"><span class="metric-label">Server</span><span class="metric-value">${d.server||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Protocol</span><span class="metric-value">${d.protocol||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Latency</span><span class="metric-value ${d.latency>200?'warn':'ok'}">${d.latency||0} ms</span></div>
+            <div class="metric-row"><span class="metric-label">Kill Switch</span><span class="metric-value ${d.killSwitch?'ok':'err'}">${d.killSwitch?'Enabled':'Disabled'}</span></div>
+            <div class="metric-row"><span class="metric-label">Uptime</span><span class="metric-value">${d.uptime||'—'}</span></div>
+          </div>`
+      },
+      {
+        id: 'proxy-chain',
+        title: 'Proxy / SOCKS5 Chain',
+        icon: '↕',
+        wiki: WIKI_BASE + '#proxy-chain',
+        settings: { chainMode: 'round-robin', maxHops: 3 },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">Active Proxies</span><span class="metric-value">${d.activeProxies||0}</span></div>
+            ${d.hops?d.hops.map((h,i)=>`<div class="metric-row"><span class="metric-label">Hop ${i+1}</span><span class="metric-value ${h.status==='ok'?'ok':'err'}">${h.addr} (${h.type})</span></div>`).join(''):'<div class="metric-row"><span class="metric-value off">No active hops</span></div>'}
+            <div class="metric-row"><span class="metric-label">Rotation</span><span class="metric-value">${d.rotation||'manual'}</span></div>
+            <div class="metric-row"><span class="metric-label">Last rotate</span><span class="metric-value">${d.lastRotate||'—'}</span></div>
+          </div>`
+      },
+      {
+        id: 'tor',
+        title: 'Tor / Onion',
+        icon: '🧅',
+        wiki: WIKI_BASE + '#tor',
+        settings: { guarded: true, bridges: 'obfs4' },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row">
+              <span class="metric-label">Status</span>
+              <span class="status-badge ${d.connected?'on':'off'}"><span class="dot"></span>${d.connected?'Connected':'Not connected'}</span>
+            </div>
+            <div class="metric-row"><span class="metric-label">Circuit</span><span class="metric-value">${d.circuit||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Guard Node</span><span class="metric-value">${d.guard||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Exit Node</span><span class="metric-value">${d.exit||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Traffic</span><span class="metric-value">${d.traffic||'0 B/s'}</span></div>
+            <div class="metric-row"><span class="metric-label">Bridges</span><span class="metric-value">${d.bridges||'none'}</span></div>
+          </div>`
+      },
+      {
+        id: 'dnscrypt',
+        title: 'DNSCrypt / DoH',
+        icon: '🔐',
+        wiki: WIKI_BASE + '#dns',
+        settings: { provider: 'cloudflare', doh: true },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">Resolver</span><span class="metric-value">${d.provider||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">DoH Enabled</span><span class="metric-value ${d.doh?'ok':'off'}">${d.doh?'Yes':'No'}</span></div>
+            <div class="metric-row"><span class="metric-label">DNSCrypt</span><span class="metric-value ${d.dnscrypt?'on':'off'}"><span class="dot"></span>${d.dnscrypt?'Active':'Inactive'}</span></div>
+            <div class="metric-row"><span class="metric-label">Latency</span><span class="metric-value ${d.latency<50?'ok':d.latency<150?'warn':'err'}">${d.latency||0} ms</span></div>
+            <div class="metric-row"><span class="metric-label">Cache</span><span class="metric-value">${d.cache||0} entries</span></div>
+            <div class="metric-row"><span class="metric-label">Blocked queries</span><span class="metric-value err">${d.blocked||0}</span></div>
+          </div>`
+      },
+      {
+        id: 'ipv4',
+        title: 'IPv4 Address',
+        icon: '🌐',
+        wiki: WIKI_BASE + '#ip',
+        settings: { mode: 'dual-stack' },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">Local IPv4</span><span class="metric-value ok">${d.local||'192.168.1.x'}</span></div>
+            <div class="metric-row"><span class="metric-label">Public IPv4</span><span class="metric-value ${d.public?'ok':'err'}">${d.public||'checking...'}</span></div>
+            <div class="metric-row"><span class="metric-label">Type</span><span class="metric-value">${d.type||'residential'}</span></div>
+            <div class="metric-row"><span class="metric-label">ISP</span><span class="metric-value">${d.isp||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Geo</span><span class="metric-value">${d.geo||'—'}</span></div>
+          </div>`
+      },
+      {
+        id: 'ipv6',
+        title: 'IPv6 Address',
+        icon: '🌐',
+        wiki: WIKI_BASE + '#ip',
+        settings: { enabled: true },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">Local IPv6</span><span class="metric-value ${d.local?'ok':'off'}">${d.local||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Public IPv6</span><span class="metric-value ${d.public?'ok':'off'}">${d.public||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Prefix</span><span class="metric-value">${d.prefix||'/64'}</span></div>
+            <div class="metric-row"><span class="metric-label">Status</span><span class="metric-value ${d.enabled?'ok':'off'}">${d.enabled?'Enabled':'Disabled'}</span></div>
+          </div>`
+      },
+      {
+        id: 'network-interfaces',
+        title: 'Network Interfaces',
+        icon: '⬡',
+        wiki: WIKI_BASE + '#network',
+        settings: { monitor: true },
+        render: (d) => `
+          <div class="card-body">
+            ${(d.interfaces||[]).map(iface=>`
+              <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+                <div class="metric-row"><span class="metric-label" style="font-weight:600;color:var(--text)">${iface.name}</span>
+                  <span class="status-badge ${iface.up?'on':'off'}"><span class="dot"></span>${iface.up?'Up':'Down'}</span>
+                </div>
+                <div class="metric-row"><span class="metric-label">IPv4</span><span class="metric-value">${iface.ipv4||'—'}</span></div>
+                <div class="metric-row"><span class="metric-label">IPv6</span><span class="metric-value">${iface.ipv6||'—'}</span></div>
+                <div class="metric-row"><span class="metric-label">MAC</span><span class="metric-value">${iface.mac||'—'}</span></div>
+              </div>
+            `).join('')}
+          </div>`
+      },
+      {
+        id: 'connections',
+        title: 'Active Connections',
+        icon: '◉',
+        wiki: WIKI_BASE + '#network',
+        settings: { maxDisplay: 20 },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">Total</span><span class="metric-value">${d.total||0}</span></div>
+            <div class="metric-row"><span class="metric-label">TCP</span><span class="metric-value ok">${d.tcp||0}</span></div>
+            <div class="metric-row"><span class="metric-label">UDP</span><span class="metric-value down">${d.udp||0}</span></div>
+            <div class="metric-row"><span class="metric-label">TLS/SSL</span><span class="metric-value">${d.tls||0}</span></div>
+            <div class="metric-row"><span class="metric-label">Listened</span><span class="metric-value warn">${d.listening||0}</span></div>
+          </div>`
+      },
+      {
+        id: 'firewall',
+        title: 'Firewall Status',
+        icon: '⚠',
+        wiki: WIKI_BASE + '#security',
+        settings: { mode: 'active', logging: true },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row">
+              <span class="metric-label">Status</span>
+              <span class="status-badge ${d.active?'on':'error'}"><span class="dot"></span>${d.active?'Active':'Inactive'}</span>
+            </div>
+            <div class="metric-row"><span class="metric-label">Rules</span><span class="metric-value">${d.rules||0}</span></div>
+            <div class="metric-row"><span class="metric-label">Blocked (24h)</span><span class="metric-value err">${d.blocked||0}</span></div>
+            <div class="metric-row"><span class="metric-label">Allowed (24h)</span><span class="metric-value ok">${d.allowed||0}</span></div>
+            <div class="metric-row"><span class="metric-label">Logging</span><span class="metric-value ${d.logging?'ok':'off'}">${d.logging?'Enabled':'Disabled'}</span></div>
+          </div>`
+      },
+      {
+        id: 'latency',
+        title: 'Latency / Ping',
+        icon: '◷',
+        wiki: WIKI_BASE + '#network',
+        settings: { targets: '8.8.8.8,1.1.1.1' },
+        render: (d) => `
+          <div class="card-body">
+            ${(d.targets||[]).map(t=>`
+              <div class="metric-row">
+                <span class="metric-label">${t.name}</span>
+                <span class="metric-value ${t.latency<50?'ok':t.latency<150?'warn':'err'}">${t.latency} ms</span>
+              </div>
+            `).join('')}
+            <div class="metric-row"><span class="metric-label">Jitter</span><span class="metric-value ${d.jitter<10?'ok':d.jitter<30?'warn':'err'}">${d.jitter||0} ms</span></div>
+            <div class="metric-row"><span class="metric-label">Packet Loss</span><span class="metric-value ${d.loss===0?'ok':'err'}">${d.loss||0}%</span></div>
+          </div>`
+      },
+      {
+        id: 'dns-over-https',
+        title: 'DoH / DoT',
+        icon: '🔒',
+        wiki: WIKI_BASE + '#dns',
+        settings: { provider: 'cloudflare', doh: true },
+        render: (d) => `
+          <div class="card-body">
+            <div class="metric-row"><span class="metric-label">DoH</span><span class="metric-value ${d.doh?'on':'off'}"><span class="dot"></span>${d.doh?'Active':'Inactive'}</span></div>
+            <div class="metric-row"><span class="metric-label">DoT</span><span class="metric-value ${d.dot?'on':'off'}"><span class="dot"></span>${d.dot?'Active':'Inactive'}</span></div>
+            <div class="metric-row"><span class="metric-label">Provider</span><span class="metric-value">${d.provider||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Endpoint</span><span class="metric-value" style="font-size:11px">${d.endpoint||'—'}</span></div>
+            <div class="metric-row"><span class="metric-label">Latency</span><span class="metric-value ${d.latency<50?'ok':d.latency<150?'warn':'err'}">${d.latency||0} ms</span></div>
+          </div>`
+      },
+    ];
+
+    // ── Simulated telemetry data ──────────────────────────────────────
+    let telemetry = {};
+    let speedHistory = { upload: [], download: [] };
+
+    function generateTelemetry() {
+      return {
+        speed: {
+          uploadSpeed: (Math.random() * 50 + 5).toFixed(1) + ' Mbps',
+          downloadSpeed: (Math.random() * 200 + 50).toFixed(1) + ' Mbps',
+          uploadPct: Math.min(100, Math.floor(Math.random() * 60 + 10)),
+          downloadPct: Math.min(100, Math.floor(Math.random() * 70 + 15)),
+          uploadHistory: speedHistory.upload.slice(-20),
+          downloadHistory: speedHistory.download.slice(-20),
+        },
+        bandwidth: {
+          up24h: (Math.random()*5+1).toFixed(2) + ' GB',
+          down24h: (Math.random()*20+5).toFixed(2) + ' GB',
+          total24h: (Math.random()*25+6).toFixed(2) + ' GB',
+          monthly: (Math.random()*80+10).toFixed(1) + ' GB',
+          monthlyPct: Math.floor(Math.random()*40+20),
+        },
+        vpn: {
+          active: Math.random() > 0.3,
+          server: ['US-East (NYC)', 'EU-West (Frankfurt)', 'Asia (Tokyo)'][Math.floor(Math.random()*3)],
+          protocol: 'WireGuard',
+          latency: Math.floor(Math.random()*80+20),
+          killSwitch: true,
+          uptime: '2d 14h 32m',
+        },
+        proxyChain: {
+          activeProxies: Math.floor(Math.random()*3)+1,
+          hops: [
+            { addr: '192.168.1.100:1080', type: 'socks5', status: 'ok' },
+            { addr: '10.0.0.50:3128', type: 'http', status: 'ok' },
+          ],
+          rotation: 'round-robin',
+          lastRotate: '2m ago',
+        },
+        tor: {
+          connected: Math.random() > 0.5,
+          circuit: ['US', 'DE', 'NL'][Math.floor(Math.random()*3)] + ' → ' + ['BR', 'JP', 'SG'][Math.floor(Math.random()*3)],
+          guard: 'guard-node-01.torproject.net',
+          exit: 'exit-node-03.torproject.net',
+          traffic: (Math.random()*100).toFixed(0) + ' KB/s',
+          bridges: 'obfs4',
+        },
+        dnscrypt: {
+          provider: 'Cloudflare',
+          doh: true,
+          dnscrypt: true,
+          latency: Math.floor(Math.random()*40+10),
+          cache: Math.floor(Math.random()*500+100),
+          blocked: Math.floor(Math.random()*20),
+        },
+        ipv4: {
+          local: '192.168.1.' + Math.floor(Math.random()*254+1),
+          public: ['72.134.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255),
+                   '198.51.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255)][Math.floor(Math.random()*2)],
+          type: Math.random() > 0.5 ? 'residential' : 'datacenter',
+          isp: 'Comcast / Spectrum',
+          geo: 'US, Virginia',
+        },
+        ipv6: {
+          local: 'fe80::1a2b:3c4d:5e6f:7890',
+          public: '2001:db8:' + Math.random().toString(16).slice(2,6) + '::1',
+          prefix: '/64',
+          enabled: true,
+        },
+        networkInterfaces: {
+          interfaces: [
+            { name: 'eth0', up: true, ipv4: '192.168.1.100', ipv6: 'fe80::1', mac: 'AA:BB:CC:DD:EE:FF' },
+            { name: 'wlan0', up: Math.random()>0.3, ipv4: Math.random()>0.3?'192.168.1.'+Math.floor(Math.random()*254):'—', ipv6: '—', mac: '11:22:33:44:55:66' },
+            { name: 'tun0', up: telemetry.vpn?.active, ipv4: '10.8.0.6', ipv6: '—', mac: '—' },
+            { name: 'vmnet1', up: false, ipv4: '172.16.0.1', ipv6: '—', mac: '00:50:56:C0:00:01' },
+          ]
+        },
+        connections: {
+          total: Math.floor(Math.random()*200+50),
+          tcp: Math.floor(Math.random()*150+30),
+          udp: Math.floor(Math.random()*50+10),
+          tls: Math.floor(Math.random()*30+5),
+          listening: Math.floor(Math.random()*20+5),
+        },
+        firewall: {
+          active: true,
+          rules: Math.floor(Math.random()*50+20),
+          blocked: Math.floor(Math.random()*500+50),
+          allowed: Math.floor(Math.random()*5000+1000),
+          logging: true,
+        },
+        latency: {
+          targets: [
+            { name: '8.8.8.8 (Google)', latency: Math.floor(Math.random()*30+10) },
+            { name: '1.1.1.1 (Cloudflare)', latency: Math.floor(Math.random()*25+8) },
+            { name: 'localhost', latency: Math.floor(Math.random()*3+1) },
+          ],
+          jitter: Math.floor(Math.random()*15+2),
+          loss: Math.random() > 0.9 ? (Math.random()*2).toFixed(1) : 0,
+        },
+        doh: {
+          doh: true,
+          dot: false,
+          provider: 'Cloudflare',
+          endpoint: 'https://1.1.1.1/dns-query',
+          latency: Math.floor(Math.random()*40+10),
+        },
+      };
+    }
+
+    // ── Render ─────────────────────────────────────────────────────────
+    function renderCards() {
+      telemetry = generateTelemetry();
+      // Update speed history
+      speedHistory.upload.push(parseFloat(telemetry.speed.uploadSpeed) / 100);
+      speedHistory.download.push(parseFloat(telemetry.speed.downloadSpeed) / 100);
+      if (speedHistory.upload.length > 20) { speedHistory.upload.shift(); speedHistory.download.shift(); }
+
+      const grid = document.getElementById('net-grid');
+      grid.innerHTML = CARDS.map(card => {
+        const d = telemetry[card.id === 'proxy-chain' ? 'proxyChain' : card.id === 'network-interfaces' ? 'networkInterfaces' : card.id === 'dns-over-https' ? 'doh' : card.id];
+        return `
+          <div class="net-card" draggable="true" data-id="${card.id}">
+            <div class="card-head">
+              <div class="card-title">
+                <span class="drag-handle" title="Drag to reorder">⠿</span>
+                <span class="card-icon">${card.icon}</span>
+                ${card.title}
+              </div>
+              <div class="card-actions">
+                <button onclick="navigateWiki('${card.wiki}')" title="Wiki help">?
+                  <span class="tooltip">Open in Wiki</span>
+                </button>
+                <button onclick="showSettings('${card.id}')" title="Settings">⚙
+                  <span class="tooltip">${card.id} settings</span>
+                </button>
+                <button onclick="refreshCard('${card.id}')" title="Refresh">↻
+                  <span class="tooltip">Refresh</span>
+                </button>
+              </div>
+            </div>
+            ${card.render(d)}
+          </div>`;
+      }).join('');
+
+      initDragDrop();
+      document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+    }
+
+    function navigateWiki(anchor) {
+      window.location.href = anchor;
+    }
+
+    function showSettings(cardId) {
+      const card = CARDS.find(c => c.id === cardId);
+      alert(`Settings for ${card?.title || cardId}\n\nConfigure via:\n- config/network.json\n- Dashboard → Settings\n\n${JSON.stringify(card?.settings || {}, null, 2)}`);
+    }
+
+    function refreshCard(cardId) {
+      telemetry = generateTelemetry();
+      renderCards();
+    }
+
+    // ── Drag and Drop ──────────────────────────────────────────────────
+    function initDragDrop() {
+      const grid = document.getElementById('net-grid');
+      let dragged = null;
+
+      grid.querySelectorAll('.net-card').forEach(card => {
+        card.addEventListener('dragstart', e => {
+          dragged = card;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          dragged = null;
+        });
+        card.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (dragged && dragged !== card) {
+            const rect = card.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            if (e.clientY < midY) {
+              grid.insertBefore(dragged, card);
+            } else {
+              grid.insertBefore(dragged, card.nextSibling);
+            }
+          }
+        });
+      });
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────
+    renderCards();
+    setInterval(renderCards, 5000);
+  </script>
+</body>
+</html>
