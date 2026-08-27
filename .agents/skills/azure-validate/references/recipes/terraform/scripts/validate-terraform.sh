@@ -10,6 +10,13 @@
 # Steps: terraform present, az present, authenticated, init, fmt -check, validate,
 #        plan, state list, Go-style {{ .Env.* }} template-variable scan.
 #
+# SECURITY WARNING: This script executes Terraform commands against the specified
+# infrastructure directory. Terraform configuration can execute arbitrary code through
+# external data sources, provider plugins, and provisioners. Only run this script
+# against infrastructure from trusted sources. When validating untrusted infrastructure
+# (e.g., pull requests from external contributors), set TRUST_UNTRUSTED_INFRA=1 and
+# ensure the execution environment is properly sandboxed with minimal privileges.
+#
 # Usage:
 #   ./validate-terraform.sh [infra-dir] [subscription-id]
 #
@@ -17,10 +24,16 @@
 #   infra-dir         Path to the Terraform infra directory (default: ./infra).
 #   subscription-id   Optional subscription to select before checks.
 #
+# Environment Variables:
+#   TRUST_UNTRUSTED_INFRA  Set to "1" to explicitly acknowledge validation of
+#                          potentially untrusted infrastructure (required for
+#                          non-default paths).
+#
 # Examples:
 #   ./validate-terraform.sh                       # Validate ./infra
 #   ./validate-terraform.sh ./infra               # Validate an explicit directory
 #   ./validate-terraform.sh ./infra 00000000-0000-0000-0000-000000000000
+#   TRUST_UNTRUSTED_INFRA=1 ./validate-terraform.sh ./external-pr/infra
 #
 # Exit code: 0 when every non-skipped step passes, 1 when any step fails.
 
@@ -28,6 +41,51 @@ set -uo pipefail
 
 INFRA_DIR="${1:-./infra}"
 SUBSCRIPTION_ID="${2:-}"
+
+# --- Security: Path validation and trust enforcement -------------------------
+# Normalize the path to prevent directory traversal attacks
+INFRA_DIR="${INFRA_DIR%/}"
+
+# Security check: Require explicit trust acknowledgment for non-default paths
+# This prevents accidental execution of untrusted Terraform configuration
+case "$INFRA_DIR" in
+    "./infra"|"infra")
+        IS_DEFAULT_PATH=true
+        ;;
+    *)
+        IS_DEFAULT_PATH=false
+        ;;
+esac
+
+if [ "$IS_DEFAULT_PATH" != true ] && [ "${TRUST_UNTRUSTED_INFRA:-0}" != "1" ]; then
+    echo "ERROR: Security check failed" >&2
+    echo "" >&2
+    echo "You are attempting to validate infrastructure from a non-default path:" >&2
+    echo "  $INFRA_DIR" >&2
+    echo "" >&2
+    echo "SECURITY WARNING:" >&2
+    echo "  Terraform configuration can execute arbitrary code through external data" >&2
+    echo "  sources, provider plugins, and provisioners. This code will inherit the" >&2
+    echo "  privileges, credentials, and network access of this validation script." >&2
+    echo "" >&2
+    echo "If you trust this infrastructure source, re-run with TRUST_UNTRUSTED_INFRA=1:" >&2
+    echo "  TRUST_UNTRUSTED_INFRA=1 ./validate-terraform.sh '$INFRA_DIR'" >&2
+    echo "" >&2
+    echo "For untrusted infrastructure (e.g., external pull requests), ensure:" >&2
+    echo "  1. This script runs in a sandboxed environment with minimal privileges" >&2
+    echo "  2. No production credentials are available to the execution environment" >&2
+    echo "  3. Network access is restricted to prevent data exfiltration" >&2
+    echo "  4. The execution environment is ephemeral and discarded after validation" >&2
+    echo "" >&2
+    exit 1
+fi
+
+# Additional security warning for untrusted infrastructure
+if [ "${TRUST_UNTRUSTED_INFRA:-0}" = "1" ]; then
+    echo "WARNING: Validating potentially untrusted infrastructure" >&2
+    echo "Ensure this environment is properly sandboxed with minimal privileges." >&2
+    echo "" >&2
+fi
 
 # --- result tracking ---------------------------------------------------------
 STEP_NAMES=()
@@ -90,16 +148,49 @@ run_tf() {
         record "$name" "SKIP" "terraform unavailable or infra dir '$INFRA_DIR' not found"
         return
     fi
+    
+    # Security: Sanitize environment to reduce credential exposure
+    # Remove sensitive Azure and cloud provider environment variables that could
+    # be exfiltrated by malicious Terraform configuration
+    local saved_ARM_CLIENT_SECRET="${ARM_CLIENT_SECRET:-}"
+    local saved_ARM_CLIENT_CERTIFICATE_PASSWORD="${ARM_CLIENT_CERTIFICATE_PASSWORD:-}"
+    local saved_AZURE_CLIENT_SECRET="${AZURE_CLIENT_SECRET:-}"
+    local saved_AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-}"
+    local saved_AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN:-}"
+    local saved_GOOGLE_CREDENTIALS="${GOOGLE_CREDENTIALS:-}"
+    local saved_GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-}"
+    
+    unset ARM_CLIENT_SECRET
+    unset ARM_CLIENT_CERTIFICATE_PASSWORD
+    unset AZURE_CLIENT_SECRET
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+    unset GOOGLE_CREDENTIALS
+    unset GOOGLE_APPLICATION_CREDENTIALS
+    
     # Stream output to a temp file so large output (e.g. terraform plan) is not
     # held in memory; only read it back when the command fails.
     local tmp
     tmp=$(mktemp)
+    local exit_code=0
     if (cd "$INFRA_DIR" && terraform "$@") >"$tmp" 2>&1; then
         record "$name" "PASS"
     else
+        exit_code=$?
         record "$name" "FAIL" "$(cat "$tmp")"
     fi
     rm -f "$tmp"
+    
+    # Restore sanitized environment variables
+    [ -n "$saved_ARM_CLIENT_SECRET" ] && export ARM_CLIENT_SECRET="$saved_ARM_CLIENT_SECRET"
+    [ -n "$saved_ARM_CLIENT_CERTIFICATE_PASSWORD" ] && export ARM_CLIENT_CERTIFICATE_PASSWORD="$saved_ARM_CLIENT_CERTIFICATE_PASSWORD"
+    [ -n "$saved_AZURE_CLIENT_SECRET" ] && export AZURE_CLIENT_SECRET="$saved_AZURE_CLIENT_SECRET"
+    [ -n "$saved_AWS_SECRET_ACCESS_KEY" ] && export AWS_SECRET_ACCESS_KEY="$saved_AWS_SECRET_ACCESS_KEY"
+    [ -n "$saved_AWS_SESSION_TOKEN" ] && export AWS_SESSION_TOKEN="$saved_AWS_SESSION_TOKEN"
+    [ -n "$saved_GOOGLE_CREDENTIALS" ] && export GOOGLE_CREDENTIALS="$saved_GOOGLE_CREDENTIALS"
+    [ -n "$saved_GOOGLE_APPLICATION_CREDENTIALS" ] && export GOOGLE_APPLICATION_CREDENTIALS="$saved_GOOGLE_APPLICATION_CREDENTIALS"
+    
+    return $exit_code
 }
 
 # --- 4. Initialize -----------------------------------------------------------
