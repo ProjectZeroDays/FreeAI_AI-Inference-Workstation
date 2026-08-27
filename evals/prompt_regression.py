@@ -6,6 +6,6 @@ def run():
     print(f"Checking {len(tasks)} golden tasks...")
     # In CI, call router with MOCK and assert no regression vs snapshots
     for t in tasks:
-        print(f" - {t.get(''id'')}: {t.get(''task'')} (mock)")
+        print(f" - {t.get('id')}: {t.get('task')} (mock)")
     print("Regression check OK (mock mode)")
 if __name__=="__main__": run()

