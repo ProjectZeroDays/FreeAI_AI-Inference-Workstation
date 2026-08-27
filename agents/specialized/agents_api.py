@@ -241,8 +241,7 @@ Then synthesize a consensus recommendation with reasoning.""",
 
         "librarian": f"""You are the LIBRARIAN. Create or update documentation.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Scope: {req.prompt}
+{_ctx}Scope: {req.prompt}
 
 Produce clear, well-structured documentation. Include:
 - Overview and purpose
@@ -253,8 +252,7 @@ Produce clear, well-structured documentation. Include:
 
         "designer": f"""You are the DESIGNER. Create UI/UX specifications.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Spec: {req.prompt}
+{_ctx}Spec: {req.prompt}
 
 Deliver:
 - Design system tokens (colors, typography, spacing)
@@ -265,8 +263,7 @@ Deliver:
 
         "fixer": f"""You are the FIXER. Diagnose and repair bugs.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Code: {req.prompt}
+{_ctx}Code: {req.prompt}
 
 Provide:
 - Root cause analysis
@@ -309,6 +306,8 @@ Provide:
 def explore_codebase(req: ExplorerRequest):
     model = AGENT_MODELS["explorer"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     import glob
     structure = []
@@ -325,7 +324,7 @@ def explore_codebase(req: ExplorerRequest):
 Path: {req.path}
 Files found: {len(structure)}
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
+{_ctx}
 
 Produce a comprehensive analysis:
 1. Architecture overview (layers, patterns)
@@ -343,6 +342,8 @@ Produce a comprehensive analysis:
 def oracle_review(req: OracleRequest):
     model = AGENT_MODELS["oracle"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     context = ""
     if req.context_files:
@@ -362,7 +363,7 @@ def oracle_review(req: OracleRequest):
 
     prompt = f"""You are the ORACLE providing deep technical analysis.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
+{_ctx}
 Target: {req.target}
 Question: {req.question}
 {('Context files:\n' + context + '\n') if context else ''}
@@ -382,11 +383,12 @@ Deliver a thorough analysis covering:
 def council_decide(req: CouncilRequest):
     model = AGENT_MODELS["council"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     prompt = f"""You are the COUNCIL. Simulate a panel of experts debating this question.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Question: {req.question}
+{_ctx}Question: {req.question}
 Options: {json.dumps(req.options)}
 {('Evaluation criteria: ' + req.criteria + '\n') if req.criteria else ''}
 
@@ -401,11 +403,12 @@ Then provide a consensus recommendation with weighted scoring."""
 def librarian_docs(req: LibrarianRequest):
     model = AGENT_MODELS["librarian"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     prompt = f"""You are the LIBRARIAN creating professional documentation.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Scope: {req.scope}
+{_ctx}Scope: {req.scope}
 Format: {req.format}
 
 Produce comprehensive documentation:
@@ -424,11 +427,12 @@ Produce comprehensive documentation:
 def designer_spec(req: DesignerRequest):
     model = AGENT_MODELS["designer"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     prompt = f"""You are the DESIGNER creating UI/UX specifications.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Spec: {req.spec}
+{_ctx}Spec: {req.spec}
 Style: {req.style}
 {('Constraints: ' + req.constraints + '\n') if req.constraints else ''}
 
@@ -448,11 +452,12 @@ Deliver a complete design spec:
 def fixer_diagnose(req: FixerRequest):
     model = AGENT_MODELS["fixer"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Context from previous sessions:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     prompt = f"""You are the FIXER diagnosing and repairing bugs.
 
-{'Context from previous sessions:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Language: {req.language}
+{_ctx}Language: {req.language}
 
 Code:
 ```{req.language}
@@ -479,11 +484,12 @@ def orchestrate(req: AgentRequest):
     """Multi-agent orchestration: decompose and delegate."""
     model = AGENT_MODELS["orchestrator"]
     mem_ctx = _recall_memory(req.session_id) if req.session_id else ""
+    _nl = "\n"
+    _ctx = f"{_nl}Previous session context:{_nl}{mem_ctx}{_nl}" if mem_ctx else ""
 
     prompt = f"""You are the MASTER ORCHESTRATOR coordinating specialized agents.
 
-{'Previous session context:\n' + mem_ctx + '\n' if mem_ctx else ''}
-Task: {req.prompt}
+{_ctx}Task: {req.prompt}
 
 Decompose this task and route sub-tasks to appropriate agents:
 - orchestrator: coordination and planning
