@@ -25,3 +25,5 @@ age.key
 config/secrets.enc.yaml
 
 config/runtime-state.json
+config/browser.json
+config/activity_log.jsonl
