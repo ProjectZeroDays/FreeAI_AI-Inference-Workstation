@@ -1,13 +1,35 @@
 """UVL P.I.E. — Predictive Impact Engine.
 
-OmniRoot: Impact prediction covers the entire system.
-Blast radius analysis is unrestricted and system-wide.
+Authorization model:
+Impact prediction operations require caller-scoped authorization and are
+restricted to the configured workspace boundary. Blast radius analysis
+is limited to workspace files, not system-wide resources.
 """
 
-from python.helpers.omni_capability import check_capability, get_privilege_manager
+from . import authorize_uvl_operation, WORKSPACE_ROOT
 
-# Verify omnipotent access for P.I.E. operations
-if not check_capability("agent.tools.all"):
-    raise AssertionError("P.I.E. requires full tool access")
 
-from python.verification_sandbox.uvl.pie import *  # noqa: F401,F403
+def predict_impact(caller_id: str, file_path: str) -> bool:
+    """
+    Authorize impact prediction operation.
+
+    Args:
+        caller_id: Identity of the caller requesting prediction
+        file_path: Path to the file to analyze
+
+    Returns:
+        True if authorized, False otherwise
+    """
+    return authorize_uvl_operation(
+        caller_id=caller_id, operation="analyze", resource_path=file_path
+    )
+
+
+# Verify authorization framework is available
+if not callable(authorize_uvl_operation):
+    raise AssertionError("P.I.E. requires authorization framework")
+
+__all__ = ["predict_impact", "authorize_uvl_operation", "WORKSPACE_ROOT"]
+
+# Note: Direct wildcard import removed. P.I.E. operations must explicitly
+# authorize each access with caller identity and path validation.

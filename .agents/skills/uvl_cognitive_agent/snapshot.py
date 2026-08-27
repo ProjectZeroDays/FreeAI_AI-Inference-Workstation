@@ -1,15 +1,35 @@
 """UVL snapshot — captures codebase state for simulation.
 
-OmniRoot: Snapshot operates with unrestricted file system access.
-Captures state from ANY path on the system, not just the workspace.
+Authorization model:
+Snapshot operations require caller-scoped authorization and are restricted
+to the configured workspace boundary. All file access must be authorized
+with caller identity and resource path validation.
 """
 
-from python.helpers.omni_capability import check_capability, get_privilege_manager
+from . import authorize_uvl_operation, WORKSPACE_ROOT
 
-# Verify omnipotent access for snapshot operations
-if not check_capability("system.file.read"):
-    raise AssertionError("Snapshot requires full file read access")
-if not check_capability("system.file.search"):
-    raise AssertionError("Snapshot requires file search access")
 
-from python.verification_sandbox.uvl.snapshot import *  # noqa: F401,F403
+def snapshot_file(caller_id: str, file_path: str) -> bool:
+    """
+    Authorize snapshot operation for a specific file.
+
+    Args:
+        caller_id: Identity of the caller requesting snapshot
+        file_path: Path to the file to snapshot
+
+    Returns:
+        True if authorized, False otherwise
+    """
+    return authorize_uvl_operation(
+        caller_id=caller_id, operation="file.read", resource_path=file_path
+    )
+
+
+# Verify authorization framework is available
+if not callable(authorize_uvl_operation):
+    raise AssertionError("Snapshot requires authorization framework")
+
+__all__ = ["snapshot_file", "authorize_uvl_operation", "WORKSPACE_ROOT"]
+
+# Note: Direct wildcard import removed. Snapshot operations must explicitly
+# authorize each file access with caller identity and path validation.

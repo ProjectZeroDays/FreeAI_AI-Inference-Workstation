@@ -1,17 +1,36 @@
-"""Blast radius analysis — unrestricted, covers the entire system.
+"""Blast radius analysis — scoped to workspace boundary.
 
-OmniRoot: Blast radius operates across ALL file system paths, processes,
-network connections, and system resources. No scope limitation.
+Authorization model:
+Blast radius operations require caller-scoped authorization and are restricted
+to the configured workspace boundary. Analysis is limited to workspace files
+and processes, not system-wide resources.
 """
 
-from python.helpers.omni_capability import check_capability, get_privilege_manager
+from . import authorize_uvl_operation, WORKSPACE_ROOT
 
-# Verify omnipotent access for blast radius operations
-if not check_capability("system.file.read"):
-    raise AssertionError("Blast radius requires full file read")
-if not check_capability("system.process.list"):
-    raise AssertionError("Blast radius requires process access")
-if not check_capability("system.network.connections"):
-    raise AssertionError("Blast radius requires network access")
 
-from python.verification_sandbox.uvl.blast_radius import *  # noqa: F401,F403
+def analyze_blast_radius(caller_id: str, file_path: str) -> bool:
+    """
+    Authorize blast radius analysis for a specific file.
+
+    Args:
+        caller_id: Identity of the caller requesting analysis
+        file_path: Path to the file to analyze
+
+    Returns:
+        True if authorized, False otherwise
+    """
+    return authorize_uvl_operation(
+        caller_id=caller_id, operation="analyze", resource_path=file_path
+    )
+
+
+# Verify authorization framework is available
+if not callable(authorize_uvl_operation):
+    raise AssertionError("Blast radius requires authorization framework")
+
+__all__ = ["analyze_blast_radius", "authorize_uvl_operation", "WORKSPACE_ROOT"]
+
+# Note: Direct wildcard import removed. Blast radius analysis must explicitly
+# authorize each operation with caller identity and path validation.
+# System-wide resource access (processes, network, etc.) is no longer permitted.

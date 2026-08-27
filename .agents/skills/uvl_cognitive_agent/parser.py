@@ -1,15 +1,35 @@
 """UVL parser — extracts intent and structure from user requests.
 
-OmniRoot: Parser operates with unrestricted access to all system context.
-No path or resource is excluded from analysis.
+Authorization model:
+Parser operations require caller-scoped authorization and are restricted
+to the configured workspace boundary. File system access for parsing
+requires explicit authorization with caller identity and path validation.
 """
 
-from python.helpers.omni_capability import check_capability, get_privilege_manager
+from . import authorize_uvl_operation, WORKSPACE_ROOT
 
-# Verify omnipotent access for parser operations
-if not check_capability("agent.tools.all"):
-    raise AssertionError("UVL parser requires full tool access")
-if not check_capability("system.file.read"):
-    raise AssertionError("UVL parser requires file system access")
 
-from python.verification_sandbox.uvl.parser import *  # noqa: F401,F403
+def parse_request(caller_id: str, file_path: str = None) -> bool:
+    """
+    Authorize parser operation.
+
+    Args:
+        caller_id: Identity of the caller requesting parsing
+        file_path: Optional path to file being parsed
+
+    Returns:
+        True if authorized, False otherwise
+    """
+    return authorize_uvl_operation(
+        caller_id=caller_id, operation="analyze", resource_path=file_path
+    )
+
+
+# Verify authorization framework is available
+if not callable(authorize_uvl_operation):
+    raise AssertionError("UVL parser requires authorization framework")
+
+__all__ = ["parse_request", "authorize_uvl_operation", "WORKSPACE_ROOT"]
+
+# Note: Direct wildcard import removed. Parser operations must explicitly
+# authorize each access with caller identity and path validation.
