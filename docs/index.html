@@ -146,10 +146,10 @@
 
     /* ── Theme Toggle — clean moon icon, no square boundary ── */
     .theme-toggle {
-      width: 36px; height: 36px; border-radius: var(--radius-pill);
+      width: 40px; height: 40px; border-radius: var(--radius-md);
       display: grid; place-items: center;
       color: var(--text-muted); transition: background .15s, color .15s;
-      cursor: pointer; border: none; background: transparent;
+      cursor: pointer; border: 1px solid var(--border);
     }
     .theme-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
     .theme-toggle svg { width: 18px; height: 18px; }
@@ -489,12 +489,12 @@
     .pillar p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
 
     /* ── Integration Marquee Grid ── */
-    .integration-marquee-wrap { overflow: hidden; padding: 8px 0; }
+    .integration-marquee-wrap { overflow: hidden; padding: 4px 0; }
     .integration-marquee { display: flex; gap: 24px; animation: int-marquee 45s linear infinite; white-space: nowrap; }
     .integration-marquee-item {
       display: flex; align-items: center; gap: 10px;
       background: var(--bg-elev-1); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 14px 20px;
+      border-radius: var(--radius-lg); padding: 8px 14px;
       flex-shrink: 0; min-width: 160px;
       transition: border-color .15s, transform .15s, box-shadow .15s;
       text-decoration: none;
@@ -503,9 +503,9 @@
       border-color: var(--primary); transform: translateY(-2px);
       box-shadow: var(--shadow-md); text-decoration: none;
     }
-    .integration-marquee-item .im-icon { font-size: 22px; flex-shrink: 0; }
-    .integration-marquee-item .im-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-    .integration-marquee-item .im-desc { font-size: 11px; color: var(--text-muted); }
+    .integration-marquee-item .im-icon { width: 20px; height: 20px; flex-shrink: 0; }
+    .integration-marquee-item .im-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .integration-marquee-item .im-desc { font-size: 10px; color: var(--text-muted); }
     @keyframes int-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ── Steps ── */
@@ -603,8 +603,8 @@
     .lang-dropdown { position: relative; }
     .lang-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      height: 36px; padding: 0 10px;
-      border-radius: var(--radius-pill);
+      height: 40px; padding: 0 10px;
+      border-radius: var(--radius-md);
       font-size: var(--fs-small); font-weight: 500;
       color: var(--text-tertiary);
       background: var(--bg-elev-1);
@@ -686,7 +686,6 @@
         <a href="deploy.html" class="nav-link">Deploy</a>
         <a href="#install" class="nav-link">Install</a>
         <a href="#faq" class="nav-link">FAQ</a>
-        <a href="mailto:contact@projectzerodays.dev" class="nav-link">Contact</a>
       </div>
       <div class="nav-actions">
         <!-- Language dropdown -->
@@ -1316,37 +1315,37 @@ docker compose --profile allinone up -d
 
     // ── Integration marquee (moving icons + names) ──
     const integrations = [
-      { icon: '🧠', name: 'Memory',    desc: 'Cross-session recall' },
-      { icon: '🔍', name: 'Code Intel', desc: 'AST-based search' },
-      { icon: '🌐', name: 'Browser',   desc: 'Headless automation' },
-      { icon: '🔎', name: 'Web Search', desc: 'Google, Brave, DDG' },
-      { icon: '🤖', name: 'LLM Access', desc: 'OpenAI, Anthropic' },
-      { icon: '📧', name: 'Email',     desc: 'IMAP/SMTP via Himalaya' },
-      { icon: '📊', name: 'Airtable',  desc: 'CRUD, filters' },
-      { icon: '💬', name: 'Telegram',  desc: 'Bot API + groups' },
-      { icon: '🐙', name: 'GitHub',    desc: 'PRs, issues, actions' },
-      { icon: '📝', name: 'Notion',    desc: 'Pages, databases' },
-      { icon: '☁️', name: 'Azure',     desc: 'AI Search, AKS' },
-      { icon: '🛡️', name: 'Aikido',    desc: 'Security scanning' },
-      { icon: '🐳', name: 'Docker',    desc: 'Container runtime' },
-      { icon: '⎈',  name: 'Kubernetes', desc: 'Cluster orchestration' },
-      { icon: '🐧', name: 'Ubuntu',    desc: 'Linux base OS' },
-      { icon: '☣️', name: 'Kali',      desc: 'Penetration testing' },
-      { icon: '❄️', name: 'NixOS',     desc: 'Functional pkg mgmt' },
-      { icon: '🔐', name: 'Kodachi',   desc: 'Forensic privacy OS' },
-      { icon: '🧀', name: 'Salad',     desc: 'GPU cloud rental' },
-      { icon: '🚀', name: 'Vast.ai',   desc: 'GPU instances' },
-      { icon: '⚡', name: 'RunPod',    desc: 'ML deployments' },
-      { icon: '🖥',  name: 'Hostinger', desc: 'Web hosting' },
-      { icon: '🔵', name: 'DigitalOcean', desc: 'Cloud infra' },
-      { icon: '💾', name: 'NVIDIA',    desc: 'CUDA GPUs' },
+      { name: 'Memory',    desc: 'Cross-session recall', color: '#5c8bff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>' },
+      { name: 'Code Intel', desc: 'AST-based search', color: '#7c5cf0', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none"/></svg>' },
+      { name: 'Browser',   desc: 'Headless automation', color: '#0ea5e9', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="3" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4"/></svg>' },
+      { name: 'Web Search', desc: 'Google, Brave, DDG', color: '#f59e0b', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none"/></svg>' },
+      { name: 'LLM Access', desc: 'OpenAI, Anthropic', color: '#10a37f', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
+      { name: 'Email',     desc: 'IMAP/SMTP', color: '#ef4444', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg>' },
+      { name: 'Airtable',  desc: 'CRUD, filters', color: '#7c5cf0', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h4v4H7V7zm6 0h4v4h-4V7zm-6 6h4v4H7v-4zm6 0h4v4h-4v-4z"/></svg>' },
+      { name: 'Telegram',  desc: 'Bot API', color: '#0088cc', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>' },
+      { name: 'GitHub',    desc: 'PRs, issues', color: '#fff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>' },
+      { name: 'Notion',    desc: 'Pages, databases', color: '#fff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v16H4zM13 4h7v16h-7z"/></svg>' },
+      { name: 'Azure',     desc: 'AI Search, AKS', color: '#0078d4', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 12l9-8 9 8-9 8-9-8z"/></svg>' },
+      { name: 'Aikido',    desc: 'Security scans', color: '#ef4444', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>' },
+      { name: 'Docker',    desc: 'Containers', color: '#2496ed', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="10" width="5" height="5" rx="1"/><rect x="8" y="10" width="5" height="5" rx="1"/><rect x="14" y="10" width="5" height="5" rx="1"/><rect x="5" y="5" width="5" height="5" rx="1"/><rect x="11" y="5" width="5" height="5" rx="1"/><path d="M2 18h20v2H2z"/></svg>' },
+      { name: 'Kubernetes', desc: 'Orchestration', color: '#326ce5', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z"/></svg>' },
+      { name: 'Ubuntu',    desc: 'Linux OS', color: '#e95420', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
+      { name: 'Kali',      desc: 'Pentesting', color: '#557c9c', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>' },
+      { name: 'NixOS',     desc: 'Functional OS', color: '#5277c3', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,20 2,20" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
+      { name: 'Kodachi',   desc: 'Privacy OS', color: '#00ff88', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
+      { name: 'Salad',     desc: 'GPU Cloud', color: '#6366f1', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 1 8 0" stroke="#fff" stroke-width="1.5" fill="none"/></svg>' },
+      { name: 'Vast.ai',   desc: 'GPU Instances', color: '#f97316', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-5 5v5l5 5 5-5V7l-5-5z"/></svg>' },
+      { name: 'RunPod',    desc: 'ML Deployments', color: '#fbbf24', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
+      { name: 'Hostinger', desc: 'Web Hosting', color: '#673de6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>' },
+      { name: 'DigitalOcean', desc: 'Cloud Infra', color: '#0080ff', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
+      { name: 'NVIDIA',    desc: 'CUDA GPUs', color: '#76b900', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
     ];
     const intMarquee = document.getElementById('integrationMarquee');
     const allInts = [...integrations, ...integrations]; // double for seamless loop
     allInts.forEach(item => {
       const a = document.createElement('a');
       a.href = '#'; a.className = 'integration-marquee-item';
-      a.innerHTML = `<span class="im-icon">${item.icon}</span><div><div class="im-name">${item.name}</div><div class="im-desc">${item.desc}</div></div>`;
+      a.innerHTML = `<svg class="im-icon" viewBox="0 0 24 24" fill="${item.color}">${item.svg}</svg><div><div class="im-name">${item.name}</div><div class="im-desc">${item.desc}</div></div>`;
       intMarquee.appendChild(a);
     });
 
