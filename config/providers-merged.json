@@ -1,0 +1,205 @@
+{
+  "_comment": "Merged provider configs from mimocode/jcode/opencode/openclaw/hermes",
+  "merged_at": "2026-08-27T06:00:00Z",
+  "sources": ["mimocode/jcode-providers.json", "mimocode/opencode-providers.json", "mimocode/openclaw-providers.json", "mimocode/hermes-providers.json", "config/providers.json"],
+  "providers": {
+    "openai": {
+      "type": "primary",
+      "base_url": "https://api.openai.com/v1",
+      "models": ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"],
+      "auth": "env:OPENAI_API_KEY"
+    },
+    "anthropic": {
+      "type": "primary",
+      "base_url": "https://api.anthropic.com/v1",
+      "models": ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku", "claude-2.1"],
+      "auth": "env:ANTHROPIC_API_KEY"
+    },
+    "google": {
+      "type": "primary",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "models": ["gemini-pro", "gemini-pro-vision", "gemini-1.5-pro"],
+      "auth": "env:GOOGLE_API_KEY"
+    },
+    "deepseek": {
+      "type": "primary",
+      "base_url": "https://api.deepseek.com/v1",
+      "models": ["deepseek-chat", "deepseek-coder"],
+      "auth": "env:DEEPSEEK_API_KEY"
+    },
+    "perplexity": {
+      "type": "primary",
+      "base_url": "https://api.perplexity.ai",
+      "models": ["sonar-pro", "sonar"],
+      "auth": "env:PERPLEXITY_API_KEY"
+    },
+    "openrouter": {
+      "type": "aggregator",
+      "base_url": "https://openrouter.ai/api/v1",
+      "models": ["auto"],
+      "auth": "env:OPENROUTER_API_KEY"
+    },
+    "agentrouter": {
+      "type": "internal",
+      "base_url": "http://localhost:8010/v1",
+      "models": ["agentrouter"],
+      "auth": "none"
+    },
+    "omniroute": {
+      "type": "internal",
+      "base_url": "http://localhost:8011/v1",
+      "models": ["omniroute"],
+      "auth": "none"
+    },
+    "venice": {
+      "type": "primary",
+      "base_url": "https://api.venice.ai/api/v1",
+      "models": ["llama-3.1-405b", "llama-3.1-70b"],
+      "auth": "env:VENICE_API_KEY"
+    },
+    "agames_ai": {
+      "type": "specialized",
+      "base_url": "https://api.agames.ai/v1",
+      "models": ["agames-model"],
+      "auth": "env:AGAMES_API_KEY"
+    },
+    "nexustrade": {
+      "type": "specialized",
+      "base_url": "https://api.nexustrade.io/v1",
+      "models": ["nexustrade-model"],
+      "auth": "env:NEXUSTRADE_API_KEY"
+    },
+    "shodan": {
+      "type": "tool",
+      "base_url": "https://api.shodan.io",
+      "models": [],
+      "auth": "env:SHODAN_API_KEY"
+    },
+    "wakatime": {
+      "type": "tool",
+      "base_url": "https://wakatime.com/api",
+      "models": [],
+      "auth": "env:WAKATIME_API_KEY"
+    },
+    "tabnine": {
+      "type": "tool",
+      "base_url": "https://api.tabnine.com",
+      "models": ["tabnine"],
+      "auth": "env:TABNINE_API_KEY"
+    },
+    "langchain": {
+      "type": "tool",
+      "base_url": "http://localhost:8200",
+      "models": ["langchain-agent"],
+      "auth": "none"
+    },
+    "gemini": {
+      "type": "primary",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "models": ["gemini-2.0-flash", "gemini-2.0-flash-thinking"],
+      "auth": "env:GEMINI_API_KEY"
+    },
+    "huggingface": {
+      "type": "primary",
+      "base_url": "https://huggingface.co/inference/api",
+      "models": ["mistral-large", "zephyr"],
+      "auth": "env:HUGGINGFACE_API_KEY"
+    },
+    "agnes": {
+      "type": "internal",
+      "base_url": "http://localhost:8030/v1",
+      "models": ["agnes-flash", "agnes-pro"],
+      "auth": "none"
+    },
+    "zen": {
+      "type": "primary",
+      "base_url": "https://api.zen.com/v1",
+      "models": ["zen-model"],
+      "auth": "env:ZEN_API_KEY"
+    },
+    "groq": {
+      "type": "primary",
+      "base_url": "https://api.groq.com/openai/v1",
+      "models": ["llama-3.1-70b", "llama-3.1-8b"],
+      "auth": "env:GROQ_API_KEY"
+    },
+    "mistral": {
+      "type": "primary",
+      "base_url": "https://api.mistral.ai/v1",
+      "models": ["mistral-large", "mistral-medium"],
+      "auth": "env:MISTRAL_API_KEY"
+    },
+    "together": {
+      "type": "primary",
+      "base_url": "https://api.together.xyz/v1",
+      "models": ["together-model"],
+      "auth": "env:TOGETHER_API_KEY"
+    },
+    "fireworks": {
+      "type": "primary",
+      "base_url": "https://api.fireworks.ai/inference/v1",
+      "models": ["fireworks-model"],
+      "auth": "env:FIREWORKS_API_KEY"
+    },
+    "xai": {
+      "type": "primary",
+      "base_url": "https://api.x.ai/v1",
+      "models": ["grok-beta"],
+      "auth": "env:XAI_API_KEY"
+    },
+    "sambanova": {
+      "type": "primary",
+      "base_url": "https://api.sambanova.ai/v1",
+      "models": ["samba-model"],
+      "auth": "env:SAMBANOVA_API_KEY"
+    },
+    "cohere": {
+      "type": "primary",
+      "base_url": "https://api.cohere.ai/v1",
+      "models": ["command-r", "command-r-plus"],
+      "auth": "env:COHERE_API_KEY"
+    },
+    "novita": {
+      "type": "primary",
+      "base_url": "https://api.novita.ai/v3/openai",
+      "models": ["novita-model"],
+      "auth": "env:NOVITA_API_KEY"
+    },
+    "deepinfra": {
+      "type": "primary",
+      "base_url": "https://api.deepinfra.com/v1/openai",
+      "models": ["deepinfra-model"],
+      "auth": "env:DEEPINFRA_API_KEY"
+    },
+    "hyperbolic": {
+      "type": "primary",
+      "base_url": "https://api.hyperbolic.xyz/v1",
+      "models": ["hyperbolic-model"],
+      "auth": "env:HYPERBOLIC_API_KEY"
+    },
+    "ollama": {
+      "type": "local",
+      "base_url": "http://localhost:11434/v1",
+      "models": ["llama3", "mistral", "codellama"],
+      "auth": "none"
+    },
+    "lmstudio": {
+      "type": "local",
+      "base_url": "http://localhost:1234/v1",
+      "models": ["lmstudio-model"],
+      "auth": "none"
+    },
+    "freetoken": {
+      "type": "internal",
+      "base_url": "http://localhost:8050/v1",
+      "models": ["freetoken-model"],
+      "auth": "none"
+    }
+  },
+  "defaults": {
+    "primary_provider": "openai",
+    "fallback_chain": ["openai", "anthropic", "openrouter"],
+    "timeout_seconds": 30,
+    "max_retries": 3
+  }
+}

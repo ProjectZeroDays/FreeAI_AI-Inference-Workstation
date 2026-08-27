@@ -1,6 +1,6 @@
-﻿# FreeAI â€” Unified AI Workstation
+﻿# FreeAI — Unified AI Workstation
 
-> **The AI workstation that thinks ahead.** Local models, autonomous agents, full SDLC automation â€” one self-hosted stack.
+> **The AI workstation that thinks ahead.** Local models, autonomous agents, full SDLC automation — one self-hosted stack.
 
 <div align="center">
 
@@ -11,7 +11,7 @@
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/pkgs/container/freeai)
 
-**Docs:** [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation) Â· **Dashboard:** `http://localhost:8030`
+**Docs:** [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation) · **Dashboard:** `http://localhost:8030`
 
 </div>
 
@@ -27,52 +27,52 @@ curl -fsSL https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI-Inference
 docker compose --profile allinone up -d
 
 # Or Live ISO (no install needed)
-# Download from Releases â†’ boot â†’ Try FreeAI Ubuntu/Kodachi/Kali/NixOS
+# Download from Releases → boot → Try FreeAI Ubuntu/Kodachi/Kali/NixOS
 ```
 
-> **No GPU?** Set `MOCK_LLM=1` â€” the full stack runs on CPU for development and testing.
+> **No GPU?** Set `MOCK_LLM=1` — the full stack runs on CPU for development and testing.
 
 ---
 
 ## What's Inside
 
-FreeAI is a **production-grade, self-hosted AI inference workstation** that unifies everything you need to run capable coding models 24/7 on your own hardware â€” with agents that actually ship work.
+FreeAI is a **production-grade, self-hosted AI inference workstation** that unifies everything you need to run capable coding models 24/7 on your own hardware — with agents that actually ship work.
 
 | Pillar | What It Does |
 |---|---|
 | **Model Router** (:8010) | Classifies each prompt, routes to the best healthy backend, falls back automatically, caches repeats, blocks repetition loops |
-| **Autonomous Agents** (:8020 / :8050) | Plan â†’ code â†’ verify with real compilers/tests â†’ fix â†’ review â†’ document â†’ package. 7-phase SDLC with session memory |
+| **Autonomous Agents** (:8020 / :8050) | Plan → code → verify with real compilers/tests → fix → review → document → package. 7-phase SDLC with session memory |
 | **Workflow Engine** (:8040) | Visual pipeline designer with validation, templates, audit logs, export/import |
 | **Security** | Aikido integration, pentest agents, auto-patching, dependency management (21+ providers, 33 security skills) |
 | **Builder Agents** | Generate fullstack apps, websites, CRMs, chatbots, sales pipelines from natural language specs |
-| **Communication Stack** | Email (SendGrid, Gmail, Proton), SMS (Twilio), Telegram, WhatsApp, Signal â€” all agents can send |
+| **Communication Stack** | Email (SendGrid, Gmail, Proton), SMS (Twilio), Telegram, WhatsApp, Signal — all agents can send |
 | **MCP Registry** | 40+ pre-configured servers for memory, code intelligence, browser automation, search, LLM access |
-| **GPU Inference** | llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) â€” local GGUF serving with 21+ hosted API bridges |
+| **GPU Inference** | llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) — local GGUF serving with 21+ hosted API bridges |
 | **Desktop** | Full XFCE + TigerVNC remote desktop, accessible from anywhere via noVNC (:6080) |
-| **Live ISO** | Bootable FreeAIOS â€” Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes |
+| **Live ISO** | Bootable FreeAIOS — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes |
 
 ---
 
 ## Architecture
 
 ```
-                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â”‚              FreeAI Dashboard (:8030)               â”‚
-                    â”‚        Flask + Chart.js + SSE + Authentication      â”‚
-                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-                    â”‚  Router  â”‚ Agents   â”‚ Workflow â”‚   Autonomous       â”‚
-                    â”‚  :8010   â”‚ :8020    â”‚  :8040   â”‚      :8050         â”‚
-                    â”‚          â”‚          â”‚          â”‚                    â”‚
-                    â”‚ classify â”‚ planâ†’codeâ”‚ chain    â”‚ 7-phase SDLC       â”‚
-                    â”‚ fallback â”‚ verify  â”‚ validate â”‚  real compilation  â”‚
-                    â”‚ cache    â”‚ fix     â”‚ template â”‚  auto-package      â”‚
-                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-                    â”‚              MCP Registry (40+ servers)              â”‚
-                    â”‚    Aikido Â· SendGrid Â· Twilio Â· Telegram Â· WhatsApp  â”‚
-                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-                    â”‚            GPU Inference Layer                       â”‚
-                    â”‚    llama.cpp (:9001) Â· vLLM (:9002) Â· FreeToken (:9100)â”‚
-                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                    ┌─────────────────────────────────────────────────────────┐
+                    │              FreeAI Dashboard (:8030)               │
+                    │        Flask + Chart.js + SSE + Authentication      │
+                    ├─────────────────────────┬─────────────────┬───────────┤
+                    │  Router  │ Agents   │ Workflow │   Autonomous       │
+                    │  :8010   │ :8020    │  :8040   │      :8050         │
+                    │          │          │          │                    │
+                    │ classify │ plan→code│ chain    │ 7-phase SDLC       │
+                    │ fallback │ verify  │ validate │  real compilation  │
+                    │ cache    │ fix     │ template │  auto-package      │
+                    ├─────────────────────────┴─────────────────┴───────────┤
+                    │              MCP Registry (40+ servers)              │
+                    │    Aikido · SendGrid · Twilio · Telegram · WhatsApp  │
+                    ├───────────────────────────────────────────────────────┤
+                    │            GPU Inference Layer                       │
+                    │    llama.cpp (:9001) · vLLM (:9002) · FreeToken (:9100)│
+                    └───────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -92,36 +92,36 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
 ## Key Features
 
 ### Model Router
-- **21+ providers** â€” OpenAI, Anthropic, DeepSeek, Gemini, OpenRouter, Venice, Agnes AI, and more
-- **Task-aware classification** â€” confidence-scored routing per prompt type
-- **Automatic fallback chains** â€” if the primary fails, tries the next in line
-- **Degenerate output detection** â€” catches repetition loops before they waste tokens
-- **LRU response cache** â€” `X-Cache: HIT/MISS` headers, per-model TTL
+- **21+ providers** — OpenAI, Anthropic, DeepSeek, Gemini, OpenRouter, Venice, Agnes AI, and more
+- **Task-aware classification** — confidence-scored routing per prompt type
+- **Automatic fallback chains** — if the primary fails, tries the next in line
+- **Degenerate output detection** — catches repetition loops before they waste tokens
+- **LRU response cache** — `X-Cache: HIT/MISS` headers, per-model TTL
 
 ### Autonomous SDLC Agents
 ```bash
-# One-line spec â†’ complete shipped project
+# One-line spec → complete shipped project
 python freeai.py auto-start "Build a FastAPI notes service with auth and tests" --watch
 ```
-- **7 phases**: plan â†’ code â†’ verify (real compilers/tests) â†’ fix â†’ review â†’ document â†’ package
-- **Real verification**: `compileall`, `pytest`â†’`unittest`, `node --check` inside sandboxed workspaces
+- **7 phases**: plan → code → verify (real compilers/tests) → fix → review → document → package
+- **Real verification**: `compileall`, `pytest`→`unittest`, `node --check` inside sandboxed workspaces
 - **Artifact download**: tarball with full project, ready to deploy
 
 ### Builder Agents
 Generate complete projects from natural language:
-- **Fullstack apps** â€” FastAPI+React, Django+Next.js, Laravel+Vue
-- **Websites** â€” landing pages, portfolios, SaaS sites
-- **CRMs** â€” contacts, deals, tasks, email integration
-- **Chatbots** â€” FAQ bots, ticketing, knowledge-base powered
-- **Sales pipelines** â€” lead capture, CRM sync, email sequences
-- **Marketing agents** â€” multi-channel campaigns with A/B testing
+- **Fullstack apps** — FastAPI+React, Django+Next.js, Laravel+Vue
+- **Websites** — landing pages, portfolios, SaaS sites
+- **CRMs** — contacts, deals, tasks, email integration
+- **Chatbots** — FAQ bots, ticketing, knowledge-base powered
+- **Sales pipelines** — lead capture, CRM sync, email sequences
+- **Marketing agents** — multi-channel campaigns with A/B testing
 
 ### Security
-- **Aikido integration** â€” scan code, test apps, auto-patch from the dashboard
-- **Pentest agents** â€” Semgrep, Bandit, Safety, Trivy (SAST/DAST)
-- **Auto-patch** â€” generate and apply safe fixes for critical/high vulnerabilities
-- **33 security skills** â€” 14 Red Team, 12 Blue Team, 7 Purple Team
-- **API key rotation** â€” up to 10 keys per provider, auto-pause on 429
+- **Aikido integration** — scan code, test apps, auto-patch from the dashboard
+- **Pentest agents** — Semgrep, Bandit, Safety, Trivy (SAST/DAST)
+- **Auto-patch** — generate and apply safe fixes for critical/high vulnerabilities
+- **33 security skills** — 14 Red Team, 12 Blue Team, 7 Purple Team
+- **API key rotation** — up to 10 keys per provider, auto-pause on 429
 
 ### Communication Stack
 All agents can send notifications through any channel:
@@ -157,7 +157,7 @@ All agents can send notifications through any channel:
 | **RAM** | 8 GB | 32 GB+ |
 | **Storage** | 20 GB | 100 GB+ (models + workspaces) |
 | **OS** | Ubuntu 22.04+ | Ubuntu 24.04 LTS |
-| **CUDA** | â€” | CUDA 12.x |
+| **CUDA** | — | CUDA 12.x |
 
 ---
 
@@ -173,9 +173,9 @@ All agents can send notifications through any channel:
 
 ## License
 
-MIT License â€” see [LICENSE](LICENSE) for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
-Built with â¤ï¸ by the FreeAI team.
+Built with ❤️‍🔥 by the FreeAI team.
 
 
 > **Full docs:** https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/  
@@ -245,7 +245,7 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | FreeAI Ubuntu/Kodachi/Kali/NixOS (Desktop Env) (Version) Live OS GRUB Boot Menu |
 |---|
 | ![Boot menu](docs/screenshots/boot-menu.png) |
-| Rendered preview of the ISO's boot menu (GRUB) â€” `live/build-live.sh` â€” Install / Try Live / Rescue |
+| Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
 
 | freeai-cli | freeai-cli providers + live test |
 |---|---|
@@ -288,7 +288,7 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | FreeToken Desktop Console |
 |---|
 | ![FreeToken Desktop](docs/screenshots/freetoken-desktop.png) |
-| Console UI â€” edge runtime on RTX 30/40/50 |
+| Console UI — edge runtime on RTX 30/40/50 |
 
 > Dashboard shots use sample telemetry; on a live box the same panels stream real nvidia-smi data, router metrics, and idle-window state. FreeToken desktop image from [FlashML-org/FreeToken](https://github.com/FlashML-org/FreeToken) (Apache-2.0).
 
@@ -317,22 +317,22 @@ The stack answers one question: *how do I run capable coding models on my own GP
 
 | Feature | **FreeAI** | LM Studio | OpenWebUI | Ollama | vLLM | LocalAI | TextGen WebUI |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Multi-backend (llama.cpp + vLLM + FreeToken MoE 290B+) | âœ” | âœ– | âœ– | âœ– | âœ” | âœ– | âœ– |
-| Router w/ fallback chains + degenerate retry + cache | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| Autonomous SDLC (planâ†’codeâ†’testâ†’fixâ†’docâ†’package) | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| Workflow engine + designer | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| Full desktop OS (XFCE+VNC/noVNC) + Live ISO | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| GPU optimizer (eco/balanced/perf) + watchdogs | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| 300+ providers (OpenAI/Anthropic/Google/OpenRouter/venice/agnes/zen/HF) | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| Red/Blue/Purple autonomous teaming | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
-| One-command bare-metal/cloud/K8s/ISO deploy | âœ” | âœ– | âœ– | âœ– | âœ– | âœ– | âœ– |
+| Multi-backend (llama.cpp + vLLM + FreeToken MoE 290B+) | ✓ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ |
+| Router w/ fallback chains + degenerate retry + cache | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Autonomous SDLC (plan→code→test→fix→doc→package) | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Workflow engine + designer | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Full desktop OS (XFCE+VNC/noVNC) + Live ISO | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| GPU optimizer (eco/balanced/perf) + watchdogs | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| 300+ providers (OpenAI/Anthropic/Google/OpenRouter/venice/agnes/zen/HF) | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Red/Blue/Purple autonomous teaming | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| One-command bare-metal/cloud/K8s/ISO deploy | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
 
 *FreeAI is the only stack that ships all of the above in one repo.*
 
 ### Use Cases
 
-- **One-line spec â†’ shippable project:** `freeai.py auto-start "Build a FastAPI notes service with tests" --watch`
-- **Multi-model fallback:** Local 9B Q6_K â†’ cloud GPT-4o â†’ Venice uncensored â†’ FreeToken 290B MoE, auto
+- **One-line spec → shippable project:** `freeai.py auto-start "Build a FastAPI notes service with tests" --watch`
+- **Multi-model fallback:** Local 9B Q6_K → cloud GPT-4o → Venice uncensored → FreeToken 290B MoE, auto
 - **24/7 workstation:** Full remote XFCE desktop via noVNC (6080) + dashboard (8030) from anywhere (TailScale/Cloudflare)
 - **Enterprise RAG:** Qdrant + ingest watcher + top-K cache for codebase/docs automation
 - **Autonomous teaming:** Red attacks, Blue hardens, Purple validates and bridges to JIRA-ready tickets
@@ -342,9 +342,9 @@ The stack answers one question: *how do I run capable coding models on my own GP
 New to self-hosting? Start here:
 
 ```bash
-# 1. One model, one chat â€” no router complexity
+# 1. One model, one chat — no router complexity
 docker compose up -d llama dashboard
-# Open http://localhost:8030 â†’ Chat with freeai/qwen3.6-12b-heretic
+# Open http://localhost:8030 → Chat with freeai/qwen3.6-12b-heretic
 
 # 2. When ready, enable the full stack:
 docker compose --profile rag --profile desktop up -d
@@ -603,7 +603,7 @@ bash scripts/backup.sh restore backups/backup-XXXX.tar.gz
 WORKSPACE_RETENTION_DAYS=14 bash scripts/cleanup.sh
 ```
 
-Backups cover config/, registry/, manifest/, VERSION and every workspaces/*/â€‹_run.json run manifest.
+Backups cover config/, registry/, manifest/, VERSION and every workspaces/*/_run.json run manifest.
 
 ### 9.10 External AI Providers
 
@@ -729,7 +729,7 @@ Roster (registry/registry.json):
 | Key | GGUF | Role |
 |---|---|---|
 | `qwen3.6-12b` | Qwen3.6 12B IQ Ultra Heretic Uncensored Thinking (GGUF) | Primary coder - architecture, full projects, CI/CD |
-| `claude-code-9b` | CodeClawd - Qwen3.5 9B Claude Code (empero-ai) | Code specialist - SFT on Claude Code + Codex agent traces, `<think>` + `<tool_call>` |
+| `claude-code-9b` | CodeClawd - Qwen3.5 9B Claude Code (empero-ai) | Code specialist - SFT on Claude Code + Codex agent traces, `<tool_call>` |
 | `qwythos-v2` | Qwythos 9B v2 (empero-ai) | Reasoning primary - Claude-trace CoT, **looping fixed (FTPO)**, 1M context, vision, MTP |
 | `qwythos-9b` | Qwythos 9B Claude Mythos 5 1M (empero-ai) | Reasoning (v1 fallback) - 1M context, vision, function calling |
 | `qwable-9b` | Qwable 9B Claude Fable 5 (empero-ai) | General assistant - Claude Fable 5 + GPT-5.5 terminal-agent distill, multimodal |
@@ -870,8 +870,8 @@ rag_config:
   level_3_64k: {chunk_size: 1536, chunk_overlap: 192, top_k: 12}
 ```
 
-> Model ids match `registry/registry.json` (Â§12). `moe-13b` is the
-> L3.1 2Ã—8B MoE â€” Mixtral-class routing, 2 experts active per token.
+> Model ids match `registry/registry.json` (§12). `moe-13b` is the
+> L3.1 2×8B MoE — Mixtral-class routing, 2 experts active per token.
 > Apply a level by: settings panel (`LLAMA_CTX` + `max_concurrent_runs`)
 > + `LLAMA_EXTRA_ARGS` flags above + registry role weights; the 1M-ctx
 > Qwythos models ignore these ceilings (raise `LLAMA_CTX` directly).
@@ -958,18 +958,18 @@ License: MIT - see [LICENSE](LICENSE).
 
 ## 23. Acknowledgments
 
-FreeAI (the router, UI, workflow engine, and autonomous SDLC layer in this repo) is an original project â€” it is not a fork. It stands on these upstream projects:
+FreeAI (the router, UI, workflow engine, and autonomous SDLC layer in this repo) is an original project — it is not a fork. It stands on these upstream projects:
 
 | Project | Role here |
 |---|---|
-| [llama.cpp](https://github.com/ggml-org/llama.cpp) | GGUF inference engine â€” CUDA build, `llama-server` behind the router |
+| [llama.cpp](https://github.com/ggml-org/llama.cpp) | GGUF inference engine — CUDA build, `llama-server` behind the router |
 | [vLLM](https://github.com/vllm-project/vllm) | High-throughput coexisting backend (:9002, prefix caching) |
 | [Qdrant](https://github.com/qdrant/qdrant) | Vector DB for the RAG sidecar (`--profile rag`) |
 | [LoLLMs](https://github.com/ParisNeo/lollms) | Optional chat frontend (`--profile lollms`) |
-| [FreeToken](https://github.com/FlashML-org/FreeToken) | Edge MoE serving engine (`--profile freetoken`) â€” Apache-2.0 |
+| [FreeToken](https://github.com/FlashML-org/FreeToken) | Edge MoE serving engine (`--profile freetoken`) — Apache-2.0 |
 | [TigerVNC](https://github.com/TigerVNC/tigervnc) / [noVNC](https://github.com/novnc/noVNC) | Desktop remote access layer |
 | [OpenCode](https://github.com/sst/opencode) | Coding-client integration target (:3000) |
 
-Model credits: [empero-ai](https://huggingface.co/empero-ai) (CodeClawd, Qwythos, Qwable distills), [mradermacher](https://huggingface.co/mradermacher) (imatrix quants), Qwen team (base models). Quantization sanity depends on their upload hygiene â€” thank them.
+Model credits: [empero-ai](https://huggingface.co/empero-ai) (CodeClawd, Qwythos, Qwable distills), [mradermacher](https://huggingface.co/mradermacher) (imatrix quants), Qwen team (base models). Quantization sanity depends on their upload hygiene — thank them.
 
 The OLED dashboard/UI styling takes visual inspiration from FreeToken's console aesthetic; all code in this repo is original MIT-licensed work.

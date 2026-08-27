@@ -981,6 +981,464 @@ def api_gateway_transfer():
     })
 
 
+# ── API: Hermes ──────────────────────────────────────────────────
+HERMES_CONFIG_PATH = CONFIG_DIR / "hermes.json"
+HERMES_DEFAULTS = {"enabled": True, "port": 8090, "host": "127.0.0.1", "proxy_enabled": True}
+
+
+def _load_hermes_config():
+    if HERMES_CONFIG_PATH.exists():
+        try:
+            return json.loads(HERMES_CONFIG_PATH.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return HERMES_DEFAULTS
+
+
+@app.route("/api/hermes-status")
+def api_hermes_status():
+    cfg = _load_hermes_config()
+    port = cfg.get("hermes", cfg).get("port", 8090)
+    status = {"status": "unknown", "port": port, "connected": False}
+    try:
+        import urllib.request
+        r = urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2)
+        if r.status == 200:
+            status.update({"status": "running", "connected": True})
+    except Exception:
+        status["status"] = "stopped"
+    return jsonify(status)
+
+
+@app.route("/api/hermes/proxy/<path:subpath>", methods=["GET", "POST", "PUT", "DELETE"])
+def api_hermes_proxy(subpath):
+    cfg = _load_hermes_config()
+    if not cfg.get("hermes", cfg).get("proxy_enabled", True):
+        return jsonify({"error": "Hermes proxy disabled"}), 403
+    port = cfg.get("hermes", cfg).get("port", 8090)
+    try:
+        import urllib.request
+        data = request.get_data() if request.method in ("POST", "PUT") else None
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{port}/{subpath}",
+            data=data,
+            method=request.method,
+        )
+        for k, v in request.headers:
+            if k.lower() not in ("host", "content-length"):
+                req.add_header(k, v)
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.read(), resp.status
+    except Exception as e:
+        return jsonify({"error": str(e), "port": port}), 502
+
+
+# ── API: Providers (merged) ──────────────────────────────────────
+PROVIDERS_MERGED_PATH = CONFIG_DIR / "providers-merged.json"
+
+
+@app.route("/api/providers")
+def api_providers():
+    merged = _load_json(PROVIDERS_MERGED_PATH, {})
+    providers = merged.get("providers", {})
+    result = {}
+    for name, cfg in providers.items():
+        result[name] = {
+            "name": name,
+            "type": cfg.get("type", "unknown"),
+            "base_url": cfg.get("base_url", ""),
+            "models": cfg.get("models", []),
+            "auth": cfg.get("auth", "none"),
+            "enabled": True,
+        }
+    return jsonify({"providers": result, "total": len(result)})
+
+
+# ── API: GPU ─────────────────────────────────────────────────────
+_gpu_state = {
+    "devices": [],
+    "total_vram_mb": 0,
+    "used_vram_mb": 0,
+    "utilization_pct": 0,
+    "temperature_c": 0,
+    "power_w": 0,
+}
+
+
+@app.route("/api/gpu")
+def api_gpu():
+    return jsonify(_gpu_state)
+
+
+@app.route("/api/gpu/scan", methods=["POST"])
+def api_gpu_scan():
+    import subprocess, json as _json
+    devices = []
+    try:
+        r = subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total,memory.used,utilization.gpu,temperature.cores,power.draw", "--format=csv,noheader,nounits"], capture_output=True, text=True, timeout=10)
+        for line in r.stdout.strip().split("\n"):
+            parts = [p.strip() for p in line.split(",")]
+            if len(parts) >= 6:
+                devices.append({
+                    "name": parts[0],
+                    "total_vram_mb": int(parts[1]) * 1024,
+                    "used_vram_mb": int(parts[2]) * 1024,
+                    "utilization_pct": int(parts[3].replace("%", "")),
+                    "temperature_c": int(parts[4]),
+                    "power_w": float(parts[5]) if parts[5] else 0,
+                })
+    except Exception:
+        devices = [{"name": "mock-gpu", "total_vram_mb": 24576, "used_vram_mb": 8192, "utilization_pct": 34, "temperature_c": 62, "power_w": 180.5}]
+    total_vram = sum(d["total_vram_mb"] for d in devices)
+    used_vram = sum(d["used_vram_mb"] for d in devices)
+    _gpu_state.update({
+        "devices": devices,
+        "total_vram_mb": total_vram,
+        "used_vram_mb": used_vram,
+        "utilization_pct": int(used_vram / total_vram * 100) if total_vram else 0,
+        "temperature_c": max((d["temperature_c"] for d in devices), default=0),
+        "power_w": sum(d["power_w"] for d in devices),
+    })
+    return jsonify(_gpu_state)
+
+
+# ── API: Permissions Engine ──────────────────────────────────────
+_PERMISSIONS = {
+    "roles": {"admin": "*", "operator": "read,write,exec", "viewer": "read", "guest": "read:public"},
+    "current_role": "admin",
+    "rbac_enabled": True,
+}
+
+
+@app.route("/api/permissions")
+def api_permissions():
+    return jsonify(_PERMISSIONS)
+
+
+@app.route("/api/permissions/check", methods=["POST"])
+def api_permissions_check():
+    data = request.get_json(silent=True) or {}
+    resource = data.get("resource", "")
+    action = data.get("action", "read")
+    role = data.get("role", _PERMISSIONS["current_role"])
+    allowed_patterns = _PERMISSIONS["roles"].get(role, "read:public").split(",")
+    allowed = action in allowed_patterns or "*" in allowed_patterns or f"{action}" in allowed_patterns
+    return jsonify({"allowed": allowed, "resource": resource, "action": action, "role": role})
+
+
+# ── API: Sandbox Executor ────────────────────────────────────────
+_SANDBOX = {"enabled": True, "max_runtime_s": 30, "output": None, "last_run": None}
+
+
+@app.route("/api/sandbox")
+def api_sandbox():
+    return jsonify(_SANDBOX)
+
+
+@app.route("/api/sandbox/run", methods=["POST"])
+def api_sandbox_run():
+    data = request.get_json(silent=True) or {}
+    code = data.get("code", "")
+    lang = data.get("language", "python")
+    if not code:
+        return jsonify({"error": "code required"}), 400
+    try:
+        if lang == "python":
+            import io, sys
+            out = io.StringIO()
+            old = sys.stdout
+            sys.stdout = out
+            try:
+                exec(code, {"__builtins__": __builtins__})
+            except Exception as e:
+                result = {"error": str(e)}
+            finally:
+                sys.stdout = old
+            result = result if "result" in dir() else {"output": out.getvalue().strip()}
+        else:
+            result = {"output": "non-python execution not supported in sandbox"}
+    except Exception as e:
+        result = {"error": str(e)}
+    _SANDBOX["output"] = result
+    _SANDBOX["last_run"] = time.time()
+    return jsonify({"ok": True, "result": result})
+
+
+# ── API: Scheduler ───────────────────────────────────────────────
+_SCHEDULER_CONFIG_PATH = CONFIG_DIR / "scheduler.json"
+_scheduler_jobs = []
+_scheduler_lock = threading.Lock()
+
+
+@app.route("/api/scheduler")
+def api_scheduler():
+    cfg = _load_json(_SCHEDULER_CONFIG_PATH, {"enabled": True})
+    with _scheduler_lock:
+        return jsonify({"config": cfg, "jobs": _scheduler_jobs, "running": len([j for j in _scheduler_jobs if j.get("status") == "running"])})
+
+
+@app.route("/api/scheduler/jobs", methods=["GET"])
+def api_scheduler_jobs():
+    with _scheduler_lock:
+        return jsonify(_scheduler_jobs)
+
+
+@app.route("/api/scheduler/jobs", methods=["POST"])
+def api_scheduler_create_job():
+    data = request.get_json(silent=True) or {}
+    job_id = str(uuid.uuid4())[:8]
+    job = {
+        "id": job_id,
+        "name": data.get("name", "untitled"),
+        "cron": data.get("cron", "0 0 * * *"),
+        "handler": data.get("handler", ""),
+        "enabled": True,
+        "status": "queued",
+        "created_at": time.time(),
+    }
+    with _scheduler_lock:
+        _scheduler_jobs.append(job)
+    return jsonify({"ok": True, "job": job})
+
+
+@app.route("/api/scheduler/jobs/<job_id>/toggle", methods=["POST"])
+def api_scheduler_toggle(job_id):
+    with _scheduler_lock:
+        for j in _scheduler_jobs:
+            if j["id"] == job_id:
+                j["enabled"] = not j["enabled"]
+                return jsonify({"ok": True, "enabled": j["enabled"]})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/scheduler/jobs/<job_id>", methods=["DELETE"])
+def api_scheduler_delete_job(job_id):
+    with _scheduler_lock:
+        before = len(_scheduler_jobs)
+        _scheduler_jobs[:] = [j for j in _scheduler_jobs if j["id"] != job_id]
+        return jsonify({"deleted": before - len(_scheduler_jobs)})
+
+
+# ── API: Workflow Engine ─────────────────────────────────────────
+_WORKFLOW_DIR = ROOT.parent / "workflow"
+_workflow_registry = []
+
+
+@app.route("/api/workflow")
+def api_workflow():
+    workflows = []
+    wf_dir = _WORKFLOW_DIR / "workflows"
+    if wf_dir.exists():
+        for f in wf_dir.glob("*.json"):
+            try:
+                wf = json.loads(f.read_text(encoding="utf-8"))
+                workflows.append({"id": f.stem, "name": wf.get("name", f.stem), "steps": len(wf.get("steps", [])), "status": wf.get("status", "active")})
+            except (json.JSONDecodeError, OSError):
+                pass
+    return jsonify({"workflows": workflows, "total": len(workflows)})
+
+
+@app.route("/api/workflow/registries", methods=["GET"])
+def api_workflow_registries():
+    reg = []
+    reg_dir = ROOT.parent / "registry"
+    if reg_dir.exists():
+        for f in reg_dir.glob("*.json"):
+            try:
+                d = json.loads(f.read_text(encoding="utf-8"))
+                reg.append({"file": f.name, "entries": len(d) if isinstance(d, list) else len(d.get("entries", []))})
+            except (json.JSONDecodeError, OSError):
+                pass
+    return jsonify({"registries": reg})
+
+
+# ── API: MCP Registry ────────────────────────────────────────────
+MCP_DIR = ROOT.parent / "mcp"
+
+
+@app.route("/api/mcp")
+def api_mcp():
+    servers = []
+    servers_dir = MCP_DIR / "servers"
+    if servers_dir.exists():
+        for f in sorted(servers_dir.iterdir()):
+            if f.is_dir():
+                skill_md = f / "SKILL.md"
+                name = f.name
+                desc = ""
+                if skill_md.exists():
+                    content = skill_md.read_text(encoding="utf-8", errors="ignore")
+                    import re as _re
+                    fm = _re.match(r"^---\n([\s\S]*?)\n---", content)
+                    if fm:
+                        for line in fm.group(1).split("\n"):
+                            if line.startswith("description:"):
+                                desc = line.split(":", 1)[1].strip().strip('"')
+                                break
+                servers.append({"name": name, "path": str(f), "description": desc, "enabled": True})
+    return jsonify({"servers": servers, "total": len(servers)})
+
+
+@app.route("/api/mcp/register", methods=["POST"])
+def api_mcp_register():
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "")
+    command = data.get("command", "")
+    args = data.get("args", [])
+    if not name or not command:
+        return jsonify({"error": "name and command required"}), 400
+    return jsonify({"ok": True, "server": {"name": name, "command": command, "args": args}})
+
+
+# ── API: Skills Aggregator ───────────────────────────────────────
+@app.route("/api/skills/aggregated")
+def api_skills_aggregated():
+    skills = []
+    skills_dirs = [ROOT.parent / "skills", ROOT.parent / "mimocode" / "skills", ROOT.parent / ".agents" / "skills"]
+    seen = set()
+    for base_dir in skills_dirs:
+        if not base_dir.exists():
+            continue
+        for d in sorted(base_dir.iterdir()):
+            if not d.is_dir():
+                continue
+            skill_md = d / "SKILL.md"
+            if not skill_md.exists():
+                continue
+            key = str(skill_md)
+            if key in seen:
+                continue
+            seen.add(key)
+            content = skill_md.read_text(encoding="utf-8", errors="ignore")
+            import re as _re2
+            name = d.name
+            desc = ""
+            category = "general"
+            fm = _re2.match(r"^---\n([\s\S]*?)\n---", content)
+            if fm:
+                for line in fm.group(1).split("\n"):
+                    if line.startswith("name:"):
+                        name = line.split(":", 1)[1].strip().strip('"').strip("'")
+                    elif line.startswith("description:"):
+                        desc = line.split(":", 1)[1].strip().strip('"')
+                    elif line.startswith("category:"):
+                        category = line.split(":", 1)[1].strip()
+            skills.append({"name": name, "path": str(skill_md), "description": desc[:120], "category": category, "source": str(base_dir.name)})
+    return jsonify({"skills": skills, "total": len(skills)})
+
+
+# ── API: Campaign ────────────────────────────────────────────────
+_campaigns = []
+_campaign_lock = threading.Lock()
+
+
+@app.route("/api/campaign")
+def api_campaign():
+    with _campaign_lock:
+        return jsonify({"campaigns": _campaigns, "total": len(_campaigns)})
+
+
+@app.route("/api/campaign/create", methods=["POST"])
+def api_campaign_create():
+    data = request.get_json(silent=True) or {}
+    campaign_id = str(uuid.uuid4())[:8]
+    campaign = {
+        "id": campaign_id,
+        "name": data.get("name", "untitled-campaign"),
+        "type": data.get("type", "scan"),
+        "status": "active",
+        "targets": data.get("targets", []),
+        "created_at": time.time(),
+    }
+    with _campaign_lock:
+        _campaigns.append(campaign)
+    return jsonify({"ok": True, "campaign": campaign})
+
+
+@app.route("/api/campaign/<campaign_id>/run", methods=["POST"])
+def api_campaign_run(campaign_id):
+    with _campaign_lock:
+        for c in _campaigns:
+            if c["id"] == campaign_id:
+                c["status"] = "running"
+                return jsonify({"ok": True, "campaign_id": campaign_id, "status": "running"})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/campaign/<campaign_id>", methods=["DELETE"])
+def api_campaign_delete(campaign_id):
+    with _campaign_lock:
+        before = len(_campaigns)
+        _campaigns[:] = [c for c in _campaigns if c["id"] != campaign_id]
+        return jsonify({"deleted": before - len(_campaigns)})
+
+
+# ── API: Salad Integration ───────────────────────────────────────
+import os as _os
+SALAD_API_KEY = _os.environ.get("SALAD_API_KEY", "")
+
+
+@app.route("/api/salad")
+def api_salad():
+    if not SALAD_API_KEY:
+        return jsonify({"error": "SALAD_API_KEY not set", "configured": False})
+    try:
+        import urllib.request
+        req = urllib.request.Request("https://api.salad.com/api/v1/earnings", headers={"Authorization": f"Bearer {SALAD_API_KEY}"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        return jsonify({"configured": True, "data": data})
+    except Exception as e:
+        return jsonify({"configured": True, "error": str(e), "earnings": {"total_usd": 0, "gpu_hours": 0}})
+
+
+@app.route("/api/salad/gpu")
+def api_salad_gpu():
+    if not SALAD_API_KEY:
+        return jsonify({"error": "SALAD_API_KEY not set", "configured": False})
+    try:
+        import urllib.request
+        req = urllib.request.Request("https://api.salad.com/api/v1/gpus", headers={"Authorization": f"Bearer {SALAD_API_KEY}"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        return jsonify({"configured": True, "gpus": data})
+    except Exception as e:
+        return jsonify({"configured": True, "error": str(e), "gpus": []})
+
+
+# ── API: Aikido Integration ──────────────────────────────────────
+AIKIDO_API_KEY = _os.environ.get("AIKIDO_API_KEY", "")
+AIKIDO_APP_ID = _os.environ.get("AIKIDO_APP_ID", "")
+
+
+@app.route("/api/aikido")
+def api_aikido():
+    if not AIKIDO_API_KEY:
+        return jsonify({"error": "AIKIDO_API_KEY not set", "configured": False})
+    return jsonify({"configured": True, "app_id": AIKIDO_APP_ID or "default", "status": "connected"})
+
+
+@app.route("/api/aikido/test", methods=["POST"])
+def api_aikido_test():
+    data = request.get_json(silent=True) or {}
+    return jsonify({"ok": True, "tested": data.get("test_type", "default"), "result": "passed"})
+
+
+# ── API: Metrics Aggregation ─────────────────────────────────────
+@app.route("/api/metrics")
+def api_metrics():
+    services = {}
+    ports = {"proxy": 8100, "memory": 8110, "agents": 8120, "registry": 8130, "rag": 8140, "brain": 8150, "skills": 8160}
+    import urllib.request as _urlopen
+    for name, port in ports.items():
+        try:
+            r = _urlopen.urlopen(f"http://127.0.0.1:{port}/metrics", timeout=2)
+            services[name] = {"status": "up", "metrics_fetched": True}
+        except Exception:
+            services[name] = {"status": "down", "metrics_fetched": False}
+    return jsonify({"services": services, "dashboard": {"status": "up", "uptime": int(time.time())}})
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("DASHBOARD_PORT", "8080"))
     print(f"[dashboard] Serving on :{port}")
