@@ -1,0 +1,26 @@
+{
+  "_comment": "Default scheduler settings for FreeAI",
+  "scheduler": {
+    "enabled": true,
+    "max_concurrent_jobs": 5,
+    "default_cron": "0 0 * * *",
+    "timezone": "UTC",
+    "retry_policy": {
+      "max_retries": 3,
+      "backoff_base": 60,
+      "backoff_max": 3600
+    },
+    "notifications": {
+      "on_success": true,
+      "on_failure": true,
+      "channels": ["log", "webhook"]
+    },
+    "services": {
+      "workflow_engine": {"enabled": true, "auto_start": true},
+      "mcp_registry": {"enabled": true, "auto_start": true},
+      "skills_aggregator": {"enabled": true, "auto_start": true},
+      "campaign_manager": {"enabled": true, "auto_start": true},
+      "gpu_monitor": {"enabled": true, "auto_start": true}
+    }
+  }
+}

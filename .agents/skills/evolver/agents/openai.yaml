@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evolver"
+  short_description: "Protocol-bound capability evolution"
+  default_prompt: "Use $evolver to analyze agent runtime history and plan protocol-bound capability improvements."

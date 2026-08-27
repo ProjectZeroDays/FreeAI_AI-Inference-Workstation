@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recover Decompiler Failures"
+  short_description: "Recover failed Ghidra decompilations with fallback tools."
+  default_prompt: "Recover failed decompiler output for this binary or Ghidra export folder."

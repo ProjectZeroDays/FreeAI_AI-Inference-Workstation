@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI Dashboard — Unified GPU Stack</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Unified GPU Stack</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="#status" class="nav-item active"><span class="nav-dot"></span> Dashboard</a>
+        <a href="#models" class="nav-item"><span class="nav-dot"></span> Models</a>
+        <a href="#clients" class="nav-item"><span class="nav-dot"></span> Clients</a>
+        <a href="#providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="#runs" class="nav-item"><span class="nav-dot"></span> SDLC Runs</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="#hermes" class="nav-item hermes-link" data-hermes-port="8090"><span class="nav-dot"></span> Hermes</a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="#files" class="nav-item"><span class="nav-dot"></span> Files</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Integrations</span>
+        <a href="#salad" class="nav-item" id="salad-nav-link"><span class="nav-dot"></span> Salad GPU</a>
+        <a href="#aikido" class="nav-item" id="aikido-nav-link"><span class="nav-dot"></span> Aikido</a>
+        <a href="#mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="#scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="sidebar-version" class="muted" style="margin-left:auto"></span>
+      </div>
+    </nav>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <h1>FreeAI Dashboard</h1>
+          <p>Unified GPU Inference Stack — Health &amp; Metrics</p>
+        </div>
+        <div class="topbar-actions">
+          <span id="power-mode-badge" class="pill">balanced</span>
+          <span id="timestamp" class="muted"></span>
+        </div>
+      </header>
+
+      <div class="bento">
+        <section class="card alerts span-2" id="status">
+          <div class="card-head">
+            <h2>Alerts</h2>
+            <span class="card-icon">◐</span>
+          </div>
+          <ul id="alerts-list"><li class="muted">No alerts.</li></ul>
+        </section>
+
+        <section class="card gpu" id="gpu-panel">
+          <div class="card-head">
+            <h2>GPU</h2>
+            <span class="card-icon">⬢</span>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><span class="metric-label">Utilization</span><span id="gpu-util" class="metric-value">—</span></div>
+            <div class="metric"><span class="metric-label">Memory</span><span id="gpu-mem" class="metric-value">—</span></div>
+            <div class="metric"><span class="metric-label">Mode / Temp / Power / Clock</span><span id="gpu-extra" class="metric-value muted">—</span></div>
+          </div>
+          <canvas id="gpuChart" height="120"></canvas>
+        </section>
+
+        <section class="card services" id="services-panel">
+          <div class="card-head"><h2>Services</h2><span class="card-icon">⬡</span></div>
+          <ul id="services-list"></ul>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Clients</h2></div>
+          <ul id="clients-list" class="muted">loading switchboard...</ul>
+        </section>
+
+        <section class="card span-2">
+          <div class="card-head"><h2>External AI Providers</h2></div>
+          <ul id="providers-list" class="muted">loading providers...</ul>
+          <div class="row">
+            <select id="prov-test-select" style="max-width:220px"></select>
+            <button id="prov-test">Test</button>
+            <span id="prov-status" class="muted"></span>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>SDLC Runs</h2></div>
+          <ul id="runs-list" class="muted">loading autonomous runs...</ul>
+        </section>
+
+        <section class="card">
+          <div class="card-head"><h2>Files</h2></div>
+          <div class="row">
+            <input type="file" id="up-file" />
+            <button id="up-send">Upload</button>
+            <span id="up-status" class="muted"></span>
+          </div>
+          <ul id="uploads-list" class="muted"></ul>
+        </section>
+
+        <section class="card settings span-2" id="settings">
+          <div class="card-head"><h2>Settings</h2><span class="card-icon">⚙</span></div>
+
+          <div id="idle-banner" class="banner hidden"></div>
+
+          <div class="row">
+            <label for="preset-select">Preset</label>
+            <select id="preset-select"></select>
+            <button id="apply-preset">Apply</button>
+            <input type="text" id="preset-name" placeholder="custom name" maxlength="48" />
+            <button id="save-preset">Save as custom</button>
+            <button id="delete-preset" title="delete selected custom preset">Delete</button>
+          </div>
+
+          <div class="row">
+            <label for="idle-min">Idle for (min)</label>
+            <input type="number" id="idle-min" min="1" max="10080" value="60" />
+            <button id="start-idle">Start idle window</button>
+            <span class="muted">eco now → auto-restores after</span>
+          </div>
+
+          <hr class="sep" />
+
+          <label class="chk">
+            <input type="checkbox" id="opt-auto" checked />
+            AI auto-management
+            <span class="muted">(recommended — optimizer shifts power modes)</span>
+          </label>
+
+          <div class="row">
+            <label for="opt-mode">Power mode</label>
+            <select id="opt-mode" disabled>
+              <option value="performance">performance (stock)</option>
+              <option value="balanced">balanced</option>
+              <option value="eco">eco</option>
+            </select>
+            <span id="current-mode" class="muted"></span>
+          </div>
+
+          <div class="row">
+            <label for="gpu-pl">Power cap (W)</label>
+            <input type="number" id="gpu-pl" min="150" max="350" step="5" />
+            <label for="gpu-clk">Clock lock (MHz)</label>
+            <input type="number" id="gpu-clk" min="2000" max="2900" step="10" />
+          </div>
+
+          <fieldset>
+            <legend>llama.cpp sampling <span class="muted">(Save + restart to apply)</span></legend>
+            <div class="row">
+              <label for="rpen">Repeat penalty</label>
+              <input type="number" id="rpen" min="1.0" max="2.0" step="0.01" />
+              <label for="rlastn">Repeat last-n</label>
+              <input type="number" id="rlastn" min="8" max="2048" />
+              <label for="ctx">Context</label>
+              <input type="number" id="ctx" min="512" max="32768" step="512" />
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Agent workload</legend>
+            <div class="row">
+              <label for="max-runs">Max concurrent SDLC runs</label>
+              <input type="number" id="max-runs" min="1" max="16" />
+              <span class="muted">(enforced live by the autonomous API)</span>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Knight-Shade Browser <span class="muted">(save applies to config/browser.json)</span></legend>
+            <div class="row">
+              <label class="chk"><input type="checkbox" id="br-stealth" checked /> Stealth mode</label>
+              <label class="chk"><input type="checkbox" id="br-cdp" checked /> CDP access</label>
+              <label class="chk"><input type="checkbox" id="br-healing" checked /> Self-healing</label>
+              <label class="chk"><input type="checkbox" id="br-manifestx" checked /> Manifest-X extensions</label>
+            </div>
+            <div class="row">
+              <label for="br-mode">Anonymity mode</label>
+              <select id="br-mode">
+                <option value="none">None (direct)</option>
+                <option value="tor">Tor</option>
+                <option value="vpn">VPN (WireGuard)</option>
+                <option value="shadowsocks">Shadowsocks</option>
+                <option value="mix">Full stack (mix)</option>
+              </select>
+              <label for="br-headless">Headless</label>
+              <input type="checkbox" id="br-headless" checked />
+            </div>
+            <div class="row">
+              <label for="br-retries">Max healing retries</label>
+              <input type="number" id="br-retries" min="1" max="20" value="5" />
+              <label for="br-backoff">Retry backoff (s)</label>
+              <input type="number" id="br-backoff" min="0.5" max="10" step="0.5" value="1.5" />
+              <label for="br-viewport-w">Viewport W</label>
+              <input type="number" id="br-viewport-w" min="320" max="3840" value="1920" />
+              <label for="br-viewport-h">Viewport H</label>
+              <input type="number" id="br-viewport-h" min="240" max="2160" value="1080" />
+            </div>
+            <div class="row">
+              <label class="chk"><input type="checkbox" id="br-screenshot-fail" checked /> Screenshot on heal fail</label>
+              <label class="chk"><input type="checkbox" id="br-scroll-view" checked /> Scroll into view on retry</label>
+              <label class="chk"><input type="checkbox" id="br-adaptive-sel" checked /> Adaptive selectors</label>
+              <label class="chk"><input type="checkbox" id="br-dom-mirror" /> DOM mirror (observability)</label>
+            </div>
+            <div class="row">
+              <label for="br-port">Browser API port</label>
+              <input type="number" id="br-port" min="1024" max="65535" value="8180" />
+              <span class="muted">(restart required for port change)</span>
+            </div>
+          </fieldset>
+
+          <div class="btn-row">
+            <button id="save-settings">Save settings</button>
+            <button id="apply-llama">Save + restart llama</button>
+            <span id="settings-status" class="muted"></span>
+          </div>
+
+          <hr class="sep" />
+          <div id="model-shelf" class="muted">loading model shelf…</div>
+        </section>
+      </div>
+
+      <footer class="foot muted">FreeAI Stack · <span id="foot-version"></span> · <span id="foot-time"></span></footer>
+    </div>
+  </div>
+
+  <script src="/static/auth.js"></script>
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

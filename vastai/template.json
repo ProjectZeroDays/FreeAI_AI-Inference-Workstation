@@ -1,0 +1,47 @@
+{
+  "name": "FreeAI Unified AI Stack (llama.cpp CUDA13 + vision + agents + desktop)",
+  "description": "llama.cpp :9001 (vision mmproj ready) + router :8010 + agents :8020 + workflow :8040 + autonomous SDLC :8050 + dashboard :8030 + Jupyter :8888 + OpenCode :3000 + ZCode :5000 + noVNC :6080. Instance Portal + Selkies + Guacamole via PORTAL_CONFIG.",
+  "image": "nvidia/cuda:13.0.1-devel-ubuntu24.04",
+  "version_tag": "latest",
+  "disk": 250,
+  "env": {
+    "PROVISIONING_SCRIPT": "https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases/latest/download/unified-ai-stack-v1.2.0.tar.gz",
+    "ONSTART_SCRIPT": "https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/main/vastai/onstart.sh",
+
+    "OPEN_BUTTON_TOKEN": "1",
+    "OPEN_BUTTON_PORT": "1111",
+    "PORTAL_CONFIG": "localhost:1111:11111:/:Instance Portal|localhost:8030:18030:/:FreeAI Dashboard|localhost:6100:16100:/:Selkies Low Latency Desktop|localhost:6200:16200:/:Apache Guacamole Desktop (VNC)|localhost:6080:16080:/:noVNC Desktop|localhost:8888:18888:/:JupyterLab|localhost:3000:13000:/:OpenCode|localhost:5000:15000:/:ZCode",
+    "ENABLE_HTTPS": "TRUE",
+
+    "LLAMA_PORT": "9001",
+    "LLAMA_VISION_ENABLED": "TRUE",
+    "ROUTER_PORT": "8010",
+    "DASHBOARD_PORT": "8030",
+    "JUPYTER_PORT": "8888",
+    "JUPYTER_ENABLE": "TRUE",
+    "OPENCODE_PORT": "3000",
+    "ZCODE_PORT": "5000",
+    "INSTALL_CLIENTS": "TRUE",
+    "AUTO_START_XFCE": "TRUE",
+    "AUTO_START_VNC": "TRUE",
+    "AUTO_START_NOVNC": "TRUE",
+    "VNC_PASSWORD": "changeme",
+    "MOCK_LLM": "0",
+    "INSTALL_DOCKER": "TRUE"
+  },
+  "ports": {
+    "1111/tcp": 1111,
+    "3000/tcp": 3000,
+    "5000/tcp": 5000,
+    "6080/tcp": 6080,
+    "6100/tcp": 6100,
+    "6200/tcp": 6200,
+    "8030/tcp": 8030,
+    "8050/tcp": 8050,
+    "8888/tcp": 8888,
+    "9001/tcp": 9001
+  },
+  "gpu": { "minVRAM": 16 },
+  "extra_filters": "verified=true gpu_ram>=16 disk_space>=100",
+  "onstart": "#!/bin/bash\nset -u\ncurl -fsSL \"${ONSTART_SCRIPT}\" -o /tmp/onstart.sh && bash /tmp/onstart.sh"
+}

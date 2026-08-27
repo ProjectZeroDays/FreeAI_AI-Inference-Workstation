@@ -1,0 +1,7 @@
+{
+  "opencode_models": [
+    { "id": "qwen3.6-12b", "capabilities": ["code", "chat", "analysis"] },
+    { "id": "moe-13b", "capabilities": ["code", "refactor"] },
+    { "id": "qwen3.5-9b", "capabilities": ["analysis", "chat"] }
+  ]
+}

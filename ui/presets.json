@@ -1,0 +1,19 @@
+{
+  "presets": [
+    {
+      "id": "qwen3.6-12b",
+      "label": "Ultra Coder (12B IQ Ultra)",
+      "description": "Full projects, production code, architecture"
+    },
+    {
+      "id": "moe-13b",
+      "label": "MOE Fast Coder (13.7B)",
+      "description": "Refactoring, debugging, patching"
+    },
+    {
+      "id": "qwen3.5-9b",
+      "label": "Reasoning Specialist (Claude-style)",
+      "description": "Analysis, planning, decomposition"
+    }
+  ]
+}

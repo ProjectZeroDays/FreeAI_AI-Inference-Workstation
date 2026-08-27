@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Providers</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .providers-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .providers-main { padding:22px 24px 32px; min-width:0; }
+    .providers-topbar { display:flex; align-items:center; justify-content:space-between;
+                        padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                        margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .providers-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .providers-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .providers-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .p-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .p-stat .p-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .p-stat .p-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .providers-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .providers-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                          border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .providers-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .providers-table tr:hover td { background:rgba(255,255,255,.02); }
+    .p-type { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:600; }
+    .p-type.primary { background:rgba(34,197,94,.15); color:#BBF7D0; }
+    .p-type.local { background:rgba(56,189,248,.15); color:#BAE6FD; }
+    .p-type.internal { background:rgba(168,85,247,.15); color:#DDD6FE; }
+    .p-type.tool { background:rgba(245,158,11,.15); color:#FDE68A; }
+    .p-type.aggregator { background:rgba(236,72,153,.15); color:#FBCFE8; }
+    .p-url { font-family:monospace; font-size:12px; color:var(--muted); max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .p-models { font-size:11px; color:var(--muted-2); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border); border-radius:10px;
+                  padding:7px 12px; font-size:13px; width:240px; font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="providers-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Providers</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item active"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+    <div class="providers-main">
+      <header class="providers-topbar">
+        <div>
+          <h1>Providers</h1>
+          <p>Unified provider registry — 33 providers from mimocode, jcode, opencode, openclaw, hermes</p>
+        </div>
+        <input type="text" class="search-box" id="search" placeholder="Search providers..." />
+      </header>
+      <div class="providers-stats" id="stats">
+        <div class="p-stat"><span class="p-val" id="s-total">—</span><span class="p-lbl">Total</span></div>
+        <div class="p-stat"><span class="p-val" id="s-primary">—</span><span class="p-lbl">Primary</span></div>
+        <div class="p-stat"><span class="p-val" id="s-local">—</span><span class="p-lbl">Local</span></div>
+        <div class="p-stat"><span class="p-val" id="s-internal">—</span><span class="p-lbl">Internal</span></div>
+        <div class="p-stat"><span class="p-val" id="s-tools">—</span><span class="p-lbl">Tool</span></div>
+      </div>
+      <div id="table-wrap">
+        <table class="providers-table">
+          <thead><tr><th>Name</th><th>Type</th><th>Base URL</th><th>Models</th><th>Auth</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="empty" style="display:none">
+        <div style="font-size:32px;margin-bottom:8px;opacity:.4">⬡</div>
+        <p>No providers configured.</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    let providers = {};
+    async function load() {
+      try {
+        const r = await fetch('/api/providers');
+        const data = await r.json();
+        providers = data.providers || {};
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function render(filter='') {
+      const entries = Object.entries(providers);
+      const filtered = filter ? entries.filter(([n,p]) =>
+        n.toLowerCase().includes(filter) ||
+        (p.base_url||'').toLowerCase().includes(filter) ||
+        (p.type||'').toLowerCase().includes(filter)) : entries;
+      $('s-total').textContent = entries.length;
+      $('s-primary').textContent = entries.filter(([,p])=>p.type==='primary').length;
+      $('s-local').textContent = entries.filter(([,p])=>p.type==='local').length;
+      $('s-internal').textContent = entries.filter(([,p])=>p.type==='internal').length;
+      $('s-tools').textContent = entries.filter(([,p])=>p.type==='tool'||p.type==='aggregator').length;
+      const tb = $('tbody');
+      if (!filtered.length) { $('empty').style.display=''; tb.parentElement.style.display='none'; return; }
+      $('empty').style.display='none'; tb.parentElement.style.display='';
+      tb.innerHTML = filtered.map(([name,p])=>`
+        <tr>
+          <td><strong>${name}</strong></td>
+          <td><span class="p-type ${p.type}">${p.type}</span></td>
+          <td class="p-url">${p.base_url||'—'}</td>
+          <td class="p-models">${(p.models||[]).slice(0,3).join(', ')}${(p.models||[]).length>3?'...':''}</td>
+          <td style="font-size:12px;color:var(--muted)">${p.auth||'none'}</td>
+        </tr>`).join('');
+    }
+    $('search').addEventListener('input', e => render(e.target.value));
+    load();
+  </script>
+</body>
+</html>

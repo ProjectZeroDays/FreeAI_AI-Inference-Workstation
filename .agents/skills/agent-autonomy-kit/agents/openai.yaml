@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Autonomy Kit"
+  short_description: "Proactive queues and heartbeats"
+  default_prompt: "Use $agent-autonomy-kit to set up a proactive Codex task queue and heartbeat workflow."

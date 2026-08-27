@@ -1,0 +1,7 @@
+[Unit]
+Description=Rotate logs + prune old autonomous workspaces
+
+[Service]
+Type=oneshot
+User=__STACK_USER__
+ExecStart=/usr/bin/env bash __STACK_DIR__/scripts/cleanup.sh

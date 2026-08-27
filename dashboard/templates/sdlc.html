@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — SDLC & Pipelines</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    /* ── SDLC/Pipeline overrides ─────────────────────────────── */
+    .pipeline-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .pipeline-main { padding:22px 24px 32px; min-width:0; }
+    .pipeline-topbar { display:flex; align-items:center; justify-content:space-between;
+                       padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                       margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .pipeline-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .pipeline-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .phase-timeline { display:flex; gap:4px; margin:12px 0; flex-wrap:wrap; }
+    .phase-node { display:flex; align-items:center; gap:4px; padding:6px 10px;
+                  border-radius:8px; font-size:12px; font-weight:500;
+                  background:rgba(255,255,255,.04); border:1px solid var(--border);
+                  color:var(--muted); transition:all .2s; }
+    .phase-node.active { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.35);
+                         color:#BBF7D0; box-shadow:0 0 12px rgba(34,197,94,.2); }
+    .phase-node.done { background:rgba(56,189,248,.08); border-color:rgba(56,189,248,.25);
+                       color:#BAE6FD; }
+    .phase-node.failed { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3);
+                         color:#FCA5A5; }
+    .phase-arrow { color:var(--muted-2); font-size:14px; }
+    .run-card { background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+                border:1px solid var(--border); border-radius:14px; padding:14px;
+                box-shadow:0 10px 30px rgba(2,6,23,.45); margin-bottom:12px; }
+    .run-card-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .run-id { font-family:Fira Code,monospace; font-size:12px; color:var(--accent-2); }
+    .run-spec { font-size:13px; color:var(--text); flex:1; min-width:0;
+                overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .run-phase { font-size:11px; padding:3px 8px; border-radius:999px;
+                 background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.25);
+                 color:#BAE6FD; font-weight:500; }
+    .run-phase.done { background:rgba(34,197,94,.1); border-color:rgba(34,197,94,.25); color:#BBF7D0; }
+    .run-phase.failed { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.25); color:#FCA5A5; }
+    .run-phase.cancelled { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.25); color:#FDE68A; }
+    .run-meta { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+    .run-meta span { display:flex; align-items:center; gap:4px; }
+    .run-actions { display:flex; gap:8px; margin-top:10px; }
+    .tutorial-section { background:rgba(255,255,255,.03); border:1px solid var(--border);
+                        border-radius:12px; padding:16px; margin-bottom:16px; }
+    .tutorial-section h3 { margin:0 0 10px; font-size:15px; color:var(--accent-2); }
+    .tutorial-section p, .tutorial-section li { font-size:13px; color:var(--muted); line-height:1.6; }
+    .tutorial-section code { background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.2);
+                              border-radius:4px; padding:1px 5px; font-size:12px;
+                              font-family:Fira Code,monospace; color:#BAE6FD; }
+    .tutorial-section pre { background:rgba(2,6,23,.6); border:1px solid var(--border);
+                             border-radius:10px; padding:12px; font-size:12px;
+                             font-family:Fira Code,monospace; overflow-x:auto;
+                             color:#CBD5E1; margin:8px 0; }
+    .tutorial-section pre code { background:none; border:none; padding:0; color:inherit; }
+    .tutorial-steps { counter-reset:step; list-style:none; padding:0; }
+    .tutorial-steps li { counter-increment:step; padding:8px 0 8px 36px; position:relative; }
+    .tutorial-steps li::before { content:counter(step); position:absolute; left:0;
+                                  top:8px; width:24px; height:24px; border-radius:50%;
+                                  background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.3);
+                                  display:grid; place-items:center; font-size:12px;
+                                  color:var(--accent); font-weight:600; }
+    .tab-bar { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border);
+               padding-bottom:0; }
+    .tab-btn { padding:8px 16px; font-size:13px; font-weight:500; color:var(--muted);
+               background:none; border:none; border-bottom:2px solid transparent;
+               cursor:pointer; transition:all .15s; margin-bottom:-1px; }
+    .tab-btn:hover { color:var(--text); }
+    .tab-btn.active { color:var(--accent-2); border-bottom-color:var(--accent-2); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .spec-input { width:100%; background:rgba(2,6,23,.55); color:var(--text);
+                  border:1px solid var(--border); border-radius:10px; padding:10px 12px;
+                  font-size:13px; font-family:Inter,system-ui,sans-serif;
+                  min-height:80px; resize:vertical; }
+    .spec-input:focus { outline:none; border-color:rgba(56,189,248,.45);
+                        box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .form-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+    .form-label { font-size:12px; color:var(--muted); font-weight:500; }
+    .form-select { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                   border-radius:10px; padding:7px 12px; font-size:13px; cursor:pointer; }
+    .form-check { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); }
+    .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+    .empty-state .empty-icon { font-size:36px; opacity:.4; margin-bottom:8px; }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+    .step-builder { display:flex; flex-direction:column; gap:8px; }
+    .step-item { display:flex; gap:8px; align-items:center; padding:8px 12px;
+                background:rgba(255,255,255,.03); border:1px solid var(--border);
+                border-radius:10px; font-size:13px; }
+    .step-item select { background:rgba(2,6,23,.55); color:var(--text);
+                        border:1px solid var(--border); border-radius:8px; padding:5px 8px;
+                        font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="pipeline-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>SDLC & Pipelines</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/dashboard" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/agents" class="nav-item"><span class="nav-dot"></span> Agents</a>
+        <a href="/sdlc" class="nav-item active"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="/models" class="nav-item"><span class="nav-dot"></span> Models</a>
+        <a href="/plugins" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="run-count" class="muted" style="margin-left:auto">0 runs</span>
+      </div>
+    </nav>
+
+    <div class="pipeline-main">
+      <header class="pipeline-topbar">
+        <div>
+          <h1>SDLC & Custom Pipelines</h1>
+          <p>Autonomous agents turn specs into shipped projects — or build your own pipeline</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn" id="btn-refresh" title="Refresh run list">↻ Refresh</button>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tutorial">Tutorial</button>
+        <button class="tab-btn" data-tab="autonomous">Autonomous Run</button>
+        <button class="tab-btn" data-tab="custom">Custom Pipeline</button>
+        <button class="tab-btn" data-tab="runs">Active Runs</button>
+      </div>
+
+      <!-- ── Tutorial Tab ─────────────────────────────────────── -->
+      <div class="tab-content active" id="tab-tutorial">
+        <div class="tutorial-section">
+          <h3>The 7-Phase SDLC Lifecycle</h3>
+          <p>FreeAI's autonomous agents execute a strict pipeline when given a one-line spec:</p>
+          <ol class="tutorial-steps">
+            <li><strong>Plan</strong> — LLM decomposes the spec into ordered, implementable tasks</li>
+            <li><strong>Code</strong> — Each task is coded using the optimal model from the router</li>
+            <li><strong>Test</strong> — Real verification runs inside a sandboxed workspace
+                (<code>compileall</code>, <code>pytest</code>, <code>node --check</code>)</li>
+            <li><strong>Fix</strong> — Failed tests feed back into the LLM for repair (up to 3 rounds)</li>
+            <li><strong>Review</strong> — Strict reviewer emits <code>VERDICT: PASS</code> or <code>FIX</code></li>
+            <li><strong>Document</strong> — README.md and API docs auto-generated from final tree</li>
+            <li><strong>Package</strong> — Workspace compressed into a downloadable <code>.tar.gz</code> artifact</li>
+          </ol>
+        </div>
+
+        <div class="tutorial-section">
+          <h3>Launching an Autonomous Run</h3>
+          <p>The SDLC service runs on <code>:8050</code>. Submit a spec and the agents handle the rest:</p>
+          <pre><code>curl -X POST http://localhost:8050/auto/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "spec": "Build a Python REST API using FastAPI with SQLite that handles user authentication",
+    "profile": "balanced",
+    "max_tasks": 8,
+    "enable_shell": true
+  }'</code></pre>
+          <p>Track progress in the <strong>Active Runs</strong> tab or at <code>/dashboard</code>.</p>
+        </div>
+
+        <div class="tutorial-section">
+          <h3>Custom Pipelines — Manual Agent Control</h3>
+          <p>Don't want the full loop? Call individual agent personas via the Pipeline API on <code>:8170</code>:</p>
+          <pre><code># Scaffold from a spec
+curl -X POST http://localhost:8170/pipeline/scaffold \
+  -H "Content-Type: application/json" \
+  -d '{"spec": "Build a CLI todo app", "profile": "creative"}'
+
+# Refactor existing code
+curl -X POST http://localhost:8170/pipeline/refactor \
+  -H "Content-Type: application/json" \
+  -d '{"code": "def add(a,b): return a+b", "language": "python",
+       "goals": "add type hints", "profile": "strict"}'
+
+# Debug an error
+curl -X POST http://localhost:8170/pipeline/debug \
+  -H "Content-Type: application/json" \
+  -d '{"code": "x = 1/0", "error": "ZeroDivisionError", "language": "python"}'
+
+# Build a custom multi-step pipeline
+curl -X POST http://localhost:8170/pipeline/custom \
+  -H "Content-Type: application/json" \
+  -d '{
+    "spec": "Build a FastAPI app",
+    "steps": [
+      {"phase": "scaffold", "input": {"spec": "Build a FastAPI app"}},
+      {"phase": "refactor", "input": {"goals": "add error handling"}},
+      {"phase": "document", "input": {}}
+    ]
+  }'</code></pre>
+          <p>Available phases: <code>scaffold</code>, <code>refactor</code>, <code>debug</code>,
+             <code>analyze</code>, <code>review</code>, <code>document</code>.</p>
+        </div>
+
+        <div class="tutorial-section">
+          <h3>Temperature Profiles</h3>
+          <table style="width:100%;font-size:13px;border-collapse:collapse;margin-top:8px">
+            <tr style="border-bottom:1px solid var(--border)">
+              <th style="text-align:left;padding:6px;color:var(--muted)">Profile</th>
+              <th style="text-align:left;padding:6px;color:var(--muted)">Temperature</th>
+              <th style="text-align:left;padding:6px;color:var(--muted)">Best For</th>
+            </tr>
+            <tr><td style="padding:6px"><code>strict</code></td><td style="padding:6px">0.0</td><td style="padding:6px;color:var(--muted)">Debugging, verification, precise output</td></tr>
+            <tr><td style="padding:6px"><code>balanced</code></td><td style="padding:6px">0.2</td><td style="padding:6px;color:var(--muted)">General purpose (default)</td></tr>
+            <tr><td style="padding:6px"><code>creative</code></td><td style="padding:6px">0.8</td><td style="padding:6px;color:var(--muted)">Brainstorming, architecture design</td></tr>
+            <tr><td style="padding:6px"><code>verbose</code></td><td style="padding:6px">0.4</td><td style="padding:6px;color:var(--muted)">Detailed explanations</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Autonomous Run Tab ───────────────────────────────── -->
+      <div class="tab-content" id="tab-autonomous">
+        <div class="tutorial-section">
+          <h3>Start Autonomous Run</h3>
+          <textarea class="spec-input" id="spec-input"
+                    placeholder="Describe your project... e.g. Build a FastAPI app with SQLite authentication"></textarea>
+          <div class="form-row">
+            <label class="form-label">Profile:</label>
+            <select class="form-select" id="run-profile">
+              <option value="strict">strict (t=0.0)</option>
+              <option value="balanced" selected>balanced (t=0.2)</option>
+              <option value="creative">creative (t=0.8)</option>
+              <option value="verbose">verbose (t=0.4)</option>
+            </select>
+            <label class="form-label">Max Tasks:</label>
+            <input type="number" id="run-max-tasks" value="8" min="1" max="16"
+                   style="background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:13px;width:60px" />
+            <label class="form-check">
+              <input type="checkbox" id="run-shell" /> Shell tools
+            </label>
+            <button class="btn btn-primary" id="btn-launch">▶ Launch Run</button>
+          </div>
+          <div id="launch-result" style="margin-top:10px;font-size:13px"></div>
+        </div>
+      </div>
+
+      <!-- ── Custom Pipeline Tab ──────────────────────────────── -->
+      <div class="tab-content" id="tab-custom">
+        <div class="tutorial-section">
+          <h3>Build Custom Pipeline</h3>
+          <textarea class="spec-input" id="pipe-spec"
+                    placeholder="Project specification..."></textarea>
+          <div style="margin-top:10px">
+            <label class="form-label">Pipeline Steps:</label>
+            <div class="step-builder" id="step-builder">
+              <div class="step-item">
+                <select class="pipe-phase">
+                  <option value="scaffold">Scaffold</option>
+                  <option value="refactor">Refactor</option>
+                  <option value="debug">Debug</option>
+                  <option value="analyze">Analyze</option>
+                  <option value="review">Review</option>
+                  <option value="document">Document</option>
+                </select>
+                <span class="muted">→</span>
+                <input type="text" class="pipe-input" placeholder="Input (optional)" style="flex:1;background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px" />
+                <button class="btn btn-sm" onclick="removeStep(this)">✕</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn btn-sm" id="btn-add-step">+ Add Step</button>
+              <button class="btn btn-sm btn-danger" id="btn-clear-steps">Clear All</button>
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:12px">
+            <label class="form-label">Profile:</label>
+            <select class="form-select" id="pipe-profile">
+              <option value="balanced">balanced</option>
+              <option value="strict">strict</option>
+              <option value="creative">creative</option>
+            </select>
+            <button class="btn btn-primary" id="btn-run-pipeline">▶ Run Pipeline</button>
+          </div>
+          <div id="pipeline-result" style="margin-top:10px;font-size:13px"></div>
+        </div>
+      </div>
+
+      <!-- ── Active Runs Tab ──────────────────────────────────── -->
+      <div class="tab-content" id="tab-runs">
+        <div id="runs-container">
+          <div class="empty-state">
+            <div class="empty-icon">⏺</div>
+            <p>No active runs. Launch one from the tabs above.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SDLC_API = 'http://localhost:8050';
+    const PIPELINE_API = 'http://localhost:8170';
+    let refreshTimer = null;
+
+    function $(id) { return document.getElementById(id); }
+    function toast(msg, type='success') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // ── Tabs ────────────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        $('tab-' + btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'runs') loadRuns();
+      });
+    });
+
+    // ── Launch autonomous run ───────────────────────────────────
+    $('btn-launch').addEventListener('click', async () => {
+      const spec = $('spec-input').value.trim();
+      if (!spec) { toast('Please enter a project spec', 'error'); return; }
+      try {
+        const r = await fetch(`${SDLC_API}/auto/start`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            spec,
+            profile: $('run-profile').value,
+            max_tasks: parseInt($('run-max-tasks').value) || 8,
+            enable_shell: $('run-shell').checked,
+          }),
+        });
+        const data = await r.json();
+        if (r.ok) {
+          $('launch-result').innerHTML = `<span style="color:var(--accent)">✓ Run started: <code>${data.run_id}</code></span>`;
+          toast(`Run ${data.run_id} launched!`);
+          setTimeout(loadRuns, 500);
+        } else {
+          $('launch-result').innerHTML = `<span style="color:var(--danger)">✗ ${data.detail || 'Failed'}</span>`;
+          toast(data.detail || 'Launch failed', 'error');
+        }
+      } catch(e) {
+        $('launch-result').innerHTML = `<span style="color:var(--danger)">✗ Network error</span>`;
+        toast('Cannot reach SDLC service', 'error');
+      }
+    });
+
+    // ── Custom pipeline ─────────────────────────────────────────
+    function addStep() {
+      const builder = $('step-builder');
+      const div = document.createElement('div');
+      div.className = 'step-item';
+      div.innerHTML = `
+        <select class="pipe-phase">
+          <option value="scaffold">Scaffold</option>
+          <option value="refactor">Refactor</option>
+          <option value="debug">Debug</option>
+          <option value="analyze">Analyze</option>
+          <option value="review">Review</option>
+          <option value="document">Document</option>
+        </select>
+        <span class="muted">→</span>
+        <input type="text" class="pipe-input" placeholder="Input (optional)"
+               style="flex:1;background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px" />
+        <button class="btn btn-sm" onclick="removeStep(this)">✕</button>`;
+      builder.appendChild(div);
+    }
+    function removeStep(btn) { btn.closest('.step-item').remove(); }
+    $('btn-add-step').addEventListener('click', addStep);
+    $('btn-clear-steps').addEventListener('click', () => {
+      $('step-builder').innerHTML = '';
+      addStep();
+    });
+    // Start with one step
+    addStep();
+
+    $('btn-run-pipeline').addEventListener('click', async () => {
+      const spec = $('pipe-spec').value.trim();
+      if (!spec) { toast('Please enter a specification', 'error'); return; }
+      const steps = [...$('step-builder').querySelectorAll('.step-item')].map(row => ({
+        phase: row.querySelector('.pipe-phase').value,
+        input: { spec, ...(row.querySelector('.pipe-input').value ? { custom: row.querySelector('.pipe-input').value } : {}) },
+      }));
+      try {
+        const r = await fetch(`${PIPELINE_API}/pipeline/custom`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ spec, steps, profile: $('pipe-profile').value }),
+        });
+        const data = await r.json();
+        if (r.ok) {
+          $('pipeline-result').innerHTML = `<span style="color:var(--accent)">✓ Pipeline started: <code>${data.pipeline_id}</code></span>`;
+          toast('Pipeline launched!');
+        } else {
+          $('pipeline-result').innerHTML = `<span style="color:var(--danger)">✗ ${data.detail || 'Failed'}</span>`;
+          toast('Pipeline launch failed', 'error');
+        }
+      } catch(e) {
+        $('pipeline-result').innerHTML = `<span style="color:var(--danger)">✗ Network error</span>`;
+        toast('Cannot reach pipeline service', 'error');
+      }
+    });
+
+    // ── Load runs ───────────────────────────────────────────────
+    async function loadRuns() {
+      try {
+        const r = await fetch(`${SDLC_API}/auto/runs`);
+        const data = await r.json();
+        const runs = data.runs || [];
+        $('run-count').textContent = runs.length + ' run' + (runs.length!==1?'s':'');
+        const container = $('runs-container');
+        if (!runs.length) {
+          container.innerHTML = `<div class="empty-state"><div class="empty-icon">⏺</div><p>No runs yet. Launch one above.</p></div>`;
+          return;
+        }
+        const phaseOrder = ['queued','planning','coding','testing','fixing','reviewing','documenting','packaging','done','failed','cancelled'];
+        container.innerHTML = runs.map(run => {
+          const phaseIdx = phaseOrder.indexOf(run.status);
+          const phaseClass = run.status==='done'?'done':run.status==='failed'||run.status==='cancelled'?'failed':'';
+          const elapsed = run.created_at ? Math.round((Date.now()/1000 - run.created_at)) : 0;
+          return `
+            <div class="run-card">
+              <div class="run-card-header">
+                <code class="run-id">${run.run_id}</code>
+                <span class="run-spec" title="${run.spec}">${run.spec}</span>
+                <span class="run-phase ${phaseClass}">${run.status}</span>
+              </div>
+              <div class="run-meta">
+                <span>📁 ${run.files?.length || 0} files</span>
+                <span>⏱ ${elapsed}s</span>
+                <span>🔧 ${run.enable_shell?'shell ON':'shell OFF'}</span>
+              </div>
+              <div class="run-actions">
+                ${(run.status==='done'||run.status==='failed')
+                  ? `<a href="${SDLC_API}/auto/runs/${run.run_id}/artifact" class="btn btn-sm" download>⬇ Download</a>`
+                  : ''}
+                ${run.status==='pending'||run.status==='running'||phaseIdx>=0&&phaseIdx<phaseOrder.length-1
+                  ? `<button class="btn btn-sm btn-danger" onclick="cancelRun('${run.run_id}')">Cancel</button>`
+                  : ''}
+                <button class="btn btn-sm" onclick="loadRunDetail('${run.run_id}')">Details</button>
+              </div>
+              <div id="detail-${run.run_id}" style="display:none;margin-top:8px;font-size:12px;color:var(--muted);pre-wrap"></div>
+            </div>`;
+        }).join('');
+      } catch(e) {
+        $('runs-container').innerHTML = `<div class="empty-state"><p>Cannot reach SDLC service at ${SDLC_API}</p></div>`;
+      }
+    }
+
+    async function cancelRun(run_id) {
+      try {
+        await fetch(`${SDLC_API}/auto/runs/${run_id}/cancel`, {method:'POST'});
+        toast('Run cancelled');
+        loadRuns();
+      } catch(e) { toast('Cancel failed', 'error'); }
+    }
+
+    async function loadRunDetail(run_id) {
+      const el = $('detail-' + run_id);
+      if (el.style.display !== 'none') { el.style.display = 'none'; return; }
+      try {
+        const r = await fetch(`${SDLC_API}/auto/runs/${run_id}`);
+        const data = await r.json();
+        el.style.display = 'block';
+        el.innerHTML = `<pre style="background:rgba(2,6,23,.5);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:11px;max-height:300px;overflow:auto">${JSON.stringify(data, null, 2)}</pre>`;
+      } catch(e) {
+        el.style.display = 'block';
+        el.textContent = 'Failed to load details';
+      }
+    }
+
+    $('btn-refresh').addEventListener('click', loadRuns);
+
+    // Auto-refresh runs every 15s
+    setInterval(loadRuns, 15000);
+    loadRuns();
+  </script>
+</body>
+</html>

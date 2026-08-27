@@ -1,0 +1,345 @@
+services:
+  llama:
+    container_name: llama_cpp
+    build:
+      context: ./llama
+      dockerfile: Dockerfile
+    environment:
+      - LLAMA_MODEL_PATH=/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf
+      - LLAMA_PORT=9001
+      - N_GPU_LAYERS=${N_GPU_LAYERS:-80}
+      - LLAMA_EXTRA_ARGS=${LLAMA_EXTRA_ARGS:-}
+      - LLAMA_VISION_ENABLED=${LLAMA_VISION_ENABLED:-false}
+      - LLAMA_MMPROJ_PATH=/models/mmproj-Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-BF16.gguf
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9001:9001"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:9001/health', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  llama2:
+    container_name: llama2_cpp
+    build:
+      context: ./llama
+      dockerfile: Dockerfile
+    profiles: ["llama2"]
+    environment:
+      - LLAMA_MODEL_PATH=${LLAMA2_MODEL_PATH:-/models/Qwen3.5-9B-Claude-Code-Q4_K_M.gguf}
+      - LLAMA_PORT=9003
+      - N_GPU_LAYERS=${N_GPU_LAYERS:-60}
+      - LLAMA_EXTRA_ARGS=${LLAMA_EXTRA_ARGS:-}
+      - LLAMA_VISION_ENABLED=${LLAMA2_VISION_ENABLED:-false}
+      - LLAMA_MMPROJ_PATH=${LLAMA2_MMPROJ_PATH:-}
+      - NVIDIA_VISIBLE_DEVICES=${LLAMA2_GPU:-1}
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9003:9003"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:9003/health', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  gpu-warmup:
+    container_name: gpu_warmup
+    build:
+      context: ./agents
+      dockerfile: Dockerfile
+    profiles: ["warmup"]
+    environment:
+      - ROUTER_URL=http://router:8010/route
+    command: ["python3", "-c", "import os,urllib.request;req=urllib.request.Request(os.environ['ROUTER_URL'],data=b'{\"prompt\":\"warmup\",\"max_tokens\":32}',headers={'Content-Type':'application/json'});print(urllib.request.urlopen(req,timeout=300).status)"]
+    depends_on:
+      router:
+        condition: service_healthy
+      llama:
+        condition: service_healthy
+    restart: "no"
+
+  vllm:
+    container_name: vllm_server
+    image: vllm/vllm-openai:latest
+    profiles: ["vllm"]
+    command: ["--host", "0.0.0.0", "--port", "9002",
+              "--model", "${VLLM_MODEL:-Qwen/Qwen2.5-7B-Instruct}",
+              "--enable-prefix-caching"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9002:9002"
+    restart: always
+
+  router:
+    container_name: freeai_router
+    build:
+      context: ./router
+      dockerfile: Dockerfile
+    environment:
+      - LLAMA_BASE=http://llama:9001
+      - ROUTER_PORT=8010
+      - ROUTER_API_KEY=${ROUTER_API_KEY:-}
+      - MOCK_LLM=${MOCK_LLM:-0}
+      - RATE_LIMIT_CAPACITY=${RATE_LIMIT_CAPACITY:-60}
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
+    ports:
+      - "8010:8010"
+      - "8011:8011"
+    depends_on:
+      - llama
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8010/health', timeout=5)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    command: ["bash", "-c", "python router/router.py & python router/ws_stream.py & wait"]
+
+  agents:
+    container_name: agent_api
+    build:
+      context: ./agents
+      dockerfile: Dockerfile
+    environment:
+      - ROUTER_URL=http://router:8010/route
+    ports:
+      - "8020:8020"
+    depends_on:
+      router:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8020/health', timeout=5)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  workflow:
+    container_name: workflow_engine
+    build:
+      context: ./workflow
+      dockerfile: Dockerfile
+    environment:
+      - AGENT_API=http://agents:8020
+      - WORKFLOW_AUDIT_LOG=/workspace/logs/workflow-audit.jsonl
+    volumes:
+      - audit-logs:/workspace/logs
+    ports:
+      - "8040:8040"
+    depends_on:
+      agents:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:8040/health', timeout=5)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  autonomous:
+    container_name: autonomous_sdlc
+    build:
+      context: .
+      dockerfile: ./autonomous/Dockerfile
+    environment:
+      - AGENT_API=http://agents:8020
+      - ENABLE_SHELL_TOOLS=${ENABLE_SHELL_TOOLS:-0}
+      - MAX_FIX_ROUNDS=3
+    volumes:
+      - workspaces:/stack/workspaces
+    ports:
+      - "8050:8050"
+    depends_on:
+      agents:
+        condition: service_healthy
+    restart: always
+
+  dashboard:
+    container_name: freeai_dashboard
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "8030:8030"
+    depends_on:
+      - router
+      - llama
+      - agents
+    restart: always
+
+  desktop:
+    container_name: xfce_desktop
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    profiles: ["desktop"]
+    environment:
+      - USER=root
+      - PASSWORD=pass
+      - RESOLUTION=1920x1080
+    ports:
+      - "5901:5901"
+      - "6080:6080"
+    restart: always
+
+  allinone:
+    container_name: freeai_allinone
+    build:
+      context: .
+      dockerfile: docker/all-in-one.Dockerfile
+    profiles: ["allinone"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    volumes:
+      - ./models:/stack/models
+      - workspaces:/stack/workspaces
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "8010:8010"
+      - "8020:8020"
+      - "8030:8030"
+      - "8040:8040"
+      - "8050:8050"
+      - "9001:9001"
+    restart: always
+
+  caddy:
+    container_name: freeai_tls
+    image: caddy:latest
+    profiles: ["tls"]
+    environment:
+      - AUTOAUTH_USER=${AUTOAUTH_USER:-freeai}
+      - AUTOAUTH_HASH=${AUTOAUTH_HASH:-}
+      - FREEAI_DOMAIN=${FREEAI_DOMAIN:-}
+      - ACME_EMAIL=${ACME_EMAIL:-}
+    # Public domain w/ automatic HTTPS: swap the volume to
+    # ./docker/Caddyfile.public and uncomment ports 80/443.
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    ports:
+      - "8443:8443"
+      # - "80:80"
+      # - "443:443"
+    depends_on:
+      - dashboard
+      - autonomous
+    restart: always
+
+  jupyter:
+    container_name: freeai_jupyter
+    image: jupyter/base-notebook:latest
+    profiles: ["jupyter"]
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: ["start-notebook.py", "--NotebookApp.token=",
+              "--NotebookApp.allow_origin='*'",
+              "--notebook-dir=/home/jovyan/notebooks"]
+    volumes:
+      - ./notebooks:/home/jovyan/notebooks
+    ports:
+      - "8888:8888"
+    restart: always
+
+  lollms:
+    container_name: freeai_lollms
+    image: parisneo/lollms:latest
+    profiles: ["lollms"]
+    ports:
+      - "9600:9600"
+    volumes:
+      - lollms-data:/data
+    environment:
+      - LOLLMS_HOST=0.0.0.0
+    restart: unless-stopped
+
+  freetoken:
+    container_name: freeai_freetoken
+    image: flashml/freetoken:latest
+    profiles: ["freetoken"]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - FREETOKEN_MODEL=${FREETOKEN_MODEL:-deepseek-ai/DeepSeek-V4-Flash}
+      - FREETOKEN_PORT=9100
+    volumes:
+      - freetoken-cache:/root/.cache/freetoken
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+
+  qdrant:
+    container_name: freeai_qdrant
+    image: qdrant/qdrant:latest
+    profiles: ["rag"]
+    volumes:
+      - qdrant-data:/qdrant/storage
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    restart: unless-stopped
+
+  rag-ingest:
+    container_name: freeai_rag_ingest
+    build:
+      context: ./rag
+      dockerfile: Dockerfile
+    profiles: ["rag"]
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - ROUTER_URL=http://router:8010/route
+    volumes:
+      - ./docs:/app/docs:ro
+      - ./README.md:/app/README.md:ro
+    depends_on:
+      - qdrant
+      - router
+    restart: "no"
+    command: ["python", "ingest.py", "--watch"]
+
+volumes:
+  audit-logs:
+  workspaces:
+  caddy-data:
+  lollms-data:
+  freetoken-cache:
+  qdrant-data:
+
+networks:
+  default:
+    driver: bridge

@@ -1,0 +1,11 @@
+name: weather
+version: 1.1.0
+description: Use when Codex needs current weather or forecasts with caching, command-line lookup, common-city shortcuts, or fallback between wttr.in and Open-Meteo.
+tools:
+  - weather_fetch
+command-dispatch: tool
+metadata:
+  codex:
+    emoji: "🌤️"
+    requires:
+      bins: ["curl"]

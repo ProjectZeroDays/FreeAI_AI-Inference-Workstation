@@ -1,0 +1,216 @@
+{
+  "_comment": "Auto-merged provider registry from mimocode/ sources. Do not edit by hand.",
+  "merged_at": "2026-08-27T13:36:59.852598Z",
+  "sources": [
+    "mimocode-providers.json",
+    "opencode-providers.json",
+    "openclaw-providers.json",
+    "jcode-providers.json",
+    "hermes-providers.json"
+  ],
+  "providers": {
+    "openai": {
+      "type": "primary",
+      "base_url": "https://api.openai.com/v1",
+      "models": [
+        "gpt-4-turbo",
+        "gpt-4o",
+        "gpt-4o-mini",
+        "o1",
+        "o1-mini"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "agentrouter": {
+      "type": "primary",
+      "base_url": "https://agentrouter.org",
+      "models": [
+        "claude-haiku-4",
+        "claude-opus-4-6",
+        "claude-sonnet-4"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "omniroute": {
+      "type": "primary",
+      "base_url": "https://api.omniroute.ai/v1",
+      "models": [
+        "omni-1-mini",
+        "omni-1-pro"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "anthropic": {
+      "type": "primary",
+      "base_url": "https://api.anthropic.com/v1",
+      "models": [
+        "claude-haiku-4-20250414",
+        "claude-opus-4-20250514",
+        "claude-sonnet-4-20250514"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "deepseek": {
+      "type": "primary",
+      "base_url": "https://api.deepseek.com/v1",
+      "models": [
+        "deepseek-chat",
+        "deepseek-coder",
+        "deepseek-reasoner"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "perplexity": {
+      "type": "primary",
+      "base_url": "https://api.perplexity.ai",
+      "models": [
+        "sonar",
+        "sonar-pro",
+        "sonar-reasoning"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "gemini": {
+      "type": "primary",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "models": [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-thinking",
+        "gemini-2.5-pro"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "venice": {
+      "type": "primary",
+      "base_url": "https://api.venice.ai/api/v1",
+      "models": [
+        "claude-3-5-sonnet",
+        "gemma-4-uncensored",
+        "llama-3.1-405b"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "agames_ai": {
+      "type": "primary",
+      "base_url": "https://apihub.agnes-ai.com/v1",
+      "models": [
+        "agnes-2.0-flash",
+        "agnes-2.0-pro"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "openrouter": {
+      "type": "primary",
+      "base_url": "https://openrouter.ai/api/v1",
+      "models": [
+        "anthropic/claude-3.5-sonnet",
+        "deepseek/deepseek-r1",
+        "openai/gpt-4o"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "nexustrade": {
+      "type": "primary",
+      "base_url": "https://nexustrade.io/api/v1",
+      "models": [
+        "nt-chat-v1",
+        "nt-coder-v1"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "shodan": {
+      "type": "primary",
+      "base_url": "https://api.shodan.io",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "wakatime": {
+      "type": "primary",
+      "base_url": "https://api.wakatime.com/api/v1",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "tabnine": {
+      "type": "primary",
+      "base_url": "https://api.tabnine.com",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "langchain": {
+      "type": "primary",
+      "base_url": "https://api.smith.langchain.com",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "huggingface": {
+      "type": "primary",
+      "base_url": "https://huggingface.co",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "gemini_ai_studio": {
+      "type": "primary",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "models": [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-thinking"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "cody": {
+      "type": "primary",
+      "base_url": "https://sourcegraph.com/.api/completions",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "envia": {
+      "type": "primary",
+      "base_url": "https://www.envia.com/api/v1",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "nvapi": {
+      "type": "primary",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "models": [
+        "llama-3.1-405b",
+        "nemo"
+      ],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "hostinger": {
+      "type": "primary",
+      "base_url": "https://hostinger.com/api",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    },
+    "omg_lol": {
+      "type": "primary",
+      "base_url": "https://api.omg.lol/v1",
+      "models": [],
+      "auth": "env:UNKNOWN",
+      "enabled": true
+    }
+  }
+}

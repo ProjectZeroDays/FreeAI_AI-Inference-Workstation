@@ -1,0 +1,7 @@
+[Unit]
+Description=FreeAI weekly config/run-manifest backup
+
+[Service]
+Type=oneshot
+User=__STACK_USER__
+ExecStart=/usr/bin/env bash __STACK_DIR__/scripts/backup.sh

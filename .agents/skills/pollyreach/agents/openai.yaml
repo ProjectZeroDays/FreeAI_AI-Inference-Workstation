@@ -1,0 +1,4 @@
+interface:
+  display_name: "PollyReach"
+  short_description: "Phone calls for agent tasks"
+  default_prompt: "Use $pollyreach to make or manage a phone-based task through PollyReach."

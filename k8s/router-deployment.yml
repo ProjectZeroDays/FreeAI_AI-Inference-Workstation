@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: router
+  namespace: freeai-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: router
+  template:
+    metadata:
+      labels:
+        app: router
+    spec:
+      containers:
+        - name: router
+          image: your-registry/router:latest
+          ports:
+            - containerPort: 8010
+          env:
+            - name: LLAMA_BASE
+              value: http://llama:9001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: router
+  namespace: freeai-stack
+spec:
+  selector:
+    app: router
+  ports:
+    - port: 8010
+      targetPort: 8010

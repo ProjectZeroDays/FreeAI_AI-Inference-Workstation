@@ -1,0 +1,273 @@
+{
+  "_comment": "FreeAI Unified Stack — complete service registry. All ports reference launch.py and MEMORY.md port map.",
+  "version": "2.0.0",
+  "generated": "2026-08-27T00:00:00Z",
+  "services": {
+    "dashboard": {
+      "name": "Dashboard",
+      "port": 8080,
+      "module": "dashboard.backend",
+      "priority": "critical",
+      "description": "Web UI — 15+ pages (wiki, blog, forum, logs, network, skills, desktop)",
+      "auto_start": true,
+      "health_path": "/api/status",
+      "dependencies": []
+    },
+    "proxy": {
+      "name": "Proxy",
+      "port": 8100,
+      "module": "proxy.proxy",
+      "priority": "critical",
+      "description": "Unified LLM proxy (opencodex-style multi-provider routing)",
+      "auto_start": true,
+      "health_path": "/health",
+      "dependencies": ["dashboard"]
+    },
+    "memory": {
+      "name": "Memory",
+      "port": 8110,
+      "module": "memory.memory_api",
+      "priority": "high",
+      "description": "Agent Zero persistent memory API",
+      "auto_start": true,
+      "health_path": "/api/health",
+      "dependencies": []
+    },
+    "agents": {
+      "name": "Agents",
+      "port": 8120,
+      "module": "agents.specialized.agents_api",
+      "priority": "high",
+      "description": "7 specialized agents (oh-my-opencode-slim)",
+      "auto_start": true,
+      "health_path": "/api/health",
+      "dependencies": ["proxy"]
+    },
+    "registry": {
+      "name": "Registry",
+      "port": 8130,
+      "module": "plugins.registry.registry_api",
+      "priority": "high",
+      "description": "Plugin registry (awesome-opencode)",
+      "auto_start": true,
+      "health_path": "/api/health",
+      "dependencies": []
+    },
+    "rag": {
+      "name": "RAG",
+      "port": 8140,
+      "module": "rag.service",
+      "priority": "medium",
+      "description": "RAG retrieval service",
+      "auto_start": true,
+      "health_path": "/health",
+      "dependencies": ["memory"]
+    },
+    "brain": {
+      "name": "Brain",
+      "port": 8150,
+      "module": "brain.brain",
+      "priority": "high",
+      "description": "AgentBrain three-tier router",
+      "auto_start": true,
+      "health_path": "/health",
+      "dependencies": ["proxy"]
+    },
+    "skills": {
+      "name": "Skills",
+      "port": 8160,
+      "module": "skills.skills_api",
+      "priority": "medium",
+      "description": "Skills API & auto-skill creation",
+      "auto_start": true,
+      "health_path": "/api/health",
+      "dependencies": ["registry"]
+    },
+    "pipeline": {
+      "name": "Pipeline",
+      "port": 8170,
+      "module": "pipeline.api",
+      "priority": "medium",
+      "description": "Workflow pipeline API",
+      "auto_start": false,
+      "health_path": "/api/health",
+      "dependencies": ["agents"]
+    },
+    "autonomous": {
+      "name": "Autonomous",
+      "port": 8050,
+      "module": "autonomous.api",
+      "launcher": "start_autonomous.py",
+      "priority": "high",
+      "description": "Autonomous SDLC agent loop",
+      "auto_start": true,
+      "health_path": "/api/health",
+      "dependencies": ["proxy", "agents"]
+    },
+    "browser": {
+      "name": "Browser (Knight-Shade)",
+      "port": 8180,
+      "module": "browser.api",
+      "launcher": "start_browser.py",
+      "priority": "medium",
+      "description": "Knight-Shade v2.0 invisible Playwright headless browser on :8180",
+      "auto_start": false,
+      "health_path": "/api/health",
+      "dependencies": []
+    },
+    "browser_v2": {
+      "name": "Browser v2",
+      "port": 8181,
+      "module": null,
+      "priority": "low",
+      "description": "Browser v2 experimental service (reserved)",
+      "auto_start": false,
+      "health_path": null,
+      "dependencies": []
+    },
+    "campaign": {
+      "name": "Campaign",
+      "port": 8090,
+      "module": null,
+      "priority": "medium",
+      "description": "Campaign Manager API (FastAPI, started separately)",
+      "auto_start": false,
+      "health_path": "/api/health",
+      "dependencies": ["agents"]
+    },
+    "gpu": {
+      "name": "GPU Monitor",
+      "port": 8200,
+      "module": null,
+      "priority": "high",
+      "description": "GPU telemetry and preset management (FastAPI)",
+      "auto_start": true,
+      "health_path": "/health",
+      "dependencies": []
+    },
+    "awesome_registry": {
+      "name": "Awesome Registry",
+      "port": 8210,
+      "module": null,
+      "priority": "low",
+      "description": "Awesome registry service (reserved)",
+      "auto_start": false,
+      "health_path": null,
+      "dependencies": []
+    },
+    "permissions": {
+      "name": "Permissions",
+      "port": 8220,
+      "module": null,
+      "priority": "medium",
+      "description": "RBAC/permissions service",
+      "auto_start": false,
+      "health_path": "/api/health",
+      "dependencies": ["registry"]
+    },
+    "scheduler": {
+      "name": "Scheduler",
+      "port": 8230,
+      "module": null,
+      "priority": "medium",
+      "description": "Cron-based job scheduler",
+      "auto_start": true,
+      "health_path": "/api/health",
+      "dependencies": ["agents", "pipeline"]
+    },
+    "health_monitor": {
+      "name": "Health Monitor",
+      "port": 8240,
+      "module": null,
+      "priority": "high",
+      "description": "Cross-service health monitoring and auto-restart",
+      "auto_start": true,
+      "health_path": "/health",
+      "dependencies": []
+    },
+    "salad": {
+      "name": "Salad",
+      "port": 8250,
+      "module": null,
+      "priority": "low",
+      "description": "Salad.dev GPU marketplace integration (env-gated stub)",
+      "auto_start": false,
+      "health_path": null,
+      "dependencies": []
+    },
+    "router": {
+      "name": "Router",
+      "port": 8010,
+      "module": "router.router",
+      "priority": "critical",
+      "description": "Main LLM router — central request dispatcher",
+      "auto_start": true,
+      "health_path": "/health",
+      "dependencies": []
+    },
+    "workflow_engine": {
+      "name": "Workflow Engine",
+      "port": 8040,
+      "module": "workflow.engine",
+      "priority": "medium",
+      "description": "Workflow orchestration engine (alternative entry to pipeline)",
+      "auto_start": false,
+      "health_path": "/api/health",
+      "dependencies": ["agents"]
+    },
+    "llama": {
+      "name": "LLama.cpp Server",
+      "port": 8011,
+      "module": null,
+      "launcher": "llama/launch-llama.sh",
+      "priority": "medium",
+      "description": "Local LLaMA.cpp inference server",
+      "auto_start": false,
+      "health_path": "/health",
+      "dependencies": []
+    },
+    "vllm": {
+      "name": "vLLM Server",
+      "port": 8012,
+      "module": null,
+      "launcher": "vllm/launch-vllm.sh",
+      "priority": "medium",
+      "description": "vLLM high-throughput serving (VLLM_ENABLED=true required)",
+      "auto_start": false,
+      "health_path": "/health",
+      "dependencies": [],
+      "env_gate": "VLLM_ENABLED"
+    }
+  },
+  "port_map": {
+    "8080": "dashboard",
+    "8010": "router",
+    "8011": "llama",
+    "8012": "vllm",
+    "8040": "workflow_engine",
+    "8050": "autonomous",
+    "8090": "campaign",
+    "8100": "proxy",
+    "8110": "memory",
+    "8120": "agents",
+    "8130": "registry",
+    "8140": "rag",
+    "8150": "brain",
+    "8160": "skills",
+    "8170": "pipeline",
+    "8180": "browser",
+    "8181": "browser_v2",
+    "8200": "gpu",
+    "8210": "awesome_registry",
+    "8220": "permissions",
+    "8230": "scheduler",
+    "8240": "health_monitor",
+    "8250": "salad"
+  },
+  "priority_groups": {
+    "critical": ["dashboard", "proxy", "router"],
+    "high": ["memory", "agents", "registry", "brain", "gpu", "autonomous", "health_monitor", "scheduler"],
+    "medium": ["rag", "skills", "pipeline", "workflow_engine", "llama", "vllm", "campaign", "permissions"],
+    "low": ["browser_v2", "awesome_registry", "salad"]
+  }
+}

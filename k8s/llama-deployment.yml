@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama
+  namespace: freeai-stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama
+  template:
+    metadata:
+      labels:
+        app: llama
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: llama
+          image: your-registry/llama:latest
+          ports:
+            - containerPort: 9001
+          env:
+            - name: LLAMA_PORT
+              value: "9001"
+            - name: LLAMA_MODEL_PATH
+              value: /models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+      volumes:
+        # Pre-populate with GGUF files (e.g. hostPath or a provisioned PVC).
+        - name: models
+          persistentVolumeClaim:
+            claimName: llama-models
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama
+  namespace: freeai-stack
+spec:
+  selector:
+    app: llama
+  ports:
+    - port: 9001
+      targetPort: 9001

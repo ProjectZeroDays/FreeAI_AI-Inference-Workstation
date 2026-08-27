@@ -1,0 +1,22 @@
+name: local-build-fallback
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-local-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build allinone tarball (no push)
+        run: |
+          docker build -f docker/all-in-one.Dockerfile -t freeai-allinone:ci .
+          docker save freeai-allinone:ci | gzip > freeai-allinone.tar.gz
+          ls -lh freeai-allinone.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: freeai-allinone-image
+          path: freeai-allinone.tar.gz
+          retention-days: 14

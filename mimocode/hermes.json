@@ -1,0 +1,8 @@
+{
+  "id": "hermes",
+  "name": "Hermes Agent",
+  "type": "web",
+  "port": 7001,
+  "url": "/hermes",
+  "enabled": true
+}

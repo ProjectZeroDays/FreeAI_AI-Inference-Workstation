@@ -1,0 +1,49 @@
+name: Bug Report
+description: Report a deployment or runtime issue
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before filing:** run `python freeai.py status` and check `docs/TROUBLESHOOTING.md`.
+  - type: input
+    id: version
+    attributes:
+      label: Version / Commit
+      placeholder: v1.2.1 or abc1234
+    validations: { required: true }
+  - type: dropdown
+    id: deploy
+    attributes:
+      label: Deployment
+      options: [bare-metal Ubuntu 24.04, Docker Compose, Kubernetes, Live ISO, Vast.ai/RunPod, other]
+    validations: { required: true }
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware
+      description: CPU / GPU (`nvidia-smi`) / RAM / NVMe
+      placeholder: i9-14900KF / RTX 4090 24GB / 128GB DDR5 / 2x2TB NVMe
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. sudo ./hardware/install-stack.sh
+        2. python freeai.py auto-start "..."
+        3. ...
+    validations: { required: true }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste `freeai.py status`, `systemctl status freeai-*`, and relevant `*.log` tails (redact keys!)
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues
+        - label: I ran `SAMPLE_TELEMETRY=1` to confirm dashboard vs GPU issue
+        - label: I did not paste secrets (keys are in `.env`, not logs)

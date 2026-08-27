@@ -1,0 +1,4 @@
+interface:
+  display_name: "FFmpeg Video Editor"
+  short_description: "Natural language FFmpeg commands"
+  default_prompt: "Use $ffmpeg-video-editor to turn a video editing request into a correct FFmpeg command."

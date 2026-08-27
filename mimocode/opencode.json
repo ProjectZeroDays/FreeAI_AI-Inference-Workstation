@@ -1,0 +1,8 @@
+{
+  "id": "opencode",
+  "name": "OpenCode",
+  "type": "web",
+  "port": 3000,
+  "url": "/opencode",
+  "enabled": true
+}

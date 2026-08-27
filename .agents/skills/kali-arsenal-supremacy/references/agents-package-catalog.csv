@@ -1,0 +1,1509 @@
+package,status,kali_categories,domain,summary
+0trace,installed,none-detected,general-ops,traceroute tool that can run within an existing TCP connection
+7zip,installed,none-detected,general-ops,7-Zip file archiver with a high compression ratio
+7zip-standalone,installed,none-detected,general-ops,7-Zip file archiver with a high compression ratio (standalone)
+above,installed,none-detected,general-ops,Network security sniffer for finding vulnerabilities in the network
+adaptixc2,installed,none-detected,exploitation-c2,extensible post-exploitation and adversarial emulation framework
+aesfix,installed,none-detected,general-ops,tool for correcting bit errors in an AES key schedule
+aeskeyfind,installed,none-detected,general-ops,tool for locating AES keys in a captured memory image
+afflib,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+afflib-tools,installed,none-detected,forensics-ir,Advanced Forensics Format Library (utilities)
+libafflib-dev,installed,none-detected,forensics-ir,Advanced Forensics Format Library (development files)
+libafflib0t64,installed,none-detected,forensics-ir,Advanced Forensics Format Library
+aflplusplus,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+afl++-doc,installed,none-detected,reverse-fuzzing,instrumentation-driven fuzzer for binary formats - documentation
+aircrack-ng,installed,kali-wifi-credential-access,wireless-rf,wireless WEP/WPA cracking utilities
+airgraph-ng,installed,none-detected,wireless-rf,Tool to graph txt files created by aircrack-ng
+airgeddon,installed,none-detected,wireless-rf,multi-use bash script for Linux systems to audit wireless networks
+altdns,installed,none-detected,general-ops,Subdomain discovery through alterations and permutations
+amap,installed,none-detected,general-ops,next-generation scanning tool for pentesters
+amass,installed,kali-discovery;kali-identify;kali-network-information;kali-network-service-discovery,reconnaissance,In-depth DNS Enumeration and Network Mapping
+android-sdk-meta,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+android-sdk,installed,none-detected,development-support,Software development kit for Android platform
+android-sdk-build-tools,installed,none-detected,development-support,Tools for building Android applications
+android-sdk-build-tools-common,installed,none-detected,development-support,Tools for building Android applications - Common files
+android-sdk-common,installed,none-detected,development-support,Common files of Android SDK base toolset
+android-sdk-platform-tools,installed,none-detected,development-support,Tools for interacting with an Android platform
+android-sdk-platform-tools-common,installed,none-detected,development-support,Tools for interacting with an Android platform - Common files
+apache-users,installed,none-detected,general-ops,Enumerate usernames on systems with Apache UserDir module
+apache2,installed,none-detected,web-app,Apache HTTP Server
+apache2-bin,installed,none-detected,web-app,Apache HTTP Server (modules and other binary files)
+apache2-data,installed,none-detected,web-app,Apache HTTP Server (common files)
+apache2-dev,installed,none-detected,web-app,Apache HTTP Server (development headers)
+apache2-doc,installed,none-detected,web-app,Apache HTTP Server (on-site documentation)
+apache2-ssl-dev,installed,none-detected,web-app,Apache HTTP Server (mod_ssl development headers)
+apache2-suexec-custom,installed,none-detected,web-app,Apache HTTP Server configurable suexec program for mod_suexec
+apache2-suexec-pristine,installed,none-detected,web-app,Apache HTTP Server standard suexec program for mod_suexec
+apache2-utils,installed,none-detected,web-app,Apache HTTP Server (utility programs for web servers)
+apktool,installed,none-detected,reverse-fuzzing,tool for reverse engineering Android apk files
+apple-bleee,installed,none-detected,general-ops,scripts to show what an attacker get from Apple devices
+arjun,installed,none-detected,web-app,HTTP parameter discovery suite
+armitage,installed,kali-command-and-control;kali-execution,exploitation-c2,Cyber attack management for Metasploit
+arp-scan,installed,none-detected,general-ops,arp scanning and fingerprinting tool
+arping,installed,kali-discovery;kali-remote-system-discovery,general-ops,sends IP and/or ARP pings (to the MAC address)
+arpwatch,installed,none-detected,defensive-monitoring,Ethernet/FDDI station activity monitor
+asleap,installed,none-detected,exploitation-c2,A tool for exploiting Cisco LEAP networks
+assetfinder,installed,none-detected,reconnaissance,Find domains and subdomains related to a given domain
+atftp,installed,none-detected,general-ops,advanced TFTP client
+atftpd,installed,none-detected,general-ops,advanced TFTP server
+atomic-operator,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-atomic-operator,installed,none-detected,general-ops,module to execute Atomic Red Team tests (Python 3)
+autopsy,installed,kali-forensics;kali-sleuth-kit-suite,wireless-rf,graphical interface to SleuthKit
+autorecon,installed,none-detected,reconnaissance,Multi-threaded network reconnaissance tool
+axel,installed,none-detected,general-ops,light command line download accelerator
+azurehound,installed,none-detected,cloud-container,BloodHound data collector for Microsoft Azure (program)
+b374k,installed,none-detected,general-ops,Remote management tool
+bed,installed,none-detected,reverse-fuzzing,A network protocol fuzzer
+beef-xss,installed,none-detected,web-app,Browser Exploitation Framework (BeEF)
+berate-ap,installed,none-detected,general-ops,Script for orchestrating mana rogue Wi-Fi Access Points
+bettercap,installed,none-detected,general-ops,"Complete, modular, portable and easily extensible MITM framework"
+bettercap-ui,installed,none-detected,web-app,bettercap's web UI
+bind9,installed,none-detected,general-ops,Internet Domain Name Server
+bind9-dev,installed,none-detected,development-support,Static Libraries and Headers used by BIND 9
+bind9-dnsutils,installed,none-detected,general-ops,Clients provided with BIND 9
+bind9-doc,installed,none-detected,development-support,Documentation for BIND 9
+bind9-host,installed,none-detected,general-ops,DNS Lookup Utility
+bind9-libs,installed,none-detected,general-ops,Shared Libraries used by BIND 9
+bind9-utils,installed,none-detected,general-ops,Utilities for BIND 9
+bing-ip2hosts,installed,none-detected,general-ops,Enumerate hostnames for an IP using bing.com
+binwalk,installed,kali-forensics,forensics-ir,tool library for analyzing binary blobs and executable code
+python3-binwalk,installed,none-detected,reverse-fuzzing,Python3 library for analyzing binary blobs and executable code
+binwalk3,installed,kali-forensics,forensics-ir,tool library for analyzing binary blobs and executable code
+librust-binwalk-dev,unresolved-on-snapshot,none-detected,development-support,Analyzes data for embedded file types - Rust source code
+bloodhound,installed,none-detected,general-ops,"Six Degrees of Domain Admin, BloodHound CE"
+bloodhound-ce-python,installed,none-detected,general-ops,Python based ingestor for BloodHound CE
+bloodhound.py,installed,kali-active-directory,general-ops,"ingestor for BloodHound, based on Impacket (Python 3)"
+bloodyad,installed,none-detected,general-ops,Active Directory privilege escalation framework
+blue-hydra,installed,none-detected,wireless-rf,Bluetooth device discovery service
+bluelog,installed,none-detected,wireless-rf,Bluetooth scanner and logger
+blueranger,installed,none-detected,wireless-rf,Simple Bash script to locate Bluetooth devices
+bluesnarfer,installed,none-detected,wireless-rf,Bluesnarfing utility
+bluez,installed,none-detected,wireless-rf,Bluetooth tools and daemons
+bluetooth,installed,none-detected,wireless-rf,Bluetooth support (metapackage)
+bluez-cups,installed,none-detected,wireless-rf,Bluetooth printer driver for CUPS
+bluez-hcidump,installed,none-detected,wireless-rf,Analyses Bluetooth HCI packets
+bluez-meshd,installed,none-detected,wireless-rf,bluetooth mesh daemon
+bluez-obexd,installed,none-detected,general-ops,bluez obex daemon
+bluez-source,installed,none-detected,wireless-rf,Source code for the BlueZ Linux Bluetooth stack
+bluez-test-scripts,installed,none-detected,general-ops,test scripts of bluez
+bluez-test-tools,installed,none-detected,general-ops,test tools of bluez
+libbluetooth-dev,installed,none-detected,wireless-rf,Development files for using the BlueZ Linux Bluetooth library
+libbluetooth3,installed,none-detected,wireless-rf,Library to use the BlueZ Linux Bluetooth stack
+bopscrk,installed,none-detected,wireless-rf,Generate smart and powerful wordlists
+bpf-linker,installed,none-detected,general-ops,simplify building modern BPF programs
+braa,installed,none-detected,general-ops,Mass SNMP scanner
+bruteforce-luks,installed,none-detected,credential-access,Try to find a password of a LUKS encrypted volume
+bruteforce-salted-openssl,installed,none-detected,crypto-stego,try to find the passphrase for files encrypted with OpenSSL
+bruteforce-wallet,installed,none-detected,credential-access,try to find the password of an encrypted wallet file
+bruteshark,installed,none-detected,forensics-ir,Network Forensic Analysis Tool (NFAT)
+brutespray,installed,none-detected,general-ops,Bruteforcing from various scanner output
+btscanner,installed,none-detected,wireless-rf,ncurses-based scanner for Bluetooth devices
+bulk-extractor,installed,kali-forensics,forensics-ir,Extracts information without parsing filesystem
+bully,installed,kali-wifi-credential-access,wireless-rf,"Implementation of the WPS brute force attack, written in C"
+burpsuite,installed,kali-reconnaissance;kali-web-vulnerability-scanning,reconnaissance,platform for security testing of web applications
+bytecode-viewer,installed,none-detected,reverse-fuzzing,Java 8+ Jar & Android APK Reverse Engineering Suite
+cabextract,installed,none-detected,general-ops,Microsoft Cabinet file unpacker
+cadaver,installed,kali-application-layer-protocol,web-app,command-line WebDAV client
+caido,installed,none-detected,defensive-monitoring,security auditing toolkit (desktop)
+caido-cli,installed,none-detected,defensive-monitoring,security auditing toolkit (CLI)
+caldera,installed,none-detected,general-ops,Scalable Automated Adversary Emulation Platform
+calico,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+calicoctl,installed,none-detected,cloud-container,networking and network security solution for Kubernetes
+capstone,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+capstone-tool,installed,none-detected,general-ops,lightweight multi-architecture disassembly framework - command line tool
+libcapstone-dev,installed,none-detected,development-support,lightweight multi-architecture disassembly framework - devel files
+libcapstone5,installed,none-detected,development-support,lightweight multi-architecture disassembly framework - library
+python3-capstone,installed,none-detected,general-ops,lightweight multi-architecture disassembly framework - Python bindings
+ccrypt,installed,none-detected,general-ops,secure encryption and decryption of files and streams
+elpa-ps-ccrypt,installed,none-detected,general-ops,Emacs addon for working with files encrypted with ccrypt
+certgraph,installed,none-detected,crypto-stego,tool to crawl the graph of certificate Alternate Names
+certi,installed,none-detected,crypto-stego,Tool to ask certificates to ADCS and discover templates
+certipy-ad,installed,none-detected,crypto-stego,Tool for attacking AD Certificate Services
+cewl,installed,kali-credential-access;kali-password-profiling-wordlists,credential-access,custom word list generator
+chainsaw,installed,none-detected,forensics-ir,Rapidly search and hunt through Windows forensic artefacts
+changeme,installed,none-detected,credential-access,Default credential scanner
+chaosreader,installed,none-detected,general-ops,trace network sessions and export it to html format
+cherrytree,installed,none-detected,general-ops,hierarchical note taking application
+chirp,installed,none-detected,general-ops,Configuration tool for amateur radios
+chisel,installed,none-detected,web-app,fast TCP/UDP tunnel over HTTP (program)
+chisel-common-binaries,installed,none-detected,general-ops,Prebuilt binaries for chisel
+chkrootkit,installed,none-detected,general-ops,rootkit detector
+chntpw,installed,kali-os-credential-dumping,credential-access,NT SAM password recovery utility
+chromium,installed,none-detected,web-app,web browser
+chromium-common,installed,none-detected,web-app,web browser - common resources used by the chromium packages
+chromium-driver,installed,none-detected,web-app,web browser - WebDriver support
+chromium-headless-shell,installed,none-detected,web-app,web browser - old headless shell
+chromium-l10n,installed,none-detected,web-app,web browser - language packs
+chromium-sandbox,installed,none-detected,web-app,web browser - setuid security sandbox for chromium
+chromium-shell,installable-missing,none-detected,web-app,web browser - minimal shell
+cifs-utils,installed,none-detected,general-ops,Common Internet File System utilities
+cilium-cli,installed,none-detected,general-ops,Cilium CLI (program)
+cisco-auditing-tool,installed,none-detected,defensive-monitoring,Scans Cisco routers for vulnerabilities
+cisco-global-exploiter,installed,none-detected,exploitation-c2,Simple and fast Cisco exploitation tool
+cisco-ocs,installed,none-detected,general-ops,Mass Cisco scanner
+cisco-torch,installed,none-detected,general-ops,Cisco device scanner
+cisco7crack,installed,none-detected,credential-access,Crypt and decrypt the cisco type 7 passwords
+clamav,installed,none-detected,wireless-rf,anti-virus utility for Unix - command-line interface
+clamav-base,installed,none-detected,defensive-monitoring,anti-virus utility for Unix - base package
+clamav-daemon,installable-missing,none-detected,defensive-monitoring,anti-virus utility for Unix - scanner daemon
+clamav-doc,installable-missing,none-detected,defensive-monitoring,anti-virus utility for Unix - documentation
+clamav-docs,installable-missing,none-detected,defensive-monitoring,anti-virus utility for Unix - documentation
+clamav-freshclam,installed,none-detected,defensive-monitoring,anti-virus utility for Unix - virus database update utility
+clamav-milter,installable-missing,none-detected,defensive-monitoring,anti-virus utility for Unix - sendmail integration
+clamav-testfiles,installable-missing,none-detected,defensive-monitoring,anti-virus utility for Unix - test files
+clamdscan,installable-missing,none-detected,general-ops,anti-virus utility for Unix - scanner client
+libclamav-dev,installable-missing,none-detected,defensive-monitoring,anti-virus utility for Unix - development files
+libclamav12,installed,none-detected,defensive-monitoring,anti-virus utility for Unix - library
+cloud-enum,installed,none-detected,cloud-container,Multi-cloud open source intelligence tool
+cloudbrute,installed,none-detected,cloud-container,Awesome cloud enumerator (program)
+cmospwd,installed,none-detected,credential-access,decrypt BIOS passwords from CMOS
+cmseek,installed,none-detected,exploitation-c2,CMS Detection and Exploitation suite
+cntlm,installed,none-detected,credential-access,Fast NTLM authentication proxy with tunneling
+code-oss,installed,none-detected,general-ops,Open Source package of vscode
+coercer,installed,none-detected,general-ops,coerce a Windows server to authenticate on an arbitrary machine
+colly,installed,none-detected,general-ops,Elegant Scraper and Crawler Framework for Golang (program)
+golang-github-gocolly-colly-dev,installable-missing,none-detected,development-support,Elegant Scraper and Crawler Framework for Golang (dev)
+command-not-found,installable-missing,none-detected,general-ops,Suggest installation of packages in interactive bash sessions
+commix,installed,kali-initial-access,exploitation-c2,Automated All-in-One OS Command Injection and Exploitation Tool
+copy-router-config,installed,none-detected,general-ops,Copies Cisco configs via SNMP
+cosign,installed,none-detected,cloud-container,Code signing/transparency for containers and binaries (program)
+golang-github-sigstore-cosign-dev,unresolved-on-snapshot,none-detected,cloud-container,Code signing/transparency for containers and binaries (library)
+covenant-kbx,installable-missing,none-detected,general-ops,.NET command and control framework
+cowpatty,installed,none-detected,wireless-rf,Brute-force WPA dictionary attack
+crack,installed,none-detected,credential-access,Password guessing program (crypt() variant)
+crack-common,installed,none-detected,credential-access,Password guessing program (common files of all variants)
+crack-md5,installable-missing,none-detected,credential-access,Password guessing program (MD5 variant)
+crackle,installed,none-detected,general-ops,Crack and decrypt BLE encryption
+crackmapexec,installed,none-detected,general-ops,Swiss army knife for pentesting networks
+creddump7,installed,kali-os-credential-dumping,credential-access,Python tool to extract credentials and secrets from Windows registry hives
+cri-tools,installed,none-detected,general-ops,command line tool used for creating OCI images
+crlfuzz,installed,none-detected,reverse-fuzzing,Fast tool to scan CRLF vulnerability written in Go
+crowbar,installed,none-detected,general-ops,Brute forcing tool
+crunch,installed,kali-credential-access;kali-password-profiling-wordlists,credential-access,tool for creating wordlist
+cryptcat,installed,none-detected,general-ops,lightweight version netcat extended with twofish encryption
+cryptsetup,installed,none-detected,general-ops,disk encryption support - startup scripts
+cryptsetup-bin,installed,kali-protect,general-ops,disk encryption support - command line tools
+cryptsetup-initramfs,installed,none-detected,general-ops,disk encryption support - initramfs integration
+cryptsetup-ssh,installable-missing,none-detected,general-ops,disk encryption support - experimental SSH token handler
+cryptsetup-suspend,installable-missing,none-detected,general-ops,disk encryption support - suspend mode integration
+cryptsetup-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libcryptsetup-dev,installable-missing,none-detected,development-support,disk encryption support - development files
+libcryptsetup12,installed,none-detected,development-support,disk encryption support - shared library
+libcryptsetup12-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+cryptsetup-nuke-password,installed,none-detected,credential-access,Erase the LUKS keys with a special password on the unlock prompt
+cupid-wpa,unresolved-on-snapshot,none-detected,wireless-rf,No package metadata available on current APT snapshot.
+cupid-hostapd,installed,none-detected,wireless-rf,Fork of hostapd to exploit hertbleed vulnerability on wireless networks
+cupid-wpasupplicant,installed,none-detected,wireless-rf,Fork of wpasupplicant to exploit hertbleed vulnerability on wireless networks
+curl,installed,none-detected,general-ops,command line tool for transferring data with URL syntax
+libcurl3t64-gnutls,installed,none-detected,development-support,easy-to-use client-side URL transfer library (GnuTLS flavour)
+libcurl4-doc,installable-missing,none-detected,development-support,documentation for libcurl
+libcurl4-gnutls-dev,installable-missing,none-detected,development-support,development files and documentation for libcurl (GnuTLS flavour)
+libcurl4-openssl-dev,installable-missing,none-detected,crypto-stego,development files and documentation for libcurl (OpenSSL flavour)
+libcurl4t64,installed,none-detected,crypto-stego,easy-to-use client-side URL transfer library (OpenSSL flavour)
+cutecom,installed,none-detected,general-ops,"Graphical serial terminal, like minicom"
+cutycapt,installed,kali-reporting-tools,web-app,utility to capture WebKit's rendering of a web page
+cymothoa,installed,none-detected,general-ops,Stealth backdooring tool
+darkstat,installed,none-detected,general-ops,network traffic analyzer
+davtest,installed,kali-web-vulnerability-scanning,web-app,Testing tool for WebDAV servers
+dbd,installed,kali-non-application-layer-protocol,general-ops,Netcat clone with encryption
+dbeaver,installed,none-detected,general-ops,Universal Database Manager and SQL Client
+dc3dd,installed,none-detected,forensics-ir,patched version of GNU dd with forensic features
+dcfldd,installed,none-detected,forensics-ir,enhanced version of dd for forensics and security
+ddrescue,installed,none-detected,forensics-ir,data recovery and protection tool
+defectdojo,installed,none-detected,general-ops,security orchestration and vulnerability management platform
+detect-it-easy,installed,none-detected,general-ops,Program for determining types of files
+dex2jar,installed,none-detected,general-ops,Tools to work with android .dex and java .class files
+dfdatetime,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-dfdatetime,installed,none-detected,forensics-ir,Digital Forensics date and time library for Python 3
+dfvfs,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-dfvfs,installed,none-detected,forensics-ir,Digital Forensics Virtual File System
+dfwinreg,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-dfwinreg,installed,none-detected,forensics-ir,Digital Forensics Windows Registry library for Python 3
+dhcpig,installed,none-detected,development-support,DHCP exhaustion script using scapy network library
+dirb,installed,kali-reconnaissance;kali-web-scanning,reconnaissance,URL bruteforcing tool
+dirbuster,installed,kali-reconnaissance;kali-web-scanning,reconnaissance,Web server directory brute-forcer
+dirsearch,installed,none-detected,web-app,Web path scanner
+dislocker,installed,none-detected,general-ops,read/write encrypted BitLocker volumes
+libdislocker0-dev,installable-missing,none-detected,development-support,read/write encrypted BitLocker volumes (development files)
+libdislocker0.7t64,installed,none-detected,development-support,read/write encrypted BitLocker volumes (shared library)
+distorm3,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libdistorm3-3,installed,none-detected,wireless-rf,powerful disassembler library for x86/AMD64 binary streams (runtime)
+libdistorm3-dev,installable-missing,none-detected,wireless-rf,powerful disassembler library for x86/AMD64 binary streams (development files)
+python3-distorm3,installed,none-detected,wireless-rf,powerful disassembler library for x86/AMD64 binary streams (Python3 bindings)
+dmitry,installed,kali-network-information,general-ops,Deepmagic Information Gathering Tool
+dns2tcp,installed,kali-protocol-tunneling,general-ops,TCP-over-DNS tunnel server and client
+dnscat2,installed,none-detected,general-ops,DNS tunnel (metapackage)
+dnscat2-client,installed,none-detected,general-ops,"DNS tunnel, the client part"
+dnscat2-server,installed,none-detected,general-ops,"DNS tunnel, the server part"
+dnschef,installed,kali-network-sniffing,general-ops,DNS proxy for penetration testers
+dnsenum,installed,kali-network-information-dns,reconnaissance,tool to enumerate domain DNS information
+dnsgen,installed,none-detected,general-ops,DNS generator
+dnsmap,installed,kali-network-information-dns,general-ops,DNS domain name brute forcing tool
+dnsrecon,installed,kali-network-information-dns,reconnaissance,Powerful DNS enumeration script
+dnstracer,installed,none-detected,general-ops,trace DNS queries to the source
+dnstwist,installed,none-detected,general-ops,Domain name permutation engine
+dnswalk,installed,none-detected,general-ops,Checks dns zone information using nameserver lookups
+dnsx,installed,none-detected,wireless-rf,perform multiple dns queries
+donut-shellcode,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+donut,installed,none-detected,general-ops,Generates position-independent shellcode from memory and runs them
+python-donut-doc,installable-missing,none-detected,development-support,Donut documentation
+python3-donut,installed,none-detected,general-ops,Generates position-independent shellcode from memory and runs them
+doona,installed,none-detected,reverse-fuzzing,Network fuzzer forked from bed
+dos2unix,installed,none-detected,general-ops,convert text file line endings between CRLF and LF
+dotdotpwn,installed,none-detected,reverse-fuzzing,Directory Traversal Fuzzer.
+dploot,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-dploot,installed,none-detected,general-ops,Python rewrite of SharpDPAPI
+dradis,installed,none-detected,general-ops,Collaboration tools for penetration testing
+driftnet,installed,none-detected,general-ops,picks out and displays images from network traffic
+dscan,installed,none-detected,general-ops,wrapper around nmap
+dscan-doc,installable-missing,none-detected,development-support,wrapper around nmap (documentation)
+dsniff,installed,kali-network-sniffing,general-ops,Various tools to sniff network traffic for cleartext insecurities
+dufflebag,installed,none-detected,general-ops,Search exposed EBS volumes for secrets (program)
+dumpsterdiver,installed,none-detected,general-ops,tool to analyze big volumes of data in search of hardcoded secrets
+dumpzilla,installed,none-detected,forensics-ir,Mozilla browser forensic tool
+dvwa,installable-missing,none-detected,web-app,Damn Vulnerable Web Application
+dwarf2json,installed,none-detected,wireless-rf,utility to generat volatility 3 Intermediate Symbol File (ISF) JSON
+eaphammer,installed,none-detected,wireless-rf,toolkit for targeted evil twin attacks against WPA2-Enterprise networks
+eapmd5pass,installed,none-detected,general-ops,Tool for extracting and cracking EAP-MD5
+edb-debugger,installed,none-detected,reverse-fuzzing,cross platform x86/x86-64 debugger
+edb-debugger-plugins,installed,none-detected,reverse-fuzzing,edb plugins
+eksctl,installed,none-detected,general-ops,official CLI for Amazon EKS (program)
+email2phonenumber,installed,none-detected,general-ops,OSINT tool to obtain a target's phone number by having their email address
+emailharvester,installed,none-detected,general-ops,Email addresses harvester
+enum4linux,installed,kali-discovery;kali-network-share-discovery,general-ops,Enumerates info from Windows and Samba systems
+enum4linux-ng,installed,none-detected,general-ops,Next generation version of enum4linux
+enumiax,installed,none-detected,general-ops,IAX protocol username enumerator
+ethtool,installed,none-detected,general-ops,display or change Ethernet device settings
+ettercap,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+ettercap-common,installed,none-detected,general-ops,Multipurpose sniffer/interceptor/logger for switched LAN
+ettercap-graphical,installed,none-detected,general-ops,Ettercap GUI-enabled executable
+ettercap-text-only,installable-missing,none-detected,general-ops,Ettercap console-mode executable
+evil-ssdp,installed,none-detected,credential-access,Spoof SSDP replies to phish for NTLM hashes on a network
+evil-winrm,installed,kali-application-layer-protocol;kali-lateral-movement;kali-pass-the-hash,general-ops,ultimate WinRM shell for hacking/pentesting
+evil-winrm-py,installed,none-detected,general-ops,Execute commands on remote Windows machines using WinRM
+evilginx2,installed,none-detected,general-ops,man-in-the-middle attack framework
+exe2hexbat,installed,kali-defense-evasion,general-ops,Convert EXE to bat
+exiflooter,installed,none-detected,general-ops,finds geolocation on all image urls and directories
+exifprobe,installed,none-detected,general-ops,read metadata from digital pictures
+exiv2,installed,none-detected,general-ops,EXIF/IPTC/XMP metadata manipulation tool
+libexiv2-28,installed,none-detected,development-support,EXIF/IPTC/XMP metadata manipulation library
+libexiv2-data,installed,none-detected,development-support,EXIF/IPTC/XMP metadata manipulation library - shared data
+libexiv2-dev,installable-missing,none-detected,development-support,EXIF/IPTC/XMP metadata manipulation library - development files
+libexiv2-doc,installable-missing,none-detected,development-support,EXIF/IPTC/XMP metadata manipulation library - HTML documentation
+expect,installed,none-detected,general-ops,Automates interactive applications
+tcl-expect,installed,none-detected,general-ops,Automates interactive applications (Tcl package)
+tcl-expect-dev,installable-missing,none-detected,development-support,Automates interactive applications (development)
+exploitdb,installed,kali-identify;kali-resource-development,exploitation-c2,Searchable Exploit Database archive
+exploitdb-bin-sploits,installed,none-detected,reverse-fuzzing,The Exploit Database's archive of binary exploits
+exploitdb-papers,installed,none-detected,exploitation-c2,The Exploit Database's archive of papers & ezines
+ext3grep,installed,none-detected,forensics-ir,tool to help recover deleted files on ext3 filesystems
+ext4magic,installed,none-detected,forensics-ir,recover deleted files from ext3 or ext4 partitions
+extundelete,installed,none-detected,forensics-ir,utility to recover deleted files from ext3/ext4 partition
+eyewitness,installed,none-detected,web-app,Rapid web application triage tool
+faraday-agent-dispatcher,installed,none-detected,general-ops,helper to develop integrations with Faraday (Python 3)
+faraday-cli,installed,none-detected,general-ops,Faraday on the terminal
+fatcat,installed,none-detected,forensics-ir,"FAT filesystem explore, extract, repair, and forensic tool"
+fcrackzip,installed,none-detected,credential-access,password cracker for zip archives
+fern-wifi-cracker,installed,kali-wifi-credential-access,wireless-rf,Automated Wi-Fi cracker
+feroxbuster,installed,none-detected,general-ops,"fast, simple, recursive content discovery tool written in Rust"
+ferret-sidejack,installed,none-detected,defensive-monitoring,Monitors data and extracts interesting data
+ffuf,installed,kali-reconnaissance;kali-web-scanning,reconnaissance,Fast web fuzzer written in Go (program)
+fierce,installed,kali-discovery;kali-remote-system-discovery,general-ops,Domain DNS scanner
+fiked,installed,none-detected,general-ops,Cisco VPN attack tool
+finalrecon,installed,none-detected,reconnaissance,fast and simple Python script for web reconnaissance
+findomain,installed,none-detected,general-ops,Fastest and most complete solution for domain recognition
+firefox-developer-edition-kbx,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+firefox-developer-edition-en-us-kbx,installable-missing,none-detected,web-app,Mozilla Firefox web browser - Developer Edition - en-US
+firewalk,installed,none-detected,reconnaissance,active reconnaissance network security tool
+firmware-mod-kit,installed,none-detected,reconnaissance,Deconstruct and reconstruct firmware images
+flashrom,installed,none-detected,general-ops,"Identify, read, write, erase, and verify BIOS/ROM/flash chips"
+libflashrom-dev,installable-missing,none-detected,development-support,BIOS/ROM/flash chips - development files
+libflashrom1,installed,none-detected,development-support,"Identify, read, write, erase, and verify BIOS/ROM/flash chips - library"
+fluxion,installed,none-detected,defensive-monitoring,security auditing and social-engineering research tool
+foremost,installed,kali-forensic-carving-tools;kali-forensics;kali-respond,forensics-ir,forensic program to recover lost files
+forensic-artifacts,installed,none-detected,forensics-ir,knowledge base of forensic artifacts (data files)
+python3-artifacts,installed,none-detected,forensics-ir,knowledge base of forensic artifacts (Python 3)
+forensics-colorize,installed,none-detected,forensics-ir,show differences between files using color graphics
+fping,installed,kali-remote-system-discovery,general-ops,sends ICMP ECHO_REQUEST packets to network hosts
+fragrouter,installed,none-detected,defensive-monitoring,IDS evasion toolkit
+framework2,installed,none-detected,exploitation-c2,Metasploit Framework 2
+freeradius,installed,none-detected,wireless-rf,high-performance and highly configurable RADIUS server
+freeradius-common,installed,none-detected,general-ops,FreeRADIUS common files
+freeradius-config,installed,none-detected,general-ops,FreeRADIUS default config files
+freeradius-dhcp,installable-missing,none-detected,general-ops,DHCP module for FreeRADIUS server
+freeradius-iodbc,installable-missing,none-detected,general-ops,iODBC module for FreeRADIUS server
+freeradius-krb5,installable-missing,none-detected,credential-access,kerberos module for FreeRADIUS server
+freeradius-ldap,installable-missing,none-detected,general-ops,LDAP module for FreeRADIUS server
+freeradius-memcached,installable-missing,none-detected,general-ops,Memcached module for FreeRADIUS server
+freeradius-mysql,installable-missing,none-detected,general-ops,MySQL module for FreeRADIUS server
+freeradius-postgresql,installable-missing,none-detected,general-ops,PostgreSQL module for FreeRADIUS server
+freeradius-python3,installable-missing,none-detected,general-ops,Python 3 module for FreeRADIUS server
+freeradius-redis,installable-missing,none-detected,general-ops,Redis module for FreeRADIUS server
+freeradius-rest,installable-missing,none-detected,general-ops,REST module for FreeRADIUS server
+freeradius-utils,installable-missing,none-detected,general-ops,FreeRADIUS client utilities
+freeradius-yubikey,installable-missing,none-detected,general-ops,Yubikey module for FreeRADIUS server
+libfreeradius-dev,installable-missing,none-detected,development-support,FreeRADIUS shared library development files
+libfreeradius3,installed,none-detected,development-support,FreeRADIUS shared library
+freeradius-wpe,installed,none-detected,wireless-rf,FreeRadius Wireless Pawn Edition
+freerdp3,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+freerdp-proxy,installable-missing,none-detected,general-ops,FreeRDP proxy server
+freerdp-proxy-modules,installable-missing,none-detected,general-ops,FreeRDP Remote Desktop Protocol proxy module libraries
+freerdp-sdl,installable-missing,none-detected,general-ops,RDP client for Windows Terminal Services (SDL client)
+freerdp-shadow-x11,installable-missing,none-detected,general-ops,FreeRDP x11 shadowing server
+freerdp-wayland,installable-missing,none-detected,general-ops,RDP client for Windows Terminal Services (wayland client)
+freerdp-x11,installed,kali-application-layer-protocol;kali-lateral-movement;kali-pass-the-hash,general-ops,RDP client for Windows Terminal Services (X11 client)
+freerdp3-dev,installable-missing,none-detected,development-support,Free Remote Desktop Protocol library (development files)
+freerdp3-proxy,installable-missing,none-detected,general-ops,FreeRDP proxy server (transitional package)
+freerdp3-proxy-modules,installable-missing,none-detected,general-ops,FreeRDP Remote Desktop Protocol proxy module libraries (transitional package)
+freerdp3-sdl,installable-missing,none-detected,general-ops,RDP client for Windows Terminal Services (SDL client transitional package)
+freerdp3-shadow-x11,installable-missing,none-detected,general-ops,FreeRDP x11 shadowing server (transitional package)
+freerdp3-wayland,installable-missing,none-detected,general-ops,RDP client for Windows Terminal Services (wayland client transitional package)
+freerdp3-x11,installed,none-detected,general-ops,RDP client for Windows Terminal Services (X11 client tramsitional package)
+libfreerdp-client3-3,installed,none-detected,development-support,Free Remote Desktop Protocol library (client library)
+libfreerdp-server-proxy3-3,installable-missing,none-detected,development-support,Free Remote Desktop Protocol library (proxy library)
+libfreerdp-server3-3,installable-missing,none-detected,development-support,Free Remote Desktop Protocol library (server library)
+libfreerdp-shadow-subsystem3-3,installable-missing,none-detected,general-ops,FreeRDP Remote Desktop Protocol shadow subsystem libraries
+libfreerdp-shadow3-3,installable-missing,none-detected,general-ops,FreeRDP Remote Desktop Protocol shadow libraries
+libfreerdp3-3,installed,none-detected,development-support,Free Remote Desktop Protocol library (core library)
+libwinpr-tools3-3,installable-missing,none-detected,development-support,Windows Portable Runtime Tools library
+libwinpr3-3,installed,none-detected,development-support,Windows Portable Runtime library
+libwinpr3-dev,installable-missing,none-detected,development-support,Windows Portable Runtime library (development files)
+winpr-utils,installable-missing,none-detected,development-support,Windows Portable Runtime library command line utilities
+winpr3-utils,installable-missing,none-detected,development-support,Windows Portable Runtime library command line utilities (transitional package)
+winpr-hash3,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+ftester,installed,none-detected,defensive-monitoring,Tool for testing firewalls and Intrusion Detection System (IDS)
+fuse3,installed,none-detected,general-ops,Filesystem in Userspace (3.x version)
+fuse,installable-missing,none-detected,general-ops,Filesystem in Userspace (transitional package)
+fuse3-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libfuse3-4,installed,none-detected,development-support,Filesystem in Userspace (library) (3.x version)
+libfuse3-4-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libfuse3-dev,installable-missing,none-detected,development-support,Filesystem in Userspace (development) (3.x version)
+fwbuilder,installed,none-detected,general-ops,Firewall administration tool GUI
+fwbuilder-common,installed,none-detected,general-ops,Firewall administration tool GUI (common files)
+fwbuilder-doc,installable-missing,none-detected,development-support,Firewall administration tool GUI documentation
+galleta,installed,none-detected,forensics-ir,Internet Explorer cookie forensic analysis tool
+gdb,installed,none-detected,reverse-fuzzing,GNU Debugger
+gdb-minimal,installable-missing,none-detected,reverse-fuzzing,GNU Debugger (minimal version - dummy transitional package)
+gdb-multiarch,installable-missing,none-detected,reverse-fuzzing,GNU Debugger (with support for multiple architectures)
+gdb-source,installable-missing,none-detected,reverse-fuzzing,GNU Debugger (source)
+gdbserver,installable-missing,none-detected,reverse-fuzzing,GNU Debugger (remote server)
+gdb-peda,installed,none-detected,exploitation-c2,Python Exploit Development Assistance for GDB
+gdisk,installed,none-detected,general-ops,GPT fdisk text-mode partitioning tool
+gef,installed,none-detected,general-ops,modern experience for GDB with advanced debugging capabilities
+gemini-cli,installed,none-detected,general-ops,open-source AI agent
+getallurls,installed,none-detected,general-ops,fetch known URLs from AlienVault's Open Threat Exchange (gau)
+getsploit,installed,none-detected,exploitation-c2,Command line utility for searching and downloading exploits
+ghidra,installed,kali-resource-development;kali-respond,reverse-fuzzing,Software Reverse Engineering Framework
+git,installed,none-detected,general-ops,"fast, scalable, distributed revision control system"
+git-all,installable-missing,none-detected,general-ops,"fast, scalable, distributed revision control system (all subpackages)"
+git-cvs,installable-missing,none-detected,general-ops,"fast, scalable, distributed revision control system (cvs interoperability)"
+git-doc,installable-missing,none-detected,development-support,"fast, scalable, distributed revision control system (documentation)"
+git-email,installable-missing,none-detected,general-ops,"fast, scalable, distributed revision control system (email add-on)"
+git-gui,installable-missing,none-detected,general-ops,"fast, scalable, distributed revision control system (GUI)"
+git-man,installed,none-detected,general-ops,"fast, scalable, distributed revision control system (manual pages)"
+git-svn,installable-missing,none-detected,general-ops,"fast, scalable, distributed revision control system (svn interoperability)"
+gitk,installable-missing,none-detected,general-ops,"fast, scalable, distributed revision control system (revision tree visualizer)"
+gitweb,installable-missing,none-detected,wireless-rf,"fast, scalable, distributed revision control system (web interface)"
+gitleaks,installed,none-detected,general-ops,protect and discover secrets using Gitleaks 🔑 (program)
+gitxray,installed,none-detected,general-ops,Scan GitHub repositories and contributors to collect data
+glibc,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+glibc-doc,installable-missing,none-detected,development-support,GNU C Library: Documentation
+glibc-source,installable-missing,none-detected,development-support,GNU C Library: sources
+libc-bin,installed,none-detected,development-support,GNU C Library: Binaries
+libc-dev-bin,installed,none-detected,development-support,GNU C Library: Development binaries
+libc-devtools,installable-missing,none-detected,development-support,GNU C Library: Development tools
+libc-gconv-modules-extra,installed,none-detected,development-support,GNU C Library: Non-essential gconv modules
+libc-l10n,installed,none-detected,development-support,GNU C Library: localization files
+libc0.3,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc0.3-dbg,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc0.3-dev,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc0.3-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6,installed,none-detected,development-support,GNU C Library: Shared libraries
+libc6-amd64,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-dbg,installable-missing,none-detected,development-support,GNU C Library: detached debugging symbols
+libc6-dev,installed,none-detected,development-support,GNU C Library: Development Libraries and Header Files
+libc6-dev-amd64,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-i386,installable-missing,none-detected,development-support,GNU C Library: 32-bit development libraries for AMD64
+libc6-dev-mips32,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-mips64,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-mipsn32,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-powerpc,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-ppc64,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-sparc,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-sparc64,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6-dev-x32,installable-missing,none-detected,development-support,GNU C Library: X32 ABI Development Libraries for AMD64
+libc6-i386,installed,none-detected,development-support,GNU C Library: 32-bit shared libraries for AMD64
+libc6-mips32,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-mips64,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-mipsn32,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-powerpc,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-ppc64,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-sparc,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-sparc64,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6-x32,installable-missing,none-detected,development-support,GNU C Library: X32 ABI Shared libraries for AMD64
+libc6.1,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6.1-dbg,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libc6.1-dev,unresolved-on-snapshot,none-detected,development-support,No package metadata available on current APT snapshot.
+libc6.1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+locales,installable-missing,none-detected,development-support,GNU C Library: National Language (locale) data [support]
+locales-all,installed,none-detected,development-support,GNU C Library: Precompiled locale data
+nscd,installable-missing,none-detected,development-support,GNU C Library: Name Service Cache Daemon
+gnuradio,installed,none-detected,general-ops,GNU Radio Software Radio Toolkit
+gnuradio-dev,installable-missing,none-detected,development-support,GNU Software Defined Radio toolkit development
+gnuradio-doc,installable-missing,none-detected,development-support,GNU Software Defined Radio toolkit documentation
+libgnuradio-analog3.10.12,installed,none-detected,general-ops,gnuradio analog functions
+libgnuradio-audio3.10.12,installed,none-detected,general-ops,gnuradio audio functions
+libgnuradio-blocks3.10.12,installed,none-detected,general-ops,gnuradio blocks functions
+libgnuradio-channels3.10.12,installed,none-detected,general-ops,gnuradio channels functions
+libgnuradio-digital3.10.12,installed,none-detected,general-ops,gnuradio digital communications functions
+libgnuradio-dtv3.10.12,installed,none-detected,general-ops,gnuradio digital TV signal processing blocks
+libgnuradio-fec3.10.12,installed,none-detected,general-ops,gnuradio forward error correction support
+libgnuradio-fft3.10.12,installed,none-detected,general-ops,gnuradio fast Fourier transform functions
+libgnuradio-filter3.10.12,installed,none-detected,general-ops,gnuradio filter functions
+libgnuradio-iio3.10.12,installed,none-detected,general-ops,IIO blocks for GnuRadio
+libgnuradio-network3.10.12,installed,none-detected,development-support,gnuradio network library
+libgnuradio-pdu3.10.12,installed,none-detected,development-support,gnuradio streaming protocol library
+libgnuradio-pmt3.10.12,installed,none-detected,cloud-container,gnuradio pmt container library
+libgnuradio-qtgui3.10.12,installed,none-detected,wireless-rf,gnuradio Qt graphical user interface functions
+libgnuradio-runtime3.10.12,installed,none-detected,general-ops,gnuradio core runtime
+libgnuradio-soapy3.10.12,installed,none-detected,wireless-rf,gnuradio SoapySDR support
+libgnuradio-trellis3.10.12,installed,none-detected,general-ops,gnuradio trellis modulation functions
+libgnuradio-uhd3.10.12,installed,none-detected,general-ops,gnuradio universal hardware driver functions
+libgnuradio-video-sdl3.10.12,installed,none-detected,general-ops,gnuradio video functions
+libgnuradio-vocoder3.10.12,installed,none-detected,general-ops,gnuradio vocoder functions
+libgnuradio-wavelet3.10.12,installed,none-detected,general-ops,gnuradio wavelet functions
+libgnuradio-zeromq3.10.12,installed,none-detected,general-ops,gnuradio zeromq functions
+gobuster,installed,kali-reconnaissance;kali-web-scanning,reconnaissance,"high-performance discovery tool for directories, DNS and cloud storage"
+godoh,installed,none-detected,web-app,DNS-over-HTTPS Command & Control Proof of Concept
+golang-github-binject-go-donut,installed,none-detected,general-ops,Donut Injector in Go
+golang-github-binject-go-donut-dev,installable-missing,none-detected,development-support,Donut Injector in Go
+goldeneye,installed,none-detected,web-app,HTTP DoS test tool
+goofile,installed,none-detected,general-ops,Command line filetype search
+google-nexus-tools,installed,none-detected,general-ops,ADB and Fastboot for use with Nexus devices
+gophish,installed,kali-initial-access;kali-system-services,general-ops,Open-Source Phishing Toolkit
+goshs,installed,none-detected,web-app,SimpleHTTPServer written in Go
+gospider,installed,none-detected,web-app,Fast web spider written in Go
+gowitness,installed,none-detected,web-app,Web screenshot utility using Chrome Headless
+gpart,installed,none-detected,general-ops,"Guess PC disk partition table, find lost partitions"
+gparted,installed,none-detected,general-ops,GNOME partition editor
+gparted-common,installed,none-detected,general-ops,GNOME partition editor -- common data
+gpp-decrypt,installed,none-detected,general-ops,Group Policy Preferences decrypter
+gqrx-sdr,installed,none-detected,wireless-rf,Software defined radio receiver
+gr-air-modes,installed,none-detected,general-ops,Gnuradio Mode-S/ADS-B radio
+libgnuradio-air-modes1t64,installed,none-detected,development-support,Gnuradio Mode-S/ADS-B radio - library
+gr-iqbal,installed,none-detected,general-ops,GNU Radio Blind IQ imbalance estimator and correction
+libgnuradio-iqbalance3.9.0,installed,none-detected,development-support,GNU Radio Blind IQ imbalance estimator and correction (shared library)
+gr-osmosdr,installed,none-detected,wireless-rf,GNU Radio blocks from the OsmoSDR project
+gr-osmosdr-doc,installable-missing,none-detected,wireless-rf,Gnuradio blocks from the OsmoSDR project - documentation
+libgnuradio-osmosdr0.2.0t64,installed,none-detected,wireless-rf,GNU Radio blocks from the OsmoSDR project - library
+graudit,installed,none-detected,defensive-monitoring,grep rough audit - source code auditing tool
+grokevt,installed,none-detected,general-ops,scripts for reading Microsoft Windows event log files
+gsocket,installed,none-detected,general-ops,Allows two machines on different networks to communicate with each other
+gss-ntlmssp,installable-missing,none-detected,credential-access,GSSAPI NTLMSSP Mechanism -- MIT GSSAPI plugin
+gss-ntlmssp-dev,installable-missing,none-detected,credential-access,GSSAPI NTLMSSP Mechanism -- development headers
+gtkhash,installed,none-detected,general-ops,GTK+ utility for computing checksums and more
+caja-gtkhash,installable-missing,none-detected,general-ops,caja extension for computing checksums and more using gtkhash
+nemo-gtkhash,installable-missing,none-detected,general-ops,nemo extension for computing checksums and more using gtkhash
+thunar-gtkhash,installable-missing,none-detected,general-ops,thunar extension for computing checksums and more using gtkhash
+guymager,installed,none-detected,forensics-ir,Forensic imaging tool based on Qt
+gvm,installed,none-detected,defensive-monitoring,remote network security auditor - metapackage and useful scripts
+h8mail,installed,none-detected,general-ops,email open source intelligence and breach hunting tool
+hackrf,installed,none-detected,wireless-rf,Software defined radio peripheral - utilities
+hackrf-doc,installable-missing,none-detected,wireless-rf,Software defined radio peripheral - documentation
+hackrf-firmware,installable-missing,none-detected,wireless-rf,Firmware for HackRF devices
+libhackrf-dev,installable-missing,none-detected,wireless-rf,Software defined radio peripheral - development
+libhackrf0,installed,none-detected,wireless-rf,Software defined radio peripheral - runtime library
+hak5-wifi-coconut,installed,none-detected,wireless-rf,Userspace driver for the Hak5 Wi-Fi Coconut
+hakrawler,installed,none-detected,web-app,"Web crawler designed for easy, quick discovery of endpoints and assets"
+hamster-sidejack,installed,none-detected,general-ops,Sidejacking tool
+hash-identifier,installed,kali-hash-identification,general-ops,Tool to identify hash types
+hashcat,installed,kali-credential-access;kali-password-cracking,credential-access,World's fastest and most advanced password recovery utility
+hashcat-data,installed,none-detected,credential-access,Data files for hashcat advanced password recovery utility
+hashcat-utils,installed,none-detected,credential-access,Set of small utilities for advanced password cracking
+hashdeep,installed,kali-forensics,forensics-ir,recursively compute hashsums or piecewise hashings
+hashid,installed,kali-hash-identification,general-ops,Identify the different types of hashes used to encrypt data
+hashrat,installed,none-detected,general-ops,hashing tool supporting several hashes and recursivity
+havoc,installed,none-detected,exploitation-c2,Modern and malleable post-exploitation C2 framework
+hb-honeypot,installed,none-detected,general-ops,Heartbleed Honeypot Script
+hcxtools,installed,none-detected,credential-access,Tools for converting captures to use with hashcat or John the Ripper
+heartleech,installed,none-detected,crypto-stego,Scanner detecting systems vulnerable to the heartbleed OpenSSL bug
+hekatomb,installed,none-detected,credential-access,Extract and decrypt all credentials from all domain computers
+hexinject,installed,none-detected,general-ops,Versatile packet injector and sniffer
+hexstrike-ai,installed,none-detected,general-ops,AI-Powered MCP Cybersecurity Automation Platform
+hexwalk,installed,none-detected,general-ops,"Hex analyzer, editor and viewer"
+hivex,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libhivex-bin,installed,none-detected,general-ops,utilities for reading and writing Windows Registry hives
+libhivex-dev,installable-missing,none-detected,development-support,library for reading and writing Windows Registry hives
+libhivex-ocaml,installable-missing,none-detected,general-ops,OCaml bindings for hivex -- runtime files
+libhivex-ocaml-dev,installable-missing,none-detected,development-support,OCaml bindings for hivex -- development files
+libhivex0,installed,none-detected,development-support,library for reading and writing Windows Registry hives
+libwin-hivex-perl,installable-missing,none-detected,general-ops,Perl bindings to hivex
+python3-hivex,installable-missing,none-detected,general-ops,Python 3 bindings for hivex
+ruby-hivex,installable-missing,none-detected,general-ops,Ruby bindings for hivex
+hoaxshell,installed,none-detected,web-app,Windows reverse shell payload generator and handler that abuses http(s)
+horst,installed,none-detected,general-ops,Highly Optimized Radio Scanning Tool
+hostapd-mana,installed,none-detected,general-ops,featureful rogue access point
+hostapd-wpe,installed,none-detected,general-ops,Modified hostapd to facilitate AP impersonation attacks
+hosthunter,installed,none-detected,general-ops,tool to discover and extract hostnames providing a set of target IP addresses
+hostsman,installed,none-detected,general-ops,cross-platform command line tool for handling hosts files
+hotpatch,installed,none-detected,general-ops,Hot patches Linux executables with .so file injection
+hping3,installed,kali-discovery;kali-remote-system-discovery,general-ops,Active Network Smashing Tool
+htshells,installed,none-detected,general-ops,Self contained htaccess shells and attacks
+httprint,installed,none-detected,web-app,Web server fingerprinting tool
+httprobe,installed,none-detected,web-app,Take a list of domains and probe for working HTTP and HTTPS servers
+httpx-toolkit,installed,none-detected,web-app,fast and multi-purpose HTTP toolkit
+httrack,installed,none-detected,web-app,Copy websites to your computer (Offline browser)
+httrack-doc,installable-missing,none-detected,web-app,Httrack website copier additional documentation
+libhttrack-dev,installable-missing,none-detected,web-app,Httrack website copier includes and development files
+libhttrack2,installed,none-detected,web-app,Httrack website copier library
+proxytrack,installable-missing,none-detected,web-app,Build HTTP Caches using archived websites copied by HTTrack
+webhttrack,installable-missing,none-detected,wireless-rf,"Copy websites to your computer, httrack with a Web interface"
+webhttrack-common,installable-missing,none-detected,web-app,webhttrack common files
+hubble,installed,none-detected,cloud-container,"Network, Service & Security Observability for Kubernetes using eBPF (program)"
+humble,installed,none-detected,web-app,HTTP Headers Analyzer
+hurl,installed,none-detected,general-ops,Hexadecimal & URL encoder + decoder
+hydra,installed,kali-brute-force;kali-credential-access,credential-access,very fast network logon cracker
+hyperion,installed,none-detected,general-ops,Runtime encrypter for 32-bit portable executables
+i2c-tools,installed,none-detected,general-ops,heterogeneous set of I2C tools for Linux
+libi2c-dev,installable-missing,none-detected,development-support,userspace I2C programming library development files
+libi2c0,installed,none-detected,development-support,userspace I2C programming library
+python3-smbus,installable-missing,none-detected,development-support,Python 3 bindings for Linux SMBus access through i2c-dev
+iaxflood,installed,none-detected,general-ops,VoIP flooder tool
+ibombshell,installed,none-detected,general-ops,Dynamic Remote Shell
+ident-user-enum,installed,none-detected,general-ops,Query ident to determine the owner of a TCP network process
+ifenslave,installed,none-detected,wireless-rf,configure network interfaces for parallel routing (bonding)
+ike-scan,installed,kali-network-service-discovery,general-ops,discover and fingerprint IKE hosts (IPsec VPN Servers)
+imhex,installed,none-detected,reverse-fuzzing,"Hex Editor for Reverse Engineers, Programmers"
+impacket,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-impacket,installed,kali-databases;kali-exfiltration;kali-lateral-movement,general-ops,Python3 module to easily build and dissect network protocols
+impacket-scripts,installed,kali-application-layer-protocol;kali-pass-the-hash;kali-respond,general-ops,Links to useful impacket scripts examples
+inetsim,installed,none-detected,general-ops,Software suite for simulating common internet services
+inspectrum,installed,none-detected,general-ops,tool for visualising captured radio signals
+inspy,installed,none-detected,general-ops,LinkedIn enumeration tool
+instaloader,installed,none-detected,general-ops,Instagram automatic photo downloader
+intrace,installed,none-detected,general-ops,Traceroute-like application piggybacking on existing TCP connections
+inviteflood,installed,none-detected,general-ops,SIP/SDP INVITE message flooding over UDP/IP
+iodine,installed,kali-protocol-tunneling,general-ops,tool for tunneling IPv4 data through a DNS server
+ipv6toolkit,installed,none-detected,general-ops,IPv6 assessment and troubleshooting tools
+irpas,installed,none-detected,general-ops,Internetwork Routing Protocol Attack Suite
+ismtp,installed,none-detected,general-ops,SMTP user enumeration and testing tool
+isr-evilgrade,installed,none-detected,general-ops,Evilgrade framework
+ivre,installed,none-detected,reconnaissance,network recon framework IVRE or DRUNK
+ivre-doc,installable-missing,none-detected,development-support,Documentation for IVRE package
+iw,installed,none-detected,wireless-rf,tool for configuring Linux wireless devices
+jadx,installed,none-detected,general-ops,Dex to Java decompiler
+javasnoop,installed,none-detected,general-ops,Intercept Java applications locally
+jboss-autopwn,installed,none-detected,general-ops,JBoss script for obtaining remote shell access
+jd-gui,installed,none-detected,general-ops,GUI Java .class decompiler
+john,installed,kali-credential-access;kali-password-cracking,credential-access,active password cracking tool
+john-data,installed,none-detected,credential-access,active password cracking tool - character sets
+johnny,installed,none-detected,general-ops,GUI for John the Ripper
+joomscan,installed,none-detected,general-ops,OWASP Joomla Vulnerability Scanner Project
+joplin,installed,none-detected,general-ops,open source note taking and to-do application
+joplin-cli,installable-missing,none-detected,general-ops,open source note taking and to-do application (CLI)
+jsp-file-browser,installed,none-detected,general-ops,File browser java server page
+jsql,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+jsql-injection,installed,none-detected,general-ops,Java tool for automatic database injection
+juice-shop,unresolved-on-snapshot,none-detected,web-app,insecure web application
+kali-autopilot,installed,none-detected,general-ops,tool for automatic attack scripts in Kali
+kali-community-wallpapers,installed,none-detected,general-ops,Transitional package to install kali-wallpapers-community
+kali-wallpapers-community,installed,none-detected,general-ops,Wallpapers generated by the community
+kali-defaults,installed,none-detected,general-ops,Kali default settings
+kali-defaults-desktop,installable-missing,none-detected,general-ops,Kali default settings for graphical desktops
+kali-meta,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-desktop-core,installable-missing,none-detected,general-ops,Metapackage with dependencies common to all Kali's desktops
+kali-desktop-e17,installable-missing,none-detected,general-ops,E17 based Kali desktop
+kali-desktop-gnome,installable-missing,none-detected,general-ops,GNOME based Kali desktop
+kali-desktop-i3,installable-missing,none-detected,general-ops,i3 based Kali desktop
+kali-desktop-i3-gaps,installable-missing,none-detected,general-ops,transitional package
+kali-desktop-kde,unresolved-on-snapshot,none-detected,general-ops,KDE based Kali desktop
+kali-desktop-live,installable-missing,none-detected,general-ops,Kali's live images environment
+kali-desktop-lxde,installable-missing,none-detected,general-ops,LXDE based Kali desktop
+kali-desktop-mate,installable-missing,none-detected,general-ops,MATE based Kali desktop
+kali-desktop-xfce,installable-missing,none-detected,general-ops,Xfce based Kali desktop
+kali-linux-arm,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-linux-core,installed,none-detected,general-ops,Kali's core packages
+kali-linux-default,installed,none-detected,general-ops,Kali's default toolset
+kali-linux-everything,installed,none-detected,general-ops,Every tool in Kali Linux
+kali-linux-firmware,installable-missing,none-detected,general-ops,Kali's default firmware files
+kali-linux-headless,installed,none-detected,general-ops,Kali's default headless tools
+kali-linux-labs,unresolved-on-snapshot,none-detected,general-ops,Test environments for learning and practising on
+kali-linux-large,installed,none-detected,general-ops,Kali's extended default tool selection
+kali-linux-nethunter,installable-missing,none-detected,general-ops,transitional package
+kali-linux-wsl,installed,none-detected,general-ops,Kali on WSL
+kali-nethunter-core,installable-missing,none-detected,general-ops,NetHunter rootfs packages - Core
+kali-nethunter-full,installable-missing,none-detected,general-ops,NetHunter rootfs packages - Full variant
+kali-nethunter-nano,installable-missing,none-detected,general-ops,NetHunter rootfs packages - Nano variant
+kali-sbc-allwinner,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-sbc-amlogic,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-sbc-qualcomm,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-sbc-raspberrypi,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-sbc-rockchip,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-system-cli,installed,none-detected,general-ops,Kali's system CLI tools
+kali-system-core,installed,none-detected,general-ops,Kali's core packages
+kali-system-gui,installed,none-detected,general-ops,Kali's system GUI tools
+kali-tools-802-11,installed,none-detected,general-ops,Kali's 802.11 attacks tools
+kali-tools-bluetooth,installed,none-detected,wireless-rf,Kali's bluetooth attacks tools
+kali-tools-crypto-stego,installed,none-detected,crypto-stego,Kali's cryptography & steganography tools
+kali-tools-database,installed,none-detected,general-ops,Kali's database assessment tools menu
+kali-tools-detect,installed,none-detected,general-ops,Kali's detect tools menu
+kali-tools-exploitation,installed,none-detected,exploitation-c2,Kali's exploitation tools menu
+kali-tools-forensics,installed,none-detected,forensics-ir,Kali's forensic tools menu
+kali-tools-fuzzing,installed,none-detected,reverse-fuzzing,Kali's fuzzing attacks tools
+kali-tools-gpu,installed,none-detected,general-ops,Kali's GPU tools
+kali-tools-hardware,installed,none-detected,general-ops,Kali's hardware attacks tools
+kali-tools-identify,installed,none-detected,general-ops,Kali's identify tools menu
+kali-tools-information-gathering,installed,none-detected,general-ops,Kali's information gathering menu
+kali-tools-passwords,installed,none-detected,credential-access,Kali's password cracking tools menu
+kali-tools-post-exploitation,installed,none-detected,exploitation-c2,Kali's post exploitation tools menu
+kali-tools-protect,installed,none-detected,general-ops,Kali's protect tools menu
+kali-tools-recover,installed,none-detected,forensics-ir,Kali's recover tools menu
+kali-tools-reporting,installed,none-detected,general-ops,Kali's reporting tools menu
+kali-tools-respond,installed,none-detected,general-ops,Kali's respond tools menu
+kali-tools-reverse-engineering,installed,none-detected,reverse-fuzzing,Kali's reverse engineering menu
+kali-tools-rfid,installed,none-detected,wireless-rf,Kali's RFID tools
+kali-tools-sdr,installed,none-detected,wireless-rf,Kali's SDR tools
+kali-tools-sniffing-spoofing,installed,none-detected,general-ops,Kali's sniffing & spoofing tools menu
+kali-tools-social-engineering,installed,none-detected,general-ops,Kali's social engineering tools menu
+kali-tools-top10,installed,none-detected,general-ops,Kali's top 10 tools
+kali-tools-voip,installed,none-detected,general-ops,Kali's VoIP tools
+kali-tools-vulnerability,installed,none-detected,general-ops,Kali's vulnerability analysis menu
+kali-tools-web,installed,none-detected,web-app,Kali's webapp assessment tools menu
+kali-tools-windows-resources,installed,none-detected,general-ops,Kali's Windows resources
+kali-tools-wireless,installed,none-detected,wireless-rf,Kali's wireless tools menu
+kali-tweaks,installable-missing,Settings;X-XFCE-SettingsDialog;kali-services-and-other-tools,general-ops,tool to adjust advanced configuration settings for Kali Linux
+kali-wallpapers,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+kali-legacy-wallpapers,installable-missing,none-detected,general-ops,Transitional package to install kali-wallpapers-legacy
+kali-wallpapers-2019.4,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2019.4 and newer
+kali-wallpapers-2020.4,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2020.4 and newer
+kali-wallpapers-2022,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2022 and newer
+kali-wallpapers-2023,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2023 and newer
+kali-wallpapers-2024,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2024 and newer
+kali-wallpapers-2025,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2025 and newer
+kali-wallpapers-2026,installed,none-detected,general-ops,Default wallpapers for Kali Linux 2026 and newer
+kali-wallpapers-all,installed,none-detected,general-ops,All wallpapers for Kali Linux
+kali-wallpapers-legacy,installed,none-detected,general-ops,Wallpapers used over the years
+kali-wallpapers-mobile-2023,installable-missing,none-detected,general-ops,Default wallpapers for Kali Linux Mobile 2023 and newer
+kalibrate-rtl,installed,none-detected,general-ops,Calculate local oscillator frequency offset using GSM base stations
+kerberoast,installed,none-detected,credential-access,tools for attacking MS Kerberos implementations
+kismet,installed,none-detected,wireless-rf,wireless network and device detector (metapackage)
+kismet-capture-antsdr-droneid,installed,none-detected,wireless-rf,capture driver for Kismet
+kismet-capture-bladerf-wiphy,installable-missing,none-detected,wireless-rf,Kismet capture driver bladerf wiphy
+kismet-capture-common,installed,none-detected,general-ops,Kismet Capture common helper
+kismet-capture-freaklabs-zigbee,installed,none-detected,general-ops,Kismet Freaklabs Zigbee datasource
+kismet-capture-hak5-wifi-coconut,installed,none-detected,wireless-rf,Kismet capture helper for WiFi Coconut
+kismet-capture-linux-bluetooth,installed,none-detected,wireless-rf,Kismet Linux Bluetooth capture helper
+kismet-capture-linux-wifi,installed,none-detected,wireless-rf,Kismet Linux Wi-Fi capture helper
+kismet-capture-nrf-51822,installed,none-detected,wireless-rf,Kismet NRF51822 BTLE Sniffer capture helper
+kismet-capture-nrf-52840,installed,none-detected,wireless-rf,Kismet NRF52840 BTLE Sniffer capture helper
+kismet-capture-nrf-mousejack,installed,none-detected,wireless-rf,Kismet nRF MouseJack capture helper
+kismet-capture-nxp-kw41z,installed,none-detected,general-ops,Kismet NXP KW41Z BTLE and Zigbee Sniffer capture helper
+kismet-capture-radiacode-usb,installed,none-detected,general-ops,"capture driver for Kismet, radiacode usb"
+kismet-capture-rtl433,installed,none-detected,general-ops,Kismet rtl_433 datasource
+kismet-capture-rtladsb,installed,none-detected,general-ops,Kismet rtladsb datasource
+kismet-capture-rz-killerbee,installed,none-detected,general-ops,Kismet Killerbee Sniffer capture helper
+kismet-capture-serial-radview,installed,none-detected,general-ops,Kismet capture driver serial radview
+kismet-capture-ti-cc-2531,installed,none-detected,exploitation-c2,Kismet TICC2531 802.15.4 Zigbee Sniffer capture helper
+kismet-capture-ti-cc-2540,installed,none-detected,exploitation-c2,Kismet TICC2540 BTLE Sniffer capture helper
+kismet-capture-ubertooth-one,installed,none-detected,general-ops,Kismet Ubertooth One BT Sniffer capture helper
+kismet-core,installed,kali-wifi,wireless-rf,Kismet Core wireless network and device detector
+kismet-logtools,installed,none-detected,wireless-rf,wireless network and device detector
+kismet-plugins,installable-missing,none-detected,wireless-rf,wireless sniffer and monitor - plugins
+python3-kismetcapturefreaklabszigbee,installable-missing,none-detected,general-ops,Kismet Freaklabs Zigbee datasource (transitional package)
+python3-kismetcapturertl433,installable-missing,none-detected,general-ops,Kismet rtl_433 datasource (transitional package)
+python3-kismetcapturertladsb,installable-missing,none-detected,general-ops,Kismet rtladsb datasource (transitional package)
+knocker,installed,none-detected,general-ops,Simple and easy to use TCP security port scanner
+koadic,installed,none-detected,exploitation-c2,Windows post-exploitation rootkit
+krbrelayx,installed,none-detected,credential-access,Kerberos relaying and unconstrained delegation abuse toolkit
+kubernetes-helm,installed,none-detected,cloud-container,tool for managing Charts (helm)
+kustomize,installed,none-detected,cloud-container,Customization of Kubernetes YAML configurations (program)
+golang-k8s-sigs-kustomize-dev,installable-missing,none-detected,cloud-container,Customization of Kubernetes YAML configurations (library)
+lapsdumper,installed,none-detected,credential-access,Tool that dumps LAPS passwords
+laudanum,installed,kali-persistence,web-app,Collection of injectable web files
+lbd,installed,kali-web-scanning,web-app,Load balancer detector
+ldeep,installed,none-detected,general-ops,In-depth ldap enumeration utility
+legion,installed,kali-network-information;kali-reconnaissance,reconnaissance,semi-automated network penetration testing tool
+libewf,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+ewf-tools,installed,none-detected,general-ops,collection of tools for reading and writing EWF files
+libewf-dev,installable-missing,none-detected,development-support,support for Expert Witness Compression format (development)
+libewf2,installed,none-detected,development-support,library with support for Expert Witness Compression Format
+python3-libewf,installed,none-detected,general-ops,support for Expert Witness Compression format -- Python 3 bindings
+libfindrtp,installed,none-detected,development-support,Library required by multiple VoIP tools
+libimage-exiftool-perl,installed,none-detected,development-support,library and program to read and write meta information in multimedia files
+libpst,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libpst-dev,installable-missing,none-detected,development-support,library for reading Microsoft Outlook PST files (development files)
+libpst4t64,installed,none-detected,development-support,library for reading Microsoft Outlook PST files
+pst-utils,installed,none-detected,general-ops,tools for reading Microsoft Outlook PST files
+libsmali-java,installed,none-detected,general-ops,assembler/disassembler for Android's dex format
+ligolo-mp,installed,none-detected,general-ops,Multiplayer pivoting solution
+ligolo-ng,installed,none-detected,wireless-rf,"Advanced, yet simple, tunneling/pivoting tool that uses a TUN interface"
+ligolo-ng-common-binaries,installed,none-detected,general-ops,Prebuilt binaries for Advanced ligolo-ng
+linkedin2username,installed,none-detected,general-ops,Generate username lists for companies on LinkedIn
+linux-exploit-suggester,installed,none-detected,exploitation-c2,LES: Linux privilege escalation auditing tool
+llm-tools-nmap,installed,none-detected,general-ops,plugin for LLM tool hat provides Nmap network scanning capabilities
+llvm-defaults,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+clang,installed,kali-resource-development,reverse-fuzzing,"C, C++ and Objective-C compiler (LLVM based), clang binary"
+clang-format,installable-missing,none-detected,general-ops,Tool to format C/C++/Obj-C code
+clang-tidy,installable-missing,none-detected,general-ops,clang-based C++ linter tool
+clang-tools,installable-missing,none-detected,general-ops,clang-based tools
+clangd,installable-missing,none-detected,general-ops,Language server that provides IDE-like features to editors
+flang,installable-missing,none-detected,general-ops,Fortran compiler
+libbolt-dev,installable-missing,none-detected,development-support,Post-link optimizer - Development package
+libc++-dev,installable-missing,none-detected,development-support,LLVM C++ Standard library (development files)
+libc++-dev-wasm32,installable-missing,none-detected,development-support,LLVM C++ Standard library (WASI)
+libc++abi-dev,installable-missing,none-detected,development-support,LLVM low level support for a standard C++ library (development files)
+libclang-cpp-dev,installable-missing,none-detected,wireless-rf,C++ interface to the clang library
+libclang-dev,installable-missing,none-detected,development-support,clang library - Development package
+libclang-rt-dev,installable-missing,none-detected,development-support,Compiler-rt - Development package
+libclang-rt-dev-wasm32,installable-missing,none-detected,development-support,Compiler-rt - wasm32 builtins
+libclang-rt-dev-wasm64,installable-missing,none-detected,development-support,Compiler-rt - wasm64 builtins
+libclang-rt-dev-win,installable-missing,none-detected,development-support,Compiler-rt - MingW 64 builtins
+libflang-dev,installable-missing,none-detected,development-support,Flang library - Development package
+liblld-dev,installable-missing,none-detected,development-support,"LLVM-based linker, library"
+liblldb-dev,installable-missing,none-detected,wireless-rf,"Next generation, high-performance debugger, header files"
+libllvm-ocaml-dev,installable-missing,none-detected,development-support,"Modular compiler and toolchain technologies, bindings for OCaml"
+libomp-dev,installable-missing,none-detected,development-support,LLVM OpenMP runtime - dev package
+libpolly-dev,installable-missing,none-detected,development-support,High-level loop and data-locality optimizer
+lld,installable-missing,none-detected,general-ops,LLVM-based linker
+lldb,installable-missing,none-detected,wireless-rf,"Next generation, high-performance debugger"
+llvm,installable-missing,none-detected,general-ops,Modular compiler and toolchain technologies
+llvm-bolt,installable-missing,none-detected,general-ops,Post-link optimizer
+llvm-dev,installable-missing,none-detected,development-support,"Modular compiler and toolchain technologies, libraries and headers"
+llvm-runtime,installable-missing,none-detected,general-ops,"Modular compiler and toolchain technologies, bytecode interpreter"
+python3-clang,installable-missing,none-detected,general-ops,Clang Python Bindings
+python3-lldb,installable-missing,none-detected,wireless-rf,"Next generation, high-performance debugger, python lib"
+lvm2,installed,none-detected,general-ops,Linux Logical Volume Manager
+dmeventd,installed,none-detected,general-ops,Linux Kernel Device Mapper event daemon
+dmsetup,installed,none-detected,development-support,Linux Kernel Device Mapper userspace library
+dmsetup-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libdevmapper-dev,installable-missing,none-detected,development-support,Linux Kernel Device Mapper header files
+libdevmapper-event1.02.1,installed,none-detected,development-support,Linux Kernel Device Mapper event support library
+libdevmapper1.02.1,installed,none-detected,development-support,Linux Kernel Device Mapper userspace library
+libdevmapper1.02.1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+liblvm2-dev,installable-missing,none-detected,development-support,LVM2 libraries - development files
+liblvm2cmd2.03,installed,none-detected,development-support,LVM2 command library
+lvm2-dbusd,installable-missing,none-detected,general-ops,LVM2 D-Bus daemon
+lvm2-lockd,installable-missing,none-detected,general-ops,LVM locking daemon
+lvm2-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+lynis,installed,none-detected,defensive-monitoring,security auditing tool for Unix based systems
+mac-robber,installed,none-detected,general-ops,collects data about allocated files in mounted filesystems
+macchanger,installed,kali-defense-evasion,wireless-rf,utility for manipulating the MAC address of network interfaces
+magicrescue,installed,kali-forensic-carving-tools,forensics-ir,recover files by looking for magic bytes
+maltego,installed,kali-identify;kali-reconnaissance;kali-reporting-tools,reconnaissance,Open source intelligence and forensics application
+maltego-teeth,installed,none-detected,general-ops,Set of offensive Maltego transforms
+maryam,installed,none-detected,general-ops,OWASP Maryam is a modular/optional open source framework bas
+maskprocessor,installed,none-detected,wireless-rf,high-performance word generator with a per-position configurable charset
+masscan,installed,kali-discovery;kali-network-service-discovery,general-ops,TCP port scanner
+massdns,installed,none-detected,wireless-rf,high-performance DNS stub resolver
+mc,installed,none-detected,wireless-rf,Midnight Commander - a powerful file manager
+mc-data,installed,none-detected,wireless-rf,Midnight Commander - a powerful file manager -- data files
+mcp-kali-server,installed,none-detected,general-ops,API bridge connecting MCP Clients to the API server
+mdbtools,installed,none-detected,general-ops,JET / MS Access database (MDB) tools
+libmdb3t64,installed,none-detected,development-support,Core library for accessing JET / MS Access (MDB) files
+libmdbsql3t64,installed,none-detected,development-support,mdbtools SQL library
+mdbtools-dev,installable-missing,none-detected,development-support,mdbtools development files
+mdbtools-doc,installable-missing,none-detected,development-support,Dummy package
+odbc-mdbtools,installable-missing,none-detected,general-ops,MDB tools ODBC driver
+mdk3,installed,none-detected,wireless-rf,Wireless attack tool for IEEE 802.11 networks
+mdk4,installed,none-detected,wireless-rf,Wireless attack tool for IEEE 802.11 networks
+medusa,installed,kali-brute-force;kali-credential-access,credential-access,"fast, parallel, modular, login brute-forcer for network services"
+memdump,installed,none-detected,general-ops,utility to dump memory contents to standard output
+mercurial,installed,none-detected,general-ops,"easy-to-use, scalable distributed version control system"
+mercurial-common,installed,none-detected,general-ops,"easy-to-use, scalable distributed version control system (common files)"
+merlin,installable-missing,none-detected,general-ops,Command & Control server & agent (metapackage)
+golang-github-ne0nd0g-merlin-dev,installable-missing,none-detected,web-app,Cross-platform post-exploitation HTTP/2 Command & Control server (source)
+merlin-server,installed,none-detected,web-app,Cross-platform post-exploitation HTTP/2 Command & Control server
+merlin-agent,installed,none-detected,web-app,Cross-platform post-exploitation HTTP/2 Command & Control agent
+metacam,installed,none-detected,general-ops,extract EXIF information from digital camera files
+metagoofil,installed,none-detected,development-support,Tool designed for extracting metadata of public documents
+metasploit-framework,installed,kali-command-and-control;kali-defense-evasion;kali-execution;kali-initial-access;kali-privilege-escalation;kali-resource-development,exploitation-c2,Framework for exploit development and vulnerability research
+metasploitmcp,installed,none-detected,exploitation-c2,MCP Server for Metasploit
+mimikatz,installed,kali-os-credential-dumping;kali-pass-the-hash,credential-access,Uses admin rights on Windows to display passwords in plaintext
+minicom,installed,none-detected,general-ops,Friendly menu driven serial communication program
+miredo,installed,kali-protocol-tunneling,general-ops,Teredo IPv6 tunneling through NATs
+miredo-server,installable-missing,none-detected,general-ops,Teredo IPv6 tunneling server
+missidentify,installed,none-detected,general-ops,find win32 applications
+mitm6,installed,none-detected,general-ops,pwning IPv4 via IPv6
+mitmproxy,installed,kali-collection,web-app,SSL-capable man-in-the-middle HTTP proxy
+mongo-tools,installed,none-detected,general-ops,MongoDB tools (program)
+msfpc,installed,kali-resource-development,development-support,MSFvenom Payload Creator (MSFPC)
+msitools,installable-missing,none-detected,general-ops,Windows Installer file manipulation tool
+gir1.2-libmsi-1.0,installable-missing,none-detected,development-support,Windows Installer file manipulation library - gir bindings
+libmsi-1.0-0,installed,none-detected,development-support,Windows Installer file manipulation library
+libmsi-dev,installable-missing,none-detected,development-support,Windows Installer file manipulation library - development files
+wixl,installed,none-detected,general-ops,Windows Installer creation tool
+wixl-data,installed,none-detected,general-ops,Windows Installer creation tool — data files
+mssqlpwner,installed,none-detected,general-ops,Advanced and versatile pentesting tool
+multiforcer,installed,none-detected,credential-access,GPU accelerated password cracking tool
+multimac,installed,none-detected,general-ops,Create multiple MACs on an adapter
+multimon-ng,installed,none-detected,general-ops,digital radio transmission decoder
+mxcheck,installed,none-detected,general-ops,Info and security scanner for e-mail servers
+myrescue,installed,none-detected,general-ops,rescue data from damaged disks
+mysql-defaults,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+default-libmysqlclient-dev,installable-missing,none-detected,development-support,MySQL database development files (metapackage)
+default-mysql-client,installable-missing,none-detected,general-ops,MySQL database client binaries (metapackage)
+default-mysql-client-core,installable-missing,none-detected,general-ops,MySQL database core client binaries (metapackage)
+default-mysql-server,installed,none-detected,general-ops,MySQL database server binaries and system database setup (metapackage)
+default-mysql-server-core,installable-missing,none-detected,general-ops,MySQL database server binaries (metapackage)
+mysql-common,installed,none-detected,general-ops,"MySQL database common files, e.g. /etc/mysql/my.cnf"
+naabu,installed,none-detected,general-ops,fast port scanner with a focus on reliability and simplicity
+name-that-hash,installed,none-detected,general-ops,"Identify MD5, SHA256 and 300+ other hash types"
+nasm,installed,none-detected,general-ops,General-purpose x86 assembler
+nasty,installed,none-detected,forensics-ir,tool which helps you to recover your GPG passphrase
+nbtscan,installed,kali-network-share-discovery,general-ops,scan networks searching for NetBIOS information
+nbtscan-unixwiz,installed,none-detected,general-ops,Scanner for open NETBIOS nameservers
+ncat-w32,installed,none-detected,general-ops,Netcat for the 21st century
+ncrack,installed,kali-brute-force;kali-credential-access,credential-access,High-speed network authentication cracking tool
+ncurses-hexedit,installed,none-detected,general-ops,"Edit files/disks in hex, ASCII and EBCDIC"
+net-snmp,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libnetsnmptrapd45,installed,none-detected,development-support,SNMP (Simple Network Management Protocol) trap library
+libsnmp-base,installed,none-detected,development-support,"SNMP configuration script, MIBs and documentation"
+libsnmp-dev,installable-missing,none-detected,development-support,SNMP (Simple Network Management Protocol) development files
+libsnmp-perl,installed,none-detected,general-ops,SNMP (Simple Network Management Protocol) Perl5 support
+libsnmp45,installed,none-detected,development-support,SNMP (Simple Network Management Protocol) library
+snmp,installed,none-detected,general-ops,SNMP (Simple Network Management Protocol) applications
+snmpd,installed,none-detected,general-ops,SNMP (Simple Network Management Protocol) agents
+snmptrapd,installable-missing,none-detected,general-ops,Net-SNMP notification receiver
+tkmib,installable-missing,none-detected,general-ops,SNMP (Simple Network Management Protocol) MIB browser
+net-tools,installed,none-detected,general-ops,NET-3 networking toolkit
+netbase,installed,none-detected,general-ops,Basic TCP/IP networking system
+netcat,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+netcat-traditional,installed,kali-exfiltration;kali-non-application-layer-protocol,general-ops,TCP/IP swiss army knife
+netdiscover,installed,kali-discovery;kali-system-network-configuration-discovery,general-ops,active/passive network address scanner using ARP requests
+netexec,installed,kali-application-layer-protocol;kali-brute-force;kali-credential-access;kali-lateral-movement;kali-network-share-discovery;kali-pass-the-hash,credential-access,Network Execution Tool
+netmask,installed,kali-system-network-configuration-discovery,general-ops,helps determine network masks
+netscanner,installed,none-detected,general-ops,Network scanner & diagnostic tool with modern TUI
+netsed,installed,none-detected,general-ops,network packet-altering stream editor
+netsniff-ng,installed,kali-network-sniffing;kali-respond,general-ops,Linux network packet sniffer toolkit
+netw-ib-ox-ag,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+netwag,installed,none-detected,general-ops,graphical frontend for netwox
+netwag-doc,installable-missing,none-detected,development-support,documentation for netwag frontend
+netwox,installed,none-detected,general-ops,networking utilities
+netwox-doc,installable-missing,none-detected,development-support,documentation for netwox toolbox
+nextnet,installed,none-detected,general-ops,pivot point discovery tool in Go
+nfs-utils,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libnfsidmap-dev,installable-missing,none-detected,development-support,header files and docs for libnfsidmap
+libnfsidmap1,installed,none-detected,development-support,NFS idmapping library
+nfs-common,installed,none-detected,general-ops,NFS support files common to client and server
+nfs-kernel-server,installable-missing,none-detected,general-ops,support for NFS kernel server
+ngrep,installed,none-detected,general-ops,grep for network traffic
+nikto,installed,kali-web-vulnerability-scanning,web-app,web server security scanner
+nipper-ng,installed,none-detected,general-ops,Device security configuration review tool
+nishang,installed,none-detected,general-ops,Collection of PowerShell scripts and payloads
+nmap,installed,kali-discovery;kali-network-information;kali-network-service-discovery;kali-reconnaissance;kali-vulnerability-scanning,reconnaissance,The Network Mapper
+ncat,installed,kali-non-application-layer-protocol,general-ops,NMAP netcat reimplementation
+ndiff,installed,none-detected,general-ops,The Network Mapper - result compare utility
+nmap-common,installed,none-detected,general-ops,Architecture independent files for nmap
+zenmap,installed,none-detected,general-ops,The Network Mapper Front End
+nmapsi4,installed,none-detected,wireless-rf,"graphical interface to nmap, the network scanner"
+nuclei,installed,none-detected,general-ops,Fast and customizable vulnerability scanner based on simple YAML based DSL
+obsidian,installed,none-detected,general-ops,Private and flexible writing app that adapts to the way you think
+oclgausscrack,installed,none-detected,general-ops,Cracks verification hashes of the Gauss Virus
+odat,installed,none-detected,general-ops,Oracle Database Attacking Tool
+offsec-courses,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+offsec-awae,installable-missing,none-detected,web-app,Resources for OffSec's AWAE/WEB-300
+offsec-awae-python2,installable-missing,none-detected,web-app,Python 2 resources for OffSec's AWAE/WEB-300
+offsec-exp100,installable-missing,none-detected,general-ops,Resources for OffSec's EXP-100 path
+offsec-exp301,installable-missing,none-detected,general-ops,Resources for OffSec's WUMED/EXP-301
+offsec-pen300,installable-missing,none-detected,general-ops,Resources for OffSec's ETBD/PEN-300
+offsec-pwk,installable-missing,none-detected,general-ops,Resources for OffSec's PWK2/PEN-200
+ohrwurm,installed,none-detected,reverse-fuzzing,RTP fuzzer
+ollydbg,installed,none-detected,reverse-fuzzing,32-bit assembler level analysing debugger
+onesixtyone,installed,kali-snmp,general-ops,fast and simple SNMP scanner
+openocd,installed,none-detected,general-ops,Open on-chip JTAG/SWD debug solution for embedded target devices
+openssh,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+openssh-client,installed,none-detected,general-ops,"secure shell (SSH) client, for secure access to remote machines"
+openssh-client-gssapi,installed,none-detected,general-ops,"secure shell (SSH) client, with GSS-API support"
+openssh-client-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+openssh-server,installed,none-detected,general-ops,"secure shell (SSH) server, for secure access from remote machines"
+openssh-server-gssapi,installable-missing,none-detected,general-ops,"secure shell (SSH) server, with GSS-API key exchange"
+openssh-server-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+openssh-sftp-server,installed,none-detected,general-ops,"secure shell (SSH) sftp server module, for SFTP access from remote machines"
+openssh-tests,installable-missing,none-detected,general-ops,OpenSSH regression tests
+ssh,installable-missing,none-detected,general-ops,secure shell client and server (metapackage)
+ssh-askpass-gnome,installable-missing,none-detected,general-ops,interactive X program to prompt users for a passphrase for ssh-add
+openssh-ssh1,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+openssh-client-ssh1,installed,none-detected,general-ops,secure shell (SSH) client for legacy SSH1 protocol
+openssl,installed,none-detected,crypto-stego,Secure Sockets Layer toolkit - cryptographic utility
+libcrypto3-udeb,unresolved-on-snapshot,none-detected,crypto-stego,No package metadata available on current APT snapshot.
+libssl-dev,installed,none-detected,development-support,Secure Sockets Layer toolkit - development files
+libssl-doc,installable-missing,none-detected,development-support,Secure Sockets Layer toolkit - development documentation
+libssl3-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libssl3t64,installed,none-detected,general-ops,Secure Sockets Layer toolkit - shared libraries
+openssl-provider-fips,installable-missing,none-detected,crypto-stego,Secure Sockets Layer toolkit - cryptographic utility
+openssl-provider-legacy,installed,none-detected,crypto-stego,Secure Sockets Layer toolkit - cryptographic utility
+opentaxii,installed,none-detected,general-ops,TAXII server implementation from EclecticIQ
+opentaxii-doc,installable-missing,none-detected,development-support,TAXII server implementation from EclecticIQ (common documentation)
+openvpn,installed,none-detected,general-ops,virtual private network daemon
+ophcrack,installed,none-detected,credential-access,Microsoft Windows password cracker using rainbow tables (gui)
+ophcrack-cli,installed,kali-password-cracking,credential-access,Microsoft Windows password cracker using rainbow tables (cmdline)
+oscanner,installed,none-detected,general-ops,Oracle assessment framework
+osrframework,installed,none-detected,wireless-rf,Open Sources Research Framework
+owasp-mantra-ff,installed,none-detected,web-app,Web application security testing framework built on top of Firefox
+owl,installed,none-detected,wireless-rf,open Apple Wireless Direct Link (AWDL)
+p0f,installed,none-detected,general-ops,Passive OS fingerprinting tool
+pack,installed,none-detected,credential-access,Password analysis and cracking kit
+pack2,installed,none-detected,credential-access,Password analysis and cracking kit 2
+pacu,installed,none-detected,exploitation-c2,Open Source AWS Exploitation Framework
+padbuster,installed,none-detected,wireless-rf,Script for performing Padding Oracle attacks
+paros,installed,none-detected,web-app,Web application proxy
+parsero,installed,none-detected,defensive-monitoring,Robots.txt audit tool
+parted,installed,none-detected,general-ops,disk partition manipulator
+libparted-dev,installable-missing,none-detected,development-support,disk partition manipulator - development files
+libparted-fs-resize0-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libparted-fs-resize0t64,installed,none-detected,development-support,disk partition manipulator - shared FS resizing library
+libparted-i18n,installable-missing,none-detected,general-ops,disk partition manipulator - i18n support
+libparted2-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libparted2t64,installed,none-detected,development-support,disk partition manipulator - shared library
+parted-doc,installable-missing,none-detected,development-support,disk partition manipulator - documentation
+parted-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+pasco,installed,none-detected,forensics-ir,Internet Explorer cache forensic analysis tool
+passdetective,installed,none-detected,general-ops,CLI tool that scans shell command history
+passing-the-hash,installed,kali-pass-the-hash,credential-access,Patched tools to use password hashes as authentication input
+patator,installed,kali-brute-force,general-ops,Multi-purpose brute-forcer
+patchleaks,installed,none-detected,general-ops,Go from a CVE number to the exact patched code and its vulnerability analysis
+payloadsallthethings,installed,none-detected,general-ops,Collection of useful payloads and bypasses
+pdf-parser,installed,kali-pdf-forensics-tools,forensics-ir,Parses PDF files to identify fundamental elements
+pdfcrack,installed,none-detected,credential-access,PDF files password cracker
+pdfid,installed,kali-pdf-forensics-tools,forensics-ir,Scans PDF files for certain PDF keywords
+peass-ng,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+peass,installed,kali-privilege-escalation,general-ops,Privilege Escalation Awesome Scripts SUITE
+peirates,installed,none-detected,cloud-container,Kubernetes Penetration Testing tool
+perl-cisco-copyconfig,installed,none-detected,general-ops,Provides methods for manipulating Cisco devices
+phishery,installed,none-detected,credential-access,Basic Auth Credential Harvester with Word Doc Template Injector
+photon,installed,none-detected,general-ops,Incredibly fast crawler designed for open source intelligence
+php-defaults,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libapache2-mod-php,installed,none-detected,general-ops,"server-side, HTML-embedded scripting language (Apache 2 module) (default)"
+libphp-embed,installable-missing,none-detected,development-support,HTML-embedded scripting language (Embedded SAPI library) (default)
+php,installed,none-detected,general-ops,"server-side, HTML-embedded scripting language (default)"
+php-all-dev,installable-missing,none-detected,development-support,package depending on all supported PHP development packages
+php-bcmath,installable-missing,none-detected,general-ops,Bcmath module for PHP [default]
+php-bz2,installable-missing,none-detected,general-ops,bzip2 module for PHP [default]
+php-cgi,installed,none-detected,reverse-fuzzing,"server-side, HTML-embedded scripting language (CGI binary) (default)"
+php-cli,installable-missing,none-detected,general-ops,command-line interpreter for the PHP scripting language (default)
+php-common,installed,none-detected,general-ops,Common files for PHP packages
+php-curl,installable-missing,none-detected,general-ops,CURL module for PHP [default]
+php-dev,installable-missing,none-detected,development-support,Files for PHP module development (default)
+php-enchant,installable-missing,none-detected,general-ops,Enchant module for PHP [default]
+php-fpm,installable-missing,none-detected,reverse-fuzzing,"server-side, HTML-embedded scripting language (FPM-CGI binary) (default)"
+php-gd,installable-missing,none-detected,general-ops,GD module for PHP [default]
+php-gmp,installable-missing,none-detected,general-ops,GMP module for PHP [default]
+php-interbase,installable-missing,none-detected,general-ops,Interbase module for PHP [default]
+php-intl,installable-missing,none-detected,general-ops,Internationalisation module for PHP [default]
+php-json,installable-missing,none-detected,general-ops,JSON module for PHP [default]
+php-ldap,installable-missing,none-detected,general-ops,LDAP module for PHP [default]
+php-mbstring,installable-missing,none-detected,general-ops,MBSTRING module for PHP [default]
+php-mysql,installed,none-detected,general-ops,MySQL module for PHP [default]
+php-odbc,installable-missing,none-detected,general-ops,ODBC module for PHP [default]
+php-pgsql,installable-missing,none-detected,general-ops,PostgreSQL module for PHP [default]
+php-phpdbg,installable-missing,none-detected,reverse-fuzzing,"server-side, HTML-embedded scripting language (PHPDBG binary) (default)"
+php-readline,installable-missing,none-detected,general-ops,readline module for PHP [default]
+php-snmp,installable-missing,none-detected,general-ops,SNMP module for PHP [default]
+php-soap,installable-missing,none-detected,general-ops,SOAP module for PHP [default]
+php-sqlite3,installed,none-detected,general-ops,SQLite3 module for PHP [default]
+php-sybase,installable-missing,none-detected,general-ops,Sybase module for PHP [default]
+php-tidy,installable-missing,none-detected,general-ops,tidy module for PHP [default]
+php-xml,installable-missing,none-detected,general-ops,"DOM, SimpleXML, WDDX, XML, and XSL module for PHP [default]"
+php-zip,installable-missing,none-detected,general-ops,Zip module for PHP [default]
+phpggc,installed,none-detected,exploitation-c2,Generate payloads that exploit unsafe object deserialization
+phpsploit,installed,none-detected,exploitation-c2,Stealth post-exploitation framework
+pipal,installed,kali-reporting-tools,credential-access,Statistical analysis on password dumps
+pixiewps,installed,kali-wifi-credential-access,wireless-rf,Offline WPS bruteforce tool
+plaso,installed,none-detected,general-ops,super timeline all the things -- metapackage
+python3-plaso,installed,none-detected,general-ops,super timeline all the things -- Python 3
+plocate,installed,none-detected,general-ops,much faster locate
+pnscan,installed,none-detected,general-ops,Multi threaded port scanner
+pocsuite3,installed,none-detected,general-ops,Open-sourced remote vulnerability testing framework
+polenum,installed,none-detected,credential-access,Extracts the password policy from a Windows system
+pompem,installed,none-detected,exploitation-c2,Exploit and Vulnerability Finder
+portspoof,installed,none-detected,general-ops,enhance OS security through a set of techniques
+poshc2,installed,none-detected,exploitation-c2,proxy aware C2 framework
+powercat,installed,none-detected,general-ops,netcat features all in powershell v2
+powershell,installed,System;Utility;kali-services-and-other-tools,general-ops,PowerShell is an automation and configuration management platform.
+powershell-empire,installed,kali-command-and-control,exploitation-c2,PowerShell and Python post-exploitation agent
+powersploit,installed,kali-execution,exploitation-c2,PowerShell Post-Exploitation Framework
+princeprocessor,installed,none-detected,credential-access,standalone password candidate generator using the PRINCE algorithm
+protos-sip,installed,none-detected,general-ops,SIP test suite
+proxify,installed,none-detected,web-app,"Swiss Army knife Proxy tool for HTTP/HTTPS traffic capture, manipulation"
+proximoth,installed,none-detected,general-ops,Control Frame Attack Vulnerability Detection Tool
+proxmark3,installed,none-detected,general-ops,"Firmware, flasher, and client for the Proxmark3"
+proxmark3-common,installed,none-detected,general-ops,scripts for the Proxmark3
+proxmark3-doc,installable-missing,none-detected,development-support,"Firmware, flasher, and client for the Proxmark3 (documentation)"
+proxmark3-firmwares,installed,none-detected,general-ops,Firmwares for the Proxmark3
+proxychains-ng,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libproxychains4,installed,none-detected,development-support,runtime shared library for proxychains-ng
+proxychains4,installed,kali-protocol-tunneling,web-app,redirect connections through socks/http proxies (proxychains-ng)
+proxytunnel,installed,kali-protocol-tunneling,web-app,Help SSH and other protocols through HTTP(S) proxies
+pskracker,installed,none-detected,wireless-rf,collection of WPA/WPA2/WPS default keys generators/pingens
+pskracker-data,installed,none-detected,wireless-rf,collection of WPA/WPA2/WPS default keys generators/pingens
+pspy,installed,none-detected,defensive-monitoring,Monitor Linux processes without root permissions
+ptunnel,installed,kali-protocol-tunneling,general-ops,Tunnel TCP connections over ICMP packets
+pwnat,installed,kali-protocol-tunneling,general-ops,NAT to NAT client-server communication
+pwncat,installed,none-detected,defensive-monitoring,netcat on steroids
+pyinstaller,installed,kali-resource-development,development-support,Utility to bundle a Python application into a single package
+python3-pyinstaller,installed,none-detected,general-ops,Python modules to bundle a Python application into a single package
+pyinstxtractor,installed,none-detected,general-ops,PyInstalller Extractor
+python-defaults,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libpython-all-dbg,installable-missing,none-detected,general-ops,package depending on all supported Python2 debugging packages
+libpython-all-dev,installable-missing,none-detected,development-support,package depending on all supported Python2 development packages
+libpython2-dbg,installable-missing,none-detected,general-ops,debug build of the Python2 interpreter (version 2.7)
+libpython2-dev,installable-missing,none-detected,development-support,header files and a static library for Python2
+libpython2-stdlib,installable-missing,none-detected,general-ops,interactive high-level object-oriented language (Python2)
+python-all,installable-missing,none-detected,general-ops,package depending on all supported Python2 runtime versions
+python-all-dbg,installable-missing,none-detected,general-ops,package depending on all supported Python2 debugging packages
+python-all-dev,installable-missing,none-detected,development-support,package depending on all supported Python2 development packages
+python2,installable-missing,none-detected,general-ops,interactive high-level object-oriented language (Python2 version)
+python2-dbg,installable-missing,none-detected,general-ops,debug build of the Python2 interpreter (version 2.7)
+python2-dev,installable-missing,none-detected,development-support,header files and a static library for Python2
+python2-doc,installable-missing,none-detected,development-support,documentation for the high-level object-oriented language Python2
+python2-minimal,installable-missing,none-detected,general-ops,minimal subset of the Python2 language
+python-faraday,installable-missing,none-detected,general-ops,Collaborative Penetration Test IDE
+faraday,installed,kali-reporting-tools;kali-system-services,general-ops,Collaborative Penetration Test IDE
+python-ldapdomaindump,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-ldapdomaindump,installed,none-detected,general-ops,Active Directory information dumper via LDAP (Python 3)
+python-pip,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-pip,installed,none-detected,general-ops,Python package installer
+python3-pip-whl,installed,none-detected,general-ops,Python package installer (pip wheel)
+python-pipx,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+pipx,installed,none-detected,general-ops,execute binaries from Python packages in isolated environments
+python-virtualenv,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-virtualenv,installed,none-detected,general-ops,Python virtual environment creator
+virtualenv,installable-missing,none-detected,general-ops,Python virtual environment creator (Dependency package)
+qemu,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+qemu-block-extra,installable-missing,none-detected,general-ops,extra block backend modules for qemu-system and qemu-utils
+qemu-guest-agent,installable-missing,none-detected,general-ops,Guest-side qemu-system agent
+qemu-system,installable-missing,none-detected,general-ops,QEMU full system emulation binaries
+qemu-system-arm,installable-missing,none-detected,general-ops,QEMU full system emulation binaries (arm)
+qemu-system-common,installed,none-detected,general-ops,QEMU full system emulation binaries (common files)
+qemu-system-data,installed,none-detected,general-ops,QEMU full system emulation (data files)
+qemu-system-gui,installable-missing,none-detected,general-ops,QEMU full system emulation binaries (graphical display and audio modules)
+qemu-system-mips,installable-missing,none-detected,general-ops,QEMU full system emulation binaries (mips)
+qemu-system-misc,installable-missing,none-detected,general-ops,QEMU full system emulation binaries (miscellaneous)
+qsslcaudit,installed,none-detected,defensive-monitoring,test SSL/TLS clients how secure they are
+quark-engine,installed,none-detected,general-ops,Android Malware (Analysis | Scoring System)
+radare2,installed,kali-resource-development,reverse-fuzzing,free and advanced command line hexadecimal editor
+libradare2-6.0.0t64,installed,none-detected,reverse-fuzzing,libraries from the radare2 suite
+libradare2-common,installed,none-detected,reverse-fuzzing,arch independent files from the radare2 suite
+libradare2-dev,installable-missing,none-detected,reverse-fuzzing,devel files from the radare2 suite
+rainbowcrack,installed,none-detected,credential-access,Rainbow table password cracker
+rake,installed,none-detected,general-ops,ruby make-like utility
+rarcrack,installed,none-detected,credential-access,Password cracker for rar archives
+raven,installed,none-detected,web-app,Python tool that extends the capabilities of the http.server Python module
+rcracki-mt,installed,none-detected,general-ops,Version of rcrack that supports hybrid and indexed tables
+rdesktop,installed,kali-lateral-movement,general-ops,RDP client for Windows NT/2000 Terminal Server and Windows Servers
+readpe,installed,none-detected,general-ops,command-line tools to manipulate Windows PE files
+libpe-dev,installable-missing,none-detected,development-support,library to read Windows PE files (development files)
+libpe1t64,installed,none-detected,development-support,library to read Windows PE files
+reaver,installed,kali-wifi;kali-wifi-credential-access,wireless-rf,brute force attack tool against Wi-Fi Protected Setup PIN number
+rebind,installed,kali-initial-access,general-ops,DNS rebinding tool
+recon-ng,installed,kali-reconnaissance;kali-web-scanning,reconnaissance,Web Reconnaissance framework written in Python
+reconspider,installed,none-detected,reconnaissance,"OSINT Framework for scanning IP Address, Emails, Websites, Organizations"
+recordmydesktop,installed,kali-reporting-tools,general-ops,Captures audio-video data of a Linux desktop session
+recoverdm,installed,none-detected,forensics-ir,recover files on disks with damaged sectors
+recoverjpeg,installed,none-detected,forensics-ir,recover JFIF (JPEG) pictures and MOV movies
+redeye,installed,none-detected,general-ops,tool to help you manage your data during a pentest operation
+redfang,installed,none-detected,wireless-rf,Locates non-discoverable bluetooth devices
+redsnarf,installed,none-detected,wireless-rf,Pentesting tool for retrieving credentials from Windows workstations
+redsocks,installed,none-detected,web-app,arbitrary TCP connection redirector to a SOCKS or HTTPS proxy server
+reglookup,installed,none-detected,general-ops,utility to analysis for Windows NT-based registry
+libregfi-dev,installable-missing,none-detected,development-support,utility to analysis for Windows NT-based registry (devel files)
+libregfi1t64,installed,none-detected,development-support,utility to analysis for Windows NT-based registry (shared library)
+python3-pyregfi,installed,none-detected,general-ops,Python 3 Bindings for reglookup
+reglookup-doc,installable-missing,none-detected,development-support,developer documentation for libregfi and python-pyregfi
+regripper,installed,none-detected,wireless-rf,perform forensic analysis of registry hives
+rekono-kbx,installable-missing,none-detected,general-ops,automation platform for pentesting
+rephrase,installed,none-detected,forensics-ir,Specialized passphrase recovery tool for GnuPG
+requests,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python-requests-doc,installable-missing,none-detected,web-app,elegant and simple HTTP library for Python (Documentation)
+python3-requests,installed,none-detected,web-app,"elegant and simple HTTP library for Python3, built for human beings"
+responder,installed,kali-credential-access,credential-access,LLMNR/NBT-NS/mDNS Poisoner
+rev-proxy-grapher,installed,none-detected,reverse-fuzzing,Reverse proxy grapher
+rfcat,installed,none-detected,wireless-rf,Swiss army knife of sub-GHz radio
+rfdump,installed,none-detected,wireless-rf,tool to decode RFID tag data
+ridenum,installed,none-detected,general-ops,Null session RID cycle attack tool
+rifiuti,installed,none-detected,general-ops,MS Windows recycle bin analysis tool
+rifiuti2,installed,none-detected,general-ops,"replacement for rifiuti, a MS Windows recycle bin analysis tool"
+rizin,installed,none-detected,reverse-fuzzing,reverse engineering framework and command-line toolset
+librizin-common,installed,none-detected,general-ops,arch independent files from the Rizin suite
+librizin-dev,installable-missing,none-detected,development-support,devel files from the Rizin suite
+librizin0,installed,none-detected,general-ops,libraries from the Rizin suite
+rizin-cutter,installed,none-detected,reverse-fuzzing,reverse engineering platform powered by rizin
+librizin-cutter-dev,installable-missing,none-detected,development-support,development files to build cutter plugins
+rkhunter,installed,none-detected,exploitation-c2,"rootkit, backdoor, sniffer and exploit scanner"
+rling,installed,none-detected,general-ops,better rli
+robotstxt,installed,none-detected,general-ops,robots.txt exclusion protocol implementation for Go language
+golang-github-temoto-robotstxt-dev,installable-missing,none-detected,development-support,robots.txt exclusion protocol implementation for Go language
+ropper,installed,none-detected,reverse-fuzzing,rop gadget finder and binary information tool
+routerkeygenpc,installed,none-detected,wireless-rf,Router Keygen generate default WPA/WEP keys
+routersploit,installed,none-detected,exploitation-c2,Exploitation Framework for Embedded Devices
+rsakeyfind,installed,none-detected,general-ops,locates BER-encoded RSA private keys in memory images
+rsmangler,installed,kali-password-profiling-wordlists,credential-access,Wordlist mangling tool
+rtpbreak,installed,none-detected,reconnaissance,"Detects, reconstructs, and analyzes RTP sessions"
+rtpflood,installed,none-detected,general-ops,Tool to flood any RTP device
+rtpinsertsound,installed,none-detected,general-ops,Inserts audio into a specified stream
+rtpmixsound,installed,none-detected,general-ops,Mixes pre-recorded audio in real-time
+rubeus,installed,none-detected,credential-access,Raw Kerberos interaction and abuses
+ruby-pedump,installed,none-detected,general-ops,dump win32 PE executable files with a pure ruby
+rz-ghidra,installed,none-detected,reverse-fuzzing,ghidra decompiler and sleigh disassembler for rizin
+s3scanner,installed,none-detected,general-ops,tool to find open S3 buckets and dump their contents
+safecopy,installed,none-detected,forensics-ir,data recovery tool for problematic or damaged media
+sakis3g,installed,none-detected,general-ops,Tool for establishing 3G connections
+samba,installed,none-detected,general-ops,"SMB/CIFS file, print, and login server for Unix"
+ctdb,installable-missing,none-detected,general-ops,clustered database to store temporary data
+ldb-tools,installable-missing,none-detected,general-ops,LDAP-like embedded database - tools
+libldb-dev,installable-missing,none-detected,development-support,LDAP-like embedded database - development files
+libldb2,installed,none-detected,development-support,LDAP-like embedded database - shared library
+libnss-winbind,installable-missing,none-detected,general-ops,Samba nameservice integration plugins
+libpam-winbind,installable-missing,none-detected,general-ops,Windows domain authentication integration plugin
+libsmbclient,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libsmbclient-dev,installable-missing,none-detected,development-support,development files for libsmbclient
+libsmbclient0,installed,none-detected,development-support,shared library for communication with SMB/CIFS servers
+libtalloc-dev,installable-missing,none-detected,development-support,hierarchical pool based memory allocator - development files
+libtalloc2,installed,none-detected,exploitation-c2,hierarchical pool based memory allocator
+libtdb-dev,installable-missing,none-detected,development-support,Trivial Database - development files
+libtdb1,installed,none-detected,development-support,Trivial Database - shared library
+libtevent-dev,installable-missing,none-detected,development-support,talloc-based event loop library - development files
+libtevent0,installable-missing,none-detected,general-ops,No package metadata available on current APT snapshot.
+libtevent0t64,installed,none-detected,development-support,talloc-based event loop library - shared library
+libwbclient-dev,installable-missing,none-detected,development-support,Samba winbind client library - development files
+libwbclient0,installed,none-detected,development-support,Samba winbind client library
+python3-ldb,installed,none-detected,general-ops,Python 3 bindings for LDB
+python3-samba,installed,none-detected,general-ops,Python 3 bindings for Samba
+python3-talloc,installed,none-detected,general-ops,hierarchical pool based memory allocator - Python3 bindings
+python3-tdb,installed,none-detected,general-ops,Python3 bindings for TDB
+registry-tools,installable-missing,none-detected,general-ops,tools for viewing and manipulating the Windows registry
+samba-ad-dc,installable-missing,none-detected,general-ops,Samba control files to run AD Domain Controller
+samba-ad-provision,installable-missing,none-detected,general-ops,Samba files needed for AD domain provision
+samba-common,installed,none-detected,general-ops,common files used by both the Samba server and client
+samba-common-bin,installed,none-detected,general-ops,Samba common files used by both the server and the client
+samba-dev,installable-missing,none-detected,development-support,tools for extending Samba
+samba-dsdb-modules,installable-missing,none-detected,general-ops,Samba Directory Services Database
+samba-libs,installed,none-detected,general-ops,Samba core libraries
+samba-testsuite,installable-missing,none-detected,general-ops,test suite from Samba
+samba-vfs-ceph,installable-missing,none-detected,general-ops,Samba Virtual FileSystem ceph modules
+samba-vfs-glusterfs,installable-missing,none-detected,wireless-rf,Samba Virtual FileSystem glusterfs modules
+samba-vfs-modules,installable-missing,none-detected,general-ops,Samba Virtual FileSystem plugins (transitional package)
+smbclient,installed,kali-application-layer-protocol;kali-network-share-discovery,general-ops,command-line SMB/CIFS clients for Unix
+tdb-tools,installed,none-detected,general-ops,Trivial Database - bundled binaries
+winbind,installable-missing,none-detected,general-ops,service to resolve user and group information from Windows NT servers
+samdump2,installed,kali-os-credential-dumping,credential-access,Dump Windows 2k/NT/XP password hashes
+sara,installed,none-detected,general-ops,RouterOS Security Inspector
+sbd,installed,kali-non-application-layer-protocol,general-ops,Secure backdoor for Linux and Windows
+scalpel,installed,kali-forensic-carving-tools,forensics-ir,fast filesystem-independent file recovery
+scapy,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python3-scapy,installed,kali-impact;kali-network-sniffing,general-ops,Packet generator/sniffer and network scanner/discovery (Python 3)
+screen,installed,none-detected,general-ops,terminal multiplexer with VT100/ANSI terminal emulation
+screen-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+scrounge-ntfs,installed,kali-forensic-carving-tools;kali-recover,forensics-ir,Data recovery program for NTFS filesystems
+sctpscan,installed,none-detected,general-ops,SCTP network scanner for discovery and security
+seclists,installed,none-detected,general-ops,Collection of multiple types of security lists
+secure-socket-funneling,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+secure-socket-funneling-windows-binaries,installed,none-detected,general-ops,SSF - windows binaries
+sendemail,installed,none-detected,general-ops,"lightweight, command line SMTP email client"
+sentrypeer,installed,none-detected,general-ops,SIP peer to peer honeypot for VoIP
+set,installed,kali-initial-access,general-ops,Social-Engineer Toolkit
+sfuzz,installed,none-detected,reverse-fuzzing,Black Box testing utilities
+sharphound,installed,none-detected,general-ops,C# Data Collector for BloodHound
+sharpshooter,installed,none-detected,general-ops,Payload Generation Framework
+shed,installed,none-detected,wireless-rf,simple hex editor with a pico-style interface
+shellfire,installed,none-detected,wireless-rf,"exploiting LFI, RFI, and command injection vulnerabilities"
+shellnoob,installed,none-detected,general-ops,Shellcode writing toolkit
+shellter,installed,none-detected,general-ops,Dynamic shellcode injection tool and dynamic PE infector
+sherlock,installed,none-detected,general-ops,Find usernames across social networks
+sickle-pdk,installed,none-detected,general-ops,Payload development kit
+sidguesser,installed,none-detected,defensive-monitoring,Guesses sids against an Oracle database
+siege,installed,none-detected,web-app,HTTP regression testing and benchmarking utility
+sigma-cli,installed,none-detected,wireless-rf,Sigma command line interface
+silenttrinity,installed,none-detected,exploitation-c2,"asynchronous, collaborative post-exploitation agent"
+siparmyknife,installed,none-detected,reverse-fuzzing,SIP fuzzing tool
+sipcrack,installed,none-detected,general-ops,SIP login dumper/cracker
+sipp,installed,none-detected,general-ops,Traffic generator for the SIP protocol
+sippts,installed,none-detected,defensive-monitoring,Set of tools to audit SIP based VoIP Systems
+sipsak,installed,none-detected,general-ops,SIP Swiss army knife
+sipvicious,installed,none-detected,defensive-monitoring,tools to audit SIP based VoIP systems
+skipfish,installed,kali-web-vulnerability-scanning,reconnaissance,"fully automated, active web application security reconnaissance tool"
+sleuthkit,installed,kali-respond;kali-sleuth-kit-suite,forensics-ir,tools for forensics analysis on volume and filesystem data
+libsleuthkit-java,installable-missing,none-detected,forensics-ir,Java Bindings for SleuthKit
+libsleuthkit-jni,installable-missing,none-detected,wireless-rf,Java native interface for SleuthKit
+libtsk-dev,installable-missing,none-detected,forensics-ir,library for forensics analysis (development files)
+libtsk23,installed,none-detected,forensics-ir,library for forensics analysis on volume and filesystem data
+slimtoolkit,installed,none-detected,cloud-container,optimization of your containers
+sliver,installed,none-detected,exploitation-c2,Implant framework
+slowhttptest,installed,none-detected,web-app,application layer Denial of Service attacks simulation tool
+smbmap,installed,kali-network-share-discovery;kali-pass-the-hash,general-ops,handy SMB enumeration tool
+smtp-user-enum,installed,kali-account-discovery;kali-smtp,general-ops,Username guessing tool for the SMTP service
+sn0int,installed,none-detected,general-ops,Semi-automatic OSINT framework and package manager
+sniffjoke,installed,none-detected,general-ops,Transparent TCP connection scrambler
+snmpcheck,installed,kali-snmp,general-ops,SNMP service enumeration tool
+snmpenum,installed,none-detected,general-ops,SNMP tabledump
+snort,installed,none-detected,defensive-monitoring,flexible Network Intrusion Detection System
+snort-common,installed,none-detected,defensive-monitoring,flexible Network Intrusion Detection System - common files
+snort-common-libraries,installed,none-detected,defensive-monitoring,flexible Network Intrusion Detection System - libraries
+snort-doc,installable-missing,none-detected,defensive-monitoring,flexible Network Intrusion Detection System - documentation
+snort-rules-default,installed,none-detected,defensive-monitoring,flexible Network Intrusion Detection System - ruleset
+snowdrop,installed,none-detected,forensics-ir,plain text watermarking and watermark recovery
+socat,installed,kali-non-application-layer-protocol,general-ops,multipurpose relay for bidirectional data transfer
+sparrow-wifi,installed,none-detected,wireless-rf,Graphical Wi-Fi Analyzer for Linux
+spiderfoot,installed,kali-host-information;kali-identify,reconnaissance,OSINT collection and reconnaissance tool
+spike,installed,kali-resource-development,reverse-fuzzing,Network protocol fuzzer
+spire,installed,none-detected,general-ops,toolchain of APIs for establishing trust between software systems
+sploitscan,installed,none-detected,general-ops,Search for CVE information
+spooftooph,installed,kali-bluetooth,wireless-rf,Automates spoofing or cloning Bluetooth devices
+spray,installed,none-detected,credential-access,Password Spraying tool for Active Directory Credentials
+sprayhound,installed,none-detected,credential-access,Password spraying tool and Bloodhound integration
+sprayingtoolkit,installed,none-detected,credential-access,"Scripts to make password spraying attacks against Lync/S4B, OWA & O365"
+spraykatz,installed,none-detected,credential-access,tool able to retrieve credentials on Windows machines
+sqldict,installed,none-detected,general-ops,Dictionary attack tool for SQL Server
+sqlitebrowser,installed,none-detected,general-ops,GUI editor for SQLite databases
+sqlmap,installed,kali-initial-access,web-app,automatic SQL injection tool
+sqlmc,installed,none-detected,general-ops,Check all urls of a domain for SQL injections
+sqlninja,installed,none-detected,general-ops,SQL server injection and takeover tool
+sqlsus,installed,none-detected,general-ops,MySQL injection tool
+ssdeep,installed,none-detected,general-ops,recursive piecewise hashing tool
+libfuzzy-dev,installable-missing,none-detected,reverse-fuzzing,recursive piecewise hashing tool (development headers)
+libfuzzy2,installable-missing,none-detected,reverse-fuzzing,recursive piecewise hashing tool (library)
+sshuttle,installed,none-detected,general-ops,Transparent proxy server for VPN over SSH
+ssldump,installed,kali-collection,general-ops,SSLv3/TLS network protocol analyzer
+sslh,installed,kali-protocol-tunneling,general-ops,Applicative protocol multiplexer
+sslscan,installed,kali-ssl-tls,general-ops,Tests SSL/TLS enabled services to discover supported cipher suites
+sslsniff,installed,none-detected,general-ops,SSL/TLS man-in-the-middle attack tool
+sslsplit,installed,kali-collection,general-ops,transparent and scalable SSL/TLS interception
+sslstrip,installed,none-detected,general-ops,SSL/TLS man-in-the-middle attack tool
+sslyze,installed,kali-ssl-tls,general-ops,Fast and full-featured SSL scanner
+sstimap,installed,none-detected,wireless-rf,Automatic SSTI detection tool with interactive interface
+starkiller,installed,kali-command-and-control;kali-system-services,exploitation-c2,Frontend for Powershell Empire
+statsprocessor,installed,none-detected,general-ops,word generator based on per-position Markov chains
+stegcracker,installed,none-detected,general-ops,steganography brute-force tool
+steghide,installed,none-detected,general-ops,steganography hiding tool
+steghide-doc,installable-missing,none-detected,development-support,steganography hiding tool - documentation files
+stegosuite,installed,none-detected,crypto-stego,steganography tool to hide information in image files
+stegsnow,installed,none-detected,general-ops,steganography using ASCII files
+stunnel4,installed,kali-protocol-tunneling,general-ops,Universal SSL tunnel for network daemons
+subfinder,installed,none-detected,general-ops,subdomain discovery tool
+subjack,installed,none-detected,general-ops,Subdomain Takeover tool
+sublist3r,installed,none-detected,general-ops,Fast subdomains enumeration tool for penetration testers
+subversion,installed,none-detected,general-ops,Advanced version control system
+libapache2-mod-svn,installable-missing,none-detected,web-app,Apache Subversion server modules for Apache httpd
+libsvn-dev,installable-missing,none-detected,development-support,Development files for Apache Subversion libraries
+libsvn-doc,installable-missing,none-detected,development-support,Developer documentation for libsvn
+libsvn-java,installable-missing,none-detected,general-ops,Java bindings for Apache Subversion
+libsvn-perl,installable-missing,none-detected,general-ops,Perl bindings for Apache Subversion
+libsvn1,installed,none-detected,general-ops,Shared libraries used by Apache Subversion
+python3-subversion,installable-missing,none-detected,general-ops,Python3 bindings for Apache Subversion
+ruby-svn,installable-missing,none-detected,general-ops,Ruby bindings for Apache Subversion
+subversion-tools,installable-missing,none-detected,general-ops,Assorted tools related to Apache Subversion
+sucrack,installed,none-detected,general-ops,multithreaded su bruteforcer
+sudo,installed,none-detected,general-ops,Provide limited super user privileges to specific users
+libnss-sudo,installable-missing,none-detected,general-ops,Transitional Package - libnss-sudo has been removed
+sudo-ldap,installable-missing,none-detected,general-ops,Transitional Package - sudo-ldap has been removed
+swaks,installed,kali-smtp,general-ops,SMTP command-line test tool
+syft,installed,none-detected,cloud-container,CLI tool for generating a SBOM from container images and filesystems
+t50,installed,none-detected,general-ops,Multi-protocol packet injector tool
+tcpdump,installed,kali-discovery;kali-network-sniffing,general-ops,command-line network traffic analyzer
+tcpflow,installed,none-detected,general-ops,TCP flow recorder
+tcpflow-nox,installable-missing,none-detected,general-ops,TCP flow recorder - version without X11 dependencies
+tcpick,installed,none-detected,general-ops,TCP stream sniffer and connection tracker
+tcpreplay,installed,kali-network-security-appliances,general-ops,Tool to replay saved tcpdump files at arbitrary speeds
+teamsploit,installed,none-detected,general-ops,Tools for group based penetration testing
+termineter,installed,none-detected,general-ops,Smart meter testing framework
+terraform,installed,none-detected,general-ops,"tool for building, changing, and versioning infrastructure"
+testdisk,installed,kali-forensic-carving-tools,forensics-ir,"Partition scanner and disk recovery tool, and PhotoRec file recovery tool"
+testssl.sh,installed,none-detected,cloud-container,"Command line tool to check TLS/SSL ciphers, protocols and cryptographic flaws"
+tetragon,installed,none-detected,general-ops,eBPF-based Security Observability and Runtime Enforcement (tetra CLI)
+tftp-hpa,installed,none-detected,general-ops,HPA's tftp client
+tftpd-hpa,installable-missing,none-detected,general-ops,HPA's tftp server
+tftpd32,installed,none-detected,general-ops,Open source ipv6-ready TFTP server for Windows
+thc-ipv6,installed,kali-remote-system-discovery,general-ops,The Hacker Choice's IPv6 Attack Toolkit
+thc-pptp-bruter,installed,kali-brute-force,general-ops,THC PPTP Brute Force
+thc-ssl-dos,installed,none-detected,general-ops,Stress tester for the SSL handshake
+theharvester,installed,kali-network-information,reconnaissance,tool for gathering e-mail accounts and subdomain names from public sources
+tiger,installed,none-detected,defensive-monitoring,security auditing and intrusion detection tools for Linux
+tiger-otheros,installable-missing,none-detected,defensive-monitoring,security auditing and intrusion detection scripts for Unix based systems
+tightvnc,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+tightvncpasswd,installed,none-detected,credential-access,virtual network computing password tool
+tightvncserver,installed,none-detected,general-ops,virtual network computing server software
+xtightvncviewer,installed,none-detected,general-ops,virtual network computing client software for X
+tinja,installed,none-detected,web-app,CLI tool for testing web pages for template injection
+tlssled,installed,none-detected,web-app,Evaluates the security of a target SSL/TLS (HTTPS) server
+tmux,installed,none-detected,general-ops,terminal multiplexer
+tnftp,installed,none-detected,general-ops,enhanced ftp client
+ftp,installed,none-detected,general-ops,dummy transitional package for tnftp
+tnscmd10g,installed,none-detected,general-ops,Tool to prod the oracle tnslsnr process
+traceroute,installed,none-detected,general-ops,Traces the route taken by packets over an IPv4/IPv6 network
+trivy,installed,none-detected,general-ops,comprehensive and versatile security scanner
+truecrack,installed,none-detected,credential-access,Bruteforce password cracker for TrueCrypt volumes
+trufflehog,installed,none-detected,general-ops,Searches through git repositories for secrets
+tundeep,installed,none-detected,general-ops,Layer 2 VPN/injection tool
+twofi,installed,none-detected,general-ops,Twitter words of interest
+tzdata,installed,none-detected,general-ops,time zone and daylight-saving time data
+tzdata-legacy,installed,none-detected,general-ops,time zone data for TAI minus ten seconds
+ubertooth,installed,none-detected,wireless-rf,2.4 GHz wireless development platform for Bluetooth experimentation
+libubertooth-dev,installable-missing,none-detected,wireless-rf,Shared library for Bluetooth experimentation - development files
+libubertooth1,installed,none-detected,wireless-rf,Shared library for Bluetooth experimentation
+ubertooth-firmware,installable-missing,none-detected,general-ops,Firmware for Ubertooth
+ubertooth-firmware-source,installable-missing,none-detected,general-ops,Source code for the Ubertooth firmware
+udptunnel,installed,kali-protocol-tunneling,general-ops,tunnel UDP packets over a TCP connection
+uhd,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libuhd-dev,installable-missing,none-detected,development-support,universal hardware driver for Ettus Research products - headers
+libuhd4.9.0,installed,none-detected,development-support,universal hardware driver for Ettus Research products - library
+libuhd4.9.0-dpdk,installable-missing,none-detected,general-ops,universal hardware driver for Ettus Research products - DPDK
+libuhd4.9.0-dpdk-tests,installable-missing,none-detected,general-ops,universal hardware driver for Ettus Research products - DPDK tests
+python3-uhd,installed,none-detected,general-ops,universal hardware driver for Ettus Research products - Python3
+uhd-doc,installable-missing,none-detected,development-support,universal hardware driver for Ettus Research products - doc
+uhd-host,installed,none-detected,general-ops,universal hardware driver for Ettus Research products - host apps
+uhd-rfnoc-dev,installable-missing,none-detected,wireless-rf,universal hardware driver for Ettus Research products - rfnoc-dev
+uhd-images,installed,none-detected,general-ops,Various UHD Images
+unar,installable-missing,none-detected,general-ops,Unarchiver for a variety of file formats
+unblob,installed,none-detected,general-ops,"accurate, fast, and easy-to-use extraction suite (Python 3)"
+undbx,installed,none-detected,forensics-ir,"tool to extract, recover and undelete e-mail messages from .dbx files"
+unhide,installed,none-detected,forensics-ir,forensic tool to find hidden processes and ports
+unhide-gui,installable-missing,none-detected,wireless-rf,graphical user interface for unhide
+unhide.rb,installed,none-detected,forensics-ir,Forensics tool to find processes hidden by rootkits
+unicorn-magic,installed,none-detected,general-ops,Tool for a PowerShell downgrade attack and inject shellcode
+unicornscan,installed,kali-network-information;kali-network-service-discovery,general-ops,Userland distributed TCP/IP stack
+uniscan,installed,none-detected,wireless-rf,"LFI, RFI, and RCE vulnerability scanner"
+unix-privesc-check,installed,kali-privilege-escalation,general-ops,Script to check for simple privilege escalation vectors
+unrar-nonfree,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libunrar-dev,installable-missing,none-detected,development-support,Unarchiver for .rar files (non-free version) - development files
+libunrar-headers,installable-missing,none-detected,development-support,Unarchiver for .rar files (non-free version) - development header files
+libunrar5t64,installable-missing,none-detected,development-support,Unarchiver for .rar files (non-free version) - shared library
+unrar,installed,none-detected,general-ops,Unarchiver for .rar files (non-free version)
+upx-ucl,installed,none-detected,general-ops,efficient live-compressor for executables
+urlcrazy,installed,none-detected,general-ops,Domain typo generator
+util-linux,installed,none-detected,general-ops,miscellaneous system utilities
+bsdextrautils,installed,none-detected,general-ops,extra utilities from 4.4BSD-Lite
+bsdutils,installed,none-detected,general-ops,basic utilities from 4.4BSD-Lite
+eject,installable-missing,none-detected,general-ops,ejects CDs and operates CD-Changers under Linux
+eject-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+fdisk,installable-missing,none-detected,general-ops,collection of partitioning utilities
+fdisk-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+lastlog2,installable-missing,none-detected,general-ops,Read lastlog2 database
+libblkid-dev,installed,none-detected,development-support,block device ID library - headers
+libblkid1,installed,none-detected,development-support,block device ID library
+libblkid1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libfdisk-dev,installable-missing,none-detected,development-support,fdisk partitioning library - headers
+libfdisk1,installable-missing,none-detected,development-support,fdisk partitioning library
+libfdisk1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+liblastlog2-2,installed,none-detected,development-support,lastlog2 database shared library
+liblastlog2-dev,installable-missing,none-detected,development-support,liblastlog2 development files
+libmount-dev,installed,none-detected,development-support,device mounting library - headers
+libmount1,installed,none-detected,development-support,device mounting library
+libmount1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libpam-lastlog2,installable-missing,none-detected,general-ops,lastlog2 database PAM module
+libsmartcols-dev,installable-missing,none-detected,development-support,smart column output alignment library - headers
+libsmartcols1,installed,none-detected,development-support,smart column output alignment library
+libsmartcols1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+libuuid1,installed,none-detected,development-support,Universally Unique ID library
+libuuid1-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+login,installed,none-detected,general-ops,system login tools
+mount,installed,none-detected,general-ops,tools for mounting and manipulating filesystems
+rfkill,installed,none-detected,wireless-rf,tool for enabling and disabling wireless devices
+util-linux-extra,installed,none-detected,general-ops,interactive login tools
+util-linux-locales,installable-missing,none-detected,general-ops,locales files for util-linux
+util-linux-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+uuid-dev,installed,none-detected,development-support,Universally Unique ID library - headers and static libraries
+uuid-runtime,installed,none-detected,development-support,runtime components for the Universally Unique ID library
+vboot-utils,installed,none-detected,general-ops,Chrome OS verified u-boot utilities
+cgpt,installed,none-detected,general-ops,GPT manipulation tool with support for Chromium OS extensions
+vboot-kernel-utils,installed,none-detected,general-ops,Chrome OS verified boot utils required to sign kernels
+veil,installed,none-detected,general-ops,Generates payloads to bypass anti-virus solutions
+veil-catapult,installable-missing,none-detected,general-ops,transitional package for veil
+veil-evasion,installable-missing,none-detected,general-ops,transitional package for veil
+villain,installed,none-detected,exploitation-c2,High level C2 framework
+vim,installable-missing,none-detected,general-ops,Vi IMproved - enhanced vi editor
+vim-common,installed,none-detected,general-ops,Vi IMproved - Common files
+vim-doc,installable-missing,none-detected,development-support,Vi IMproved - HTML documentation
+vim-gtk3,installed,none-detected,general-ops,Vi IMproved - enhanced vi editor - with GTK3 GUI
+vim-gui-common,installed,none-detected,general-ops,Vi IMproved - Common GUI files
+vim-motif,installable-missing,none-detected,general-ops,Vi IMproved - enhanced vi editor - with Motif GUI
+vim-nox,installable-missing,none-detected,general-ops,Vi IMproved - enhanced vi editor - with scripting languages support
+vim-runtime,installed,none-detected,general-ops,Vi IMproved - Runtime files
+vim-tiny,installable-missing,none-detected,general-ops,Vi IMproved - enhanced vi editor - compact version
+xxd,installed,none-detected,reverse-fuzzing,tool to make (or reverse) a hex dump
+vinetto,installed,none-detected,forensics-ir,forensics tool to examine Thumbs.db files
+vlan,installed,none-detected,general-ops,ifupdown legacy integration for vlan configuration
+voiphopper,installed,kali-voip,general-ops,Runs a VLAN hop security test
+vopono,installed,none-detected,general-ops,Run applications through VPN tunnels with temporary network namespaces
+vpnc,installed,none-detected,general-ops,Cisco-compatible VPN client
+vwifi-dkms,installable-missing,none-detected,wireless-rf,Simple Virtual Wireless Driver for Linux in DKMS format
+vwifi-tool,installed,none-detected,wireless-rf,userspace tool which supports user-specific utilization for vwifi-dkms
+wafw00f,installed,kali-network-security-appliances,web-app,identify and fingerprint Web Application Firewall products
+wapiti,installed,kali-identify;kali-web-vulnerability-scanning,web-app,web application vulnerability scanner
+watobo,installed,none-detected,web-app,Semi-automated web application scanner
+waybackpy,installed,none-detected,general-ops,Access Wayback Machine's API using Python
+wce,installed,none-detected,credential-access,Windows Credentials Editor
+web-cache-vulnerability-scanner,installed,none-detected,web-app,Go-based CLI tool for testing for web cache poisoning
+webacoo,installed,none-detected,web-app,Web backdoor cookie script kit
+webscarab,installed,none-detected,web-app,Web application review tool
+webshells,installed,kali-persistence,web-app,Collection of webshells
+websploit,installed,none-detected,web-app,Web exploitation framework
+weevely,installed,kali-persistence,web-app,Stealth tiny web shell
+wfuzz,installed,kali-web-scanning,web-app,Web application bruteforcer
+wget,installed,none-detected,web-app,retrieves files from the web
+wget-udeb,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+wgetpaste,installed,none-detected,wireless-rf,Command-line interface to various online pastebin services
+what-is-python,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python-dev-is-python3,installable-missing,none-detected,development-support,symlinks /usr/bin/python-config to python3-config
+python-is-python3,installed,none-detected,general-ops,symlinks /usr/bin/python to python3
+whatmask,installed,none-detected,general-ops,helper for network settings
+whatweb,installed,kali-web-vulnerability-scanning,web-app,Next generation web scanner
+whois,installed,none-detected,general-ops,intelligent WHOIS client
+wifi-honey,installed,none-detected,wireless-rf,Wi-Fi honeypot
+wifiphisher,installed,none-detected,wireless-rf,Automated phishing attacks against Wi-Fi networks
+wifipumpkin3,installed,none-detected,wireless-rf,Powerful framework for rogue access point attack
+wifite,installed,kali-wifi-credential-access,wireless-rf,Python script to automate wireless auditing using aircrack-ng tools
+wig,installed,none-detected,web-app,WebApp Information Gatherer
+wig-ng,installed,none-detected,general-ops,utility for Wi-Fi device fingerprinting
+windows-binaries,installed,none-detected,general-ops,Various pentesting Windows binaries
+windows-privesc-check,installed,none-detected,general-ops,Windows privilege escalation checking tool
+winregfs,installed,none-detected,general-ops,Windows registry FUSE filesystem
+wireshark,installed,none-detected,wireless-rf,network traffic analyzer - graphical interface
+libwireshark-data,installed,none-detected,development-support,network packet dissection library -- data files
+libwireshark-dev,installable-missing,none-detected,development-support,network packet dissection library -- development files
+libwireshark19,installed,none-detected,development-support,network packet dissection library -- shared library
+libwiretap-dev,installable-missing,none-detected,development-support,network packet capture library -- development files
+libwiretap16,installed,none-detected,development-support,network packet capture library -- shared library
+libwsutil-dev,installable-missing,none-detected,development-support,network packet dissection utilities library -- development files
+libwsutil17,installed,none-detected,development-support,network packet dissection utilities library -- shared library
+stratoshark,installable-missing,none-detected,wireless-rf,system call and log analyzer - graphical and console interfaces
+tshark,installed,none-detected,general-ops,network traffic analyzer - console version
+wireshark-common,installed,none-detected,general-ops,network traffic analyzer - common files
+wireshark-dev,installable-missing,none-detected,development-support,network traffic analyzer - development tools
+wireshark-doc,installable-missing,none-detected,development-support,network traffic analyzer - documentation
+witnessme,installed,none-detected,web-app,Web Inventory tool
+wmi,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+wmi-client,installed,none-detected,general-ops,DCOM/WMI client implementation
+wordlistraider,installed,none-detected,general-ops,Tool to prepare existing wordlists
+wordlists,installed,kali-credential-access;kali-password-profiling-wordlists,credential-access,Contains the rockyou wordlist
+wotmate,installed,none-detected,general-ops,reimplement the defunct PGP pathfinder with only your own keyring
+wpa-sycophant,installed,none-detected,wireless-rf,tool to relay phase 2 authentication attempts to access corporate wireless
+wpprobe,installed,none-detected,general-ops,Fast WordPress plugin enumeration tool
+wpscan,installed,kali-web-vulnerability-scanning,web-app,Black box WordPress vulnerability scanner
+wsgidav,unresolved-on-snapshot,none-detected,general-ops,No package metadata available on current APT snapshot.
+python-wsgidav-doc,installable-missing,none-detected,web-app,generic and extendable WebDAV server (common documentation)
+python3-wsgidav,installed,none-detected,web-app,generic and extendable WebDAV server (Python 3)
+xclip,installed,none-detected,wireless-rf,command line interface to X selections
+xmount,installed,none-detected,general-ops,tool for crossmounting between disk image formats
+xplico,installed,none-detected,forensics-ir,Network Forensic Analysis Tool (NFAT)
+xspy,installed,none-detected,general-ops,X server sniffer
+xsrfprobe,installed,none-detected,wireless-rf,Prime Cross Site Request Forgery Audit and Exploitation Toolkit
+xsser,installed,none-detected,web-app,XSS testing framework
+xsstrike,installed,none-detected,web-app,Most advanced XSS scanner
+yara,installed,none-detected,crypto-stego,Pattern matching swiss knife for malware researchers
+libyara-dev,installable-missing,none-detected,crypto-stego,YARA development libraries and headers
+libyara10,installed,none-detected,crypto-stego,YARA shared library
+yara-doc,installable-missing,none-detected,crypto-stego,HTML documentation for YARA
+yersinia,installed,none-detected,general-ops,Network vulnerabilities check software
+zaproxy,installed,none-detected,web-app,Testing tool for finding vulnerabilities in web applications
+zerofree,installed,none-detected,general-ops,"zero free blocks from ext2, ext3 and ext4 file-systems"
+zim,installed,none-detected,general-ops,graphical text editor based on wiki technologies
+zonedb,installed,none-detected,general-ops,Public Zone Database (program)
+golang-github-zonedb-zonedb-dev,installable-missing,none-detected,development-support,Public Zone Database (source library)
+zsh,installed,none-detected,general-ops,shell with lots of features
+zsh-common,installed,none-detected,general-ops,architecture independent files for Zsh
+zsh-dev,installable-missing,none-detected,development-support,shell with lots of features (development files)
+zsh-doc,installable-missing,none-detected,development-support,zsh documentation - info/HTML format
+zsh-static,installable-missing,none-detected,general-ops,shell with lots of features (static link)
+zsh-autosuggestions,installed,none-detected,general-ops,Fish-like fast/unobtrusive autosuggestions for zsh
+zsh-syntax-highlighting,installed,none-detected,general-ops,Fish shell like syntax highlighting for zsh

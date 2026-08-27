@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FreeAI UI — Unified GPU Stack</title>
+  <link rel="stylesheet" href="theme.css" />
+</head>
+
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>FreeAI UI</h1>
+      <p>Unified GPU Inference Stack — Model &amp; Agent Control</p>
+    </header>
+
+    <section class="models">
+      <h2>Models</h2>
+      <div id="model-list" class="model-list"></div>
+    </section>
+
+    <section class="agents">
+      <h2>Agents</h2>
+      <div class="agent-buttons">
+        <button data-agent="project">Project Scaffolding</button>
+        <button data-agent="refactor">Refactor</button>
+        <button data-agent="debug">Debug</button>
+        <button data-agent="analyze">Analysis</button>
+        <button data-agent="orchestrate" class="active">Orchestrator</button>
+      </div>
+    </section>
+
+    <section class="prompt">
+      <h2>Prompt</h2>
+      <textarea id="prompt" placeholder="Describe your task, code, or question..."></textarea>
+      <button id="send">Send</button>
+    </section>
+
+    <section class="output">
+      <h2>Output</h2>
+      <pre id="output"></pre>
+    </section>
+  </div>
+
+  <script src="freeai.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ClawdHub"
+  short_description: "Discover and publish skills"
+  default_prompt: "Use $clawdhub to search, install, update, list, or publish skills through the ClawdHub CLI."

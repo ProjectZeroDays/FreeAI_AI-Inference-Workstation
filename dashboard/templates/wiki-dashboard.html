@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Wiki Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .wiki-dash { display: grid; grid-template-columns: 260px 1fr 220px; grid-template-rows: 1fr; height: calc(100vh - 68px); overflow: hidden; }
+    .wiki-toc { background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; padding: 16px 0; }
+    .wiki-toc::-webkit-scrollbar { width: 4px; }
+    .wiki-toc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .wiki-toc-header { padding: 0 16px 12px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+    .wiki-toc-header h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    .wiki-toc-search { width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .wiki-toc-group { margin-bottom: 4px; }
+    .wiki-toc-group-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-2); padding: 8px 16px 4px; }
+    .wiki-toc-item { display: block; width: 100%; text-align: left; padding: 6px 16px; font-size: 13px; color: var(--muted); cursor: pointer; border-left: 2px solid transparent; transition: all .12s; background: none; border-top: none; border-right: none; border-bottom: none; }
+    .wiki-toc-item:hover { color: var(--text); background: rgba(148,163,184,.06); }
+    .wiki-toc-item.active { color: var(--accent-2); border-left-color: var(--accent-2); background: rgba(56,189,248,.06); }
+    .wiki-content-wrap { overflow-y: auto; padding: 32px 40px; background: var(--bg); }
+    .wiki-content-wrap::-webkit-scrollbar { width: 6px; }
+    .wiki-content-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .wiki-content { max-width: 780px; }
+    .wiki-content h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; color: var(--text); }
+    .wiki-content .wc-meta { font-size: 12px; color: var(--muted-2); margin-bottom: 24px; }
+    .wiki-content h2 { font-size: 20px; font-weight: 700; margin-top: 36px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--text); scroll-margin-top: 20px; }
+    .wiki-content h3 { font-size: 16px; font-weight: 600; margin-top: 24px; margin-bottom: 8px; color: var(--text); scroll-margin-top: 20px; }
+    .wiki-content p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+    .wiki-content code { background: var(--panel-2); padding: 1px 6px; border-radius: 5px; font-size: 13px; color: var(--accent-2); font-family: 'JetBrains Mono', monospace; }
+    .wiki-content pre { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; overflow-x: auto; margin: 12px 0; }
+    .wiki-content pre code { background: none; padding: 0; color: var(--text); font-size: 13px; }
+    .wiki-content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    .wiki-content th { background: var(--panel); color: var(--accent-2); font-weight: 700; text-align: left; padding: 8px 12px; border: 1px solid var(--border); }
+    .wiki-content td { padding: 8px 12px; border: 1px solid var(--border); color: var(--muted); }
+    .wiki-content ul, .wiki-content ol { padding-left: 20px; margin: 8px 0; }
+    .wiki-content li { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 4px; }
+    .wiki-content blockquote { border-left: 3px solid var(--accent-2); padding: 8px 16px; margin: 12px 0; background: var(--panel); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+    .wiki-content blockquote p { margin: 0; }
+    .wiki-content a { color: var(--accent-2); }
+    .wiki-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .wiki-content .anchor-link { color: var(--muted-2); text-decoration: none; margin-left: 6px; font-size: 12px; opacity: 0; transition: opacity .15s; }
+    .wiki-content h2:hover .anchor-link, .wiki-content h3:hover .anchor-link { opacity: 1; }
+    .wiki-page-toc { background: var(--panel); border-left: 1px solid var(--border); overflow-y: auto; padding: 16px 0; }
+    .wiki-page-toc::-webkit-scrollbar { width: 4px; }
+    .wiki-page-toc::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .wiki-page-toc-header { padding: 0 14px 10px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+    .wiki-page-toc-header h3 { font-size: 12px; font-weight: 700; color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; }
+    .wiki-page-toc-item { display: block; width: 100%; text-align: left; padding: 4px 14px; font-size: 12px; color: var(--muted-2); cursor: pointer; border-left: 2px solid transparent; transition: all .12s; background: none; border-top: none; border-right: none; border-bottom: none; }
+    .wiki-page-toc-item:hover { color: var(--text); }
+    .wiki-page-toc-item.active { color: var(--accent-2); border-left-color: var(--accent-2); }
+    .wiki-page-toc-item.h2 { padding-left: 22px; }
+    .wiki-page-toc-item.h3 { padding-left: 30px; font-size: 11px; }
+    .wiki-loading { display: grid; place-items: center; height: 100%; color: var(--muted-2); font-size: 14px; }
+    .wiki-error { color: var(--danger); padding: 40px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Wiki Dashboard</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> Model Training</a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Persistent Memory</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+        <a href="/wiki-dashboard" class="nav-item active"><span class="nav-dot"></span> Wiki</a>
+        <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+        <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--muted-2)">Wiki v1.0</span>
+      </div>
+    </nav>
+
+    <div class="wiki-dash">
+      <!-- LEFT: Page TOC -->
+      <div class="wiki-toc">
+        <div class="wiki-toc-header">
+          <h3> Pages</h3>
+          <input class="wiki-toc-search" id="page-search" placeholder="Search pages..." oninput="filterPages(this.value)" />
+        </div>
+        <div id="page-toc">
+          <div class="wiki-toc-group-label">Wiki</div>
+          <button class="wiki-toc-item active" data-page="overview" onclick="loadPage('overview')">Overview</button>
+          <button class="wiki-toc-item" data-page="quickstart" onclick="loadPage('quickstart')">Quick Start</button>
+          <button class="wiki-toc-item" data-page="installation" onclick="loadPage('installation')">Installation Guide</button>
+          <button class="wiki-toc-item" data-page="aikido-panel" onclick="loadPage('aikido-panel')">Aikido Security</button>
+          <button class="wiki-toc-item" data-page="pentest-panel" onclick="loadPage('pentest-panel')">Pentest Agent</button>
+          <button class="wiki-toc-item" data-page="builders-panel" onclick="loadPage('builders-panel')">Builder Agents</button>
+          <button class="wiki-toc-item" data-page="comms-panel" onclick="loadPage('comms-panel')">Communication Stack</button>
+          <button class="wiki-toc-item" data-page="api-rest-guide" onclick="loadPage('api-rest-guide')">REST API Guide</button>
+          <div class="wiki-toc-group-label">Docs</div>
+          <button class="wiki-toc-item" data-page="architecture" onclick="loadPage('architecture')">Architecture</button>
+          <button class="wiki-toc-item" data-page="providers" onclick="loadPage('providers')">Providers</button>
+          <button class="wiki-toc-item" data-page="mcp" onclick="loadPage('mcp')">MCP Registry</button>
+          <button class="wiki-toc-item" data-page="rag" onclick="loadPage('rag')">RAG & Vector DB</button>
+          <button class="wiki-toc-item" data-page="websocket" onclick="loadPage('websocket')">WebSocket</button>
+          <button class="wiki-toc-item" data-page="function-calling" onclick="loadPage('function-calling')">Function Calling</button>
+          <button class="wiki-toc-item" data-page="log-streaming" onclick="loadPage('log-streaming')">Log Streaming</button>
+          <button class="wiki-toc-item" data-page="deployment" onclick="loadPage('deployment')">Deployment</button>
+          <button class="wiki-toc-item" data-page="security-advanced" onclick="loadPage('security-advanced')">Security</button>
+          <button class="wiki-toc-item" data-page="builders-overview" onclick="loadPage('builders-overview')">Builders</button>
+          <button class="wiki-toc-item" data-page="comms-overview" onclick="loadPage('comms-overview')">Comms</button>
+          <button class="wiki-toc-item" data-page="troubleshooting" onclick="loadPage('troubleshooting')">Troubleshooting</button>
+        </div>
+      </div>
+
+      <!-- CENTER: Content -->
+      <div class="wiki-content-wrap" id="wiki-content-wrap">
+        <div class="wiki-loading">Loading wiki...</div>
+      </div>
+
+      <!-- RIGHT: Page section TOC -->
+      <div class="wiki-page-toc" id="wiki-page-toc">
+        <div class="wiki-page-toc-header"><h3>On this page</h3></div>
+        <div id="page-toc-items"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = '/api/wiki/content';
+    let currentPage = 'overview';
+    let allSections = [];
+
+    async function loadPage(anchor) {
+      currentPage = anchor;
+      document.querySelectorAll('.wiki-toc-item').forEach(i => i.classList.remove('active'));
+      const btn = document.querySelector(`.wiki-toc-item[data-page="${anchor}"]`);
+      if (btn) btn.classList.add('active');
+
+      const wrap = document.getElementById('wiki-content-wrap');
+      wrap.innerHTML = '<div class="wiki-loading">Loading...</div>';
+      document.getElementById('page-toc-items').innerHTML = '';
+
+      try {
+        const r = await fetch(`${API}/${anchor}`);
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+
+        document.getElementById('wiki-topbar-title') && (document.title = data.title + ' — FreeAI Wiki');
+
+        // Render markdown
+        const html = renderMarkdown(data.markdown || '');
+        wrap.innerHTML = `<div class="wiki-content" id="wiki-content-body">${html}</div>`;
+
+        // Build page TOC from h2/h3
+        allSections = [];
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        temp.querySelectorAll('h2, h3').forEach(h => {
+          const id = h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+          h.id = id;
+          allSections.push({ id, tag: h.tagName.toLowerCase(), text: h.textContent.trim() });
+        });
+        renderPageToc();
+
+        // Scroll to top
+        wrap.scrollTop = 0;
+      } catch(e) {
+        wrap.innerHTML = `<div class="wiki-error">Failed to load: ${escHtml(e.message)}</div>`;
+      }
+    }
+
+    function renderPageToc() {
+      const container = document.getElementById('page-toc-items');
+      if (!allSections.length) {
+        container.innerHTML = '<div style="padding:10px 14px;font-size:12px;color:var(--muted-2)">No subsections</div>';
+        return;
+      }
+      container.innerHTML = allSections.map(s => `
+        <button class="wiki-page-toc-item ${s.tag}" data-anchor="${s.id}" onclick="scrollToSection('${s.id}')">${escHtml(s.text)}</button>
+      `).join('');
+    }
+
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Scroll spy
+    function initScrollSpy() {
+      const wrap = document.getElementById('wiki-content-wrap');
+      if (!wrap) return;
+      wrap.addEventListener('scroll', () => {
+        const headings = wrap.querySelectorAll('h2, h3');
+        let current = allSections[0]?.id;
+        headings.forEach(h => {
+          if (h.getBoundingClientRect().top < 80) current = h.id;
+        });
+        if (current && current !== window._currentSection) {
+          window._currentSection = current;
+          document.querySelectorAll('.wiki-page-toc-item').forEach(i => {
+            i.classList.toggle('active', i.dataset.anchor === current);
+          });
+        }
+      });
+    }
+
+    function filterPages(q) {
+      q = q.toLowerCase();
+      document.querySelectorAll('.wiki-toc-item').forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        btn.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    function renderMarkdown(md) {
+      return md
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+        .replace(/^\|(.+)\|$/gm, match => {
+          const cells = match.split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`).join('');
+          return `<tr>${cells}</tr>`;
+        })
+        .replace(/(<tr>.*<\/tr>\n?)+/g, '<table>$&</table>')
+        .replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>')
+        .replace(/^---$/gm, '<hr/>')
+        .replace(/\n/g, '<br/>');
+    }
+
+    function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Init
+    loadPage('overview');
+    setTimeout(initScrollSpy, 100);
+  </script>
+</body>
+</html>

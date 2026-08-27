@@ -1,0 +1,27 @@
+name: Feature Request
+description: Suggest an idea
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Use Case
+      description: What are you trying to do that you can't today?
+      placeholder: As a ... I want ... so that ...
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: How should it work? Any prior art (LM Studio, OpenWebUI, etc.)?
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [router, agents/SDLC, workflow, dashboard, hardware/installer, docs, providers, other]
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: Contribution
+      options:
+        - label: I can submit a PR for this

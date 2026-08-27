@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Hermes</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .hermes-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .hermes-main { padding:22px 24px 32px; min-width:0; }
+    .hermes-topbar { display:flex; align-items:center; justify-content:space-between;
+                     padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                     margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .hermes-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .hermes-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .status-panel { display:flex; align-items:center; gap:14px; padding:14px 18px;
+                    background:rgba(255,255,255,.04); border:1px solid var(--border);
+                    border-radius:12px; margin-bottom:18px; }
+    .status-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+    .status-dot.running { background:var(--accent); box-shadow:0 0 10px rgba(34,197,94,.7); animation:pulse 1.5s infinite; }
+    .status-dot.stopped { background:var(--muted-2); }
+    .status-dot.error { background:var(--danger); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    .config-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:18px; }
+    .config-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .config-card label { font-size:11px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.06em; display:block; margin-bottom:6px; }
+    .config-card .val { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); }
+    .config-card .val.muted { color:var(--muted); }
+    .log-area { background:rgba(2,6,23,.6); border:1px solid var(--border); border-radius:12px;
+                padding:14px; font-family:'JetBrains Mono',monospace; font-size:12px;
+                max-height:320px; overflow-y:auto; color:#CBD5E1; line-height:1.7; }
+    .log-area::-webkit-scrollbar { width:6px; }
+    .log-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    .log-line { display:flex; gap:10px; }
+    .log-time { color:var(--muted-2); flex-shrink:0; }
+    .log-level { flex-shrink:0; font-weight:700; padding:0 6px; border-radius:4px; font-size:11px; }
+    .log-level.info { color:#38BDF8; background:rgba(56,189,248,.1); }
+    .log-level.warn { color:#F59E0B; background:rgba(245,158,11,.1); }
+    .log-level.error { color:#EF4444; background:rgba(239,68,68,.1); }
+    .log-level.ok { color:#22C55E; background:rgba(34,197,94,.1); }
+    .controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+    .tab-bar { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0; }
+    .tab-btn { padding:8px 16px; font-size:13px; font-weight:500; color:var(--muted);
+               background:none; border:none; border-bottom:2px solid transparent;
+               cursor:pointer; transition:all .15s; margin-bottom:-1px; }
+    .tab-btn:hover { color:var(--text); }
+    .tab-btn.active { color:var(--accent-2); border-bottom-color:var(--accent-2); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+  </style>
+</head>
+<body>
+  <div class="hermes-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Hermes</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item active"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="hermes-main">
+      <header class="hermes-topbar">
+        <div>
+          <h1>Hermes Agent Gateway</h1>
+          <p>Configure and monitor the Hermes agent proxy service</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill" id="hermes-status-pill">checking…</span>
+          <button class="btn" id="btn-refresh">↻ Refresh</button>
+        </div>
+      </header>
+
+      <div class="status-panel" id="status-panel">
+        <div class="status-dot stopped" id="status-dot"></div>
+        <div>
+          <div style="font-weight:600;font-size:15px" id="status-text">Connecting…</div>
+          <div class="muted" style="font-size:12px" id="status-detail">Detecting Hermes service on default port</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn" id="btn-open">Open Hermes</button>
+          <button class="btn btn-primary" id="btn-test">Test Proxy</button>
+        </div>
+      </div>
+
+      <div class="config-grid" id="config-grid">
+        <div class="config-card">
+          <label>Host</label>
+          <div class="val" id="cfg-host">—</div>
+        </div>
+        <div class="config-card">
+          <label>Port</label>
+          <div class="val" id="cfg-port">—</div>
+        </div>
+        <div class="config-card">
+          <label>Proxy Enabled</label>
+          <div class="val" id="cfg-proxy">—</div>
+        </div>
+        <div class="config-card">
+          <label>Proxy URL</label>
+          <div class="val muted" id="cfg-url">—</div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="logs">Live Logs</button>
+        <button class="tab-btn" data-tab="proxy">Proxy Test</button>
+        <button class="tab-btn" data-tab="config">Configuration</button>
+      </div>
+
+      <div class="tab-content active" id="tab-logs">
+        <div class="log-area" id="log-area">
+          <div class="log-line"><span class="log-time">—</span><span class="log-level info">info</span><span>Waiting for Hermes service…</span></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-proxy">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="row">
+            <label style="font-size:13px;color:var(--muted)">Endpoint path</label>
+            <input type="text" id="proxy-path" value="health" style="flex:1;max-width:300px" />
+            <select id="proxy-method">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+            <button id="btn-proxy-send">Send</button>
+          </div>
+          <pre id="proxy-response" class="log-area" style="white-space:pre-wrap;word-break:break-all;min-height:120px;max-height:300px">Response will appear here…</pre>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-config">
+        <div style="display:flex;flex-direction:column;gap:12px;max-width:500px">
+          <div class="editor-field">
+            <label>Host</label>
+            <input type="text" id="edit-host" placeholder="127.0.0.1" />
+          </div>
+          <div class="editor-field">
+            <label>Port</label>
+            <input type="number" id="edit-port" placeholder="8090" />
+          </div>
+          <label class="chk">
+            <input type="checkbox" id="edit-proxy" />
+            Enable proxy passthrough
+          </label>
+          <div class="btn-row">
+            <button id="btn-save-config">Save Configuration</button>
+            <span id="cfg-save-status" class="muted" style="font-size:12px"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    function toast(msg, type='success') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    async function loadStatus() {
+      try {
+        const r = await fetch('/api/hermes-status');
+        if (!r.ok) throw new Error(r.statusText);
+        const d = await r.json();
+        $('cfg-host').textContent = d.host || '127.0.0.1';
+        $('cfg-port').textContent = d.port || '—';
+        $('cfg-url').textContent = `http://${d.host || '127.0.0.1'}:${d.port || '8090'}`;
+        $('cfg-proxy').textContent = d.proxy_enabled ? 'Yes' : 'No';
+        $('edit-host').value = d.host || '127.0.0.1';
+        $('edit-port').value = d.port || '8090';
+        $('edit-proxy').checked = d.proxy_enabled !== false;
+
+        const dot = $('status-dot');
+        const pill = $('hermes-status-pill');
+        if (d.status === 'running') {
+          dot.className = 'status-dot running';
+          $('status-text').textContent = 'Hermes is running';
+          $('status-detail').textContent = `Port ${d.port} · Connected`;
+          pill.textContent = 'running';
+          pill.style.background = 'rgba(34,197,94,.14)';
+          pill.style.color = '#BBF7D0';
+          pill.style.border = '1px solid rgba(34,197,94,.35)';
+        } else if (d.status === 'unknown') {
+          dot.className = 'status-dot stopped';
+          $('status-text').textContent = 'Hermes not detected';
+          $('status-detail').textContent = `Configured on port ${d.port || 8090} — service may be stopped`;
+          pill.textContent = 'unknown';
+          pill.style.background = 'rgba(245,158,11,.14)';
+          pill.style.color = '#FDE68A';
+          pill.style.border = '1px solid rgba(245,158,11,.35)';
+        } else {
+          dot.className = 'status-dot stopped';
+          $('status-text').textContent = 'Hermes stopped';
+          $('status-detail').textContent = 'Service is not running on configured port';
+          pill.textContent = 'stopped';
+          pill.style.background = 'rgba(239,68,68,.14)';
+          pill.style.color = '#FECACA';
+          pill.style.border = '1px solid rgba(239,68,68,.35)';
+        }
+        addLog(d.status === 'running' ? 'ok' : 'warn', `Status: ${d.status}`);
+      } catch(e) {
+        $('status-dot').className = 'status-dot error';
+        $('status-text').textContent = 'Error';
+        $('status-detail').textContent = e.message;
+        $('hermes-status-pill').textContent = 'error';
+        addLog('error', 'Failed to reach /api/hermes-status: ' + e.message);
+      }
+    }
+
+    function addLog(level, msg) {
+      const area = $('log-area');
+      const now = new Date().toLocaleTimeString();
+      area.insertAdjacentHTML('beforeend',
+        `<div class="log-line"><span class="log-time">${now}</span><span class="log-level ${level}">${level}</span><span>${msg}</span></div>`);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    async function testProxy() {
+      try {
+        $('proxy-response').textContent = 'Testing…';
+        const r = await fetch('/api/hermes/proxy/health');
+        const text = await r.text();
+        $('proxy-response').textContent = `HTTP ${r.status}\n${text}`;
+        addLog('ok', 'Proxy test: HTTP ' + r.status);
+      } catch(e) {
+        $('proxy-response').textContent = 'Error: ' + e.message;
+        addLog('error', 'Proxy test failed: ' + e.message);
+      }
+    }
+
+    async function sendProxyReq() {
+      const path = $('proxy-path').value.trim();
+      const method = $('proxy-method').value;
+      if (!path) { toast('Enter an endpoint path', 'error'); return; }
+      try {
+        $('proxy-response').textContent = 'Sending…';
+        const r = await fetch(`/api/hermes/proxy/${encodeURIComponent(path)}`, { method });
+        const text = await r.text();
+        $('proxy-response').textContent = `HTTP ${r.status}\n${text}`;
+        addLog('ok', `${method} /api/hermes/proxy/${path} → ${r.status}`);
+      } catch(e) {
+        $('proxy-response').textContent = 'Error: ' + e.message;
+        addLog('error', `${method} /${path} failed: ` + e.message);
+      }
+    }
+
+    async function saveConfig() {
+      try {
+        const cfg = {
+          hermes: {
+            host: $('edit-host').value,
+            port: parseInt($('edit-port').value) || 8090,
+            proxy_enabled: $('edit-proxy').checked,
+          }
+        };
+        // Save via config API if available
+        const r = await fetch('/api/settings', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({hermes_config: cfg}),
+        });
+        const d = await r.json();
+        if (d.ok) {
+          toast('Configuration saved');
+          $('cfg-save-status').textContent = 'Saved';
+          addLog('ok', 'Config saved');
+        } else {
+          toast(d.error || 'Save failed', 'error');
+        }
+      } catch(e) {
+        toast('Network error: ' + e.message, 'error');
+      }
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        $('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    $('btn-refresh').addEventListener('click', loadStatus);
+    $('btn-test').addEventListener('click', testProxy);
+    $('btn-proxy-send').addEventListener('click', sendProxyReq);
+    $('btn-save-config').addEventListener('click', saveConfig);
+    $('btn-open').addEventListener('click', () => {
+      const port = $('edit-port').value || '8090';
+      window.open(`http://127.0.0.1:${port}`, '_blank');
+    });
+
+    loadStatus();
+    setInterval(loadStatus, 30000);
+  </script>
+</body>
+</html>

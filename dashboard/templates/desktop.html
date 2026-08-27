@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — FreeToken Desktop Console</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .desktop-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .desktop-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .desktop-topbar { display:flex; align-items:center; justify-content:space-between;
+                      padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                      margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .desktop-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .desktop-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .card-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:14px; }
+    .web-card {
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:14px;
+      padding:16px; box-shadow:0 10px 30px rgba(2,6,23,.45);
+      backdrop-filter:blur(8px); transition:border-color .18s ease, transform .18s ease;
+      cursor:grab; user-select:none;
+    }
+    .web-card:active { cursor:grabbing; }
+    .web-card.dragging { opacity:0.5; border-color:var(--accent-2); transform:rotate(1deg); }
+    .web-card-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .web-card-icon {
+      width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
+      font-size:15px; flex-shrink:0;
+    }
+    .web-card-title { font-size:14px; font-weight:600; color:var(--text); margin:0; flex:1; }
+    .web-card-dots { display:flex; gap:4px; align-items:center; }
+    .status-dot { width:8px; height:8px; border-radius:50%; }
+    .status-dot.green { background:var(--accent); box-shadow:0 0 6px rgba(34,197,94,.6); }
+    .status-dot.yellow { background:var(--warn); box-shadow:0 0 6px rgba(245,158,11,.6); }
+    .status-dot.red { background:var(--danger); box-shadow:0 0 6px rgba(239,68,68,.6); }
+    .status-dot.gray { background:var(--muted-2); }
+    .web-card-actions { display:flex; gap:4px; margin-left:auto; }
+    .web-card-actions button {
+      width:26px; height:26px; border-radius:7px; border:1px solid var(--border);
+      background:var(--panel-2); color:var(--muted); cursor:pointer;
+      display:grid; place-items:center; font-size:12px; transition:all .15s;
+    }
+    .web-card-actions button:hover { border-color:var(--accent-2); color:var(--accent-2); }
+    .web-card-body { display:flex; flex-direction:column; gap:8px; }
+    .web-card-row { display:flex; justify-content:space-between; align-items:center; font-size:12px; }
+    .web-card-label { color:var(--muted-2); }
+    .web-card-value { color:var(--text); font-weight:500; font-family:'JetBrains Mono',monospace; font-size:12px; }
+    .web-card-value.up { color:var(--accent); }
+    .web-card-value.warn { color:var(--warn); }
+    .web-card-value.err { color:var(--danger); }
+    .web-card-recommendation {
+      margin-top:8px; padding:8px 10px; border-radius:8px;
+      background:rgba(56,189,248,.06); border:1px solid rgba(56,189,248,.15);
+      font-size:11px; color:var(--accent-2); line-height:1.5;
+    }
+    .web-card-recommendation strong { color:var(--text); }
+    .drag-handle { color:var(--muted-2); font-size:14px; cursor:grab; margin-right:4px; }
+    /* Sortable overrides */
+    .card-grid.sortable-ghost { opacity:0.3; }
+    .card-grid.sortable-chosen { opacity:0.8; }
+    .empty-state { grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--muted-2); }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+  </style>
+</head>
+<body>
+  <div class="desktop-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Desktop</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+        <a href="/desktop" class="nav-item active"><span class="nav-dot"></span> Desktop</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="card-count" class="muted" style="margin-left:auto">12 cards</span>
+      </div>
+    </nav>
+
+    <div class="desktop-main">
+      <header class="desktop-topbar">
+        <div>
+          <h1>FreeToken Desktop Console</h1>
+          <p>Drag to reorder. Order persists in localStorage. Click the <strong>?&#8203;</strong> for docs, <strong>&#9881;</strong> for config.</p>
+        </div>
+        <button class="btn" id="btn-refresh">↻ Refresh</button>
+      </header>
+
+      <div class="card-grid" id="cardGrid"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CARD_DEFS = [
+      { id:'model-roster', icon:'⬡', bg:'rgba(14,165,233,.15)', color:'#0EA5E9', title:'Model Roster',
+        status:'green', lines:[['Primary','Qwen2.5-7B-Q6_K'],['Fallback','DeepSeek-V3'],['Reasoning','THINKING-i1'],['MoE','FreeToken 290B']],
+        rec:'Upgrade Primary to FP8 for 2x throughput on RTX 4090.' },
+      { id:'router-chain', icon:'◈', bg:'rgba(34,197,94,.12)', color:'#22C55E', title:'Router Chain',
+        status:'green', lines:[['Chain','local → openai → anthropic'],['Cache Hit','78%'],['Latency P50','12ms']],
+        rec:'Enable cache for repeat prompts to cut latency by 60%.' },
+      { id:'gpu-telemetry', icon:'⬢', bg:'rgba(168,85,247,.12)', color:'#A855F7', title:'GPU Telemetry',
+        status:'green', lines:[['GPU','RTX 4090 24GB'],['VRAM Used','8.2 / 24 GB'],['Utilization','34%'],['Temp','62°C']],
+        rec:'Run `nvidia-smi` for full telemetry. Eco mode recommended for idle.' },
+      { id:'agents-active', icon:'◉', bg:'rgba(245,158,11,.12)', color:'#F59E0B', title:'Active Agents',
+        status:'yellow', lines:[['Running','3'],['Queued','7'],['Done (24h)','142'],['Failed','2']],
+        rec:'Review failed agents in /subagents for retry suggestions.' },
+      { id:'skills-catalog', icon:'⟁', bg:'rgba(6,182,212,.12)', color:'#06B6D4', title:'Skills Catalog',
+        status:'green', lines:[['Total','55+'],['Red Team','14'],['Blue Team','12'],['Auto-generated','3']],
+        rec:'Run /api/skills/scan to auto-discover recurring patterns.' },
+      { id:'mcp-servers', icon:'⬡', bg:'rgba(236,72,153,.12)', color:'#EC4899', title:'MCP Servers',
+        status:'green', lines:[['Registered','40'],['Active','12'],['Disabled','28']],
+        rec:'Enable memory and code-intel MCPs for full agent context.' },
+      { id:'workflows', icon:'⟳', bg:'rgba(59,130,246,.12)', color:'#3B82F6', title:'Workflows',
+        status:'green', lines:[['Defined','6'],['Templates','4'],['Audit Log','1,247 entries']],
+        rec:'Use SDLC pipeline template for plan→code→test→package flows.' },
+      { id:'scheduler', icon:'⏱', bg:'rgba(34,197,94,.12)', color:'#22C55E', title:'Scheduler',
+        status:'green', lines:[['Jobs','8'],['Running','1'],['Next run','08:00 UTC']],
+        rec:'Daily security reports at 08:00. Adjust in /scheduler.' },
+      { id:'browser-army', icon:'◈', bg:'rgba(239,68,68,.1)', color:'#EF4444', title:'Browser Army',
+        status:'green', lines:[['Agents','4'],['Headless','New mode'],['Stealth','Enabled'],['Tor','Off']],
+        rec:'Enable Tor for recon divisions. See /browser-v2 for settings.' },
+      { id:'crypto-module', icon:'⟁', bg:'rgba(168,85,247,.12)', color:'#A855F7', title:'Crypto Vault',
+        status:'green', lines:[['AES-256-GCM','Active'],['XOR Layer','Active'],['Keys Rotated','7d ago']],
+        rec:'Rotate keys weekly. Check /api/campaign for vault status.' },
+      { id:'providers', icon:'⬡', bg:'rgba(14,165,233,.15)', color:'#0EA5E9', title:'Providers',
+        status:'green', lines:[['Merged','105'],['OpenAI','Active'],['Anthropic','Active'],['OpenRouter','Active']],
+        rec:'Test providers via /api/providers before switching chains.' },
+      { id:'system-health', icon:'✓', bg:'rgba(34,197,94,.12)', color:'#22C55E', title:'System Health',
+        status:'green', lines:[['Uptime','4d 7h'],['CPU','23%'],['RAM','41%'],['Disk','67%']],
+        rec:'All critical services healthy. Check /api/services for details.' },
+    ];
+
+    const GRID_KEY = 'freeai-desktop-card-order';
+    let cardOrder = [];
+    try { cardOrder = JSON.parse(localStorage.getItem(GRID_KEY) || '[]'); } catch(e) {}
+    if (!cardOrder.length) cardOrder = CARD_DEFS.map(c => c.id);
+
+    const grid = document.getElementById('cardGrid');
+    const iconMap = {};
+
+    function renderCards() {
+      grid.innerHTML = '';
+      cardOrder.forEach((id, idx) => {
+        const def = CARD_DEFS.find(c => c.id === id);
+        if (!def) return;
+        const card = document.createElement('div');
+        card.className = 'web-card';
+        card.draggable = true;
+        card.dataset.id = id;
+        card.style.transitionDelay = (idx * 30) + 'ms';
+        iconMap[id] = card;
+
+        const linesHtml = def.lines.map(([k,v]) =>
+          `<div class="web-card-row"><span class="web-card-label">${k}</span><span class="web-card-value ${def.status === 'green' ? 'up' : def.status === 'yellow' ? 'warn' : 'err'}">${v}</span></div>`
+        ).join('');
+
+        card.innerHTML = `
+          <div class="web-card-header">
+            <span class="drag-handle">&#9776;</span>
+            <div class="web-card-icon" style="background:${def.bg};color:${def.color}">${def.icon}</div>
+            <h3 class="web-card-title">${def.title}</h3>
+            <div class="web-card-dots">
+              <span class="status-dot ${def.status}"></span>
+            </div>
+            <div class="web-card-actions">
+              <button title="Wiki" onclick="window.open('/wiki-dashboard','_blank')">?</button>
+              <button title="Config" onclick="showToast('Config panel for ${def.title}')">&#9881;</button>
+              <button title="Refresh" onclick="refreshCard('${id}')">↻</button>
+            </div>
+          </div>
+          <div class="web-card-body">
+            ${linesHtml}
+            <div class="web-card-recommendation"><strong>Tip:</strong> ${def.rec}</div>
+          </div>`;
+
+        // Drag events
+        card.addEventListener('dragstart', e => {
+          card.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', id);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+        card.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
+        card.addEventListener('drop', e => {
+          e.preventDefault();
+          const fromId = e.dataTransfer.getData('text/plain');
+          const toId = id;
+          if (fromId === toId) return;
+          const fromIdx = cardOrder.indexOf(fromId);
+          const toIdx = cardOrder.indexOf(toId);
+          cardOrder.splice(fromIdx, 1);
+          cardOrder.splice(toIdx, 0, fromId);
+          localStorage.setItem(GRID_KEY, JSON.stringify(cardOrder));
+          renderCards();
+          showToast('Cards reordered');
+        });
+        grid.appendChild(card);
+      });
+      document.getElementById('card-count').textContent = grid.children.length + ' cards';
+    }
+
+    function refreshCard(id) {
+      const def = CARD_DEFS.find(c => c.id === id);
+      if (def) showToast('Refreshed ' + def.title);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show success';
+      setTimeout(() => { t.className = 'toast'; }, 2000);
+    }
+
+    document.getElementById('btn-refresh').addEventListener('click', () => {
+      cardOrder = CARD_DEFS.map(c => c.id);
+      localStorage.setItem(GRID_KEY, JSON.stringify(cardOrder));
+      renderCards();
+      showToast('Cards reset to default order');
+    });
+
+    renderCards();
+  </script>
+</body>
+</html>

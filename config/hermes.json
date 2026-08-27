@@ -1,0 +1,28 @@
+{
+  "_comment": "Hermes integration settings for FreeAI dashboard",
+  "hermes": {
+    "enabled": true,
+    "port": 8090,
+    "host": "127.0.0.1",
+    "health_check_interval": 30,
+    "proxy_enabled": true,
+    "proxy_path": "/api/hermes",
+    "settings_panel": {
+      "enabled": true,
+      "theme": "dark",
+      "position": "bottom"
+    }
+  },
+  "detection": {
+    "auto_detect": true,
+    "ports_to_check": [8090, 8091, 8092],
+    "timeout_ms": 2000
+  },
+  "integration": {
+    "wire_to_sidebar": true,
+    "show_in_dashboard": true,
+    "link_text": "Hermes",
+    "link_path": "/hermes",
+    "icon": "⚡"
+  }
+}

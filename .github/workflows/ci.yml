@@ -1,0 +1,42 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python compile check
+        run: |
+          files=$(git ls-files '*.py')
+          [ -z "$files" ] || python -m py_compile $files
+
+      - name: Bash syntax check
+        run: |
+          status=0
+          for f in $(git ls-files '*.sh'); do
+            bash -n "$f" || { echo "SYNTAX FAIL: $f"; status=1; }
+          done
+          exit $status
+
+      - name: JSON validity check
+        run: |
+          status=0
+          for f in $(git ls-files '*.json'); do
+            python -m json.tool "$f" > /dev/null || { echo "JSON FAIL: $f"; status=1; }
+          done
+          exit $status
+
+      - name: JS syntax check
+        run: |
+          status=0
+          for f in $(git ls-files '*.js'); do
+            node --check "$f" || { echo "JS FAIL: $f"; status=1; }
+          done
+          exit $status

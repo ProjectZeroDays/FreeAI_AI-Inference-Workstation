@@ -1,0 +1,58 @@
+name: auto-release
+
+# Autonomous versioning: when VERSION on main differs from the latest
+# v* tag, cut the tag. Tag push triggers `release` which compiles assets.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "VERSION"
+      - "CHANGELOG.md"
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  cut-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve target version
+        id: ver
+        run: |
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          echo "target=v${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Target version: v${VERSION}"
+
+      - name: Skip if tag already exists
+        id: check
+        run: |
+          if git rev-parse "refs/tags/${{ steps.ver.outputs.target }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Tag already present - nothing to do"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Require a CHANGELOG section (guardrail)
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          TARGET="${{ steps.ver.outputs.target }}"
+          if ! grep -q "^## ${TARGET}" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## ${TARGET}' section - add release notes before cutting the tag"
+            exit 1
+          fi
+
+      - name: Cut tag (triggers release workflow)
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name "freeai-release-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git tag -a "${{ steps.ver.outputs.target }}" \
+            -m "Release ${{ steps.ver.outputs.target }} (auto-cut from VERSION)"
+          git push origin "${{ steps.ver.outputs.target }}"

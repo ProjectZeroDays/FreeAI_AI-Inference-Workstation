@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ultimate Frontend GUI"
+  short_description: "Advanced GUI design, control, and verification"
+  default_prompt: "Use $ultimate-frontend-gui to build, inspect, and verify a complex production GUI."

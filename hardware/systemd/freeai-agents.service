@@ -1,0 +1,14 @@
+[Unit]
+Description=FreeAI health + recovery watchdog agents
+After=freeai-stack.service freeai-supervisor.service
+
+[Service]
+Type=simple
+User=__STACK_USER__
+WorkingDirectory=__STACK_DIR__
+ExecStart=/usr/bin/env bash __STACK_DIR__/agents/run-watchdogs.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

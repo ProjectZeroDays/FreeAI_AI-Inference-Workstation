@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Loot</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .loot-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .loot-main { padding:22px 24px 32px; min-width:0; }
+    .loot-topbar { display:flex; align-items:center; justify-content:space-between;
+                   padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                   margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .loot-topbar h1 { margin:0; font-size:22px; }
+    .loot-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .loot-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .loot-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+                border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .loot-tab.active { background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3);color:#BBF7D0; }
+    .loot-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .loot-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                      border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .loot-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .loot-table tr:hover td { background:rgba(255,255,255,.02); }
+    .loot-item { font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .btn-export { background:rgba(56,189,248,.12);border-color:rgba(56,189,248,.3);color:#BAE6FD; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .loot-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px; }
+    .loot-stat { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:12px 14px; }
+    .loot-stat .ls-val { font-size:22px;font-weight:700;color:var(--accent); }
+    .loot-stat .ls-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+  </style>
+</head>
+<body>
+  <div class="loot-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Loot</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item active"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="loot-main">
+      <header class="loot-topbar">
+        <div><h1>Loot</h1><p>Harvested credentials, cookies, sessions, and files</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-export" onclick="exportLoot('netscape')">Export Netscape</button>
+          <button class="btn btn-sm btn-export" onclick="exportLoot('csv')">Export CSV</button>
+          <button class="btn btn-sm btn-danger" onclick="clearLoot()">Clear All</button>
+        </div>
+      </header>
+      <div class="loot-stats">
+        <div class="loot-stat"><div class="ls-val" id="ls-cookies">0</div><div class="ls-lbl">Cookies</div></div>
+        <div class="loot-stat"><div class="ls-val" id="ls-creds">0</div><div class="ls-lbl">Credentials</div></div>
+        <div class="loot-stat"><div class="ls-val" id="ls-hashes">0</div><div class="ls-lbl">Cracked Hashes</div></div>
+        <div class="loot-stat"><div class="ls-val" id="ls-sessions">0</div><div class="ls-lbl">Sessions</div></div>
+        <div class="loot-stat"><div class="ls-val" id="ls-files">0</div><div class="ls-lbl">Files</div></div>
+      </div>
+      <div class="loot-tabs">
+        <button class="loot-tab active" data-tab="cookies" onclick="switchTab(this)">Cookies</button>
+        <button class="loot-tab" data-tab="creds" onclick="switchTab(this)">Credentials</button>
+        <button class="loot-tab" data-tab="hashes" onclick="switchTab(this)">Hashes</button>
+        <button class="loot-tab" data-tab="sessions" onclick="switchTab(this)">Sessions</button>
+        <button class="loot-tab" data-tab="files" onclick="switchTab(this)">Files</button>
+      </div>
+      <table class="loot-table" id="loot-table">
+        <thead><tr><th>Name / Domain</th><th>Type</th><th>Value</th><th>Collected</th><th>Actions</th></tr></thead>
+        <tbody id="loot-tbody"><tr><td colspan="5" class="empty-state">No loot harvested yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let lootData = { cookies:[], creds:[], hashes:[], sessions:[], files:[] };
+    let currentTab = 'cookies';
+    async function loadLoot() {
+      try {
+        const r = await fetch('/api/loot');
+        lootData = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.loot-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      $('ls-cookies').textContent = (lootData.cookies||[]).length;
+      $('ls-creds').textContent = (lootData.creds||[]).length;
+      $('ls-hashes').textContent = (lootData.hashes||[]).length;
+      $('ls-sessions').textContent = (lootData.sessions||[]).length;
+      $('ls-files').textContent = (lootData.files||[]).length;
+      const items = lootData[currentTab] || [];
+      const tb = $('loot-tbody');
+      if (!items.length) { tb.innerHTML='<tr><td colspan="5" class="empty-state">No '+currentTab+' harvested.</td></tr>'; return; }
+      const headers = currentTab==='files'?['Name','Type','Size','Modified','Actions']
+                       :currentTab==='hashes'?['Hash','Target','Status','Cracked','Actions']
+                       :['Name / Domain','Type','Value','Collected','Actions'];
+      tb.querySelector('tr').innerHTML = headers.map(h=>`<th>${h}</th>`).join('');
+      tb.innerHTML += items.map((item,i)=>{
+        const vals = currentTab==='files'?[item.name,item.type,item.size,new Date(item.modified).toLocaleString()]
+                      :currentTab==='hashes'?[item.hash,item.target,item.algorithm,item.cracked?'Yes':'No']
+                      :[item.domain||item.name,item.type,item.value||item.secret,new Date(item.collected||Date.now()).toLocaleString()];
+        return `<tr>${vals.map(v=>`<td class="loot-item">${v}</td>`).join('')}
+          <td><button class="btn btn-sm btn-danger" onclick="deleteItem('${currentTab}',${i})">Del</button></td></tr>`;
+      }).join('');
+    }
+    async function deleteItem(tab, idx) {
+      try { await fetch(`/api/loot/${tab}/${idx}`, {method:'DELETE'}); loadLoot(); } catch(e) {}
+    }
+    function exportLoot(fmt) { alert('Export '+fmt+' — stub for now'); }
+    async function clearLoot() {
+      if (!confirm('Clear all loot?')) return;
+      try { await fetch('/api/loot/clear', {method:'POST'}); loadLoot(); } catch(e) {}
+    }
+    loadLoot();
+  </script>
+</body>
+</html>

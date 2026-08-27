@@ -1,0 +1,36 @@
+# FreeAI TLS gateway — PUBLIC DOMAIN template (automatic HTTPS).
+#
+# Use instead of docker/Caddyfile when you have a real domain:
+#   1. docker-compose.yml: change the caddy volume to
+#        - ./docker/Caddyfile.public:/etc/caddy/Caddyfile:ro
+#      and uncomment ports 80:80 + 443:443
+#   2. set env: FREEAI_DOMAIN=ai.yourdomain.com  ACME_EMAIL=you@yourdomain.com
+#      (compose reads them from .env)
+#   3. DNS A/AAAA record -> this host; Caddy obtains/renews certs automatically.
+#
+# Autonomous API auth: AUTOAUTH_USER / AUTOAUTH_HASH (bcrypt) from .env.
+#   generate:  docker run --rm caddy caddy hash-password --plaintext 'yourpw'
+{
+	email {$ACME_EMAIL}
+}
+
+{$FREEAI_DOMAIN} {
+	# ---- Dashboard ----
+	handle /api/settings* {
+		@post method POST
+		respond @post 403 "write via LAN/tailnet only" 403
+		reverse_proxy dashboard:8030
+	}
+
+	# ---- Autonomous SDLC API (basic-auth protected) ----
+	handle /auto/* {
+		basic_auth {
+			{$AUTOAUTH_USER:freeai} {$AUTOAUTH_HASH:$2b$12$jaNpJiLbzS1iZVdogZuB9.u4nLCtLipqOIH880wLXwGM7n0sqqjZi}
+		}
+		reverse_proxy autonomous:8050
+	}
+
+	handle {
+		reverse_proxy dashboard:8030
+	}
+}

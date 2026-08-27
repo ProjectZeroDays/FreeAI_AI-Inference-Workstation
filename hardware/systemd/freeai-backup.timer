@@ -1,0 +1,10 @@
+[Unit]
+Description=Run FreeAI backup weekly (Mon 03:40)
+
+[Timer]
+OnCalendar=Mon *-*-* 03:40:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

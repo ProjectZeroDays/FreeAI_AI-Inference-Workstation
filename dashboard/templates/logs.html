@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Service Logs</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .logs-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    /* Service buttons row */
+    .service-bar { display: flex; gap: 8px; padding: 16px 24px; border-bottom: 1px solid var(--border); overflow-x: auto; flex-shrink: 0; }
+    .svc-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); cursor: pointer; transition: all .15s; white-space: nowrap; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .svc-btn:hover { border-color: var(--accent-2); color: var(--text); }
+    .svc-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(34,197,94,.08); }
+    .svc-btn .svc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .svc-dot.running { background: var(--accent); box-shadow: 0 0 8px rgba(34,197,94,.6); animation: pulse 1.5s infinite; }
+    .svc-dot.stopped { background: var(--muted-2); }
+    .svc-dot.error { background: var(--danger); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    /* Main log area */
+    .logs-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    .logs-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .logs-header h2 { font-size: 16px; font-weight: 700; }
+    .logs-header-actions { display: flex; gap: 8px; }
+    .logs-header-actions button { padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .logs-header-actions button:hover { border-color: var(--accent-2); }
+    .logs-header-actions button.danger:hover { border-color: var(--danger); color: var(--danger); }
+    .logs-header-actions button.ai-btn:hover { border-color: #a855f7; color: #a855f7; }
+    /* Log display */
+    .logs-display { flex: 1; overflow-y: auto; padding: 16px 24px; background: #0a0e1a; font-family: 'JetBrains Mono', monospace; }
+    .logs-display::-webkit-scrollbar { width: 6px; }
+    .logs-display::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .log-entry { display: flex; gap: 12px; padding: 4px 0; font-size: 12px; line-height: 1.6; border-bottom: 1px solid rgba(148,163,184,.06); }
+    .log-entry:hover { background: rgba(255,255,255,.02); }
+    .log-time { color: var(--muted-2); flex-shrink: 0; }
+    .log-level { flex-shrink: 0; font-weight: 700; padding: 0 6px; border-radius: 4px; font-size: 11px; }
+    .log-level.info { color: #38BDF8; background: rgba(56,189,248,.1); }
+    .log-level.warn { color: #F59E0B; background: rgba(245,158,11,.1); }
+    .log-level.error { color: #EF4444; background: rgba(239,68,68,.1); }
+    .log-level.ok { color: #22C55E; background: rgba(34,197,94,.1); }
+    .log-level.debug { color: var(--muted-2); background: rgba(148,163,184,.06); }
+    .log-msg { color: #CBD5E1; word-break: break-all; }
+    .log-msg code { color: #7DD3FC; }
+    /* Bottom bar */
+    .logs-bottom { display: flex; align-items: center; gap: 12px; padding: 10px 24px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+    .logs-bottom .lb-label { font-size: 12px; color: var(--muted-2); }
+    .logs-bottom .lb-count { font-size: 12px; color: var(--accent-2); font-weight: 600; }
+    .logs-bottom .lb-spacer { flex: 1; }
+    .logs-bottom .lb-actions { display: flex; gap: 8px; }
+    .logs-bottom .lb-actions button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .logs-bottom .lb-actions button:hover { border-color: var(--accent-2); }
+    .logs-bottom .lb-actions button.export:hover { border-color: var(--accent); color: var(--accent); }
+    .logs-bottom .lb-actions button.clear:hover { border-color: var(--danger); color: var(--danger); }
+    .logs-bottom .lb-actions button.ai:hover { border-color: #a855f7; color: #a855f7; }
+    /* AI Help Modal */
+    .ai-modal-overlay { display: none; position: fixed; inset: 0; z-index: 600; background: rgba(2,6,23,.8); backdrop-filter: blur(8px); }
+    .ai-modal-overlay.open { display: flex; align-items: center; justify-content: center; }
+    .ai-modal { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); width: 640px; max-width: 90vw; max-height: 80vh; display: flex; flex-direction: column; }
+    .ai-modal-header { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .ai-modal-header h3 { font-size: 15px; font-weight: 700; flex: 1; }
+    .ai-modal-header button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; }
+    .ai-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .ai-modal-body .ai-response { font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .ai-modal-body .ai-response strong { color: var(--text); }
+    .ai-modal-body .ai-response code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; color: var(--accent-2); }
+    .ai-modal-body .ai-response pre { background: var(--bg-soft); border-radius: 8px; padding: 12px; margin: 8px 0; overflow-x: auto; }
+    .ai-modal-body .ai-response pre code { background: none; padding: 0; }
+    .ai-modal-body .ai-thinking { color: var(--muted-2); font-style: italic; padding: 8px 0; }
+    .ai-modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .ai-modal-footer button { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .ai-modal-footer button:hover { border-color: var(--accent-2); }
+    .ai-modal-footer button.primary { background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; border: none; }
+    /* Filter bar */
+    .filter-bar { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); }
+    .filter-bar input { flex: 1; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .filter-bar select { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .filter-bar label { font-size: 12px; color: var(--muted-2); display: flex; align-items: center; gap: 6px; }
+    .filter-bar input[type="checkbox"] { accent-color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Service Logs</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> Model Training</a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Persistent Memory</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+        <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+        <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+        <a href="/logs" class="nav-item active"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main" style="padding:0;overflow:hidden">
+      <header class="topbar" style="padding:16px 24px;border-bottom:1px solid var(--border)">
+        <div>
+          <h1>Service Logs</h1>
+          <p>Real-time logs from all FreeAI services</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill" id="auto-scroll-badge">auto-scroll: on</span>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
+            <input type="checkbox" id="auto-scroll" checked onchange="toggleAutoScroll()" /> Auto-scroll
+          </label>
+        </div>
+      </header>
+
+      <!-- Service buttons -->
+      <div class="service-bar" id="service-bar">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input type="text" id="log-filter" placeholder="Filter logs..." oninput="applyFilters()" />
+        <select id="log-level-filter" onchange="applyFilters()">
+          <option value="all">All Levels</option>
+          <option value="info">Info</option>
+          <option value="warn">Warn</option>
+          <option value="error">Error</option>
+          <option value="debug">Debug</option>
+        </select>
+        <label><input type="checkbox" id="log-show-system" checked onchange="applyFilters()" /> System</label>
+        <label><input type="checkbox" id="log-show-app" checked onchange="applyFilters()" /> App</label>
+      </div>
+
+      <!-- Log display -->
+      <div class="logs-main">
+        <div class="logs-display" id="logs-display"></div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="logs-bottom">
+        <span class="lb-label">Total entries:</span>
+        <span class="lb-count" id="log-count">0</span>
+        <span class="lb-spacer"></span>
+        <span class="lb-label">Showing:</span>
+        <span class="lb-count" id="log-visible">0</span>
+        <div class="lb-actions">
+          <button class="export" onclick="exportLogs('txt')">📄 Export TXT</button>
+          <button class="export" onclick="exportLogs('json')">📋 Export JSON</button>
+          <button class="ai" onclick="askAI()">? AI Help</button>
+          <button class="clear" onclick="clearLogs()">🗑 Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Help Modal -->
+  <div class="ai-modal-overlay" id="ai-modal">
+    <div class="ai-modal">
+      <div class="ai-modal-header">
+        <h3>🤖 AI Log Analysis</h3>
+        <button onclick="closeAI()">×</button>
+      </div>
+      <div class="ai-modal-body" id="ai-modal-body">
+        <div class="ai-thinking">Analyzing logs... this may take a moment.</div>
+      </div>
+      <div class="ai-modal-footer">
+        <button onclick="closeAI()">Close</button>
+        <button class="primary" onclick="copyAIResponse()">Copy Response</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SERVICES = [
+      { id: 'all', name: 'All Services', icon: '◈', port: null },
+      { id: 'dashboard', name: 'Dashboard', icon: '◈', port: 8030 },
+      { id: 'router', name: 'Router', icon: '⬡', port: 8010 },
+      { id: 'agents', name: 'Agents', icon: '◉', port: 8020 },
+      { id: 'workflow', name: 'Workflow', icon: '⟁', port: 8040 },
+      { id: 'autonomous', name: 'Autonomous', icon: '⬢', port: 8050 },
+      { id: 'mcp', name: 'MCP', icon: '◬', port: 8060 },
+      { id: 'scheduler', name: 'Scheduler', icon: '◷', port: 8070 },
+      { id: 'llama', name: 'llama.cpp', icon: '⬡', port: 9001 },
+      { id: 'vllm', name: 'vLLM', icon: '⬢', port: 9002 },
+      { id: 'freetoken', name: 'FreeToken', icon: '◈', port: 9100 },
+      { id: 'jupyter', name: 'Jupyter', icon: '🐍', port: 8888 },
+      { id: 'opencode', name: 'OpenCode', icon: '⟐', port: 3000 },
+      { id: 'browser', name: 'Browser', icon: '🌐', port: 8180 },
+      { id: 'proxy', name: 'Proxy', icon: '↕', port: 8100 },
+      { id: 'skills', name: 'Skills', icon: '★', port: 8160 },
+    ];
+
+    let activeService = 'all';
+    let allLogs = [];
+    let autoScroll = true;
+    let aiResponse = '';
+
+    // Generate realistic logs
+    const LOG_TEMPLATES = {
+      dashboard: [
+        { level: 'info', msg: 'Dashboard server started on :8030' },
+        { level: 'info', msg: 'Serving static files from /static/' },
+        { level: 'info', msg: 'API endpoint /api/services healthy' },
+        { level: 'warn', msg: 'Slow response on /api/settings (2.3s)' },
+        { level: 'error', msg: 'Connection refused to :8100 (proxy)' },
+        { level: 'info', msg: 'New session started: session_abc123' },
+        { level: 'debug', msg: 'Request GET /api/services — 12ms' },
+      ],
+      router: [
+        { level: 'info', msg: 'Model router initialized with 21 providers' },
+        { level: 'info', msg: 'Routed to claude-sonnet-4 (balanced profile)' },
+        { level: 'warn', msg: 'Rate limit approaching for provider: openai (429)' },
+        { level: 'info', msg: 'Fallback to deepseek-v3 — latency 340ms' },
+        { level: 'error', msg: 'Provider anthropic returned 503 — circuit breaker opened' },
+        { level: 'info', msg: 'Cache hit for prompt hash: a3f2c1' },
+        { level: 'debug', msg: 'Model selected: qwen2.5:7b (local, 32K context)' },
+      ],
+      agents: [
+        { level: 'info', msg: 'Agent orchestrator started' },
+        { level: 'info', msg: 'Spawned subagent: explorer-01 for task "research auth flow"' },
+        { level: 'info', msg: 'Subagent explorer-01 completed in 12.3s' },
+        { level: 'warn', msg: 'Agent memory context exceeds 80% — consider pruning' },
+        { level: 'error', msg: 'Agent coder-03 failed: exit code 1 — syntax error in generated code' },
+        { level: 'info', msg: 'Session memory saved: 42 entries persisted' },
+      ],
+      workflow: [
+        { level: 'info', msg: 'Workflow engine started' },
+        { level: 'info', msg: 'Triggered: code_review workflow for PR #42' },
+        { level: 'info', msg: 'Step 3/7 complete: static analysis passed' },
+        { level: 'warn', msg: 'Step 5/7 slow: integration test (timeout: 30s, elapsed: 28s)' },
+        { level: 'info', msg: 'Workflow code_review completed successfully' },
+      ],
+      llama: [
+        { level: 'info', msg: 'llama.cpp server starting on :9001' },
+        { level: 'info', msg: 'Loaded model: qwen2.5-7b-instruct-Q4_K_M.gguf (4.7GB)' },
+        { level: 'info', msg: 'KV cache: 2048 tokens, batch size: 512' },
+        { level: 'warn', msg: 'GPU memory pressure: 87% utilized' },
+        { level: 'info', msg: 'Prompt processing: 142 tokens in 234ms' },
+        { level: 'info', msg: 'Completion: 387 tokens generated at 165 tok/s' },
+      ],
+      vllm: [
+        { level: 'info', msg: 'vLLM server starting on :9002' },
+        { level: 'info', msg: 'Loaded model: deepseek-coder-6.7b' },
+        { level: 'info', msg: 'Tensor parallel: 1, pipeline parallel: 1' },
+        { level: 'warn', msg: 'Scheduler: 3 requests waiting, queue full' },
+        { level: 'info', msg: 'Batch processed: 16 requests, avg latency 45ms' },
+      ],
+      proxy: [
+        { level: 'info', msg: 'LLM proxy started on :8100' },
+        { level: 'info', msg: 'Forwarding to: claude-sonnet-4' },
+        { level: 'warn', msg: 'High latency detected: 2.1s to anthropic' },
+        { level: 'error', msg: 'TLS handshake failed for provider endpoint' },
+        { level: 'info', msg: 'Request logged: POST /v1/chat/completions (200, 1240ms)' },
+      ],
+      browser: [
+        { level: 'info', msg: 'Browser engine started (headless)' },
+        { level: 'info', msg: 'Navigated to: https://example.com' },
+        { level: 'warn', msg: 'Page load timeout after 30s — retrying' },
+        { level: 'info', msg: 'Screenshot captured: 1920x1080, 234KB' },
+        { level: 'error', msg: 'CDP connection lost — reconnecting...' },
+      ],
+      default: [
+        { level: 'info', msg: 'Service heartbeat OK' },
+        { level: 'warn', msg: 'Memory usage at 72%' },
+        { level: 'info', msg: 'Request processed successfully' },
+        { level: 'error', msg: 'Unhandled exception in request pipeline' },
+      ]
+    };
+
+    function generateLogs(service, count) {
+      const templates = LOG_TEMPLATES[service] || LOG_TEMPLATES['default'];
+      const logs = [];
+      for (let i = 0; i < count; i++) {
+        const tpl = templates[Math.floor(Math.random() * templates.length)];
+        logs.push({
+          id: Date.now() + i,
+          time: new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString(),
+          service,
+          level: tpl.level,
+          msg: tpl.msg + (Math.random() > 0.7 ? ` [req-${Math.random().toString(36).slice(2,6)}]` : ''),
+          system: Math.random() > 0.6,
+        });
+      }
+      return logs.sort((a, b) => a.id - b.id);
+    }
+
+    function renderServiceBar() {
+      const bar = document.getElementById('service-bar');
+      bar.innerHTML = SERVICES.map(s => `
+        <button class="svc-btn ${activeService === s.id ? 'active' : ''}" onclick="selectService('${s.id}')">
+          <span class="svc-dot ${s.id === activeService ? 'running' : 'stopped'}"></span>
+          ${s.icon} ${s.name}
+        </button>
+      `).join('');
+    }
+
+    function selectService(id) {
+      activeService = id;
+      renderServiceBar();
+      renderLogs();
+    }
+
+    function renderLogs() {
+      const display = document.getElementById('logs-display');
+      let logs = allLogs;
+
+      if (activeService !== 'all') {
+        logs = logs.filter(l => l.service === activeService);
+      }
+
+      const filter = document.getElementById('log-filter').value.toLowerCase();
+      const levelFilter = document.getElementById('log-level-filter').value;
+      const showSystem = document.getElementById('log-show-system').checked;
+      const showApp = document.getElementById('log-show-app').checked;
+
+      logs = logs.filter(l => {
+        if (filter && !l.msg.toLowerCase().includes(filter) && !l.service.toLowerCase().includes(filter)) return false;
+        if (levelFilter !== 'all' && l.level !== levelFilter) return false;
+        if (!showSystem && l.system) return false;
+        if (!showApp && !l.system) return false;
+        return true;
+      });
+
+      document.getElementById('log-count').textContent = allLogs.length;
+      document.getElementById('log-visible').textContent = logs.length;
+
+      display.innerHTML = logs.map(l => `
+        <div class="log-entry" data-level="${l.level}">
+          <span class="log-time">${l.time}</span>
+          <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
+          <span class="log-msg">${escHtml(l.msg)}</span>
+          <span style="color:var(--muted-2);font-size:11px;flex-shrink:0">${l.service}</span>
+        </div>
+      `).join('');
+
+      if (autoScroll) display.scrollTop = display.scrollHeight;
+    }
+
+    function applyFilters() { renderLogs(); }
+
+    function toggleAutoScroll() {
+      autoScroll = document.getElementById('auto-scroll').checked;
+      document.getElementById('auto-scroll-badge').textContent = `auto-scroll: ${autoScroll ? 'on' : 'off'}`;
+    }
+
+    function clearLogs() {
+      if (!confirm('Clear all logs?')) return;
+      allLogs = [];
+      renderLogs();
+    }
+
+    function exportLogs(format) {
+      let logs = allLogs;
+      if (activeService !== 'all') logs = logs.filter(l => l.service === activeService);
+
+      const filter = document.getElementById('log-filter').value.toLowerCase();
+      if (filter) logs = logs.filter(l => l.msg.toLowerCase().includes(filter));
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+        downloadBlob(blob, `freeai-logs-${activeService}-${Date.now()}.json`);
+      } else {
+        const text = logs.map(l => `[${l.time}] ${l.level.toUpperCase().padEnd(5)} [${l.service}] ${l.msg}`).join('\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        downloadBlob(blob, `freeai-logs-${activeService}-${Date.now()}.txt`);
+      }
+    }
+
+    function downloadBlob(blob, filename) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    function askAI() {
+      const modal = document.getElementById('ai-modal');
+      const body = document.getElementById('ai-modal-body');
+      modal.classList.add('open');
+      body.innerHTML = '<div class="ai-thinking">Analyzing logs for issues and recommendations...</div>';
+
+      let logs = allLogs;
+      if (activeService !== 'all') logs = logs.filter(l => l.service === activeService);
+      const errors = logs.filter(l => l.level === 'error');
+      const warns = logs.filter(l => l.level === 'warn');
+
+      setTimeout(() => {
+        let analysis = '';
+        if (errors.length > 0) {
+          analysis += `<strong>Errors Found (${errors.length}):</strong><br/>`;
+          errors.slice(0, 5).forEach(e => {
+            analysis += `<div style="padding:4px 0;color:#f87171">⚠ ${escHtml(e.msg)}</div>`;
+          });
+          if (errors.some(e => e.msg.includes('proxy'))) {
+            analysis += `<br/><strong>Recommendation:</strong> Check proxy service health at <code>:8100</code>. Try restarting: <code>python launch.py proxy</code><br/><br/>`;
+          }
+          if (errors.some(e => e.msg.includes('provider'))) {
+            analysis += `<strong>Recommendation:</strong> Aikido circuit breaker opened. Check provider API keys in <code>config/providers.json</code>. Try switching to backup provider.<br/><br/>`;
+          }
+        }
+        if (warns.length > 0) {
+          analysis += `<strong>Warnings (${warns.length}):</strong><br/>`;
+          warns.slice(0, 3).forEach(w => {
+            analysis += `<div style="padding:4px 0;color:#FDE68A">⚡ ${escHtml(w.msg)}</div>`;
+          });
+        }
+        if (errors.length === 0 && warns.length === 0) {
+          analysis = '<strong>All clear!</strong> No errors or warnings detected in the selected logs. Services are running healthy.';
+        }
+        if (logs.length === 0) {
+          analysis = 'No logs available for the selected service. Check that the service is running.';
+        }
+        aiResponse = analysis;
+        body.innerHTML = `<div class="ai-response">${analysis}</div>`;
+      }, 1200);
+    }
+
+    function closeAI() {
+      document.getElementById('ai-modal').classList.remove('open');
+    }
+
+    function copyAIResponse() {
+      navigator.clipboard.writeText(aiResponse).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
+
+    function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Init
+    allLogs = [];
+    SERVICES.slice(1).forEach(s => {
+      allLogs.push(...generateLogs(s.id, 15));
+    });
+    allLogs.sort((a, b) => a.id - b.id);
+    renderServiceBar();
+    renderLogs();
+
+    // Live log simulation
+    setInterval(() => {
+      const svc = SERVICES[1 + Math.floor(Math.random() * (SERVICES.length - 1))];
+      allLogs.push(...generateLogs(svc.id, 1));
+      if (allLogs.length > 2000) allLogs = allLogs.slice(-1500);
+      renderLogs();
+    }, 3000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "_comment": "Copy to config/providers.json. Keys come from env vars (never put secrets here). enabled/fallback toggle per provider. Unknown names = custom providers (style: openai|anthropic|gemini).",
+  "providers": {
+    "openai":     { "enabled": true, "fallback": false },
+    "anthropic":  { "enabled": true, "fallback": false },
+    "google":     { "enabled": true, "fallback": false },
+    "groq":       { "enabled": true, "fallback": true  },
+    "deepseek":   { "enabled": true, "fallback": true  },
+    "openrouter": { "enabled": true, "fallback": true  },
+    "my-custom":  { "style": "openai", "base_url": "https://my-host/v1", "key_env": "MY_CUSTOM_KEY", "models": ["my-model"], "fallback": false }
+  }
+}

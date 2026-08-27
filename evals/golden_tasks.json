@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "id": "t1_refactor",
+      "prompt": "Refactor this python function for readability and add type hints: def add(a,b): return a+b",
+      "expected_contains": ["def add", "->"],
+      "max_tokens": 512
+    },
+    {
+      "id": "t2_tool_use",
+      "prompt": "Write a python function that lists files in a directory and returns their sizes. No explanation.",
+      "expected_contains": ["os.", "def "],
+      "max_tokens": 512
+    },
+    {
+      "id": "t3_reasoning",
+      "prompt": "Think step by step: why does overfitting happen and how to mitigate?",
+      "expected_contains": ["overfit", "regularization"],
+      "max_tokens": 512
+    }
+  ]
+}

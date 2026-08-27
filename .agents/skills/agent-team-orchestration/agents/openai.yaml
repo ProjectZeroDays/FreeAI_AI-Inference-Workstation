@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Team Orchestration"
+  short_description: "Coordinate multi-agent work"
+  default_prompt: "Use $agent-team-orchestration to coordinate a multi-agent Codex workflow with roles and review gates."

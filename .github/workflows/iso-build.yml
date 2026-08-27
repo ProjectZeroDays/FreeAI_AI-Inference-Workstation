@@ -1,0 +1,58 @@
+name: iso-build
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ISO toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorriso isolinux
+          sudo mkdir -p /mnt/iso-work && sudo chmod 777 /mnt/iso-work
+
+      - name: Fetch Ubuntu 24.04 live-server ISO
+        run: |
+          ISO=$(curl -s https://releases.ubuntu.com/24.04/ | grep -o 'ubuntu-24\.04\.[0-9]*-live-server-amd64\.iso' | sort -V | tail -n1)
+          URL="https://releases.ubuntu.com/24.04/${ISO}"
+          echo "Downloading $URL"
+          wget -q --show-progress -O /mnt/iso-work/ubuntu.iso "$URL"
+          ls -lh /mnt/iso-work/ubuntu.iso
+
+      - name: Build FreeAIOS ISO
+        run: |
+          export TMPDIR=/mnt/iso-work
+          UBUNTU_ISO=/mnt/iso-work/ubuntu.iso OUT=/mnt/iso-work/freeaios-amd64.iso bash live/build-live.sh
+          ls -lh /mnt/iso-work/freeaios-amd64.iso
+          mkdir -p out
+          cp /mnt/iso-work/freeaios-amd64.iso out/
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freeaios-amd64-iso
+          path: out/freeaios-amd64.iso
+          retention-days: 14
+          compression-level: 0
+
+      - name: Attach split parts to release (tags only)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # release assets cap at 2 GiB per file -> split
+          cd out
+          split -b 1900M -d freeaios-amd64.iso freeaios-amd64.iso.part-
+          sha256sum freeaios-amd64.iso > SHA256SUMS
+          gh release upload "${GITHUB_REF_NAME}" freeaios-amd64.iso.part-* SHA256SUMS --clobber
+          echo "reassemble with: cat freeaios-amd64.iso.part-* > freeaios-amd64.iso"

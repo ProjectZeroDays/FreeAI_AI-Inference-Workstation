@@ -1,0 +1,7 @@
+{
+  "jcode_models": [
+    { "id": "qwen3.6-12b", "mode": "code" },
+    { "id": "moe-13b", "mode": "refactor" },
+    { "id": "qwen3.5-9b", "mode": "analysis" }
+  ]
+}

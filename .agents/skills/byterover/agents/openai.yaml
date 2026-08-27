@@ -1,0 +1,4 @@
+interface:
+  display_name: "ByteRover"
+  short_description: "Project memory via brv CLI"
+  default_prompt: "Use $byterover to query or curate project memory with brv before starting work."

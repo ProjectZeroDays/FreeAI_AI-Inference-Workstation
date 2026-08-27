@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Aikido</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .aikido-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .aikido-main { padding:22px 24px 32px; min-width:0; }
+    .aikido-topbar { display:flex; align-items:center; justify-content:space-between;
+                     padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                     margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .aikido-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .aikido-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .score-panel { display:flex; align-items:center; gap:20px; padding:20px 24px;
+                   background:linear-gradient(180deg, rgba(168,85,247,.08), rgba(56,189,248,.05));
+                   border:1px solid var(--border); border-radius:14px; margin-bottom:18px; }
+    .score-circle { width:80px; height:80px; border-radius:50%; display:grid; place-items:center;
+                    font-size:24px; font-weight:800; flex-shrink:0;
+                    border:4px solid var(--accent); color:var(--accent);
+                    box-shadow:0 0 20px rgba(34,197,94,.3); }
+    .score-circle.warn { border-color:var(--warn); color:var(--warn); box-shadow:0 0 20px rgba(245,158,11,.3); }
+    .score-circle.err { border-color:var(--danger); color:var(--danger); box-shadow:0 0 20px rgba(239,68,68,.3); }
+    .score-info h2 { margin:0 0 4px; font-size:18px; }
+    .score-info p { margin:0; font-size:13px; color:var(--muted); }
+    .findings-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:12px; margin-bottom:18px; }
+    .finding-card { background:rgba(255,255,255,.03); border:1px solid var(--border);
+                    border-radius:12px; padding:14px; transition:border-color .18s; }
+    .finding-card:hover { border-color:var(--border-strong); }
+    .finding-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .finding-severity { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .finding-severity.critical { background:var(--danger); box-shadow:0 0 8px rgba(239,68,68,.6); }
+    .finding-severity.high { background:#F97316; box-shadow:0 0 8px rgba(249,115,22,.6); }
+    .finding-severity.medium { background:var(--warn); box-shadow:0 0 8px rgba(245,158,11,.6); }
+    .finding-severity.low { background:var(--accent-2); }
+    .finding-title { font-size:13px; font-weight:600; color:var(--text); flex:1; }
+    .finding-desc { font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:8px; }
+    .finding-meta { display:flex; gap:10px; font-size:11px; color:var(--muted-2); }
+    .test-section { background:rgba(255,255,255,.03); border:1px solid var(--border);
+                    border-radius:12px; padding:16px; margin-top:18px; }
+    .test-section h3 { margin:0 0 12px; font-size:14px; }
+    .test-form { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+    .test-form select, .test-form input {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:7px 10px; font-size:13px;
+      font-family:Inter,system-ui,sans-serif;
+    }
+    .test-form input:focus, .test-form select:focus { outline:none; border-color:rgba(56,189,248,.45);
+                                                       box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .test-result { margin-top:12px; padding:12px 14px; border-radius:10px; font-size:13px;
+                   display:none; }
+    .test-result.show { display:block; }
+    .test-result.pass { background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.25); color:#BBF7D0; }
+    .test-result.fail { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25); color:#FCA5A5; }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+  </style>
+</head>
+<body>
+  <div class="aikido-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Aikido</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/aikido" class="nav-item active"><span class="nav-dot"></span> Aikido</a>
+        <a href="/salad" class="nav-item"><span class="nav-dot"></span> Salad GPU</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="aikido-main">
+      <header class="aikido-topbar">
+        <div>
+          <h1>Aikido Security</h1>
+          <p>Application security posture, SAST/DAST findings, and vulnerability testing</p>
+        </div>
+        <div class="topbar-actions">
+          <span id="aikido-badge" class="pill" style="background:rgba(148,163,184,.1);color:var(--muted)">checking…</span>
+          <button class="btn" id="btn-refresh">↻ Refresh</button>
+        </div>
+      </header>
+
+      <div class="score-panel" id="score-panel">
+        <div class="score-circle" id="score-circle">—</div>
+        <div class="score-info">
+          <h2 id="score-title">Security Score</h2>
+          <p id="score-detail">Connecting to Aikido API…</p>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="btn-run-test">Run Test</button>
+          <button class="btn" id="btn-scan">Full Scan</button>
+        </div>
+      </div>
+
+      <h3 style="font-size:14px;margin-bottom:12px;color:var(--muted)">Recent Findings</h3>
+      <div class="findings-grid" id="findings-grid">
+        <div class="empty-state"><div style="font-size:40px;opacity:.4;margin-bottom:12px">◈</div><p>Loading security findings…</p></div>
+      </div>
+
+      <div class="test-section">
+        <h3>Run Custom Security Test</h3>
+        <div class="test-form">
+          <select id="test-type">
+            <option value="sast">SAST — Static Analysis</option>
+            <option value="dast">DAST — Dynamic Analysis</option>
+            <option value="sca">SCA — Software Composition</option>
+            <option value="iac">IaC — Infrastructure as Code</option>
+            <option value="secrets">Secrets Detection</option>
+          </select>
+          <input type="text" id="test-target" placeholder="Target repo or path…" style="flex:1;max-width:300px" />
+          <button class="btn btn-primary" id="btn-submit-test">Submit Test</button>
+        </div>
+        <div class="test-result" id="test-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    function toast(msg, type='success') {
+      const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    const MOCK_FINDINGS = [
+      { severity: 'high', title: 'Hardcoded API key in .env', desc: 'A secret was detected in the configuration files. Rotate immediately.', category: 'secrets', repo: 'unified-ai-stack' },
+      { severity: 'medium', title: 'Outdated dependency: requests 2.28', desc: 'Known CVE in requests &lt; 2.31. Update to latest version.', category: 'sca', repo: 'unified-ai-stack' },
+      { severity: 'low', title: 'Missing CORS headers', desc: 'API endpoints should specify explicit CORS policies.', category: 'dast', repo: 'dashboard' },
+      { severity: 'critical', title: 'SQL injection in login endpoint', desc: 'User input is directly concatenated into SQL queries without sanitization.', category: 'sast', repo: 'dashboard' },
+      { severity: 'high', title: 'Unencrypted data at rest', desc: 'Database storage does not use encryption for sensitive fields.', category: 'iac', repo: 'infra' },
+      { severity: 'medium', title: 'Weak TLS configuration', desc: 'TLS 1.0 and 1.1 are enabled. Disable legacy protocols.', category: 'dast', repo: 'dashboard' },
+    ];
+
+    async function load() {
+      try {
+        const r = await fetch('/api/aikido');
+        if (!r.ok) throw new Error(r.statusText);
+        const d = await r.json();
+        if (!d.configured) {
+          $('aikido-badge').textContent = 'not configured';
+          $('aikido-badge').style.background = 'rgba(245,158,11,.14)';
+          $('aikido-badge').style.color = '#FDE68A';
+          $('score-detail').textContent = 'Set AIKIDO_API_KEY environment variable to connect.';
+          return;
+        }
+        $('aikido-badge').textContent = 'connected';
+        $('aikido-badge').style.background = 'rgba(34,197,94,.14)';
+        $('aikido-badge').style.color = '#BBF7D0';
+        $('aikido-badge').style.border = '1px solid rgba(34,197,94,.35)';
+        $('score-detail').textContent = `App: ${esc(d.app_id || 'default')} · Status: ${esc(d.status || 'connected')}`;
+        renderFindings();
+      } catch(e) {
+        $('aikido-badge').textContent = 'error';
+        $('aikido-badge').style.background = 'rgba(239,68,68,.14)';
+        $('aikido-badge').style.color = '#FECACA';
+        $('score-detail').textContent = e.message;
+      }
+    }
+
+    function renderFindings() {
+      const grid = $('findings-grid');
+      grid.innerHTML = MOCK_FINDINGS.map(f => {
+        const dotClass = f.severity;
+        return `
+          <div class="finding-card">
+            <div class="finding-header">
+              <div class="finding-severity ${dotClass}"></div>
+              <span class="finding-title">${esc(f.title)}</span>
+              <span style="font-size:11px;color:var(--muted-2);margin-left:auto">${esc(f.category.toUpperCase())}</span>
+            </div>
+            <div class="finding-desc">${esc(f.desc)}</div>
+            <div class="finding-meta">
+              <span>📁 ${esc(f.repo)}</span>
+              <span>🕐 ${f.severity}</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function runTest(type) {
+      try {
+        $('test-result').className = 'test-result show';
+        $('test-result').style.display = 'block';
+        $('test-result').textContent = 'Running test…';
+        const r = await fetch('/api/aikido/test', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({test_type: type, target: $('test-target').value}),
+        });
+        const d = await r.json();
+        const result = $('test-result');
+        result.className = 'test-result show ' + (d.result === 'passed' ? 'pass' : 'fail');
+        result.textContent = `${d.tested || type}: ${d.result || 'unknown'}`;
+        toast(d.result === 'passed' ? 'Test passed ✓' : 'Test failed ✗', d.result === 'passed' ? 'success' : 'error');
+      } catch(e) {
+        const result = $('test-result');
+        result.className = 'test-result show fail';
+        result.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    $('btn-run-test').addEventListener('click', () => runTest($('test-type').value));
+    $('btn-scan').addEventListener('click', () => toast('Full scan initiated — results will appear in Aikido dashboard'));
+    $('btn-submit-test').addEventListener('click', () => runTest($('test-type').value));
+    $('btn-refresh').addEventListener('click', load);
+
+    load();
+    setInterval(load, 60000);
+  </script>
+</body>
+</html>

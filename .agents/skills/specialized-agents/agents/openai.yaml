@@ -1,0 +1,4 @@
+interface:
+  display_name: "Specialized Agents"
+  short_description: "Route work to specialist agents"
+  default_prompt: "Use $specialized-agents to choose and coordinate specialist Codex agents for a complex workflow."

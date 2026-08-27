@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Subagents</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .sa-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .sa-main { padding:22px 24px 32px; min-width:0; }
+    .sa-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .sa-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .sa-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .sa-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:18px; }
+    .sa-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .sa-stat .sa-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .sa-stat .sa-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .sa-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:14px; }
+    .sa-card {
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:14px; padding:16px;
+      transition:border-color .18s ease, transform .18s ease;
+    }
+    .sa-card:hover { border-color:var(--border-strong); transform:translateY(-2px); }
+    .sa-card-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .sa-avatar { width:36px; height:36px; border-radius:10px; display:grid; place-items:center;
+                 background:linear-gradient(135deg, rgba(14,165,233,.2), rgba(34,197,94,.2));
+                 color:var(--accent-2); font-size:14px; font-weight:700; flex-shrink:0; }
+    .sa-name { font-size:14px; font-weight:600; color:var(--text); }
+    .sa-role { font-size:11px; color:var(--muted-2); }
+    .sa-body { display:flex; flex-direction:column; gap:6px; }
+    .sa-desc { font-size:12px; color:var(--muted); line-height:1.4; }
+    .sa-progress-wrap { margin:8px 0; }
+    .sa-progress-label { display:flex; justify-content:space-between; font-size:11px; color:var(--muted-2); margin-bottom:4px; }
+    .progress-bar { height:6px; background:rgba(148,163,184,.1); border-radius:3px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:3px; transition:width .5s; }
+    .progress-fill.green { background:var(--accent); }
+    .progress-fill.blue { background:var(--accent-2); }
+    .progress-fill.yellow { background:var(--warn); }
+    .progress-fill.red { background:var(--danger); }
+    .sa-meta { display:flex; gap:10px; flex-wrap:wrap; font-size:11px; color:var(--muted-2); }
+    .sa-actions { display:flex; gap:6px; margin-top:10px; }
+    .sa-actions button { padding:5px 10px; border-radius:8px; border:1px solid var(--border);
+                         background:var(--panel-2); color:var(--muted); cursor:pointer;
+                         font-size:12px; transition:all .15s; }
+    .sa-actions button:hover { border-color:var(--accent-2); color:var(--text); }
+    .sa-actions button.danger:hover { border-color:var(--danger); color:var(--danger); }
+    .task-form { background:rgba(255,255,255,.03); border:1px solid var(--border);
+                 border-radius:12px; padding:16px; margin-bottom:18px; }
+    .task-form h3 { margin:0 0 12px; font-size:14px; }
+    .form-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .form-row input, .form-row select {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:7px 10px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif;
+    }
+    .form-row input:focus, .form-row select:focus { outline:none; border-color:rgba(56,189,248,.45);
+                                                     box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .form-row textarea { background:rgba(2,6,23,.55); color:var(--text);
+                          border:1px solid var(--border); border-radius:10px;
+                          padding:8px 12px; font-size:13px; resize:vertical;
+                          font-family:Inter,system-ui,sans-serif; min-height:60px; flex:1; }
+    .form-row textarea:focus { outline:none; border-color:rgba(56,189,248,.45);
+                               box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); grid-column:1/-1; }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+  </style>
+</head>
+<body>
+  <div class="sa-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Subagents</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/subagents" class="nav-item active"><span class="nav-dot"></span> Subagents</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="sa-count" class="muted" style="margin-left:auto">0 agents</span>
+      </div>
+    </nav>
+
+    <div class="sa-main">
+      <header class="sa-topbar">
+        <div>
+          <h1>Subagent Orchestration</h1>
+          <p>Launch parallel AI agents to decompose and execute complex tasks</p>
+        </div>
+        <button class="btn" id="btn-refresh">↻ Refresh</button>
+      </header>
+
+      <div class="sa-stats" id="stats">
+        <div class="sa-stat"><span class="sa-val" id="s-total">—</span><span class="sa-lbl">Total</span></div>
+        <div class="sa-stat"><span class="sa-val" id="s-running">—</span><span class="sa-lbl">Running</span></div>
+        <div class="sa-stat"><span class="sa-val" id="s-done">—</span><span class="sa-lbl">Done</span></div>
+        <div class="sa-stat"><span class="sa-val" id="s-failed">—</span><span class="sa-lbl">Failed</span></div>
+      </div>
+
+      <div class="task-form">
+        <h3>Launch New Task</h3>
+        <div class="form-row">
+          <input type="text" id="task-desc" placeholder="Task description (what should the agents do?)" style="flex:2;min-width:200px" />
+        </div>
+        <div class="form-row">
+          <select id="task-roles">
+            <option value="all">All Roles</option>
+            <option value="coder">Coder</option>
+            <option value="explorer">Explorer</option>
+            <option value="researcher">Researcher</option>
+            <option value="reviewer">Reviewer</option>
+            <option value="architect">Architect</option>
+          </select>
+          <select id="task-model">
+            <option value="auto">Auto-select</option>
+            <option value="sonnet">Claude Sonnet</option>
+            <option value="opus">Claude Opus</option>
+            <option value="gpt4">GPT-4</option>
+            <option value="gemini">Gemini</option>
+          </select>
+          <select id="task-pipeline">
+            <option value="scaffold">Scaffold</option>
+            <option value="fullstack">Fullstack</option>
+            <option value="research">Research</option>
+            <option value="review">Review</option>
+          </select>
+          <input type="number" id="task-parallel" placeholder="Parallel" value="3" min="1" max="8" style="width:100px" />
+          <button class="btn btn-primary" id="btn-launch">Launch</button>
+        </div>
+      </div>
+
+      <div class="sa-grid" id="sa-grid">
+        <div class="empty-state"><div style="font-size:40px;opacity:.4;margin-bottom:12px">⬡</div><p>Launch a task to see subagents here.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    function toast(msg, type='success') {
+      const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    let agents = [];
+
+    async function load() {
+      try {
+        const r = await fetch('/api/subagents');
+        if (!r.ok) throw new Error(r.statusText);
+        agents = await r.json();
+        updateStats();
+        render(agents);
+      } catch(e) {
+        agents = [];
+        updateStats();
+        render([]);
+      }
+    }
+
+    function updateStats() {
+      $('s-total').textContent = agents.length;
+      $('s-running').textContent = agents.filter(a => a.status === 'running').length;
+      $('s-done').textContent = agents.filter(a => a.status === 'done').length;
+      $('s-failed').textContent = agents.filter(a => a.status === 'failed').length;
+      $('sa-count').textContent = agents.length + ' agents';
+    }
+
+    function render(items) {
+      const grid = $('sa-grid');
+      if (!items.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div style="font-size:40px;opacity:.4;margin-bottom:12px">⬡</div><p>No subagents running. Launch a task above.</p></div>`;
+        return;
+      }
+      grid.innerHTML = items.map(a => {
+        const fillClass = a.status === 'done' ? 'green' : a.status === 'failed' ? 'red' : a.status === 'paused' ? 'yellow' : 'blue';
+        return `
+          <div class="sa-card" data-id="${esc(a.id)}">
+            <div class="sa-card-head">
+              <div class="sa-avatar">${(a.name||'?').charAt(0)}</div>
+              <div style="flex:1;min-width:0">
+                <div class="sa-name">${esc(a.name || 'untitled')}</div>
+                <div class="sa-role">${esc(a.role || '?')} · ${esc(a.pipeline || 'scaffold')}</div>
+              </div>
+              <span class="job-status ${a.status}">${a.status}</span>
+            </div>
+            <div class="sa-body">
+              <div class="sa-desc">${esc(a.description || '')}</div>
+              <div class="sa-progress-wrap">
+                <div class="sa-progress-label">
+                  <span>Progress</span>
+                  <span>${a.progress || 0}%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill ${fillClass}" style="width:${a.progress || 0}%"></div>
+                </div>
+              </div>
+              <div class="sa-meta">
+                <span>Model: ${esc(a.model || 'auto')}</span>
+                <span>Task: ${esc(a.task_id || '')}</span>
+                <span>Created: ${new Date((a.created_at||0)*1000).toLocaleTimeString()}</span>
+              </div>
+            </div>
+            <div class="sa-actions">
+              ${a.status === 'running' ? `<button onclick="pauseAgent('${esc(a.id)}')">Pause</button>` :
+                a.status === 'paused' ? `<button onclick="resumeAgent('${esc(a.id)}')">Resume</button>` : ''}
+              <button class="danger" onclick="deleteAgent('${esc(a.id)}')">Delete</button>
+              <button onclick="showLog('${esc(a.id)}')">Logs</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    async function launch() {
+      const desc = $('task-desc').value.trim();
+      if (!desc) { toast('Please enter a task description', 'error'); return; }
+      try {
+        const r = await fetch('/api/subagents', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            description: desc,
+            roles: $('task-roles').value,
+            model: $('task-model').value,
+            pipeline: $('task-pipeline').value,
+            parallel: parseInt($('task-parallel').value) || 3,
+          }),
+        });
+        const d = await r.json();
+        if (d.subagents_launched) {
+          toast(`Launched ${d.subagents_launched} subagent(s)!`);
+          await load();
+        } else toast(d.error || 'Failed to launch', 'error');
+      } catch(e) { toast('Network error: ' + e.message, 'error'); }
+    }
+
+    async function pauseAgent(id) {
+      try {
+        await fetch(`/api/subagents/${encodeURIComponent(id)}/pause`, {method:'POST'});
+        await load();
+      } catch(e) { toast('Error: ' + e.message, 'error'); }
+    }
+
+    async function resumeAgent(id) {
+      try {
+        await fetch(`/api/subagents/${encodeURIComponent(id)}/resume`, {method:'POST'});
+        await load();
+      } catch(e) { toast('Error: ' + e.message, 'error'); }
+    }
+
+    async function deleteAgent(id) {
+      if (!confirm('Delete this subagent?')) return;
+      try {
+        await fetch(`/api/subagents/${encodeURIComponent(id)}`, {method:'DELETE'});
+        await load();
+        toast('Agent deleted');
+      } catch(e) { toast('Error: ' + e.message, 'error'); }
+    }
+
+    async function showLog(id) {
+      try {
+        const r = await fetch(`/api/subagents/${encodeURIComponent(id)}/log`);
+        const d = await r.json();
+        const logs = d.logs || [];
+        const msg = logs.map(l => `[${l.time}] ${l.level.toUpperCase()}: ${l.msg}`).join('\n');
+        alert(`Logs for ${id}:\n\n${msg}`);
+      } catch(e) { toast('Error loading logs: ' + e.message, 'error'); }
+    }
+
+    $('btn-launch').addEventListener('click', launch);
+    $('btn-refresh').addEventListener('click', load);
+    $('task-desc').addEventListener('keydown', e => { if (e.key === 'Enter') launch(); });
+
+    load();
+    setInterval(load, 10000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "advanced-persistence-testing",
+  "description": "Implement and test advanced persistence mechanisms across different platforms",
+  "invocation": "Run comprehensive tests on persistence mechanisms",
+  "execution": [
+    "python tests/integration/test_persistence.py",
+    "python tests/integration/test_database_persistence.py"
+  ],
+  "requirements": [
+    "python>=3.8",
+    "unittest",
+    "sqlite3"
+  ],
+  "tags": [
+    "persistence",
+    "testing",
+    "security",
+    "cross-platform"
+  ],
+  "version": "1.0.0",
+  "author": "Project Zero",
+  "license": "MIT"
+}

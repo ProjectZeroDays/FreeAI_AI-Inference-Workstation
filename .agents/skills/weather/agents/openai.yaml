@@ -1,0 +1,4 @@
+interface:
+  display_name: "Weather"
+  short_description: "Weather lookup with fallback"
+  default_prompt: "Use $weather to fetch current weather or a forecast with caching and fallback sources."

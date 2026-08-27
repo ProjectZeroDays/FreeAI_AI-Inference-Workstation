@@ -1,0 +1,314 @@
+{
+  "openai": {
+    "name": "OpenAI",
+    "base_url": "https://api.openai.com/v1",
+    "key_env": "OPENAI_API_KEY",
+    "models": [
+      "gpt-4o",
+      "gpt-4o-mini",
+      "gpt-4-turbo",
+      "o1",
+      "o1-mini"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode",
+      "hermes",
+      "openclaw"
+    ],
+    "key_set": true
+  },
+  "agentrouter": {
+    "name": "AgentRouter",
+    "base_url": "https://agentrouter.org",
+    "key_env": "AGENTROUTER_AUTH_TOKEN",
+    "models": [
+      "claude-opus-4-6",
+      "claude-sonnet-4",
+      "claude-haiku-4"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode",
+      "hermes",
+      "openclaw"
+    ],
+    "key_set": true
+  },
+  "omniroute": {
+    "name": "OmniRoute",
+    "base_url": "https://api.omniroute.ai/v1",
+    "key_env": "OMNIROUTE_API_KEY",
+    "models": [
+      "omni-1-pro",
+      "omni-1-mini"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "anthropic": {
+    "name": "Anthropic (DIA SAP)",
+    "base_url": "https://api.anthropic.com/v1",
+    "key_env": "DIA_SAP_PROJECT_RED_SWORD",
+    "models": [
+      "claude-opus-4-20250514",
+      "claude-sonnet-4-20250514",
+      "claude-haiku-4-20250414"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode",
+      "hermes",
+      "openclaw"
+    ],
+    "key_set": true
+  },
+  "deepseek": {
+    "name": "DeepSeek",
+    "base_url": "https://api.deepseek.com/v1",
+    "key_env": "DEEPSEEK",
+    "models": [
+      "deepseek-chat",
+      "deepseek-coder",
+      "deepseek-reasoner"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode",
+      "hermes"
+    ],
+    "key_set": true
+  },
+  "perplexity": {
+    "name": "Perplexity",
+    "base_url": "https://api.perplexity.ai",
+    "key_env": "PERPLEXITY_PRO_API_KEY",
+    "models": [
+      "sonar",
+      "sonar-pro",
+      "sonar-reasoning"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode"
+    ],
+    "key_set": true
+  },
+  "gemini": {
+    "name": "Google Gemini",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta",
+    "key_env": "GEMINI_API_KEY",
+    "models": [
+      "gemini-2.0-flash",
+      "gemini-2.0-flash-thinking",
+      "gemini-2.5-pro"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode",
+      "hermes",
+      "openclaw"
+    ],
+    "key_set": true
+  },
+  "venice": {
+    "name": "Venice AI",
+    "base_url": "https://api.venice.ai/api/v1",
+    "key_env": "VENICE_AI_API_KEY",
+    "models": [
+      "gemma-4-uncensored",
+      "llama-3.1-405b",
+      "claude-3-5-sonnet"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "agames_ai": {
+    "name": "Agnes AI (API Hub)",
+    "base_url": "https://apihub.agnes-ai.com/v1",
+    "key_env": "AGNES_API_KEY",
+    "models": [
+      "agnes-2.0-flash",
+      "agnes-2.0-pro"
+    ],
+    "clients": [
+      "hermes",
+      "mimocode",
+      "opencode",
+      "jcode"
+    ],
+    "key_set": false
+  },
+  "openrouter": {
+    "name": "OpenRouter",
+    "base_url": "https://openrouter.ai/api/v1",
+    "key_env": "OPENROUTER_API_KEY",
+    "models": [
+      "anthropic/claude-3.5-sonnet",
+      "openai/gpt-4o",
+      "deepseek/deepseek-r1"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode",
+      "hermes",
+      "openclaw"
+    ],
+    "key_set": true
+  },
+  "nexustrade": {
+    "name": "Nexustrade",
+    "base_url": "https://nexustrade.io/api/v1",
+    "key_env": "NEXUSTRADE_API_KEY",
+    "models": [
+      "nt-coder-v1",
+      "nt-chat-v1"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "shodan": {
+    "name": "Shodan",
+    "base_url": "https://api.shodan.io",
+    "key_env": "SHODAN_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "wakatime": {
+    "name": "WakaTime",
+    "base_url": "https://api.wakatime.com/api/v1",
+    "key_env": "WAKATIME_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode"
+    ],
+    "key_set": true
+  },
+  "tabnine": {
+    "name": "Tabnine",
+    "base_url": "https://api.tabnine.com",
+    "key_env": "TABNINE_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "langchain": {
+    "name": "LangChain / LangSmith",
+    "base_url": "https://api.smith.langchain.com",
+    "key_env": "LANGCHAIN_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode"
+    ],
+    "key_set": true
+  },
+  "huggingface": {
+    "name": "HuggingFace",
+    "base_url": "https://huggingface.co",
+    "key_env": "HUGGINGFACE_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "gemini_ai_studio": {
+    "name": "Google AI Studio",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta",
+    "key_env": "AI_STUDIO_API_KEY",
+    "models": [
+      "gemini-2.0-flash",
+      "gemini-2.0-flash-thinking"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode",
+      "jcode"
+    ],
+    "key_set": true
+  },
+  "cody": {
+    "name": "Sourcegraph Cody",
+    "base_url": "https://sourcegraph.com/.api/completions",
+    "key_env": "CUDY_CODER",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "envia": {
+    "name": "Envia (Eden AI)",
+    "base_url": "https://www.envia.com/api/v1",
+    "key_env": "EDEN_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "nvapi": {
+    "name": "NVIDIA NVAI",
+    "base_url": "https://integrate.api.nvidia.com/v1",
+    "key_env": "NVAPI_KEY",
+    "models": [
+      "nemo",
+      "llama-3.1-405b"
+    ],
+    "clients": [
+      "mimocode",
+      "opencode"
+    ],
+    "key_set": true
+  },
+  "hostinger": {
+    "name": "Hostinger",
+    "base_url": "https://hostinger.com/api",
+    "key_env": "HOSTINGER_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode"
+    ],
+    "key_set": true
+  },
+  "omg_lol": {
+    "name": "OMG.lol",
+    "base_url": "https://api.omg.lol/v1",
+    "key_env": "OMG_LOL_API_KEY",
+    "models": [],
+    "clients": [
+      "mimocode"
+    ],
+    "key_set": true
+  }
+}

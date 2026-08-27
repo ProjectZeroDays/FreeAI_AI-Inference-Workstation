@@ -1,0 +1,149 @@
+# Roadmap
+
+Status of the master improvement list. ✅ implemented · 🕐 planned.
+
+## 1. Infrastructure
+- ✅ Health checks for all compose services
+- ✅ Restart policies (tuned per service)
+- ✅ GPU warmup container (`--profile warmup`)
+- ✅ Centralized config (`config/config.json` + env overrides)
+- ✅ Environment profiles (dev/staging/prod via env)
+- ✅ AI resource optimizer (thermal/util-driven power modes, hysteresis,
+  runtime-state published to dashboard) — saves watts/money 24/7
+- ✅ Settings control plane: dashboard panel → runtime-settings.json →
+  optimizer / autonomous cap / router / llama launcher
+- ✅ Recommended + custom presets incl. timed idle window w/ auto-restore
+- ✅ GPU undervolt-equivalent tune (power cap + clock lock, systemd)
+- 🕐 Log aggregation (FluentBit → Loki → Grafana)
+- 🕐 Secrets management (Vault / Kubernetes Secrets)
+- 🕐 Request tracing (OpenTelemetry)
+
+## 2. Router
+- ✅ Task confidence scoring
+- ✅ Model fallback logic
+- ✅ Per-agent model overrides
+- ✅ Response caching (LRU)
+- ✅ Metrics endpoint
+- ✅ API-key auth + rate limiting
+- 🕐 Load balancing across parallel model instances
+- 🕐 SSE streaming passthrough
+- 🕐 Dashboard log streaming
+
+## 3. Agents
+- ✅ Agent profiles (strict/balanced/creative/verbose/minimal)
+- ✅ Session memory (+ `/agent/chat`, memory inspect/clear)
+- ✅ Error recovery envelopes + retry at router level
+- ✅ Metrics counters
+- 🕐 Sandboxed code execution
+- 🕐 Long-term memory store
+
+## 4. Workflow Engine
+- ✅ Visual designer (workflow/ui/designer.html — export/import JSON)
+- ✅ Validation (missing consumes/produces detection)
+- ✅ Templates (api_build, microservice_build)
+- ✅ Audit logs (JSONL)
+- ✅ Export/import (definitions) + inline execution
+- 🕐 Versioning, scheduling, pause/resume
+
+## 5–6. UI & Dashboard
+- ✅ GPU temp / power draw / clock speeds
+- ✅ Alerts panel (services down, GPU util/temp thresholds)
+- ✅ Chart.js utilization history
+- ✅ Designer canvas with step config/delete/export
+- 🕐 Drag-and-drop designer, prompt templates/history, theme toggle,
+  multi-tab UI, model load-time charts, logs viewer — `docs/UI_ENHANCEMENTS.md`
+
+## 7. Performance
+- ✅ Tunable llama.cpp flags (`N_GPU_LAYERS`, ctx via env)
+- ✅ vLLM prefix caching enabled
+- 🕐 CUDA graphs, quantized KV cache, speculative decoding,
+  tensor parallelism (`LLAMA_TP=2`), micro-batching, prompt compression, response
+  streaming end-to-end
+
+## 8. Security
+- ✅ Router API keys
+- ✅ Rate limiting
+- 🕐 JWT for agents/workflows, TLS termination, RBAC, audit logs,
+  network segmentation — `k8s/network-policy.yml`
+
+## 9. Testing
+- ✅ Unit tests: classifier/switcher/cache/rate-limiter
+- ✅ API tests: router (mock), agent profiles/memory/metrics
+- ✅ Workflow tests: validation, retries, definitions, extraction
+- 🕐 Integration/load (Locust), GPU stress, prompt regression suites
+
+## 10–11. DevEx & CI/CD
+- ✅ freeai-cli (status/models/route/workflows/run)
+- ✅ Local dev mode (MOCK_LLM=1)
+- ✅ Docker build+push to GHCR on tags
+- ✅ Release bundle workflow
+- ✅ Workflow CI + docs generation pipelines
+- 🕐 VSCode extension, hot reload, debug mode
+
+## 12. Kubernetes
+- ✅ HPA (router/agents/workflow)
+- ✅ GPU nodeSelector + tolerations (llama/vLLM)
+- ✅ Models PVC manifest
+- 🕐 Prometheus/Grafana stack, Istio, Argo CD/Workflows, sealed secrets
+
+## 13. Documentation
+- ✅ MkDocs skeleton (architecture, API, switching, deployment,
+  troubleshooting)
+- ✅ Autonomous SDLC guide
+- ✅ Auto-docs generator (docs/generate_docs.py → workflows.json)
+
+## 14. Models
+- ✅ Health-aware fallback routing
+- ✅ GPU warmup (compose profile + agents/gpu-warmup.sh)
+- 🕐 Model performance scoring, registry UI
+
+## 15. Ops scripts (ported from center-control-plane)
+- ✅ model-benchmark.sh (per-task latency), smoke-test.sh (11-endpoint sweep)
+- ✅ validate.ps1 + deploy.ps1 (Windows validator + remote provisioner)
+- ✅ install.sh --check drift report
+- ✅ autonomous release pipeline (VERSION-tag-cut + multi-asset releases)
+
+## 15b. Future
+- ✅ Autonomous SDLC agents (plan → code → verify → fix → document →
+  package, sandboxed workspaces, artifact delivery)
+- ✅ Function calling / tool use (`autonomous/tools.json` + `docs/FUNCTION_CALLING.md`), RAG + vector DB (Qdrant `--profile rag`),
+  document ingestion (`scripts/ingest.py`), repo-wide auto-refactor,
+  multi-GPU distributed inference (`router/load_balancer.py`), model registry UI (`docs/MODEL_REGISTRY_UI.md`)
+
+## 16. Codex-class integration (planned epic)
+- ✅ MCP server wrapper over /route, /agent/*, /workflow, autonomous API
+- ✅ Approval profiles (suggest/auto/full-auto) + dashboard confirm queue
+- ✅ Diff-based surgical edits (`EDIT_MODE=diff`)
+- ✅ OS-level sandbox runner option (bwrap/nspawn, network-off profile)
+- ✅ Git-native runs (init/commit per green phase; branch archive export)
+- See docs/CODEX-INTEGRATION.md and docs/GAP-ANALYSIS-CODEX.md
+
+## 17. Distribution tracks (planned)
+- ✅ All-in-one CUDA image starter (`docker/all-in-one.Dockerfile` + supervisord) behind compose `--profile allinone`
+  supervisord) behind compose `--profile allinone`
+- ✅ Live ISO ("FreeAIOS"): build script + boot-menu plan (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v1.2.1 artifact
+  (`live/build-live.sh`, docs/DEPLOYMENT-PLANS.md Track C) - ISO v0.1 tag
+- ✅ Provider launch kits: RunPod template from GHCR image, Lambda/ Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
+  Hetzner bare-metal via install-stack.sh, spot-cloud Terraform module
+
+## 17b. External providers & expansion (shipped)
+- ✅ Parallel hot models: llama2 shard :9003 (--profile llama2, per-GPU CUDA_VISIBLE_DEVICES) + /admin/hot-models + /admin/model-switch
+- ✅ Qdrant RAG sidecar + ingest watcher (--profile rag) - MiniLM 384-dim, hash fallback for CI
+- ✅ WebSocket token streaming (ws://:8011/ws/route) alongside SSE
+- ✅ Golden-task eval harness (evals/golden_tasks.json + reviewer-scored run_eval.py)
+- ✅ Multi-stage image diet (~60% smaller all-in-one) + SOPS/Vault secrets via scripts/up-secure.sh
+- ✅ local-build.yml workflow (billing workaround: artifact tarballs instead of GHCR push)
+
+- ✅ FreeToken edge MoE serving engine (--profile freetoken) - 290B+ frontier models on consumer GPUs
+- ✅ LoLLMs chat UI (--profile lollms) - optional chat-centric frontend
+- ✅ 21+ hosted API bridge (openai/anthropic/gemini adapters), explicit model routing, keyed-fallback tails, streaming, dashboard panel + test pings, docs/PROVIDERS.md
+
+## 18. llmv-llama.cpp-cuda-13.0-ZCode-MimoCode-NoVNC-DesktopEnv integration
+- ✅ Vision (mmproj): launcher flag, downloader entry, compose env
+- ✅ JupyterLab :8888 (compose --profile jupyter + systemd template)
+- ✅ Coding-clients provisioning (OpenCode :3000, ZCode :5000, MimoCode, JCode) wired to router + llama /v1
+- ✅ mimocode/ switchboard manifests + dashboard Clients panel (/api/clients)
+- ✅ Vast.ai kit: template.json (Instance Portal + Selkies + Guacamole PORTAL_CONFIG) + onstart.sh
+- ✅ CUDA 13.0 images (llama/all-in-one/vLLM; driver >= 580) + installer 13-0 default w/ 12-6 fallback
+- ✅ UI auth gate (auth.js + X-Auth-Token write protection), /api/upload + Files panel
+- ✅ VNC password via VNC_PASSWORD env

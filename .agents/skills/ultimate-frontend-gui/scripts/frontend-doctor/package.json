@@ -1,0 +1,47 @@
+{
+  "name": "@openclaw/frontend-doctor",
+  "version": "1.0.0",
+  "description": "Diagnose and fix common frontend issues — white screen, JS errors, resource loading failures, React/Vue hydration, browser extension popup, and CSS layout bugs.",
+  "main": "./src/cli.js",
+  "exports": {
+    ".": "./src/cli.js",
+    "./diagnostics/*": "./src/diagnostics/*.js"
+  },
+  "bin": {
+    "frontend-doctor": "./src/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "src/",
+    "SKILL.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "openclaw",
+    "skill",
+    "frontend",
+    "debugging",
+    "diagnosis",
+    "react",
+    "vue",
+    "css",
+    "hydration",
+    "white-screen"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openclaw/clawhub"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/openclaw/clawhub",
+  "openclaw": {
+    "skillKey": "frontend-doctor"
+  }
+}

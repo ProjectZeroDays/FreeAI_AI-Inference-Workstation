@@ -1,0 +1,4 @@
+interface:
+  display_name: "Planning With Files"
+  short_description: "Persistent file-based planning"
+  default_prompt: "Use $planning-with-files to create task_plan.md, findings.md, and progress.md for complex Codex work."

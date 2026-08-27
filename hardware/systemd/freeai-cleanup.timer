@@ -1,0 +1,10 @@
+[Unit]
+Description=Run FreeAI cleanup daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=900
+
+[Install]
+WantedBy=timers.target

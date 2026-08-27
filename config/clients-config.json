@@ -1,0 +1,15 @@
+{
+  "clients": [
+    "mimocode",
+    "mimocode-desktop",
+    "opencode",
+    "opencode-desktop",
+    "jcode",
+    "jcode-terminal",
+    "hermes",
+    "hermes-desktop",
+    "openclaw",
+    "openclaw-desktop"
+  ],
+  "count": 10
+}

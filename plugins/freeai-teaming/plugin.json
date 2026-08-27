@@ -1,0 +1,11 @@
+{
+  "name": "freeai-teaming",
+  "version": "1.0.0",
+  "description": "FreeAI Teaming Plugin — autonomous Red/Blue/Purple + SDLC apex agents powered by uncensored heretic models",
+  "author": "FreeAI",
+  "license": "MIT",
+  "opencode": ">=1.18.0",
+  "agents": ["red-team", "blue-team", "purple-team", "sdlc-apex"],
+  "skills": ["red-team-apex", "blue-team-apex", "purple-team-apex", "sdlc-apex"],
+  "mcp": ["mcp-red-team", "mcp-blue-team", "mcp-purple-team", "mcp-sdlc"]
+}

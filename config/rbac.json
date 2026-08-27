@@ -1,0 +1,5 @@
+{
+  "admin": ["*"],
+  "operator": ["route", "agent/*", "workflow/*"],
+  "viewer": ["status", "metrics", "health"]
+}

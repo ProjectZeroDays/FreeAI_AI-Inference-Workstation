@@ -1,0 +1,13 @@
+[Unit]
+Description=GPU power/clock tune for 24/7 inference (eco profile)
+After=multi-user.target
+Wants=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+ExecStart=__STACK_DIR__/hardware/gpu-power-tune.sh apply
+ExecStop=__STACK_DIR__/hardware/gpu-power-tune.sh reset
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

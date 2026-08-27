@@ -1,0 +1,89 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Source bundle
+        run: |
+          mkdir -p dist
+          tar --exclude='./.git' \
+              --exclude='./venv' \
+              --exclude='./.venv-vllm' \
+              --exclude='./llama.cpp' \
+              --exclude='./models/*.gguf' \
+              --exclude='./workspaces' \
+              --exclude='./backups' \
+              --exclude='./dist' \
+              -czf "dist/unified-ai-stack-${GITHUB_REF_NAME}.tar.gz" .
+
+      - name: Docs bundle (MkDocs-ready sources)
+        run: |
+          mkdir -p dist/docs-site/docs
+          cp mkdocs.yml dist/docs-site/
+          cp docs/*.md dist/docs-site/docs/ 2>/dev/null || true
+          cp README.md dist/docs-site/docs/index-full.md
+          tar -czf "dist/docs-site-${GITHUB_REF_NAME}.tar.gz" -C dist docs-site
+
+      - name: Generated workflow reference
+        run: |
+          pip install requests --quiet
+          python docs/generate_docs.py
+          cp docs/workflows.json dist/workflows-${GITHUB_REF_NAME}.json
+
+      - name: Deploy kit (provisioner + hardware docs)
+        run: |
+          mkdir -p dist/deploy-kit
+          cp hardware/install-stack.sh hardware/gpu-power-tune.sh \
+             hardware/setup-remote-access.sh hardware/PARTS-LIST.md \
+             hardware/BUILD.md hardware/LOCAL-DEPLOY.md dist/deploy-kit/
+          tar -czf "dist/deploy-kit-${GITHUB_REF_NAME}.tar.gz" -C dist deploy-kit
+
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum *.tar.gz *.json > sha256sums-${GITHUB_REF_NAME}.txt
+
+      - name: Release notes (CHANGELOG section + commits)
+        run: |
+          {
+            echo "## What's in ${GITHUB_REF_NAME}"
+            echo
+            awk "/^## ${GITHUB_REF_NAME#v}/{flag=1;next}/^## /{if(flag)exit}flag" CHANGELOG.md || true
+            echo
+            echo "### Commits"
+            echo '```'
+            git log --oneline "$(git describe --tags --abbrev=0 ${GITHUB_REF_NAME}^ 2>/dev/null || echo HEAD~20)..${GITHUB_REF_NAME}" | head -50
+            echo '```'
+            echo
+            echo "### Assets"
+            echo "- unified-ai-stack-*.tar.gz — full source, ready for install-stack.sh"
+            echo "- docs-site-*.tar.gz — MkDocs documentation sources"
+            echo "- deploy-kit-*.tar.gz — provisioner + hardware guides only"
+            echo "- workflows-*.json — generated workflow reference"
+            echo "- sha256sums-*.txt — verify before use"
+          } > dist/RELEASE_NOTES.md
+          cat dist/RELEASE_NOTES.md
+
+      - name: Publish release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.json
+            dist/*.txt
+          body_path: dist/RELEASE_NOTES.md
