@@ -2,6 +2,7 @@
 """Autonomous SDLC API — start runs, track lifecycle, fetch artifacts."""
 import json
 import os
+import re
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -116,6 +117,8 @@ def run_shell(run_id: str, req: ShellRequest):
 
 def _shell(run_id, command):
     import subprocess
+    if not re.match(r'^[a-zA-Z0-9_\-./\\]+$', run_id):
+        return {"error": "Invalid run_id"}
     ws = Workspace(run_id)
     try:
         proc = subprocess.run(command, cwd=ws.root, capture_output=True,
