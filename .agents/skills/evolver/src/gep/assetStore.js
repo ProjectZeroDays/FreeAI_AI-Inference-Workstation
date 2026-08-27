@@ -200,6 +200,18 @@ function appendCandidateJsonl(candidateObj) {
 }
 
 function appendExternalCandidateJsonl(obj) {
+  // Sanitize validation commands for external candidates (genes from A2A)
+  if (obj && obj.type === 'Gene' && Array.isArray(obj.validation)) {
+    const { isValidationCommandAllowed } = require('./policyCheck');
+    obj.validation = obj.validation.filter(function (cmd) {
+      const allowed = isValidationCommandAllowed(cmd);
+      if (!allowed) {
+        console.warn('[AssetStore] Rejected unsafe validation command in external candidate ' + (obj.id || 'unknown') + ':', String(cmd).slice(0, 100));
+      }
+      return allowed;
+    });
+  }
+  
   const dir = getGepAssetsDir(); ensureDir(dir);
   fs.appendFileSync(externalCandidatesPath(), JSON.stringify(obj) + '\n', 'utf8');
 }
@@ -279,6 +291,20 @@ function ensureSchemaFields(obj) {
 
 function upsertGene(geneObj) {
   ensureSchemaFields(geneObj);
+  
+  // Sanitize validation commands to prevent command injection
+  // This is critical for genes received from external sources (A2A)
+  const { isValidationCommandAllowed } = require('./policyCheck');
+  if (Array.isArray(geneObj.validation)) {
+    geneObj.validation = geneObj.validation.filter(function (cmd) {
+      const allowed = isValidationCommandAllowed(cmd);
+      if (!allowed) {
+        console.warn('[AssetStore] Rejected unsafe validation command in gene ' + (geneObj.id || 'unknown') + ':', String(cmd).slice(0, 100));
+      }
+      return allowed;
+    });
+  }
+  
   const current = readJsonIfExists(genesPath(), getDefaultGenes());
   const genes = Array.isArray(current.genes) ? current.genes : [];
   const idx = genes.findIndex(g => g && g.id === geneObj.id);
