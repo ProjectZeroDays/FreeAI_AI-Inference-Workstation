@@ -1,0 +1,14 @@
+{
+  "keys": [
+    {
+      "name": "hostinger",
+      "env_var": "SSH_KEY_HOSTINGER"
+    },
+    {
+      "name": "vasi",
+      "env_var": "SSH_KEY_VASI"
+    }
+  ],
+  "tunnel_env": "SSH_TUNNEL_CMD",
+  "gateway_env": "GATEWAY_WS"
+}

@@ -1,0 +1,264 @@
+{
+  "client": "opencode",
+  "providers": {
+    "openai": {
+      "name": "OpenAI",
+      "base_url": "https://api.openai.com/v1",
+      "models": [
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gpt-4-turbo",
+        "o1",
+        "o1-mini"
+      ],
+      "key_set": true
+    },
+    "agentrouter": {
+      "name": "AgentRouter",
+      "base_url": "https://agentrouter.org",
+      "models": [
+        "claude-opus-4-6",
+        "claude-sonnet-4",
+        "claude-haiku-4"
+      ],
+      "key_set": true
+    },
+    "omniroute": {
+      "name": "OmniRoute",
+      "base_url": "https://api.omniroute.ai/v1",
+      "models": [
+        "omni-1-pro",
+        "omni-1-mini"
+      ],
+      "key_set": true
+    },
+    "anthropic": {
+      "name": "Anthropic (DIA SAP)",
+      "base_url": "https://api.anthropic.com/v1",
+      "models": [
+        "claude-opus-4-20250514",
+        "claude-sonnet-4-20250514",
+        "claude-haiku-4-20250414"
+      ],
+      "key_set": true
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "base_url": "https://api.deepseek.com/v1",
+      "models": [
+        "deepseek-chat",
+        "deepseek-coder",
+        "deepseek-reasoner"
+      ],
+      "key_set": true
+    },
+    "perplexity": {
+      "name": "Perplexity",
+      "base_url": "https://api.perplexity.ai",
+      "models": [
+        "sonar",
+        "sonar-pro",
+        "sonar-reasoning"
+      ],
+      "key_set": true
+    },
+    "gemini": {
+      "name": "Google Gemini",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "models": [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-thinking",
+        "gemini-2.5-pro"
+      ],
+      "key_set": true
+    },
+    "venice": {
+      "name": "Venice AI",
+      "base_url": "https://api.venice.ai/api/v1",
+      "models": [
+        "gemma-4-uncensored",
+        "llama-3.1-405b",
+        "claude-3-5-sonnet"
+      ],
+      "key_set": true
+    },
+    "agames_ai": {
+      "name": "Agnes AI (API Hub)",
+      "base_url": "https://apihub.agnes-ai.com/v1",
+      "models": [
+        "agnes-2.0-flash",
+        "agnes-2.0-pro"
+      ],
+      "key_set": false
+    },
+    "openrouter": {
+      "name": "OpenRouter",
+      "base_url": "https://openrouter.ai/api/v1",
+      "models": [
+        "anthropic/claude-3.5-sonnet",
+        "openai/gpt-4o",
+        "deepseek/deepseek-r1"
+      ],
+      "key_set": true
+    },
+    "nexustrade": {
+      "name": "Nexustrade",
+      "base_url": "https://nexustrade.io/api/v1",
+      "models": [
+        "nt-coder-v1",
+        "nt-chat-v1"
+      ],
+      "key_set": true
+    },
+    "shodan": {
+      "name": "Shodan",
+      "base_url": "https://api.shodan.io",
+      "models": [],
+      "key_set": true
+    },
+    "wakatime": {
+      "name": "WakaTime",
+      "base_url": "https://api.wakatime.com/api/v1",
+      "models": [],
+      "key_set": true
+    },
+    "tabnine": {
+      "name": "Tabnine",
+      "base_url": "https://api.tabnine.com",
+      "models": [],
+      "key_set": true
+    },
+    "langchain": {
+      "name": "LangChain / LangSmith",
+      "base_url": "https://api.smith.langchain.com",
+      "models": [],
+      "key_set": true
+    },
+    "huggingface": {
+      "name": "HuggingFace",
+      "base_url": "https://huggingface.co",
+      "models": [],
+      "key_set": true
+    },
+    "gemini_ai_studio": {
+      "name": "Google AI Studio",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "models": [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-thinking"
+      ],
+      "key_set": true
+    },
+    "cody": {
+      "name": "Sourcegraph Cody",
+      "base_url": "https://sourcegraph.com/.api/completions",
+      "models": [],
+      "key_set": true
+    },
+    "envia": {
+      "name": "Envia (Eden AI)",
+      "base_url": "https://www.envia.com/api/v1",
+      "models": [],
+      "key_set": true
+    },
+    "nvapi": {
+      "name": "NVIDIA NVAI",
+      "base_url": "https://integrate.api.nvidia.com/v1",
+      "models": [
+        "nemo",
+        "llama-3.1-405b"
+      ],
+      "key_set": true
+    }
+  },
+  "skills": [
+    "red_teaming/godmode",
+    "red_teaming/recon",
+    "red_teaming/exploit",
+    "blue_teaming/siem",
+    "blue_teaming/forensics",
+    "blue_teaming/hunting",
+    "purple_teaming/sim",
+    "purple_teaming/validate",
+    "browser/automation",
+    "browser/fingerprint",
+    "browser/cdp",
+    "code/review",
+    "code/refactor",
+    "code/debug",
+    "code/test",
+    "data/pipeline",
+    "data/etl",
+    "data/analysis",
+    "devops/ci_cd",
+    "devops/docker",
+    "devops/kubernetes",
+    "docs/write",
+    "docs/api",
+    "docs/readme",
+    "memory/persistent",
+    "memory/cross_session",
+    "productivity/cron",
+    "productivity/scheduler",
+    "security/aikido",
+    "security/scan",
+    "security/pentest",
+    "agent/orchestrate",
+    "agent/swarm",
+    "agent/coord",
+    "mcp/register",
+    "mcp/browser",
+    "mcp/github",
+    "mcp/search",
+    "media/generate",
+    "media/transcribe",
+    "media/speak",
+    "research/web",
+    "research/summarize",
+    "research/cite"
+  ],
+  "mcps": [
+    "browser",
+    "github",
+    "filesystem",
+    "memory",
+    "search",
+    "sql",
+    "postgres",
+    "mongodb",
+    "redis",
+    "slack",
+    "discord",
+    "telegram",
+    "vector",
+    "embedding",
+    "rag",
+    "code",
+    "lint",
+    "test"
+  ],
+  "plugins": [
+    "auto-skill-creator",
+    "rate-limit",
+    "memory-sync",
+    "provider-rotator",
+    "health-monitor",
+    "audit-log",
+    "skill-registry",
+    "agent-coordinator"
+  ],
+  "agents": [
+    "orchestrator",
+    "explorer",
+    "oracle",
+    "council",
+    "librarian",
+    "designer",
+    "fixer",
+    "coder",
+    "reviewer",
+    "researcher",
+    "architect",
+    "tester"
+  ]
+}

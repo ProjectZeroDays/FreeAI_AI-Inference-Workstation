@@ -1,0 +1,378 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openai": {
+      "name": "OpenAI",
+      "options": {
+        "baseURL": "https://api.openai.com/v1",
+        "apiKey": "${OPENAI_API_KEY}"
+      },
+      "models": {
+        "gpt-4o": {
+          "name": "gpt-4o"
+        },
+        "gpt-4o-mini": {
+          "name": "gpt-4o-mini"
+        },
+        "gpt-4-turbo": {
+          "name": "gpt-4-turbo"
+        },
+        "o1": {
+          "name": "o1"
+        },
+        "o1-mini": {
+          "name": "o1-mini"
+        }
+      }
+    },
+    "agentrouter": {
+      "name": "AgentRouter",
+      "options": {
+        "baseURL": "https://agentrouter.org",
+        "apiKey": "${AGENTROUTER_AUTH_TOKEN}"
+      },
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        },
+        "claude-sonnet-4": {
+          "name": "claude-sonnet-4"
+        },
+        "claude-haiku-4": {
+          "name": "claude-haiku-4"
+        }
+      }
+    },
+    "omniroute": {
+      "name": "OmniRoute",
+      "options": {
+        "baseURL": "https://api.omniroute.ai/v1",
+        "apiKey": "${OMNIROUTE_API_KEY}"
+      },
+      "models": {
+        "omni-1-pro": {
+          "name": "omni-1-pro"
+        },
+        "omni-1-mini": {
+          "name": "omni-1-mini"
+        }
+      }
+    },
+    "anthropic": {
+      "name": "Anthropic (DIA SAP)",
+      "options": {
+        "baseURL": "https://api.anthropic.com/v1",
+        "apiKey": "${DIA_SAP_PROJECT_RED_SWORD}"
+      },
+      "models": {
+        "claude-opus-4-20250514": {
+          "name": "claude-opus-4-20250514"
+        },
+        "claude-sonnet-4-20250514": {
+          "name": "claude-sonnet-4-20250514"
+        },
+        "claude-haiku-4-20250414": {
+          "name": "claude-haiku-4-20250414"
+        }
+      }
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "options": {
+        "baseURL": "https://api.deepseek.com/v1",
+        "apiKey": "${DEEPSEEK}"
+      },
+      "models": {
+        "deepseek-chat": {
+          "name": "deepseek-chat"
+        },
+        "deepseek-coder": {
+          "name": "deepseek-coder"
+        },
+        "deepseek-reasoner": {
+          "name": "deepseek-reasoner"
+        }
+      }
+    },
+    "perplexity": {
+      "name": "Perplexity",
+      "options": {
+        "baseURL": "https://api.perplexity.ai",
+        "apiKey": "${PERPLEXITY_PRO_API_KEY}"
+      },
+      "models": {
+        "sonar": {
+          "name": "sonar"
+        },
+        "sonar-pro": {
+          "name": "sonar-pro"
+        },
+        "sonar-reasoning": {
+          "name": "sonar-reasoning"
+        }
+      }
+    },
+    "gemini": {
+      "name": "Google Gemini",
+      "options": {
+        "baseURL": "https://generativelanguage.googleapis.com/v1beta",
+        "apiKey": "${GEMINI_API_KEY}"
+      },
+      "models": {
+        "gemini-2.0-flash": {
+          "name": "gemini-2.0-flash"
+        },
+        "gemini-2.0-flash-thinking": {
+          "name": "gemini-2.0-flash-thinking"
+        },
+        "gemini-2.5-pro": {
+          "name": "gemini-2.5-pro"
+        }
+      }
+    },
+    "venice": {
+      "name": "Venice AI",
+      "options": {
+        "baseURL": "https://api.venice.ai/api/v1",
+        "apiKey": "${VENICE_AI_API_KEY}"
+      },
+      "models": {
+        "gemma-4-uncensored": {
+          "name": "gemma-4-uncensored"
+        },
+        "llama-3.1-405b": {
+          "name": "llama-3.1-405b"
+        },
+        "claude-3-5-sonnet": {
+          "name": "claude-3-5-sonnet"
+        }
+      }
+    },
+    "openrouter": {
+      "name": "OpenRouter",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1",
+        "apiKey": "${OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "anthropic/claude-3.5-sonnet": {
+          "name": "anthropic/claude-3.5-sonnet"
+        },
+        "openai/gpt-4o": {
+          "name": "openai/gpt-4o"
+        },
+        "deepseek/deepseek-r1": {
+          "name": "deepseek/deepseek-r1"
+        }
+      }
+    },
+    "nexustrade": {
+      "name": "Nexustrade",
+      "options": {
+        "baseURL": "https://nexustrade.io/api/v1",
+        "apiKey": "${NEXUSTRADE_API_KEY}"
+      },
+      "models": {
+        "nt-coder-v1": {
+          "name": "nt-coder-v1"
+        },
+        "nt-chat-v1": {
+          "name": "nt-chat-v1"
+        }
+      }
+    },
+    "shodan": {
+      "name": "Shodan",
+      "options": {
+        "baseURL": "https://api.shodan.io",
+        "apiKey": "${SHODAN_API_KEY}"
+      },
+      "models": {}
+    },
+    "wakatime": {
+      "name": "WakaTime",
+      "options": {
+        "baseURL": "https://api.wakatime.com/api/v1",
+        "apiKey": "${WAKATIME_API_KEY}"
+      },
+      "models": {}
+    },
+    "tabnine": {
+      "name": "Tabnine",
+      "options": {
+        "baseURL": "https://api.tabnine.com",
+        "apiKey": "${TABNINE_API_KEY}"
+      },
+      "models": {}
+    },
+    "langchain": {
+      "name": "LangChain / LangSmith",
+      "options": {
+        "baseURL": "https://api.smith.langchain.com",
+        "apiKey": "${LANGCHAIN_API_KEY}"
+      },
+      "models": {}
+    },
+    "huggingface": {
+      "name": "HuggingFace",
+      "options": {
+        "baseURL": "https://huggingface.co",
+        "apiKey": "${HUGGINGFACE_API_KEY}"
+      },
+      "models": {}
+    },
+    "gemini_ai_studio": {
+      "name": "Google AI Studio",
+      "options": {
+        "baseURL": "https://generativelanguage.googleapis.com/v1beta",
+        "apiKey": "${AI_STUDIO_API_KEY}"
+      },
+      "models": {
+        "gemini-2.0-flash": {
+          "name": "gemini-2.0-flash"
+        },
+        "gemini-2.0-flash-thinking": {
+          "name": "gemini-2.0-flash-thinking"
+        }
+      }
+    },
+    "cody": {
+      "name": "Sourcegraph Cody",
+      "options": {
+        "baseURL": "https://sourcegraph.com/.api/completions",
+        "apiKey": "${CUDY_CODER}"
+      },
+      "models": {}
+    },
+    "envia": {
+      "name": "Envia (Eden AI)",
+      "options": {
+        "baseURL": "https://www.envia.com/api/v1",
+        "apiKey": "${EDEN_API_KEY}"
+      },
+      "models": {}
+    },
+    "nvapi": {
+      "name": "NVIDIA NVAI",
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "${NVAPI_KEY}"
+      },
+      "models": {
+        "nemo": {
+          "name": "nemo"
+        },
+        "llama-3.1-405b": {
+          "name": "llama-3.1-405b"
+        }
+      }
+    },
+    "hostinger": {
+      "name": "Hostinger",
+      "options": {
+        "baseURL": "https://hostinger.com/api",
+        "apiKey": "${HOSTINGER_API_KEY}"
+      },
+      "models": {}
+    },
+    "omg_lol": {
+      "name": "OMG.lol",
+      "options": {
+        "baseURL": "https://api.omg.lol/v1",
+        "apiKey": "${OMG_LOL_API_KEY}"
+      },
+      "models": {}
+    }
+  },
+  "model": "agentrouter/claude-opus-4-6",
+  "skills": [
+    "red_teaming/godmode",
+    "red_teaming/recon",
+    "red_teaming/exploit",
+    "blue_teaming/siem",
+    "blue_teaming/forensics",
+    "blue_teaming/hunting",
+    "purple_teaming/sim",
+    "purple_teaming/validate",
+    "browser/automation",
+    "browser/fingerprint",
+    "browser/cdp",
+    "code/review",
+    "code/refactor",
+    "code/debug",
+    "code/test",
+    "data/pipeline",
+    "data/etl",
+    "data/analysis",
+    "devops/ci_cd",
+    "devops/docker",
+    "devops/kubernetes",
+    "docs/write",
+    "docs/api",
+    "docs/readme",
+    "memory/persistent",
+    "memory/cross_session",
+    "productivity/cron",
+    "productivity/scheduler",
+    "security/aikido",
+    "security/scan",
+    "security/pentest",
+    "agent/orchestrate",
+    "agent/swarm",
+    "agent/coord",
+    "mcp/register",
+    "mcp/browser",
+    "mcp/github",
+    "mcp/search",
+    "media/generate",
+    "media/transcribe",
+    "media/speak",
+    "research/web",
+    "research/summarize",
+    "research/cite"
+  ],
+  "mcp_servers": [
+    "browser",
+    "github",
+    "filesystem",
+    "memory",
+    "search",
+    "sql",
+    "postgres",
+    "mongodb",
+    "redis",
+    "slack",
+    "discord",
+    "telegram",
+    "vector",
+    "embedding",
+    "rag",
+    "code",
+    "lint",
+    "test"
+  ],
+  "plugins": [
+    "auto-skill-creator",
+    "rate-limit",
+    "memory-sync",
+    "provider-rotator",
+    "health-monitor",
+    "audit-log",
+    "skill-registry",
+    "agent-coordinator"
+  ],
+  "agents": [
+    "orchestrator",
+    "explorer",
+    "oracle",
+    "council",
+    "librarian",
+    "designer",
+    "fixer",
+    "coder",
+    "reviewer",
+    "researcher",
+    "architect",
+    "tester"
+  ]
+}

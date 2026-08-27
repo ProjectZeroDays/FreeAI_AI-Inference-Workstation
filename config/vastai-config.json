@@ -1,0 +1,30 @@
+{
+  "name": "tokugawa-https-caddy",
+  "description": "FreeAI: llama.cpp + Tokugawa WebUI + Caddy HTTPS + Qwen3.5-9B",
+  "image": "tokugawaai/llama.cpp:latest",
+  "version_tag": "latest",
+  "disk": 250,
+  "ssh_keys_env": [
+    "SSH_KEY_HOSTINGER",
+    "SSH_KEY_VASI"
+  ],
+  "env": {
+    "OPEN_BUTTON_PORT": "1111",
+    "JUPYTER_DIR": "/workspace",
+    "DATA_DIRECTORY": "/workspace",
+    "PORTAL_CONFIG": "localhost:1111:11111:/:InstancePortal|localhost:8000:18000:/:TokugawaWebUI|localhost:8080:18080:/:APIServer"
+  },
+  "ports": {
+    "8080/tcp": 8080,
+    "8000/tcp": 8000,
+    "1111/tcp": 1111,
+    "8443/tcp": 8443
+  },
+  "gpu": {
+    "minVRAM": 32,
+    "gpuName": "RTX PRO 4000 Ada",
+    "maxPrice": 0.4
+  },
+  "extra_filters": "verified=true gpu_display_active=true gpu_ram>=32",
+  "onstart_script": "scripts/create-vastai-template.sh"
+}
