@@ -114,10 +114,6 @@ plugins:
       minify_html: true
   - git-revision-date-localized:
       enable_creation_date: true
-  - mkdocs-simple-hooks:
-      hooks:
-        on_post_build:
-          - docs.generate_docs:main
 
 extra:
   generator: false
