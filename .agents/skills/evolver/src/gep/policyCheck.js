@@ -11,7 +11,7 @@ const {
 
 function readJsonIfExists(filePath, fallback) {
   try {
-    if (!fs.existsSync(filePath)) return fallback;
+    if (filePath.includes('..') || path.isAbsolute(filePath)) return fallback;
     const raw = fs.readFileSync(filePath, 'utf8');
     if (!raw.trim()) return fallback;
     return JSON.parse(raw);
@@ -151,10 +151,13 @@ function computeBlastRadius({ repoRoot, baselineUntracked }) {
   if (untracked.ok) {
     const rels = String(untracked.out).split('\n').map(normalizeRelPath).filter(Boolean);
     const baselineSet = new Set((Array.isArray(baselineUntracked) ? baselineUntracked : []).map(normalizeRelPath));
+    const base = path.resolve(repoRoot);
     for (const rel of rels) {
       if (baselineSet.has(rel)) continue;
       if (!isConstraintCountedPath(rel, policy)) continue;
-      const abs = path.join(repoRoot, rel);
+      const abs = path.resolve(base, rel);
+      const relative = path.relative(base, abs);
+      if (relative.startsWith('..') || path.isAbsolute(relative)) continue;
       untrackedLines += countFileLines(abs);
     }
   }
@@ -308,7 +311,13 @@ function checkConstraints({ gene, blast, blastRadiusEstimate, repoRoot }) {
       }
     }
     newSkillDirs.forEach(function (skillName) {
-      const skillDir = path.join(repoRoot, 'skills', skillName);
+      const base = path.resolve(repoRoot, 'skills');
+      const target = path.resolve(base, skillName);
+      const rel = path.relative(base, target);
+      if (rel.startsWith('..') || path.isAbsolute(rel)) {
+        return;
+      }
+      const skillDir = target;
       try {
         const entries = fs.readdirSync(skillDir).filter(function (e) { return !e.startsWith('.'); });
         if (entries.length < 2) {
@@ -469,7 +478,12 @@ function runValidations(gene, opts = {}) {
 function runCanaryCheck(opts) {
   const repoRoot = (opts && opts.repoRoot) ? opts.repoRoot : getRepoRoot();
   const timeoutMs = (opts && Number.isFinite(Number(opts.timeoutMs))) ? Number(opts.timeoutMs) : _CFG_CANARY_TIMEOUT;
-  const canaryScript = path.join(repoRoot, 'src', 'canary.js');
+  const baseResolved = path.resolve(repoRoot);
+  const canaryScript = path.resolve(baseResolved, 'src', 'canary.js');
+  const relative = path.relative(baseResolved, canaryScript);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    return { ok: true, skipped: true, reason: 'canary.js not found' };
+  }
   if (!fs.existsSync(canaryScript)) {
     return { ok: true, skipped: true, reason: 'canary.js not found' };
   }

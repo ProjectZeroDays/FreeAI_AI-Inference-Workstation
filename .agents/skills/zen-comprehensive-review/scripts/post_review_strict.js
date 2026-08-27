@@ -348,6 +348,14 @@ function parseArgs(args) {
 
   const diffFilePath = path.resolve(args[2]);
   const payloadFilePath = path.resolve(args[3]);
+  if (args[2].includes("..") || path.isAbsolute(args[2])) {
+    logError(`Error: invalid file path: ${args[2]}`);
+    process.exit(1);
+  }
+  if (args[3].includes("..") || path.isAbsolute(args[3])) {
+    logError(`Error: invalid file path: ${args[3]}`);
+    process.exit(1);
+  }
   if (!fs.existsSync(diffFilePath)) {
     logError(`Error: diff file not found: ${diffFilePath}`);
     process.exit(1);

@@ -15,7 +15,7 @@ function sleepMs(ms) {
 
 function readJsonSafe(p) {
   try {
-    if (!fs.existsSync(p)) return null;
+    if (p.includes('..') || path.isAbsolute(p)) return null;
     const raw = fs.readFileSync(p, 'utf8');
     if (!raw.trim()) return null;
     return JSON.parse(raw);

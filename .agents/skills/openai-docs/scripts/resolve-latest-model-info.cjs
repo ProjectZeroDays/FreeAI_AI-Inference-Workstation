@@ -31,10 +31,18 @@ function parseArgs(argv) {
 
 async function readSource(source) {
   if (source.startsWith("file://")) {
-    return fs.readFile(new URL(source), "utf8");
+    const fileUrl = new URL(source);
+    const filePath = fileUrl.pathname;
+    if (filePath.includes('..') || path.isAbsolute(filePath)) {
+      throw new Error("Invalid file path");
+    }
+    return fs.readFile(fileUrl, "utf8");
   }
 
   if (!/^https?:\/\//.test(source)) {
+    if (source.includes('..') || path.isAbsolute(source)) {
+      throw new Error("Invalid file path");
+    }
     return fs.readFile(path.resolve(source), "utf8");
   }
 
