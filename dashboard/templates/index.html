@@ -102,6 +102,21 @@
         </section>
 
         <section class="card">
+          <div class="card-head"><h2>Skills</h2><span id="skills-count-badge" class="pill muted">—</span></div>
+          <div class="metric-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="metric"><span class="metric-label">Total</span><span id="skills-total" class="metric-value">—</span></div>
+            <div class="metric"><span class="metric-label">Categories</span><span id="skills-categories" class="metric-value">—</span></div>
+            <div class="metric"><span class="metric-label">Auto-generated</span><span id="skills-auto" class="metric-value">—</span></div>
+            <div class="metric"><span class="metric-label">Enabled</span><span id="skills-enabled" class="metric-value">—</span></div>
+          </div>
+          <div id="skills-category-bar" class="skills-bar" style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;"></div>
+          <div class="row" style="margin-top:8px;">
+            <button id="skills-scan-btn" style="font-size:12px;padding:4px 10px;">Scan for new skills</button>
+            <span id="skills-scan-status" class="muted"></span>
+          </div>
+        </section>
+
+        <section class="card">
           <div class="card-head"><h2>SDLC Runs</h2></div>
           <ul id="runs-list" class="muted">loading autonomous runs...</ul>
         </section>

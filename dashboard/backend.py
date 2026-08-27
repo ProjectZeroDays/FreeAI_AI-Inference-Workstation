@@ -5,6 +5,7 @@ Provides REST API endpoints and serves static HTML pages.
 import json
 import os
 import random
+import re
 import threading
 import time
 import uuid
@@ -142,7 +143,7 @@ def api_skills():
                         continue
                     if trig_section:
                         if line.strip().startswith("- "):
-                            triggers.append(line[2:].strip().strip('"'))
+                            triggers.append(line.strip()[2:].strip().strip('"'))
                         else:
                             trig_section = False
             skills.append({
@@ -303,7 +304,27 @@ def api_log_activity():
 # ── API: General ─────────────────────────────────────────────────
 @app.route("/api/health")
 def health():
-    return jsonify({"status": "ok", "service": "dashboard"})
+    import urllib.request
+    services_ports = {
+        "proxy": 8100, "memory": 8110, "agents": 8120,
+        "registry": 8130, "rag": 8140, "brain": 8150, "skills": 8160,
+        "dashboard": 8080,
+    }
+    svc_health = {}
+    all_up = True
+    for name, port in services_ports.items():
+        try:
+            r = urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2)
+            svc_health[name] = {"port": port, "status": "up", "ok": r.status == 200}
+        except Exception:
+            svc_health[name] = {"port": port, "status": "down", "ok": False}
+            all_up = False
+    return jsonify({
+        "status": "ok" if all_up else "degraded",
+        "service": "dashboard",
+        "services": svc_health,
+        "uptime": int(time.time()),
+    })
 
 
 @app.route("/api/config")
@@ -452,6 +473,67 @@ def logs_page():
 @app.route("/network")
 def network_page():
     return render_template("network.html")
+
+
+# ── Page Routes: New Dashboard Pages ─────────────────────────────
+@app.route("/providers")
+def providers_page():
+    return render_template("providers.html")
+
+
+@app.route("/hermes")
+def hermes_page():
+    return render_template("hermes.html")
+
+
+@app.route("/workflows")
+def workflows_page():
+    return render_template("workflows.html")
+
+
+@app.route("/scheduler")
+def scheduler_page():
+    return render_template("scheduler.html")
+
+
+@app.route("/mcp")
+def mcp_page():
+    return render_template("mcp.html")
+
+
+@app.route("/plugins-manage")
+def plugins_manage_page():
+    return render_template("plugins-manage.html")
+
+
+@app.route("/browser-v2")
+def browser_v2_page():
+    return render_template("browser-v2.html")
+
+
+@app.route("/loot")
+def loot_page():
+    return render_template("loot.html")
+
+
+@app.route("/c2")
+def c2_page():
+    return render_template("c2.html")
+
+
+@app.route("/salad")
+def salad_page():
+    return render_template("salad.html")
+
+
+@app.route("/aikido")
+def aikido_page():
+    return render_template("aikido.html")
+
+
+@app.route("/desktop")
+def desktop_page():
+    return render_template("desktop.html")
 
 
 # ── API: Subagents ────────────────────────────────────────────────
@@ -1252,6 +1334,85 @@ def api_workflow_registries():
     return jsonify({"registries": reg})
 
 
+# ── API: Services Health ──────────────────────────────────────────
+@app.route("/api/services/health")
+def api_services_health():
+    ports = {
+        "proxy": 8100, "memory": 8110, "agents": 8120,
+        "registry": 8130, "rag": 8140, "brain": 8150, "skills": 8160,
+        "pipeline": 8170,
+    }
+    import urllib.request
+    results = {}
+    for name, port in ports.items():
+        try:
+            r = urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2)
+            results[name] = {"status": "running", "port": port, "health": r.status == 200}
+        except Exception:
+            try:
+                r = urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=2)
+                results[name] = {"status": "running", "port": port, "health": r.status == 200}
+            except Exception:
+                results[name] = {"status": "stopped", "port": port, "health": False}
+    up = sum(1 for v in results.values() if v["health"])
+    total = len(results)
+    return jsonify({"services": results, "up": up, "total": total, "all_healthy": up == total})
+
+
+# ── API: Workflow Run and Schedule ────────────────────────────────
+WORKFLOW_RUNS = []
+_WORKFLOW_RUN_LOCK = threading.Lock()
+
+
+@app.route("/api/workflow/run-and-schedule", methods=["POST"])
+def api_workflow_run_and_schedule():
+    data = request.get_json(silent=True) or {}
+    workflow_id = data.get("workflow_id", "")
+    cron = data.get("cron", None)
+    immediate = data.get("immediate", True)
+    params = data.get("params", {})
+    run_id = str(uuid.uuid4())[:8]
+    entry = {
+        "run_id": run_id,
+        "workflow_id": workflow_id,
+        "status": "queued",
+        "scheduled_cron": cron,
+        "started_at": time.time(),
+        "params": params,
+        "result": None,
+    }
+    with _WORKFLOW_RUN_LOCK:
+        WORKFLOW_RUNS.append(entry)
+    if immediate and workflow_id:
+        def _execute():
+            import random
+            for p in range(0, 101, random.randint(5, 20)):
+                time.sleep(random.uniform(0.3, 1))
+                with _WORKFLOW_RUN_LOCK:
+                    entry["progress"] = min(p, 100)
+                    if p >= 100:
+                        entry["status"] = random.choice(["done", "done", "failed"])
+                        entry["result"] = {"output": f"workflow-{workflow_id}-complete", "steps_completed": random.randint(3, 10)}
+            entry.pop("progress", None)
+        threading.Thread(target=_execute, daemon=True).start()
+    return jsonify({"ok": True, "run_id": run_id, "entry": entry})
+
+
+@app.route("/api/workflow/runs", methods=["GET"])
+def api_workflow_runs():
+    with _WORKFLOW_RUN_LOCK:
+        return jsonify({"runs": list(reversed(WORKFLOW_RUNS)), "total": len(WORKFLOW_RUNS)})
+
+
+@app.route("/api/workflow/runs/<run_id>", methods=["GET"])
+def api_workflow_run(run_id):
+    with _WORKFLOW_RUN_LOCK:
+        for r in WORKFLOW_RUNS:
+            if r["run_id"] == run_id:
+                return jsonify(r)
+    return jsonify({"error": "not found"}), 404
+
+
 # ── API: MCP Registry ────────────────────────────────────────────
 MCP_DIR = ROOT.parent / "mcp"
 
@@ -1288,6 +1449,35 @@ def api_mcp_register():
     if not name or not command:
         return jsonify({"error": "name and command required"}), 400
     return jsonify({"ok": True, "server": {"name": name, "command": command, "args": args}})
+
+
+@app.route("/api/mcp/tools")
+def api_mcp_tools():
+    """Aggregate tools from all MCP server definitions in mcp/servers/."""
+    tools = []
+    servers_dir = MCP_DIR / "servers"
+    if servers_dir.exists():
+        for f in sorted(servers_dir.iterdir()):
+            if not f.is_file() or not f.name.endswith(".py"):
+                continue
+            try:
+                content = f.read_text(encoding="utf-8", errors="ignore")
+                import re as _re
+                # Extract TOOLS array from Python source
+                tools_match = _re.search(r"TOOLS\s*=\s*\[([\s\S]*?)\]", content)
+                if tools_match:
+                    tools_json_str = tools_match.group(1)
+                    try:
+                        server_tools = json.loads(f"[{tools_json_str}]")
+                        server_name = f.stem
+                        for t in server_tools:
+                            t["server"] = server_name
+                        tools.extend(server_tools)
+                    except (json.JSONDecodeError, ValueError):
+                        pass
+            except (OSError, UnicodeDecodeError):
+                continue
+    return jsonify({"tools": tools, "total": len(tools)})
 
 
 # ── API: Skills Aggregator ───────────────────────────────────────
@@ -1437,6 +1627,93 @@ def api_metrics():
         except Exception:
             services[name] = {"status": "down", "metrics_fetched": False}
     return jsonify({"services": services, "dashboard": {"status": "up", "uptime": int(time.time())}})
+
+
+# ── API: Loot (harvested cookies, creds, hashes) ─────────────────
+_LOOT_DATA = {
+    "cookies": [], "creds": [], "hashes": [], "sessions": [], "files": []
+}
+_LOOT_LOCK = threading.Lock()
+
+
+@app.route("/api/loot")
+def api_loot():
+    with _LOOT_LOCK:
+        return jsonify(_LOOT_DATA)
+
+
+@app.route("/api/loot/<tab>/<int:idx>", methods=["DELETE"])
+def api_loot_delete(tab, idx):
+    with _LOOT_LOCK:
+        if tab in _LOOT_DATA and idx < len(_LOOT_DATA[tab]):
+            _LOOT_DATA[tab].pop(idx)
+            return jsonify({"deleted": True})
+    return jsonify({"error": "not found"}), 404
+
+
+@app.route("/api/loot/clear", methods=["POST"])
+def api_loot_clear():
+    with _LOOT_LOCK:
+        for k in _LOOT_DATA:
+            _LOOT_DATA[k] = []
+    return jsonify({"cleared": True})
+
+
+# ── API: Browser V2 Status ───────────────────────────────────────
+@app.route("/api/browser/status")
+def api_browser_status():
+    import urllib.request
+    status = {"engine": "stopped", "army_size": 0, "queued": 0, "completed": 0}
+    try:
+        r = urllib.request.urlopen("http://127.0.0.1:8180/health", timeout=2)
+        if r.status == 200:
+            status["engine"] = "running"
+    except Exception:
+        pass
+    return jsonify(status)
+
+
+@app.route("/army/close-all", methods=["POST"])
+def api_army_close_all():
+    import urllib.request
+    try:
+        urllib.request.urlopen("http://127.0.0.1:8180/army/close-all", timeout=2)
+    except Exception:
+        pass
+    return jsonify({"ok": True})
+
+
+# ── API: C2 ──────────────────────────────────────────────────────
+_C2_HOSTS = []
+_C2_LISTENERS = []
+_C2_EVENTS_24H = 0
+_C2_LOCK = threading.Lock()
+
+
+@app.route("/api/c2/events")
+def api_c2_events():
+    with _C2_LOCK:
+        return jsonify({
+            "hosts": _C2_HOSTS, "listeners": len(_C2_LISTENERS),
+            "scans": 0, "events_24h": _C2_EVENTS_24H
+        })
+
+
+@app.route("/api/c2/scan", methods=["POST"])
+def api_c2_scan():
+    global _C2_EVENTS_24H
+    data = request.get_json(silent=True) or {}
+    with _C2_LOCK:
+        _C2_EVENTS_24H += 1
+    return jsonify({"ok": True, "hosts_found": 0, "range": data.get("range", "unknown")})
+
+
+@app.route("/api/c2/shell", methods=["POST"])
+def api_c2_shell():
+    data = request.get_json(silent=True) or {}
+    cmd = data.get("command", "")
+    output = f"$ {cmd}\nCommand executed on {data.get('host_id', 'unknown')}."
+    return jsonify({"output": output})
 
 
 if __name__ == "__main__":

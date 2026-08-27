@@ -165,7 +165,7 @@ class SkillLoader:
                         "path": str(skill_file),
                         "dir": str(skill_root),
                         "description": fm.get("description", "")[:500],
-                        "triggers": fm.get("triggers", "").split(","),
+                        "triggers": [t.strip() for t in fm.get("triggers", "").split(",") if t.strip()],
                         "metadata": fm.get("metadata", {}),
                         "body_preview": body[:200],
                     }
@@ -181,8 +181,7 @@ class SkillLoader:
 
     def match_skills(self, query: str, limit: int = 5) -> list[dict]:
         """Find skills matching a query by description and triggers."""
-        if not self._loaded:
-            self.discover()
+        self.discover()  # ensure loaded
         query_lower = query.lower()
         scored = []
         for name, info in self._skills.items():

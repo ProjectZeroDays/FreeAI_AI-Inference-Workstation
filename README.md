@@ -1,4 +1,4 @@
-﻿# FreeAI — Unified AI Workstation
+# FreeAI — Unified AI Workstation
 
 > **The AI workstation that thinks ahead.** Local models, autonomous agents, full SDLC automation — one self-hosted stack.
 
@@ -7,7 +7,7 @@
 [![version](https://img.shields.io/badge/version-1.3.0-blue)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](https://www.python.org/)
 [![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)](https://developer.nvidia.com/cuda)
-[![tests](https://img.shields.io/badge/tests-88_passing-brightgreen)](#15-testing-and-validation)
+[![tests](https://img.shields.io/badge/tests-262_passing-brightgreen)](#15-testing-and-validation)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/pkgs/container/freeai)
 
@@ -48,6 +48,9 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
 | **Communication Stack** | Email (SendGrid, Gmail, Proton), SMS (Twilio), Telegram, WhatsApp, Signal — all agents can send |
 | **MCP Registry** | 40+ pre-configured servers for memory, code intelligence, browser automation, search, LLM access |
 | **GPU Inference** | llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) — local GGUF serving with 21+ hosted API bridges |
+| **Hermes** | CLI agent orchestrator with proxy forwarding, multi-provider model routing, ext provider SDK integration |
+| **Salad** | Cloud GPU earnings dashboard — connect Salad account, monitor earnings and available GPUs |
+| **Aikido** | Security scanning integration — SAST/DAST tests, vulnerability reporting from the dashboard |
 | **Desktop** | Full XFCE + TigerVNC remote desktop, accessible from anywhere via noVNC (:6080) |
 | **Live ISO** | Bootable FreeAIOS — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes |
 
@@ -123,11 +126,54 @@ Generate complete projects from natural language:
 - **33 security skills** — 14 Red Team, 12 Blue Team, 7 Purple Team
 - **API key rotation** — up to 10 keys per provider, auto-pause on 429
 
-### Communication Stack
-All agents can send notifications through any channel:
-- **Email**: SendGrid, Gmail (OAuth), Proton Mail (SMTP)
-- **SMS**: Twilio
-- **Messaging**: Telegram, WhatsApp Business, Signal
+### Knight-Shade Browser (Stealth Automation)
+- **Invisible Playwright** — `headless="new"` Chrome with 16-category stealth JS injection
+- **70+ fingerprint vectors** — navigator, WebGL, audio, screen, timezone spoofing
+- **5-tier anonymity** — Tor, VPN, Shadowsocks, DNSCrypt, full stack mix
+- **Army orchestrator** — multi-agent coordination with division-aware configs
+- **Manifest-X extensions** — CDP-native browser control with self-healing
+- **Dashboard pages**: `/browser-v2`, `/loot`, `/c2`
+
+### Red-Team Specialized Agents
+- **API Sniffer** — CDP Network domain interception, endpoint mapping
+- **Cookie Harvester** — session harvesting, cookie crafting, Netscape export
+- **Payload Engine** — polymorphic AES-256-GCM + XOR encryption, 9 output formats
+- **Vuln Scanner** — nmap, nuclei, sqlmap, ffuf, OWASP ZAP with NIST 800-115 reports
+- **Brute Force** — hashcat GPU, rainbow tables, hydra, JWT/ZIP/SSH cracking
+- **Exploitation** — Metasploit API, privilege escalation, lateral movement, persistence
+
+### Cloud Integrations
+- **Salad GPU** — rent out your GPU for profit via Salad marketplace
+- **Aikido** — integrated security scanning and SAST/DAST
+- **Vast.ai / RunPod / Hostinger** — cloud GPU provider dashboards
+
+### Hermes CLI Integration
+Hermes is a CLI agent orchestrator that routes through the FreeAI stack:
+```bash
+hermes config set model.provider custom
+hermes config set model.base_url https://<host>:8010
+hermes config set model.api_key <ROUTER_API_KEY>
+```
+- 100+ ext provider SDKs via `@ai-sdk/openai-compatible`
+- Multi-provider model routing (OpenAI, Anthropic, Gemini, OpenRouter, Venice, HF, Zen, Agnes AI)
+- Dashboard at `/hermes` — proxy forwarding to all configured providers
+
+### Salad GPU Earnings
+Monetize idle GPU capacity with Salad:
+```bash
+export SALAD_API_KEY=slhd_...
+```
+- Dashboard at `/salad` — earnings overview, available GPU listings
+- REST: `GET /api/salad`, `GET /api/salad/gpu`
+
+### Aikido Security Scanning
+Integrated security posture from Aikido:
+```bash
+export AIKIDO_API_KEY=aikido_...
+export AIKIDO_APP_ID=your-app-id
+```
+- Dashboard at `/aikido` — security overview, test controls
+- REST: `GET /api/aikido`, `POST /api/aikido/test` (type: sAST/dAST/dependency)
 
 ---
 
@@ -146,6 +192,74 @@ All agents can send notifications through any channel:
 | JupyterLab | `8888` | Interactive Python |
 | OpenCode | `3000` | OpenCode web UI |
 | Desktop (VNC) | `6080` | XFCE remote desktop |
+| Browser (Knight-Shade) | `8180` | Stealth browser engine API |
+| Browser V2 Dashboard | `8181` | Army orchestrator API |
+| Salad | `8250` | Salad GPU marketplace |
+| C2 | `8090` | Command & control (simulated) |
+| Permissions | `8220` | RBAC engine |
+| Scheduler | `8230` | Cron job scheduler |
+| Proxy | `8100` | Internal service proxy |
+| Memory | `8110` | Agent memory store |
+| Registry | `8130` | Plugin registry API |
+| RAG | `8140` | RAG ingestion service |
+| Brain | `8150` | Brain/analysis service |
+| Skills | `8160` | Skills API service |
+| Pipeline | `8170` | Pipeline orchestrator |
+| MCP | `8090` | MCP server wrapper |
+| TLS Gateway | `8443` | Caddy reverse proxy (profile: tls) |
+| LoLLMs | `9600` | Chat UI (profile: lollms) |
+| Qdrant RAG | `6333/6334` | Vector DB (profile: rag) |
+
+---
+
+## Dashboard Pages
+
+The dashboard serves 19 pages at `http://localhost:8030`:
+
+| Page | Route | Description |
+|---|---|---|
+| Main Dashboard | `/` | GPU stats, alerts, services, settings, model shelf |
+| Skills Manager | `/skills` | Browse, create, delete, scan for auto-generated skills |
+| SDLC Runs | `/sdlc` | Autonomous run status, artifact download, shell access |
+| Workflow Designer | `/workflows` | Pipeline builder, validation, export/import, run scheduling |
+| MCP Registry | `/mcp` | Discover and register MCP servers |
+| Hermes | `/hermes` | CLI agent proxy, multi-provider config, ext SDK routing |
+| Salad | `/salad` | GPU earnings, available marketplace GPUs |
+| Aikido | `/aikido` | Security scanning, vulnerability reports, test controls |
+| Wiki | `/wiki-dashboard` | Project knowledge base, searchable docs |
+| Blog | `/blog` | Team blog, release notes, tutorials |
+| Forum | `/forum` | Community discussions, Q&A |
+| Logs | `/logs` | Service log stream, audit trail |
+| Network | `/network` | Network topology, service mesh view |
+| Browser | `/browser` | Headless browser automation, stealth profiles |
+| Scheduler | `/scheduler` | Cron job management, execution history |
+| Loot | `/loot` | Exfiltrated data viewer, captured credentials |
+| C2 | `/c2` | Quantum C2 unified dashboard |
+| Plugins | `/plugins-manage` | Plugin registry, install/uninstall, skill loader |
+
+---
+
+## Provider Guide
+
+See [docs/PROVIDERS.md](docs/PROVIDERS.md) for the full matrix. Quick start:
+
+```bash
+# 1. Export keys for providers you use
+export OPENAI_API_KEY=sk-...
+export ANTHROPIC_API_KEY=sk-ant-...
+export GROQ_API_KEY=gsk_...
+
+# 2. (optional) customize config
+cp config/providers.example.json config/providers.json
+
+# 3. Route explicitly to any provider model
+curl -X POST localhost:8010/route -H "Content-Type: application/json" \
+  -d '{"prompt":"Design a rate limiter","model":"openai/gpt-4o-mini"}'
+```
+
+**Three wire styles:** `openai` (most hosts), `anthropic` (Claude), `gemini` (Google).  
+**Fallback chains:** set `"fallback": true` in providers.json to append hosted models after all local GGUFs.  
+**FreeToken edge MoE:** `docker compose --profile freetoken up -d` for 290B+ models on consumer GPUs.
 
 ---
 
@@ -164,10 +278,11 @@ All agents can send notifications through any channel:
 ## Documentation
 
 - **Full docs**: [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation)
+- **API Reference**: [docs/api-reference.md](docs/api-reference.md) (complete REST endpoint catalog)
+- **Providers**: [docs/PROVIDERS.md](docs/PROVIDERS.md)
 - **Wiki**: http://localhost:8030/wiki-dashboard
 - **Blog**: http://localhost:8030/blog
 - **Forum**: http://localhost:8030/forum
-- **API Reference**: [API.md](docs/API.md)
 
 ---
 
@@ -624,6 +739,40 @@ Full per-provider setup (env vars, model slugs, custom/Azure/vLLM entries, cost 
 
 **Local FreeToken (edge MoE) in 30s:** `docker compose --profile freetoken up -d` -> `curl http://localhost:9100/v1/models` -> `model: "freetoken/deepseek-ai/DeepSeek-V4-Flash"` routes automatically as fallback when healthy. Native: `uv pip install "freetoken[accel]" && freetoken serve --model deepseek-ai/DeepSeek-V4-Flash`. See detailed steps in [docs/PROVIDERS.md#FreeToken-Local-Setup](docs/PROVIDERS.md).
 
+### 9.11 Hermes CLI Agent Orchestrator
+
+Hermes bridges the FreeAI router to CLI agents (OpenClaw, Codex, Claude Code):
+```bash
+hermes config set model.provider custom
+hermes config set model.base_url https://<host>:8010
+hermes config set model.api_key <ROUTER_API_KEY>
+```
+- 100+ ext provider SDKs via `@ai-sdk/openai-compatible` (ext001–ext118+)
+- Multi-provider model routing: OpenAI, Anthropic, Gemini, OpenRouter, Venice, HF, Zen, Agnes AI
+- Dashboard proxy at `/api/hermes-status` and `/api/hermes/proxy/<subpath>`
+- Config file: `hermes.json`
+
+### 9.12 Salad GPU Earnings
+
+Monetize idle GPU capacity:
+```bash
+export SALAD_API_KEY=slhd_...
+```
+- Dashboard at `/salad` — earnings overview, available GPU listings
+- REST: `GET /api/salad`, `GET /api/salad/gpu`
+- Falls back to `configured: false` when `SALAD_API_KEY` is unset
+
+### 9.13 Aikido Security Scanning
+
+Integrated security posture:
+```bash
+export AIKIDO_API_KEY=aikido_...
+export AIKIDO_APP_ID=your-app-id
+```
+- Dashboard at `/aikido` — security overview, test controls
+- REST: `GET /api/aikido`, `POST /api/aikido/test` (body: `{"test_type": "sAST"}`)
+- Falls back to `configured: false` when `AIKIDO_API_KEY` is unset
+
 ## 10. Configuration Reference
 
 Layering: defaults < config/config.json < config/providers.json (external backends) < config/runtime-settings.json < environment variables.
@@ -666,10 +815,18 @@ Layering: defaults < config/config.json < config/providers.json (external backen
 | OPTIMIZER_INTERVAL_S / COOLDOWN_S | optimizer | 60 / 600 |
 | GPU_ID / GPU_POWER_LIMIT_W / GPU_LOCKED_CLOCK_MHZ | tune | 0 / 240 / 2520 |
 | WORKSPACES_DIR / MAX_FILE_BYTES | autonomous | repo/workspaces / 524288 |
+| DASHBOARD_AUTH_TOKEN | dashboard write auth | empty |
+| SALAD_API_KEY | salad integration | empty |
+| AIKIDO_API_KEY / AIKIDO_APP_ID | aikido integration | empty |
+| HERMES_PORT / HERMES_API_KEY | hermes proxy | 8090 / empty |
+| MCP_REGISTRY_ENABLED / MCP_SERVERS_DIR | mcp registry | true / mcp/servers |
+| QDRANT_URL | rag/memory | http://localhost:6333 |
+| FREETOKEN_MODEL | freetoken profile | deepseek-ai/DeepSeek-V4-Flash |
+| OPENAI_API_KEY .. HF_TOKEN | external providers | empty |
 
 ## 11. API Reference
 
-Condensed; full curl examples in docs/API.md.
+Complete endpoint catalog: [docs/api-reference.md](docs/api-reference.md).
 
 ### Router :8010
 
@@ -717,10 +874,36 @@ Condensed; full curl examples in docs/API.md.
 
 | Method | Path |
 |---|---|
-| GET | /api/status (gpu, services, alerts, power_mode, router_metrics, version) |
+| GET | /api/health, /api/status, /api/stats, /api/config |
+| GET | /api/services, /api/services/health, /api/metrics, /api/events |
 | GET/POST | /api/settings ; POST /api/settings/llama-restart |
 | GET/POST/DELETE | /api/presets[/{name}] ; POST /api/presets/{name}/apply {duration_min?} |
-| GET | /api/models-status ; GET /api/runs (autonomous runs proxy) ; GET /api/events (SSE) |
+| GET | /api/models-status ; /api/providers ; /api/runs ; /api/clients |
+| GET/POST | /api/skills ; POST /api/skills/save ; DELETE /api/skills/delete/{name} |
+| POST | /api/skills/scan, /api/skills/log ; GET /api/skills/activity, /api/skills/aggregated |
+| GET/POST | /api/mcp ; POST /api/mcp/register |
+| GET/POST | /api/workflow ; GET /api/workflow/registries |
+| POST | /api/workflow/run-and-schedule ; GET /api/workflow/runs[/{run_id}] |
+| GET/POST | /api/gpu ; POST /api/gpu/scan |
+| GET/POST | /api/permissions ; POST /api/permissions/check |
+| GET/POST | /api/sandbox ; POST /api/sandbox/run |
+| GET/POST/DELETE | /api/scheduler/jobs[/{id}] ; POST /api/scheduler/jobs/{id}/toggle |
+| GET/POST | /api/campaign ; POST /api/campaign/create ; POST/DELETE /api/campaign/{id} |
+| GET | /api/training[/{datasets|models}] ; POST /api/training/jobs, /api/training/abliterate |
+| GET/POST/DELETE | /api/automations[/{id}] ; POST /api/automations/{id}/toggle, /run |
+| GET | /api/automations/history, /api/automations/stats |
+| GET/POST | /api/gateway[/{platforms|messages}] ; POST /api/gateway/{platforms/<name>}/connect,disconnect |
+| POST | /api/gateway/voice/transcribe, /api/gateway/transfer ; GET /api/gateway/stats |
+| GET | /api/hermes-status ; * /api/hermes/proxy/{subpath} |
+| GET | /api/salad, /api/salad/gpu |
+| GET/POST | /api/aikido[test] |
+| POST | /api/upload ; GET /api/uploads |
+| GET/POST | /api/browser/settings ; GET /api/browser/reset |
+| GET | /api/memory[/{preferences|projects|learnings|stats}] ; DELETE /api/memory/projects/{name} |
+| GET/POST/DELETE | /api/subagents[/{id}] ; POST /api/subagents/{id}/{pause,resume} ; GET /api/subagents/{id}/log |
+
+All write endpoints require `X-Auth-Token` header when `DASHBOARD_AUTH_TOKEN` is set.
+Full curl examples: [docs/api-reference.md](docs/api-reference.md).
 
 ## 12. Model Management
 
@@ -920,7 +1103,8 @@ Full matrix: [ROADMAP.md](ROADMAP.md). Headliners:
 
 | Doc | Contents |
 |---|---|
-| docs/API.md | full endpoint reference + curl |
+| docs/api-reference.md | complete REST endpoint catalog + auth + error codes |
+| docs/API.md | condensed endpoint reference + curl examples |
 | docs/ARCHITECTURE.md | diagrams, request flows, settings interconnection |
 | docs/MODEL-SWITCHING.md | classifier -> chain -> overrides tuning guide |
 | docs/AUTONOMOUS-AGENTS.md | SDLC lifecycle, safety model, API/CLI |

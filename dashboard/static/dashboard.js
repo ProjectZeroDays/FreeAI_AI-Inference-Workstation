@@ -500,6 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProviders();
   loadRuns();
   loadUploads();
+  loadSkillsSummary();
   document.getElementById("up-send").onclick = uploadFile;
   fetchStatus();
   setInterval(fetchStatus, 5000);
@@ -536,6 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("save-preset").onclick = saveCustomPreset;
   $("delete-preset").onclick = deleteSelectedPreset;
   $("start-idle").onclick = startIdleWindow;
+  $("skills-scan-btn").onclick = () => scanSkills();
 });
 
 /* ---------------- model shelf ---------------- */
@@ -558,6 +560,68 @@ async function loadModelShelf() {
       `<br><span class="muted">missing → bash models/auto-download-models.sh</span>`;
   } catch (e) {
     el.textContent = "model shelf unavailable";
+  }
+}
+
+/* ---------------- skills summary ---------------- */
+
+async function loadSkillsSummary() {
+  try {
+    const res = await fetch("/api/skills/aggregated");
+    const d = await res.json();
+    const skills = d.skills || [];
+    const total = d.total || skills.length;
+    const cats = {};
+    let autoCount = 0;
+    let enabledCount = 0;
+    for (const s of skills) {
+      const c = s.category || "general";
+      cats[c] = (cats[c] || 0) + 1;
+      if (s.auto_generated) autoCount++;
+      if (s.enabled !== false) enabledCount++;
+    }
+    const elTotal = document.getElementById("skills-total");
+    const elCats = document.getElementById("skills-categories");
+    const elAuto = document.getElementById("skills-auto");
+    const elEnabled = document.getElementById("skills-enabled");
+    const elBadge = document.getElementById("skills-count-badge");
+    const elBar = document.getElementById("skills-category-bar");
+    if (elTotal) elTotal.textContent = total;
+    if (elCats) elCats.textContent = Object.keys(cats).length;
+    if (elAuto) elAuto.textContent = autoCount;
+    if (elEnabled) elEnabled.textContent = enabledCount;
+    if (elBadge) elBadge.textContent = total + " skills";
+    if (elBar) {
+      elBar.innerHTML = "";
+      const colors = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#3b82f6", "#8b5cf6", "#14b8a6", "#f97316"];
+      Object.entries(cats).forEach(([cat, count], i) => {
+        const chip = document.createElement("span");
+        chip.className = "pill";
+        chip.style.cssText = `background:${colors[i % colors.length]}22;color:${colors[i % colors.length]};border:1px solid ${colors[i % colors.length]}44;font-size:11px;padding:2px 7px;`;
+        chip.textContent = `${cat} (${count})`;
+        elBar.appendChild(chip);
+      });
+    }
+  } catch (e) {
+    const el = document.getElementById("skills-total");
+    if (el) el.textContent = "—";
+  }
+}
+
+async function scanSkills() {
+  const btn = document.getElementById("skills-scan-btn");
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = "Scanning…";
+  try {
+    const res = await fetch("/api/skills/scan", { method: "POST" });
+    const d = await res.json();
+    btn.textContent = `Scan complete — ${d.count || 0} new`;
+    loadSkillsSummary();
+    setTimeout(() => { btn.textContent = "Scan for new skills"; btn.disabled = false; }, 3000);
+  } catch (e) {
+    btn.textContent = "Scan failed";
+    setTimeout(() => { btn.textContent = "Scan for new skills"; btn.disabled = false; }, 3000);
   }
 }
 

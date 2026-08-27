@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — C2</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .c2-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .c2-main { padding:22px 24px 32px; min-width:0; }
+    .c2-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .c2-topbar h1 { margin:0; font-size:22px; }
+    .c2-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .c2-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-bottom:18px; }
+    .c2-card { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .c2-card .c2-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .c2-card .c2-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .c2-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .c2-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                    border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .c2-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .c2-table tr:hover td { background:rgba(255,255,255,.02); }
+    .c2-status { display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px; }
+    .c2-status.online { background:#22C55E;box-shadow:0 0 6px rgba(34,197,94,.5); }
+    .c2-status.offline { background:#EF4444; }
+    .c2-status.scanning { background:#F59E0B;animation:pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#0EA5E9,#22C55E);color:#020617;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .shell-box { background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;
+                 padding:12px;font-family:monospace;font-size:12px;color:#22C55E;
+                 min-height:120px;max-height:300px;overflow-y:auto;margin-bottom:10px;white-space:pre-wrap; }
+    .shell-input-row { display:flex;gap:8px; }
+    .shell-input { flex:1;background:rgba(2,6,23,.55);color:#22C55E;border:1px solid var(--border);
+                   border-radius:10px;padding:8px 12px;font-size:13px;font-family:monospace; }
+    .shell-input:focus { outline:none;border-color:rgba(34,197,94,.4);box-shadow:0 0 0 3px rgba(34,197,94,.1); }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="c2-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>C2</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item active"><span class="nav-dot"></span> C2</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="c2-main">
+      <header class="c2-topbar">
+        <div><h1>Command &amp; Control</h1><p>Connected hosts, listeners, and post-exploitation actions</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="loadEvents()">Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="scanNetwork()">Scan Network</button>
+        </div>
+      </header>
+      <div class="c2-grid">
+        <div class="c2-card"><div class="c2-val" id="c2-hosts">0</div><div class="c2-lbl">Connected Hosts</div></div>
+        <div class="c2-card"><div class="c2-val" id="c2-listeners">0</div><div class="c2-lbl">Active Listeners</div></div>
+        <div class="c2-card"><div class="c2-val" id="c2-scans">0</div><div class="c2-lbl">Vuln Scans</div></div>
+        <div class="c2-card"><div class="c2-val" id="c2-events">0</div><div class="c2-lbl">Events (24h)</div></div>
+      </div>
+      <h3 style="font-size:15px;margin:0 0 10px">Connected Hosts</h3>
+      <table class="c2-table">
+        <thead><tr><th>Host</th><th>OS</th><th>IP</th><th>Status</th><th>Last Contact</th><th>Actions</th></tr></thead>
+        <tbody id="hosts-tbody"><tr><td colspan="6" class="empty-state">No hosts connected</td></tr></tbody>
+      </table>
+      <h3 style="font-size:15px;margin:18px 0 10px">Device Shell</h3>
+      <div class="shell-box" id="shell-output">Select a host to open a shell...
+</div>
+      <div class="shell-input-row">
+        <input class="shell-input" id="shell-input" placeholder="Enter command..." onkeydown="if(event.key==='Enter')sendShell()" />
+        <button class="btn btn-sm btn-primary" onclick="sendShell()">Send</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let hosts = [];
+    let selectedHost = null;
+    async function loadEvents() {
+      try {
+        const r = await fetch('/api/c2/events');
+        const d = await r.json();
+        hosts = d.hosts || [];
+        $('c2-hosts').textContent = hosts.length;
+        $('c2-listeners').textContent = d.listeners || 0;
+        $('c2-scans').textContent = d.scans || 0;
+        $('c2-events').textContent = d.events_24h || 0;
+        renderHosts();
+      } catch(e) { console.error(e); }
+    }
+    function renderHosts() {
+      const tb = $('hosts-tbody');
+      if (!hosts.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No hosts connected</td></tr>'; return; }
+      tb.innerHTML = hosts.map((h,i)=>`<tr>
+        <td><strong>${h.name||h.hostname||'unknown'}</strong></td>
+        <td style="font-size:12px;color:var(--muted)">${h.os||'—'}</td>
+        <td class="muted">${h.ip||'—'}</td>
+        <td><span class="c2-status ${h.status==='online'?'online':h.status==='scanning'?'scanning':'offline'}"></span>${h.status||'offline'}</td>
+        <td class="muted">${h.last_contact?new Date(h.last_contact*1000).toLocaleString():'—'}</td>
+        <td>
+          <button class="btn btn-sm" onclick="selectHost(${i})">Shell</button>
+          <button class="btn btn-sm" onclick="fingerprintHost(${i})">FP</button>
+          <button class="btn btn-sm" onclick="vulnScanHost(${i})">Scan</button>
+        </td>
+      </tr>`).join('');
+    }
+    function selectHost(i) {
+      selectedHost = hosts[i];
+      $('shell-output').textContent = `Connected to ${selectedHost.name||selectedHost.ip}\n> `;
+      $('shell-input').focus();
+    }
+    async function sendShell() {
+      const cmd = $('shell-input').value.trim();
+      if (!cmd || !selectedHost) return;
+      $('shell-output').textContent += cmd + '\n';
+      try {
+        const r = await fetch('/api/c2/shell', { method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({host_id:selectedHost.id||selectedHost.ip, command:cmd}) });
+        const d = await r.json();
+        $('shell-output').textContent += (d.output||'') + '\n> ';
+      } catch(e) { $('shell-output').textContent += 'Error: '+e.message+'\n> '; }
+      $('shell-input').value='';
+      const sb = $('shell-output'); sb.scrollTop = sb.scrollHeight;
+    }
+    async function scanNetwork() {
+      $('shell-output').textContent += '[*] Starting network scan...\n';
+      try {
+        const r = await fetch('/api/c2/scan', {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({range:'192.168.1.0/24'})});
+        const d = await r.json();
+        $('shell-output').textContent += '[*] Scan complete: '+(d.hosts_found||0)+' hosts found\n';
+        loadEvents();
+      } catch(e) { $('shell-output').textContent += '[!] Scan failed: '+e.message+'\n'; }
+    }
+    function fingerprintHost(i) {
+      selectedHost = hosts[i];
+      $('shell-output').textContent += `[*] Fingerprinting ${selectedHost.ip}...\n`;
+    }
+    function vulnScanHost(i) {
+      selectedHost = hosts[i];
+      $('shell-output').textContent += `[*] Launching vuln scan on ${selectedHost.ip}...\n`;
+    }
+    loadEvents();
+    setInterval(loadEvents, 30000);
+  </script>
+</body>
+</html>
