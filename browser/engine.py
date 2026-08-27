@@ -252,6 +252,69 @@ class FingerprintProfile:
             "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;"
             "Object.defineProperty(navigator,'ks_version',{get:()=>undefined});"
             "Object.defineProperty(navigator,'ks_build',{get:()=>undefined});"
+            "/* Category 1: WebDriver hide */"
+            "delete window._cdc_adoQpoasnfa76pfcZLmcfl;"
+            "delete window['__playwright'];"
+            "delete window['__pwt'];"
+            "delete window['cdp'];"
+            "delete window['domAutomation'];"
+            "delete window['domController'];"
+            "Object.defineProperty(navigator,'webdriver',{get:()=>undefined,configurable:true});"
+            "/* Category 2: WebGL fingerprint */"
+            "const _gl=HTMLCanvasElement.prototype.getContext;"
+            "HTMLCanvasElement.prototype.getContext=function(t,a){var c=_gl.call(this,t,a);if(c){var _e=c.getExtension;c.getExtension=function(e){if(e==='WEBGL_lose_context'){var l=_e.call(this,e);return{l:function(){},restore:function(){},loseContext:function(){}};}return _e.call(this,e);};}return c;};"
+            "/* Category 3: WebRTC hide */"
+            "const _origRTCP=RTCPeerConnection;"
+            "window.RTCPeerConnection=function(...args){"
+            "  const pc=new _origRTCP(...args);"
+            "  const _gs=pc.getStats.bind(pc);"
+            "  pc.getStats=function(...a){return _gs().then(r=>{"
+            "    for(const x of r.values()){if(x.type==='candidate'&&x.candidate)x.candidate=x.candidate.replace(/([0-9]+\\.){3}[0-9]+/g,'0.0.0.0');}"
+            "    return r;});};"
+            "  return pc;};"
+            "/* Category 4: Storage spoof */"
+            "const _origOpenDB=indexedDB.open;"
+            "indexedDB.open=function(){return _origOpenDB.apply(this,arguments);};"
+            "Object.defineProperty(navigator,'storage',{get:()=>({estimate:async()=>({quota:107374182400,usage:1024,usageDetails:{}})})});"
+            "/* Category 5: Performance timing */"
+            "const _origPerf=performance.now;"
+            "performance.now=function(){var v=_origPerf.call(performance);return v+Math.random()*0.5;};;"
+            "/* Category 6: Permissions spoof */"
+            "const _origQuery=navigator.permissions.query;"
+            "navigator.permissions.query=function(u){return Promise.resolve({state:'granted',onchange:null});};"
+            "/* Category 7: Chrome runtime */"
+            "window.chrome={app:{},runtime:{},loadTimes:function(){},csi:function(){},csi_:function(){}};"
+            "/* Category 8: Language */"
+            "Object.defineProperty(navigator,'languages',{get:()=>['en-US','en']});"
+            "Object.defineProperty(navigator,'language',{get:()=>'en-US'});"
+            "Object.defineProperty(navigator,'userLanguage',{get:()=>'en-US'});"
+            "/* Category 9: PDF viewer */"
+            "Object.defineProperty(navigator,'pdfViewerEnabled',{get:()=>true});"
+            "/* Category 10: Fetch/XHR override */"
+            "const _origFetch=window.fetch;"
+            "window.fetch=function(...args){return _origFetch.apply(this,args);};"
+            "/* Category 11: Notification permissions */"
+            "Notification.requestPermission=function(){return Promise.resolve('granted');};"
+            "Notification.permission='granted';"
+            "/* Category 12: WebGL extensions hide */"
+            "const _getExts=WebGLRenderingContext.prototype.getExtension;"
+            "WebGLRenderingContext.prototype.getExtension=function(e){if(e==='WEBGL_debug_renderer_info'){return null;}return _getExts.call(this,e);};;"
+            "/* Category 13: Canvas anti-detection */"
+            "const _c2d=HTMLCanvasElement.prototype.getContext;"
+            "HTMLCanvasElement.prototype.getContext=function(t,a){var c=_c2d.call(this,t,a);if(c&&t==='2d'){var _dr=c.drawImage;"
+            "c.drawImage=function(img,sx,sy,sw,sh,dx,dy,dw,dh){if(img && img.src && (img.src.includes('data:image')||img.src.startsWith('http'))){}"
+            "return _dr.call(this,img,sx||0,sy||0,sw||this.canvas.width,sy||0,dx||0,dy||0,dw||this.canvas.width,dh||this.canvas.height);};}"
+            "return c;};"
+            "/* Category 14: AudioContext fingerprint */"
+            "const _oa=AudioContext.prototype.createOscillator;"
+            "AudioContext.prototype.createOscillator=function(){var o=_oa.call(this);Object.defineProperty(o,'frequency',{value:{setValueCurve:function(){}}});return o;};"
+            "/* Category 15: Date/timezone */"
+            "Object.defineProperty(Date,'getTimezoneOffset',{value:function(){return " + str(tzoff) + ";}});"
+            "/* Category 16: Screen geometry */"
+            "Object.defineProperty(window,'screen',{get:()=>({width:" + str(sw) + ",height:" + str(sh) + ",availWidth:" + str(saw) + ",availHeight:" + str(sah) + ",colorDepth:" + str(cd) + ",pixelDepth:" + str(cd) + "}),writable:false,configurable:false});"
+            "window.outerHeight=window.innerHeight;"
+            "window.outerWidth=window.innerWidth;"
+            "window.screenX=0;window.screenY=0;"
         )
         await page.add_init_script(script)
 
@@ -728,18 +791,17 @@ class BrowserEngine:
         from playwright.async_api import async_playwright
         self._playwright = await async_playwright().start()
         launch_opts = {
-            "headless": headless,
+            "headless": "new" if headless else False,
             "args": [
                 "--disable-blink-features=AutomationControlled",
+                "--disable-automation",
                 "--disable-features=IsolateOrigins,site-per-process",
                 "--disable-site-isolation-trials",
                 "--disable-web-security",
                 "--disable-features=ImprovedCookieControls",
                 "--no-first-run",
                 "--disable-infobars",
-                "--hide-scrollbars",
                 "--metrics-recording-only",
-                "--mute-audio",
                 "--no-default-browser-check",
                 "--disable-default-apps",
                 "--disable-popup-blocking",
@@ -747,7 +809,6 @@ class BrowserEngine:
                 "--disable-sync",
                 "--disable-translate",
                 "--no-pings",
-                "--disable-extensions-except=",
                 "--disable-component-update",
                 "--disable-domain-reliability",
                 "--disable-background-networking",
@@ -755,11 +816,11 @@ class BrowserEngine:
                 "--disable-backgrounding-occluded-windows",
                 "--disable-breakpad",
                 "--disable-hang-monitor",
-                "--disable-prompt-on-repost",
                 "--disable-ipc-flooding-protection",
-                "--enable-features=NetworkService,NetworkServiceInProcess",
-                "--password-store=basic",
-                "--use-mock-keychain",
+                "--deterministic-mode",
+                "--no-zygote",
+                "--single-process",
+                "--disable-extensions",
                 "--lang=en-US",
                 "--remote-allow-origins=*",
                 "--window-size={},{}".format(
@@ -775,6 +836,12 @@ class BrowserEngine:
             locale=self._fp.data["locale"],
             timezone_id=self._fp.data["timezone"],
             color_scheme="dark",
+            device_scale_factor=self._fp.data["pixel_ratio"],
+            has_touch=False,
+            is_mobile=False,
+            reduced_motion="reduce",
+            java_script_enabled=True,
+            accept_downloads=False,
         )
         stealth = self.config.get("stealth", {})
         if stealth.get("enable", True):
