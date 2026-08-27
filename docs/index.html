@@ -386,24 +386,24 @@
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ── Logo Marquee (services/integrations) ── */
-    .logo-marquee-wrap { overflow: hidden; padding: 32px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+    .logo-marquee-wrap { overflow: hidden; padding: 16px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
     [data-theme="dark"] .logo-marquee-wrap { background: var(--bg-canvas); }
     .logo-marquee { display: flex; gap: 56px; animation: logo-marquee 60s linear infinite; white-space: nowrap; align-items: center; }
     .logo-marquee-item {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 15px; font-weight: 600; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
       opacity: .6; transition: opacity .2s, color .2s;
       text-decoration: none; flex-shrink: 0;
     }
     .logo-marquee-item:hover { opacity: 1; color: var(--text-primary); text-decoration: none; }
-    .logo-marquee-item svg { width: 24px; height: 24px; flex-shrink: 0; }
+    .logo-marquee-item svg { width: 20px; height: 20px; flex-shrink: 0; }
     @keyframes logo-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ── Trusted ── */
-    .trusted { padding: 40px 0; text-align: center; border-bottom: 1px solid var(--border); }
-    .trusted p { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 20px; }
-    .logo-strip { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; align-items: center; opacity: .45; }
-    .logo-strip span { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
+    .trusted { padding: 20px 0; text-align: center; border-bottom: 1px solid var(--border); }
+    .trusted p { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 12px; }
+    .logo-strip { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; align-items: center; opacity: .5; }
+    .logo-strip span { font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
 
     /* ── Feature Cards — EXACT Applivery sizing ── */
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
@@ -524,40 +524,128 @@
     .step h3 { font-size: var(--fs-h4); font-weight: 600; margin-bottom: 8px; margin-top: 8px; color: var(--text-primary); }
     .step p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
 
-    /* ── SDLC Auto-Workflow Panel ── */
-    .sdlc-panel {
+    /* ── Nav brand ── */
+    .nav-brand { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
+    .nav-brand-sub { font-size: 13px; font-weight: 400; color: var(--primary); margin-left: 6px; }
+
+    /* ── Footer brand ── */
+    .footer-brand-sub { font-size: 12px; font-weight: 400; color: var(--primary); margin-left: 6px; }
+
+    /* ── Applivery-style SDLC Diagram ── */
+    .sdlc-diagram {
       background: linear-gradient(135deg, rgba(14,22,48,.95) 0%, rgba(6,10,24,.98) 100%);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(92,139,255,.2);
       border-radius: var(--radius-3xl);
-      padding: clamp(32px,5vw,56px);
-      text-align: center;
+      padding: clamp(24px,4vw,48px);
       position: relative; overflow: hidden;
-      box-shadow: 0 0 60px rgba(92,139,255,.08), inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .sdlc-panel::before {
+    [data-theme="light"] .sdlc-diagram {
+      background: linear-gradient(135deg, var(--bg-elev-2) 0%, var(--bg-elev-1) 100%);
+      border-color: var(--border);
+    }
+    .sdlc-diagram::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse 50% 60% at 50% 40%, rgba(92,139,255,.1) 0%, transparent 70%);
+      background: radial-gradient(ellipse 50% 60% at 50% 30%, rgba(92,139,255,.1) 0%, transparent 70%);
       pointer-events: none;
     }
-    .sdlc-panel > * { position: relative; z-index: 1; }
-    .sdlc-problems { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 28px; }
-    .sdlc-solution { font-size: clamp(16px,2.5vw,22px); color: var(--text-secondary); margin-bottom: 28px; line-height: 1.5; }
-    .sdlc-solution .grad { font-weight: 700; }
-    .sdlc-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .sdlc-pill {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 10px 18px; border-radius: 100px;
-      font-size: 13px; font-weight: 600;
+    .sdlc-diagram > * { position: relative; z-index: 1; }
+
+    /* Tabs */
+    .sdlc-tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+    .sdlc-tab {
+      padding: 8px 20px; border-radius: 100px;
+      font-size: 13px; font-weight: 500;
       border: 1px solid var(--border);
       background: var(--bg-elev-1);
-      color: var(--text-primary);
-      transition: border-color .15s, transform .15s, box-shadow .15s;
+      color: var(--text-tertiary);
+      cursor: pointer; transition: all .15s;
     }
-    .sdlc-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .sdlc-pill.problem { border-color: rgba(239,68,68,.3); color: rgba(239,68,68,.9); background: rgba(239,68,68,.06); }
-    .sdlc-pill.step { border-color: rgba(34,197,94,.3); color: rgba(34,197,94,.9); background: rgba(34,197,94,.06); }
-    .sdlc-pill .pill-icon { font-size: 12px; }
+    .sdlc-tab:hover { border-color: var(--primary); color: var(--text-primary); }
+    .sdlc-tab.active {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Prompt banner */
+    .sdlc-prompt {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: 100px;
+      padding: 8px 20px;
+      font-size: 13px; color: #fbbf24;
+      margin: 0 auto 24px;
+    }
+    [data-theme="light"] .sdlc-prompt {
+      background: rgba(245,158,11,.08);
+      border-color: rgba(245,158,11,.2);
+      color: #d97706;
+    }
+
+    /* Orchestrator */
+    .sdlc-orchestrator { text-align: center; margin-bottom: 24px; }
+    .orch-node {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
+      border-radius: 100px;
+      padding: 10px 24px;
+      font-size: 14px; font-weight: 600; color: #fff;
+      box-shadow: 0 4px 20px rgba(92,139,255,.3);
+    }
+    .orch-icon { font-size: 16px; }
+
+    /* Agents grid */
+    .sdlc-agents {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .agent-node { text-align: center; }
+    .agent-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 10px;
+      border-radius: var(--radius-lg);
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
+      display: grid; place-items: center;
+      font-size: 22px;
+      position: relative;
+    }
+    .agent-icon.verified { border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.08); }
+    .agent-check {
+      position: absolute; top: -4px; right: -4px;
+      width: 16px; height: 16px;
+      background: #4ade80; border-radius: 50%;
+      font-size: 10px; color: #060a18;
+      display: grid; place-items: center;
+      font-weight: 700;
+    }
+    .agent-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 4px; }
+    .agent-status { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+
+    /* Footer bar */
+    .sdlc-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 14px 20px;
+      gap: 16px;
+    }
+    .sdlc-footer-left { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); }
+    .orch-icon-small { font-size: 16px; }
+    .sdlc-approve {
+      padding: 10px 24px;
+      background: #0241e3;
+      color: #fff;
+      border: none; border-radius: var(--radius-md);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .15s, transform .15s;
+    }
+    .sdlc-approve:hover { background: #0137c4; transform: translateY(-1px); }
 
     /* ── CTA Section ── */
     .cta-section {
@@ -666,26 +754,19 @@
   <nav class="nav">
     <div class="nav-inner">
       <a href="/" class="nav-logo">
-        <svg viewBox="0 0 200 60" width="28" height="28">
-          <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#5c8bff"/>
-            <stop offset="100%" style="stop-color:#8a70f6"/>
-          </linearGradient></defs>
-          <polygon points="30,6 48,24 30,42 12,24" fill="url(#g)" opacity="0.95"/>
-          <circle cx="30" cy="24" r="4" fill="#4ade80" opacity="0.8"/>
-        </svg>
-        FreeAI
+        <span class="nav-brand">FreeAI</span>
+        <span class="nav-brand-sub">AI Intelligence</span>
       </a>
       <div class="nav-links">
-        <a href="#dashboards" class="nav-link">Dashboards</a>
-        <a href="#skills" class="nav-link">Skills</a>
-        <a href="#plugins" class="nav-link">Plugins</a>
-        <a href="#mcps" class="nav-link">MCPs</a>
-        <a href="#extensions" class="nav-link">Extensions</a>
-        <a href="#workflows" class="nav-link">Workflows</a>
-        <a href="deploy.html" class="nav-link">Deploy</a>
-        <a href="#install" class="nav-link">Install</a>
-        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="#dashboards" class="nav-link" data-i18n="nav-dashboards">Dashboards</a>
+        <a href="#skills" class="nav-link" data-i18n="nav-skills">Skills</a>
+        <a href="#plugins" class="nav-link" data-i18n="nav-plugins">Plugins</a>
+        <a href="#mcps" class="nav-link" data-i18n="nav-mcps">MCPs</a>
+        <a href="#extensions" class="nav-link" data-i18n="nav-extensions">Extensions</a>
+        <a href="#workflows" class="nav-link" data-i18n="nav-workflows">Workflows</a>
+        <a href="deploy.html" class="nav-link" data-i18n="nav-deploy">Deploy</a>
+        <a href="#install" class="nav-link" data-i18n="nav-install">Install</a>
+        <a href="#faq" class="nav-link" data-i18n="nav-faq">FAQ</a>
       </div>
       <div class="nav-actions">
         <!-- Language dropdown -->
@@ -715,7 +796,7 @@
           <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
         <!-- GitHub button — Applivery light theme blue -->
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;box-shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(2,65,227,.25);">
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;box-shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(2,65,227,.25);height:40px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
           GitHub
         </a>
@@ -730,16 +811,16 @@
         <span class="dot" style="background:var(--success)"></span>
         v1.3.0 — Autonomous SDLC Agents &amp; Aikido Security
       </div>
-      <h1 class="reveal">The AI workstation<br/><span class="grad">that thinks ahead.</span></h1>
-      <p class="reveal" style="transition-delay:.1s">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
+      <h1 class="reveal" data-i18n="hero-tagline">The AI workstation<br/><span class="grad">that thinks ahead.</span></h1>
+      <p class="reveal" style="transition-delay:.1s" data-i18n="hero-sub">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
       <div class="hero-actions reveal" style="transition-delay:.2s">
         <a href="#install" class="btn btn--primary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Install FreeAI
+          <span data-i18n="hero-btn-install">Install FreeAI</span>
         </a>
         <a href="/wiki-dashboard" class="btn btn--secondary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
-          Read Docs
+          <span data-i18n="hero-btn-docs">Read Docs</span>
         </a>
       </div>
       <div class="hero-stats reveal" style="transition-delay:.3s">
@@ -770,7 +851,7 @@
             <span class="status-text" id="statusText">Scanning 4,812 devices...</span>
           </div>
           <div class="composer-fields">
-            <span style="font-size:var(--fs-h4);color:var(--text-tertiary);pointer-events:none" id="composerPlaceholder">Ask FreeAI</span>
+            <span style="font-size:var(--fs-h4);color:var(--text-tertiary);pointer-events:none" id="composerPlaceholder" data-i18n="composer-placeholder">Ask FreeAI</span>
             <button class="composer-tool" title="Add attachment">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
             </button>
@@ -798,16 +879,16 @@
 
   <!-- ── Trusted By ── -->
   <div class="trusted">
-    <p>Powered by leading AI infra</p>
-    <div class="logo-strip">
-      <span>OpenAI</span>
-      <span>Anthropic</span>
-      <span>llama.cpp</span>
-      <span>vLLM</span>
-      <span>Playwright</span>
-      <span>Docker</span>
-      <span>GitHub</span>
-      <span>FastAPI</span>
+    <p data-i18n="trusted-label">Powered by leading AI infra</p>
+    <div class="logo-strip" id="logoStrip">
+      <span style="color:#10a37f">OpenAI</span>
+      <span style="color:#FF4B5C">Anthropic</span>
+      <span style="color:#FCD34D">llama.cpp</span>
+      <span style="color:#7C5CFC">vLLM</span>
+      <span style="color:#0ea5e9">Playwright</span>
+      <span style="color:#2496ED">Docker</span>
+      <span style="color:#fff">GitHub</span>
+      <span style="color:#0ea5e9">FastAPI</span>
     </div>
   </div>
 
@@ -1175,26 +1256,87 @@ docker compose --profile allinone up -d
     </div>
   </section>
 
-  <!-- ── Autonomous SDLC ── -->
+  <!-- ── Autonomous SDLC Diagram ── -->
   <section class="section" id="sdlc" style="background:var(--bg-canvas);">
-    <div class="container" style="max-width:900px;">
-      <div class="sdlc-panel reveal">
-        <div class="sdlc-problems">
-          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too many tools</span>
-          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too many policies</span>
-          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too many manual workflows</span>
-          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too much reactive IT</span>
-          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too little operational intelligence</span>
+    <div class="container" style="max-width:1100px;">
+      <div class="sdlc-diagram reveal">
+        <!-- Top tabs -->
+        <div class="sdlc-tabs">
+          <span class="sdlc-tab active">Fullstack App</span>
+          <span class="sdlc-tab">Website</span>
+          <span class="sdlc-tab">CRM</span>
+          <span class="sdlc-tab">Chatbot</span>
+          <span class="sdlc-tab">Sales Pipeline</span>
         </div>
-        <p class="sdlc-solution">The next step: the <span class="grad">Autonomous SDLC.</span></p>
-        <div class="sdlc-steps">
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 1. Plan</span>
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 2. Code</span>
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 3. Verify</span>
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 4. Fix</span>
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 5. Review</span>
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 6. Document</span>
-          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 7. Package</span>
+        <!-- Prompt banner -->
+        <div class="sdlc-prompt">
+          <span class="sdlc-prompt-icon">🤖</span>
+          Build a FastAPI notes service with auth, tests, and docs
+        </div>
+        <!-- Orchestrator -->
+        <div class="sdlc-orchestrator">
+          <div class="orch-node">
+            <span class="orch-icon">⚡</span>
+            <span>IT Lead</span>
+          </div>
+        </div>
+        <!-- Agent nodes -->
+        <div class="sdlc-agents">
+          <div class="agent-node">
+            <div class="agent-icon verified">
+              <span>📋</span>
+              <span class="agent-check">✓</span>
+            </div>
+            <div class="agent-label">COMPLIANCE</div>
+            <div class="agent-status">Spec validated — FastAPI + SQLAlchemy</div>
+          </div>
+          <div class="agent-node">
+            <div class="agent-icon verified">
+              <span>🔒</span>
+              <span class="agent-check">✓</span>
+            </div>
+            <div class="agent-label">SECURITY</div>
+            <div class="agent-status">JWT auth, CSRF tokens, input sanitization</div>
+          </div>
+          <div class="agent-node">
+            <div class="agent-icon verified">
+              <span>🧪</span>
+              <span class="agent-check">✓</span>
+            </div>
+            <div class="agent-label">VERIFY</div>
+            <div class="agent-status">14 tests pass, coverage 92%</div>
+          </div>
+          <div class="agent-node">
+            <div class="agent-icon">
+              <span>🔍</span>
+            </div>
+            <div class="agent-label">IMPACT</div>
+            <div class="agent-status">standing by</div>
+          </div>
+          <div class="agent-node">
+            <div class="agent-icon verified">
+              <span>📝</span>
+              <span class="agent-check">✓</span>
+            </div>
+            <div class="agent-label">DOCUMENT</div>
+            <div class="agent-status">README + API docs generated</div>
+          </div>
+          <div class="agent-node">
+            <div class="agent-icon verified">
+              <span>📦</span>
+              <span class="agent-check">✓</span>
+            </div>
+            <div class="agent-label">PACKAGE</div>
+            <div class="agent-status">tarball ready — 3.2MB</div>
+          </div>
+        </div>
+        <!-- Footer bar -->
+        <div class="sdlc-footer">
+          <div class="sdlc-footer-left">
+            <span class="orch-icon-small">⚡</span>
+            <span>Day-one kit ready — project shipped sealed</span>
+          </div>
+          <button class="sdlc-approve">Approve</button>
         </div>
       </div>
     </div>
@@ -1203,11 +1345,11 @@ docker compose --profile allinone up -d
   <!-- ── CTA ── -->
   <section class="cta-section">
     <div class="container">
-      <h2>Ready to build with AI?</h2>
-      <p>Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.</p>
+      <h2 data-i18n="cta-title">Ready to build with AI?</h2>
+      <p data-i18n="cta-sub">Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.</p>
       <div class="hero-actions">
-        <a href="#install" class="btn btn--primary">Get Started Free</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--ghost" target="_blank">Star on GitHub</a>
+        <a href="#install" class="btn btn--primary" data-i18n="cta-btn-primary">Get Started Free</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--ghost" target="_blank" data-i18n="cta-btn-secondary">Star on GitHub</a>
       </div>
     </div>
   </section>
@@ -1216,18 +1358,17 @@ docker compose --profile allinone up -d
   <footer class="footer">
     <div class="footer-inner">
       <div>
-        <div class="footer-brand">FreeAI</div>
-        <div class="footer-copy">© 2026 FreeAI · Unified AI Workstation · MIT License</div>
+        <div class="footer-brand">FreeAI <span class="footer-brand-sub">AI Intelligence</span></div>
+        <div class="footer-copy" data-i18n="footer-copy">\u00a9 2026 FreeAI \u00b7 Unified AI Workstation \u00b7 MIT License</div>
       </div>
       <div class="footer-links">
-        <a href="/">Home</a>
-        <a href="#install">Install</a>
-        <a href="#faq">FAQ</a>
-        <a href="deploy.html">Deploy</a>
-        <a href="/wiki-dashboard" target="_blank">Documentation</a>
-        <a href="mailto:contact@projectzerodays.dev">Contact</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues">Report a Bug</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>
+        <a href="/" data-i18n="footer-home">Home</a>
+        <a href="#install" data-i18n="footer-install">Install</a>
+        <a href="#faq" data-i18n="footer-faq">FAQ</a>
+        <a href="deploy.html" data-i18n="footer-deploy">Deploy</a>
+        <a href="/wiki-dashboard" target="_blank" data-i18n="footer-docs">Documentation</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues" data-i18n="footer-bug">Report a Bug</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" data-i18n="footer-github">GitHub</a>
       </div>
     </div>
   </footer>
@@ -1404,6 +1545,148 @@ docker compose --profile allinone up -d
     });
     composer.addEventListener('blur', () => {
       composerPlaceholder.style.opacity = '1';
+    });
+
+    // ── i18n translations ──
+    const i18n = {
+      en: {
+        'nav-dashboards': 'Dashboards', 'nav-skills': 'Skills', 'nav-plugins': 'Plugins',
+        'nav-mcps': 'MCPs', 'nav-extensions': 'Extensions', 'nav-workflows': 'Workflows',
+        'nav-deploy': 'Deploy', 'nav-install': 'Install', 'nav-faq': 'FAQ',
+        'hero-tagline': 'The AI workstation<br/><span class="grad">that thinks ahead.</span>',
+        'hero-sub': 'FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.',
+        'hero-btn-install': 'Install FreeAI', 'hero-btn-docs': 'Read Docs',
+        'composer-placeholder': 'Ask FreeAI',
+        'cta-title': 'Ready to build with AI?',
+        'cta-sub': 'Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.',
+        'cta-btn-primary': 'Get Started Free', 'cta-btn-secondary': 'Star on GitHub',
+        'trusted-label': 'Powered by leading AI infra',
+        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Unified AI Workstation \u00b7 MIT License',
+        'footer-home': 'Home', 'footer-install': 'Install', 'footer-faq': 'FAQ',
+        'footer-deploy': 'Deploy', 'footer-docs': 'Documentation',
+        'footer-bug': 'Report a Bug', 'footer-github': 'GitHub',
+      },
+      es: {
+        'nav-dashboards': 'Paneles', 'nav-skills': 'Habilidades', 'nav-plugins': 'Plugins',
+        'nav-mcps': 'MCPs', 'nav-extensions': 'Extensiones', 'nav-workflows': 'Flujos',
+        'nav-deploy': 'Desplegar', 'nav-install': 'Instalar', 'nav-faq': 'FAQ',
+        'hero-tagline': 'La estaci\u00f3n de IA<br/><span class="grad">que piensa adelante.</span>',
+        'hero-sub': 'FreeAI unifica servicio de modelos optimizado para GPU, agentes SDLC aut\u00f3nomos, escaneos de seguridad y herramientas de construcci\u00f3n — todo en un stack auto-alojado.',
+        'hero-btn-install': 'Instalar FreeAI', 'hero-btn-docs': 'Leer Docs',
+        'composer-placeholder': 'Preguntar a FreeAI',
+        'cta-title': '\u00bfListo para construir con IA?',
+        'cta-sub': '\u00danete a desarrolladores que usan FreeAI para construir, asegurar y escalar aplicaciones de IA — en su propio hardware.',
+        'cta-btn-primary': 'Empezar Gratis', 'cta-btn-secondary': 'Star en GitHub',
+        'trusted-label': 'Impulsado por infra AI líder',
+        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Estaci\u00f3n de Trabajo IA Unificada \u00b7 Licencia MIT',
+        'footer-home': 'Inicio', 'footer-install': 'Instalar', 'footer-faq': 'FAQ',
+        'footer-deploy': 'Desplegar', 'footer-docs': 'Documentaci\u00f3n',
+        'footer-bug': 'Reportar Bug', 'footer-github': 'GitHub',
+      },
+      de: {
+        'nav-dashboards': 'Dashboards', 'nav-skills': 'F\u00e4higkeiten', 'nav-plugins': 'Plugins',
+        'nav-mcps': 'MCPs', 'nav-extensions': 'Erweiterungen', 'nav-workflows': 'Workflows',
+        'nav-deploy': 'Deployen', 'nav-install': 'Installieren', 'nav-faq': 'FAQ',
+        'hero-tagline': 'Die AI-Workstation<br/><span class="grad">die mitdenkt.</span>',
+        'hero-sub': 'FreeAI vereint GPU-optimiertes Modellserving, autonome SDLC-Agenten, Sicherheits-Scans und Builder-Tools — alles in einem selbst gehosteten Stack.',
+        'hero-btn-install': 'FreeAI installieren', 'hero-btn-docs': 'Dokumentation',
+        'composer-placeholder': 'FreeAI fragen',
+        'cta-title': 'Bereit, mit KI zu bauen?',
+        'cta-sub': 'Schlie\u00dfen Sie sich Entwicklern an, die FreeAI nutzen, um KI-Anwendungen zu bauen, zu sichern und zu skalieren — auf ihrer eigenen Hardware.',
+        'cta-btn-primary': 'Kostenlos starten', 'cta-btn-secondary': 'Auf GitHub starren',
+        'trusted-label': 'Angetrieben von f\u00fchrender KI-Infra',
+        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Vereinheitlichte KI-Workstation \u00b7 MIT-Lizenz',
+        'footer-home': 'Startseite', 'footer-install': 'Installieren', 'footer-faq': 'FAQ',
+        'footer-deploy': 'Deployen', 'footer-docs': 'Dokumentation',
+        'footer-bug': 'Bug melden', 'footer-github': 'GitHub',
+      },
+      fr: {
+        'nav-dashboards': 'Tableaux de bord', 'nav-skills': 'Comp\u00e9tences', 'nav-plugins': 'Plugins',
+        'nav-mcps': 'MCPs', 'nav-extensions': 'Extensions', 'nav-workflows': 'Workflows',
+        'nav-deploy': 'D\u00e9ployer', 'nav-install': 'Installer', 'nav-faq': 'FAQ',
+        'hero-tagline': 'La station de travail IA<br/><span class="grad">qui anticipe.</span>',
+        'hero-sub': 'FreeAI unifie le service de mod\u00e8les optimis\u00e9 GPU, les agents SDLC autonomes, la s\u00e9curit\u00e9 et les outils de d\u00e9veloppement — tout dans une stack auto-h\u00e9berg\u00e9e.',
+        'hero-btn-install': 'Installer FreeAI', 'hero-btn-docs': 'Lire la doc',
+        'composer-placeholder': 'Demander \u00e0 FreeAI',
+        'cta-title': 'Pr\u00eat \u00e0 construire avec l\'IA?',
+        'cta-sub': 'Rejoignez les d\u00e9veloppeurs qui utilisent FreeAI pour construire, s\u00e9curiser et mettre \u00e0 l\'\u00e9chelle des applications IA — sur leur propre mat\u00e9riel.',
+        'cta-btn-primary': 'Commencer gratuitement', 'cta-btn-secondary': 'Star sur GitHub',
+        'trusted-label': 'Propuls\u00e9 par les meilleures infra IA',
+        'footer-copy': '\u00a9 2026 FreeAI \u00b7 Station de travail IA unifi\u00e9e \u00b7 Licence MIT',
+        'footer-home': 'Accueil', 'footer-install': 'Installer', 'footer-faq': 'FAQ',
+        'footer-deploy': 'D\u00e9ployer', 'footer-docs': 'Documentation',
+        'footer-bug': 'Signaler un bug', 'footer-github': 'GitHub',
+      },
+      ja: {
+        'nav-dashboards': 'ダッシュボード', 'nav-skills': 'スキル', 'nav-plugins': 'プラグイン',
+        'nav-mcps': 'MCPs', 'nav-extensions': '拡張', 'nav-workflows': 'ワークフロー',
+        'nav-deploy': 'デプロイ', 'nav-install': 'インストール', 'nav-faq': 'FAQ',
+        'hero-tagline': 'AIワークステーション<br/><span class="grad">先読み思考。</span>',
+        'hero-sub': 'FreeAIはGPU最適化モデルサービング、自律型SDLCエージェント、セキュリティスキャン、ビルダーツールを1つの自己ホスト型スタックに統合します。',
+        'hero-btn-install': 'FreeAIをインストール', 'hero-btn-docs': 'ドキュメント',
+        'composer-placeholder': 'FreeAIに質問',
+        'cta-title': 'AIで構築する準備はできましたか？',
+        'cta-sub': 'FreeAIを使ってAIアプリケーションを構築、保護、スケールアップする開発者に加わりましょう。',
+        'cta-btn-primary': '無料で始める', 'cta-btn-secondary': 'GitHubでスター',
+        'trusted-label': '主要なAIインフラにより駆動',
+        'footer-copy': '\u00a9 2026 FreeAI \u00b7 統一AIワークステーション \u00b7 MITライセンス',
+        'footer-home': 'ホーム', 'footer-install': 'インストール', 'footer-faq': 'FAQ',
+        'footer-deploy': 'デプロイ', 'footer-docs': 'ドキュメント',
+        'footer-bug': 'バグを報告', 'footer-github': 'GitHub',
+      },
+      ar: {
+        'nav-dashboards': 'لوحة التحكم', 'nav-skills': 'المهارات', 'nav-plugins': 'الإضافات',
+        'nav-mcps': 'MCPs', 'nav-extensions': 'الإضافات', 'nav-workflows': 'سير العمل',
+        'nav-deploy': 'النشر', 'nav-install': 'التثبيت', 'nav-faq': 'الأسئلة',
+        'hero-tagline': 'محطة عمل الذكاء<br/><span class="grad">التي تفكر مسبقاً.</span>',
+        'hero-sub': 'FreeAI يوحّد خدمة النماذج المحسّنة لـ GPU، وكوادر SDLC الذاتية، وفحص الأمان، وأدوات البناء — كل ذلك في مجموعة مستضافة ذاتياً.',
+        'hero-btn-install': 'تثبيت FreeAI', 'hero-btn-docs': 'اقرأ المستندات',
+        'composer-placeholder': 'اسأل FreeAI',
+        'cta-title': 'هل أنت مستعد للبناء بالذكاء الاصطناعي؟',
+        'cta-sub': 'انضم إلى المطورين الذين يستخدمون FreeAI لبناء وتأمين وتوسيع تطبيقات الذكاء الاصطناعي — على عتادهم الخاص.',
+        'cta-btn-primary': 'ابدأ مجاناً', 'cta-btn-secondary': 'نجمة على GitHub',
+        'trusted-label': 'مدعوم من أفضل بنية الذكاء الاصطناعي',
+        'footer-copy': '\u00a9 2026 FreeAI \u00b7 محطة عمل الذكاء الموحدة \u00b7 رخصة MIT',
+        'footer-home': 'الرئيسية', 'footer-install': 'التثبيت', 'footer-faq': 'الأسئلة',
+        'footer-deploy': 'النشر', 'footer-docs': 'المستندات',
+        'footer-bug': 'الإبلاغ عن خطأ', 'footer-github': 'GitHub',
+      },
+    };
+
+    function applyLang(lang) {
+      const t = i18n[lang] || i18n.en;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = t[key];
+          } else {
+            el.innerHTML = t[key];
+          }
+        }
+      });
+      document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+        const key = el.dataset.i18nAttr;
+        const attr = el.dataset.i18nAttrKey || 'title';
+        if (t[key] !== undefined) el.setAttribute(attr, t[key]);
+      });
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      localStorage.setItem('lang', lang);
+    }
+
+    // Initialize language
+    const savedLang = localStorage.getItem('lang') || 'en';
+    langLabel.textContent = savedLang.toUpperCase();
+    applyLang(savedLang);
+    langMenu.querySelector(`[data-lang="${savedLang}"]`)?.classList.add('active');
+
+    // Apply translations on language select
+    langMenu.querySelectorAll('.lang-menu-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const lang = item.dataset.lang;
+        langLabel.textContent = lang.toUpperCase();
+        applyLang(lang);
+      });
     });
   </script>
 </body>
