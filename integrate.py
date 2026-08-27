@@ -202,10 +202,37 @@ def generate_configs():
 def verify_services(services):
     """Check all services are reachable."""
     import requests
+    import re
+    from urllib.parse import urlparse, urlunparse
+    
+    def build_validated_url(base_url: str) -> str:
+        try:
+            # Minimal path validation
+            if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+                raise ValueError("Invalid path")
+            
+            parsed = urlparse(base_url)
+            
+            # Protocol + host checks
+            if parsed.scheme not in ("http", "https"):
+                raise ValueError("Invalid protocol")
+            if not parsed.hostname:
+                raise ValueError("Invalid host")
+            allowed_domains = ["example.com"]  # add your allowed domains here
+            if parsed.hostname.lower() not in allowed_domains:
+                raise ValueError("Invalid host")
+            
+            # Rebuild path with fixed /health endpoint
+            parsed = parsed._replace(path=f"{parsed.path.rstrip('/')}/health")
+            
+            return urlunparse(parsed)
+        except Exception:
+            raise ValueError("Invalid URL")
+    
     results = {}
     for name, svc in services.items():
         try:
-            r = requests.get(f"{svc['url']}/health", timeout=3)
+            r = requests.get(build_validated_url(svc['url']), timeout=3)
             results[name] = {"status": r.status_code, "healthy": r.ok}
         except Exception as exc:
             results[name] = {"status": 0, "healthy": False, "error": str(exc)}

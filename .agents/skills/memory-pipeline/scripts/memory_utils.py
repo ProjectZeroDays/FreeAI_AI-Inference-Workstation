@@ -227,6 +227,32 @@ def write_raw_memories(memory_root: Path, entries: list[dict]) -> Path:
 
 # ─── LLM Call ─────────────────────────────────────────────────────────────────
 
+def build_validated_url(base_url: str) -> str:
+    from urllib.parse import urlparse, urlunparse
+    try:
+        # Minimal path validation
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        
+        parsed = urlparse(base_url)
+        
+        # Protocol + host checks
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        allowed_domains = ["example.com"]  # add your allowed domains here
+        if parsed.hostname.lower() not in allowed_domains:
+            raise ValueError("Invalid host")
+        
+        # Append static path
+        path = parsed.path.rstrip("/") + "/v1/chat/completions"
+        parsed = parsed._replace(path=path)
+        
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
 def call_llm(system_prompt: str, user_prompt: str, config: dict,
              output_schema: Optional[dict] = None,
              temperature: float = 0.3) -> dict:
@@ -252,7 +278,7 @@ def call_llm(system_prompt: str, user_prompt: str, config: dict,
         body["response_format"] = {"type": "json_object"}
 
     resp = requests.post(
-        f"{config['llm_endpoint']}/v1/chat/completions",
+        build_validated_url(config['llm_endpoint']),
         headers=headers,
         json=body,
         timeout=120,

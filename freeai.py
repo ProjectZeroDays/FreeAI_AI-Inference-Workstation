@@ -3,9 +3,11 @@
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
+from urllib.parse import urlparse, urlunparse, urlencode
 
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010")
 AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
@@ -15,10 +17,38 @@ DASH_API = os.environ.get("DASH_API", "http://localhost:8030")
 ROUTER_URL2 = ROUTER_URL
 
 
+def build_validated_url(base_url: str, path_segment: str = None) -> str:
+    try:
+        # Minimal path validation
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        
+        parsed = urlparse(base_url)
+        
+        # Protocol + host checks
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        
+        # Validate path segment if provided
+        if path_segment:
+            if not re.fullmatch(r"[A-Za-z0-9_/-]+", path_segment):
+                raise ValueError("Invalid parameter")
+            # Ensure the path segment doesn't contain path traversal
+            if "/../" in path_segment or re.search(r"/%2e%2e/", path_segment, re.IGNORECASE):
+                raise ValueError("Invalid parameter")
+        
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
+
 def _req(method, url, body=None):
+    validated_url = build_validated_url(url)
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(
-        url, data=data, method=method,
+        validated_url, data=data, method=method,
         headers={"Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=660) as resp:
@@ -135,8 +165,9 @@ def cmd_auto_cancel(args):
 def cmd_auto_fetch(args):
     import urllib.request
     url = f"{AUTONOMOUS_API}/auto/runs/{args.run_id}/artifact"
+    validated_url = build_validated_url(url)
     try:
-        with urllib.request.urlopen(url, timeout=120) as resp:
+        with urllib.request.urlopen(validated_url, timeout=120) as resp:
             data = resp.read()
     except urllib.error.HTTPError as exc:
         print(f"error: HTTP {exc.code} — artifact not ready?")

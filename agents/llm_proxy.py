@@ -15,6 +15,7 @@ import time
 import threading
 from pathlib import Path
 from collections import OrderedDict
+from urllib.parse import urlparse, urlunparse, urlencode
 
 import requests
 
@@ -72,6 +73,36 @@ def _parse_provider_model(provider_model: str) -> tuple[str, str] | None:
     return None
 
 
+def _build_validated_gemini_url(base_url: str, model: str, api_key: str) -> str:
+    try:
+        # Minimal path validation
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        
+        parsed = urlparse(base_url)
+        
+        # Protocol + host checks
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        
+        # Validate model parameter (used in path)
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", model):
+            raise ValueError("Invalid parameter")
+        
+        # Rebuild path from fixed literals + validated segments
+        parsed = parsed._replace(path=f"{parsed.path.rstrip('/')}/{model}:generateContent")
+        
+        # Add query parameters
+        query = {"key": api_key}
+        parsed = parsed._replace(query=urlencode(query))
+        
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
+
 def _call_provider(provider: str, model: str, prompt: str,
                    max_tokens: int = 2048,
                    temperature: float = 0.2) -> dict:
@@ -125,7 +156,7 @@ def _call_provider(provider: str, model: str, prompt: str,
             return {"content": content, "model": f"{provider}/{model}"}
 
         elif style == "gemini":
-            url = f"{base_url.rstrip('/')}/{model}:generateContent?key={api_key}"
+            url = _build_validated_gemini_url(base_url, model, api_key)
             body = {
                 "contents": [{"parts": [{"text": prompt}]}],
                 "generationConfig": {"maxOutputTokens": max_tokens},

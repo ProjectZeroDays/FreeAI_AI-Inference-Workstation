@@ -29,6 +29,24 @@ def _normalize_authorized_user_payload(payload: dict) -> dict:
     return normalized
 
 
+def build_validated_url(base_url: str) -> str:
+    import re
+    from urllib.parse import urlparse, urlunparse
+    try:
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        parsed = urlparse(base_url)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        allowed_domains = ["oauth2.googleapis.com", "accounts.google.com", "www.googleapis.com"]
+        if parsed.hostname.lower() not in allowed_domains:
+            raise ValueError("Invalid host")
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
 def refresh_token(token_data: dict) -> dict:
     """Refresh the access token using the refresh token."""
     import urllib.error
@@ -49,7 +67,8 @@ def refresh_token(token_data: dict) -> dict:
         "grant_type": "refresh_token",
     }).encode()
 
-    req = urllib.request.Request(token_data["token_uri"], data=params)
+    validated_token_uri = build_validated_url(token_data["token_uri"])
+    req = urllib.request.Request(validated_token_uri, data=params)
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             result = json.loads(resp.read())

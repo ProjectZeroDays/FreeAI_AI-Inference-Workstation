@@ -15,12 +15,62 @@ API keys come from the environment (never stored in the file).
 """
 import json
 import os
+import re
 import time
+from urllib.parse import urlparse, urlunparse
 
 import requests
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROVIDERS_PATH = os.path.join(ROOT, "config", "providers.json")
+
+
+# ---------------------------------------------------------------- URL validation helpers
+def _build_validated_health_url(base_url: str, suffix: str) -> str:
+    """Build and validate health check URL."""
+    try:
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        parsed = urlparse(base_url)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        # Construct the final path
+        if parsed.path.endswith(suffix):
+            final_path = parsed.path
+        elif parsed.path.endswith("/v1") and suffix == "/v1/models":
+            final_path = parsed.path + "/models"
+        else:
+            final_path = parsed.path.rstrip("/") + suffix
+        parsed = parsed._replace(path=final_path)
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
+
+def _build_validated_api_url(base_url: str, path_suffix: str, model: str = None) -> str:
+    """Build and validate API request URL."""
+    try:
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        parsed = urlparse(base_url)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        # Validate model parameter if provided (used in gemini path)
+        if model is not None:
+            if not re.fullmatch(r"[A-Za-z0-9_.-]+", model):
+                raise ValueError("Invalid parameter")
+            final_path = parsed.path.rstrip("/") + f"/models/{model}:generateContent"
+        else:
+            final_path = parsed.path.rstrip("/") + path_suffix
+        parsed = parsed._replace(path=final_path)
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
 
 # ---------------------------------------------------------------- presets
 PRESETS = {
@@ -2355,7 +2405,7 @@ def is_provider_healthy(name, cfg, timeout=2):
 
     Results cached for _HEALTH_TTL seconds to avoid per-request stalls.
     """
-    base = cfg.get("base_url", "").rstrip("/")
+    base = cfg.get("base_url", "")
     if not base:
         return False
     now = time.time()
@@ -2365,9 +2415,7 @@ def is_provider_healthy(name, cfg, timeout=2):
     healthy = False
     for suffix in ("/health", "/v1/models", "/models"):
         try:
-            url = base + suffix if not base.endswith(suffix) else base
-            if base.endswith("/v1") and suffix == "/v1/models":
-                url = base + "/models"
+            url = _build_validated_health_url(base, suffix)
             r = requests.get(url, timeout=timeout)
             if r.status_code < 500:
                 healthy = True
@@ -2411,19 +2459,18 @@ def build_request(name, cfg, model, prompt, max_tokens=2048,
     style = cfg.get("style", "openai")
     key = get_key(name, cfg)
     if style == "anthropic":
-        url = cfg["base_url"].rstrip("/") + "/v1/messages"
+        url = _build_validated_api_url(cfg["base_url"], "/v1/messages")
         headers = {"x-api-key": key,
                    "anthropic-version": "2023-06-01",
                    "Content-Type": "application/json"}
         body = _payload_anthropic(model, prompt, max_tokens, temperature)
     elif style == "gemini":
-        url = (cfg["base_url"].rstrip("/")
-               + f"/models/{model}:generateContent")
+        url = _build_validated_api_url(cfg["base_url"], None, model=model)
         headers = {"x-goog-api-key": key,
                    "Content-Type": "application/json"}
         body = _payload_gemini(model, prompt, max_tokens, temperature)
     else:
-        url = cfg["base_url"].rstrip("/") + "/chat/completions"
+        url = _build_validated_api_url(cfg["base_url"], "/chat/completions")
         headers = {"Content-Type": "application/json"}
         if key:
             headers["Authorization"] = f"Bearer {key}"

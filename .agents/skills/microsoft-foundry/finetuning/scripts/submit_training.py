@@ -65,9 +65,29 @@ def submit_sft_sdk(client, model, train_id, val_id, epochs=2, lr=1.0, batch_size
     return {"id": job.id, "status": job.status, "model": model, "method": "sdk"}
 
 
+def build_validated_url(base_url: str) -> str:
+    import re
+    from urllib.parse import urlparse, urlunparse, urlencode
+    try:
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        parsed = urlparse(base_url)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid protocol")
+        if not parsed.hostname:
+            raise ValueError("Invalid host")
+        allowed_domains = ["example.com"]  # add your allowed domains here
+        if parsed.hostname.lower() not in allowed_domains:
+            raise ValueError("Invalid host")
+        parsed = parsed._replace(path="/openai/fine_tuning/jobs")
+        parsed = parsed._replace(query=urlencode({"api-version": "2025-04-01-preview"}))
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
 def submit_sft_rest(endpoint, api_key, model, train_id, val_id, epochs=2, lr=1.0, batch_size=None, suffix=None, training_type="globalStandard"):
     """Submit SFT job via REST API (fallback for models like gpt-oss-20b)."""
-    url = f"{endpoint}/openai/fine_tuning/jobs?api-version=2025-04-01-preview"
+    url = build_validated_url(endpoint)
     body = {
         "model": model,
         "training_file": train_id,

@@ -31,6 +31,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import HelpOnErrorParser
 
 import requests
+import re
+from urllib.parse import urlparse, urlunparse, urlencode
 
 
 def _safe_error_msg(resp):
@@ -82,15 +84,48 @@ def get_arm_token():
     return token
 
 
+def build_validated_url(
+    base_url: str,
+    sub: str,
+    rg: str,
+    account: str,
+    deploy_name: str | None = None,
+) -> str:
+    try:
+        if "/../" in base_url or re.search(r"/%2e%2e/", base_url, re.IGNORECASE):
+            raise ValueError("Invalid path")
+        
+        parsed = urlparse(base_url)
+        
+        # Validate path parameters
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", sub):
+            raise ValueError("Invalid parameter")
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", rg):
+            raise ValueError("Invalid parameter")
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", account):
+            raise ValueError("Invalid parameter")
+        if deploy_name and not re.fullmatch(r"[A-Za-z0-9_-]+", deploy_name):
+            raise ValueError("Invalid parameter")
+        
+        # Rebuild path from fixed literals + validated segments
+        if deploy_name:
+            parsed = parsed._replace(path=f"/subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.CognitiveServices/accounts/{account}/deployments/{deploy_name}")
+        else:
+            parsed = parsed._replace(path=f"/subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.CognitiveServices/accounts/{account}/deployments")
+        
+        # Add query parameters
+        query = {"api-version": "2024-10-01"}
+        parsed = parsed._replace(query=urlencode(query))
+        
+        return urlunparse(parsed)
+    except Exception:
+        raise ValueError("Invalid URL")
+
+
 def arm_url(sub, rg, account, deploy_name=None):
     """Build the ARM REST API URL."""
-    base = (f"https://management.azure.com/subscriptions/{sub}"
-            f"/resourceGroups/{rg}"
-            f"/providers/Microsoft.CognitiveServices/accounts/{account}"
-            f"/deployments")
-    if deploy_name:
-        base += f"/{deploy_name}"
-    return base + "?api-version=2024-10-01"
+    base_url = "https://management.azure.com"
+    return build_validated_url(base_url, sub, rg, account, deploy_name)
 
 
 def detect_format(model_id):

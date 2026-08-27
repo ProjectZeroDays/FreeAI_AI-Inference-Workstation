@@ -18,6 +18,7 @@ Commands:
 import argparse
 import json
 import math
+import re
 import sys
 import time
 import urllib.error
@@ -161,12 +162,46 @@ def error_exit(message, code=1):
 # HTTP helpers
 # ---------------------------------------------------------------------------
 
+def validate_url(url):
+    """
+    Validate URL to prevent SSRF attacks.
+    Only allows URLs from known safe domains used by this application.
+    """
+    try:
+        if "/../" in url or re.search(r"/%2e%2e/", url, re.IGNORECASE):
+            raise ValueError("Invalid URL")
+        
+        parsed = urllib.parse.urlparse(url)
+        
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("Invalid URL")
+        
+        if not parsed.hostname:
+            raise ValueError("Invalid URL")
+        
+        allowed_domains = [
+            "nominatim.openstreetmap.org",
+            "overpass-api.de",
+            "overpass.kumi.systems",
+            "router.project-osrm.org",
+            "timeapi.io"
+        ]
+        
+        if parsed.hostname.lower() not in allowed_domains:
+            raise ValueError("Invalid URL")
+        
+        return url
+    except Exception:
+        raise ValueError("Invalid URL")
+
+
 def http_get(url, params=None, retries=MAX_RETRIES, silent=False):
     """
     Perform an HTTP GET request, returning parsed JSON.
     Adds the required User-Agent header. Retries on transient errors.
     If silent=True, raises RuntimeError instead of calling error_exit.
     """
+    url = validate_url(url)
     if params:
         url = url + "?" + urllib.parse.urlencode(params)
 
@@ -204,6 +239,7 @@ def http_get_text(url, params=None, retries=MAX_RETRIES, silent=False):
     Like http_get but returns raw text instead of parsed JSON.
     Useful for APIs that may return non-JSON responses.
     """
+    url = validate_url(url)
     if params:
         url = url + "?" + urllib.parse.urlencode(params)
 
@@ -237,6 +273,7 @@ def http_post(url, data_str, retries=MAX_RETRIES):
     Perform an HTTP POST with a plain-text body (for Overpass QL).
     Returns parsed JSON.
     """
+    url = validate_url(url)
     encoded = data_str.encode("utf-8")
     req = urllib.request.Request(
         url,
