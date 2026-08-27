@@ -122,7 +122,10 @@ def cache_put(key, value):
 def guard():
     if request.path == "/health":
         return None
-    if API_KEY and request.headers.get("X-API-Key") != API_KEY:
+    # Fail-secure: reject requests when API_KEY is not configured or empty
+    if not API_KEY:
+        return jsonify({"error": "unauthorized - API key not configured"}), 401
+    if request.headers.get("X-API-Key") != API_KEY:
         return jsonify({"error": "unauthorized"}), 401
     if not allow_request(request.remote_addr or "unknown"):
         return jsonify({"error": "rate limited"}), 429
