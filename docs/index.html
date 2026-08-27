@@ -1,258 +1,501 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FreeAI â€” Unified AI Workstation</title>
-  <meta name="description" content="Build, secure, and scale AI applications on your own hardware. FreeAI unifies model serving, autonomous agents, and security tools." />
-  <meta property="og:title" content="FreeAI â€” Unified AI Workstation" />
-  <meta property="og:description" content="Self-hosted AI inference workstation with GPU serving, autonomous agents, and security scanning." />
+  <title>FreeAI — Unified AI Workstation</title>
+  <meta name="description" content="Self-hosted AI inference workstation with GPU serving, autonomous agents, security scanning, and builder tools." />
+  <meta property="og:title" content="FreeAI — Unified AI Workstation" />
+  <meta property="og:description" content="Local models. Autonomous agents. Full SDLC automation. One self-hosted stack." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" />
   <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #FAFAFA; --bg-soft: #F1F5F9; --panel: #FFFFFF;
-      --border: rgba(15,23,42,.1); --border-strong: rgba(15,23,42,.18);
-      --text: #0F172A; --muted: #64748B; --muted-2: #94A3B8;
-      --accent: #0EA5E9; --accent-2: #22C55E; --danger: #EF4444; --warn: #F59E0B;
-      --purple: #8B5CF6;
-      --radius: 20px; --radius-sm: 12px;
+      --primary: #0241e3;
+      --primary-hover: #0137c4;
+      --primary-soft: rgba(2, 65, 227, .1);
+      --primary-50: #EEF4FF;
+      --primary-100: #DBE7FF;
+      --primary-200: #B8CFFF;
+      --primary-600: #0241E3;
+      --primary-900: #010258;
+      --secondary: #010258;
+      --secondary-soft: rgba(1, 2, 88, .08);
+      --navy-50: #F1F6FF;
+      --navy-100: #E2E8F4;
+      --navy-400: #8A98BA;
+      --navy-800: #0B1638;
+      --navy-900: #010258;
+      --accent: #0237C2;
+      --accent-light: #6691F1;
+      --accent-50: #E5ECFC;
+      --accent-300: #6691F1;
+      --accent-500: #0241E3;
+      --accent-600: #0237C2;
+      --canvas: #F1F6FF;
+      --bg: #FFFFFF;
+      --bg-canvas: #F1F6FF;
+      --bg-elev-1: #FFFFFF;
+      --bg-elev-2: #F6F9FF;
+      --bg-elev-3: #ECF1FB;
+      --text-primary: #010258;
+      --text-secondary: #2A3866;
+      --text-tertiary: #5A6A95;
+      --text-muted: #8A98BA;
+      --border: #E2E8F4;
+      --border-strong: #C9D3E8;
+      --border-brand: rgba(2, 65, 227, .32);
+      --success: #16A34A;
+      --success-soft: #DCFCE7;
+      --warning: #D97706;
+      --warning-soft: #FEF3C7;
+      --danger: #DC2626;
+      --danger-soft: #FEE2E2;
+      --info: #0241E3;
+      --info-soft: #DBE7FF;
+      --radius-xs: 4px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-2xl: 24px;
+      --radius-3xl: 28px;
+      --radius-pill: 9999px;
+      --shadow-sm: 0 1px 2px rgba(1, 2, 88, .06);
+      --shadow-md: 0 4px 12px rgba(1, 2, 88, .08);
+      --shadow-lg: 0 16px 40px rgba(1, 2, 88, .12);
+      --shadow-glow: 0 0 0 4px rgba(2, 65, 227, .18);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+      --font-sans: "Outfit", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+      --fs-display: 56px;
+      --fs-h1: 40px;
+      --fs-h2: 28px;
+      --fs-h3: 20px;
+      --fs-h4: 17px;
+      --fs-body: 15px;
+      --fs-small: 13px;
+      --fs-micro: 11px;
+      --lh-tight: 1.15;
+      --lh-snug: 1.35;
+      --lh-normal: 1.55;
+      --fw-regular: 400;
+      --fw-medium: 500;
+      --fw-semibold: 600;
+      --ease-out: cubic-bezier(.23, 1, .32, 1);
+      --ai-grad: linear-gradient(100deg, var(--primary-600) 8%, #7c5cf0 92%);
+      --ai-violet: #7c5cf0;
+      --ai-violet-soft: rgba(124, 92, 240, .12);
+      --header-glass: rgba(255, 255, 255, .82);
+      --glass-border: var(--border);
+      --glow-core: rgba(2, 65, 227, .1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [data-theme="dark"] {
+      --bg: #060a18;
+      --bg-canvas: #04070f;
+      --bg-elev-1: #0e1630;
+      --bg-elev-2: #121b3a;
+      --bg-elev-3: #1b2750;
+      --text-primary: #f1f6ff;
+      --text-secondary: #c9d3e8;
+      --text-tertiary: #a5b4dc;
+      --text-muted: #8a98ba;
+      --border: rgba(150, 170, 255, .13);
+      --border-strong: rgba(150, 170, 255, .26);
+      --border-brand: rgba(92, 139, 255, .45);
+      --primary: #5c8bff;
+      --primary-hover: #7da2ff;
+      --primary-soft: rgba(92, 139, 255, .13);
+      --secondary-soft: rgba(255, 255, 255, .06);
+      --success: #4ade80;
+      --success-soft: rgba(74, 222, 128, .14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(211, 119, 6, .14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, .15);
+      --info: #5c8bff;
+      --info-soft: rgba(92, 139, 255, .16);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
+      --shadow-lg: 0 24px 60px rgba(0, 0, 0, .55);
+      --shadow-glow: 0 0 0 4px rgba(92, 139, 255, .24);
+      --header-glass: rgba(5, 8, 20, .88);
+      --glass-border: rgba(150, 170, 255, .13);
+      --glow-core: rgba(2, 65, 227, .32);
+      --ai-grad: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+      --ai-violet: #8a70f6;
+      --ai-violet-soft: rgba(138, 112, 246, .16);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg); color: var(--text);
-      line-height: 1.6; overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text-secondary);
+      font: var(--fw-regular) var(--fs-body) / var(--lh-normal) var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+    ::selection { background: var(--primary-100); color: var(--primary-900); }
+    [data-theme="dark"] ::selection { background: var(--primary); color: #fff; }
 
-    /* â”€â”€ Nav â”€â”€ */
+    /* ── Theme Toggle ── */
+    .theme-toggle {
+      width: 36px; height: 36px; border-radius: var(--radius-md);
+      display: grid; place-items: center;
+      color: var(--text-muted); transition: background .15s, color .15s;
+      cursor: pointer; border: 1px solid var(--border);
+    }
+    .theme-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .theme-toggle svg { width: 18px; height: 18px; }
+    .theme-toggle .icon-moon { display: none; }
+    .theme-toggle .icon-sun  { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+    [data-theme="dark"] .theme-toggle .icon-sun  { display: none; }
+
+    /* ── Nav ── */
     .nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(250,250,250,.88); backdrop-filter: blur(20px);
+      background: var(--header-glass);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
       max-width: 1200px; margin: 0 auto;
-      display: flex; align-items: center; gap: 20px;
-      padding: 0 32px; height: 68px;
+      display: flex; align-items: center; gap: var(--space-4);
+      padding: 0 var(--space-8); height: 64px;
     }
     .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 800; font-size: 19px; color: var(--text);
+      display: flex; align-items: center; gap: var(--space-2);
+      font-weight: 700; font-size: 18px; color: var(--text-primary);
+      white-space: nowrap;
     }
     .nav-logo svg { flex-shrink: 0; }
-    .nav-links { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+    .nav-links {
+      display: flex; gap: 2px; margin-left: auto;
+      flex-wrap: wrap; align-items: center;
+    }
     .nav-link {
-      padding: 7px 14px; border-radius: 10px; font-size: 13.5px; font-weight: 500;
-      color: var(--muted); transition: all .15s;
+      padding: 6px 12px; border-radius: var(--radius-md);
+      font-size: var(--fs-small); font-weight: 500;
+      color: var(--text-tertiary); transition: all .15s;
+      white-space: nowrap;
     }
-    .nav-link:hover { color: var(--text); background: rgba(15,23,42,.06); text-decoration: none; }
-    .nav-cta {
-      background: var(--text); color: #fff;
-      font-weight: 700; padding: 9px 20px; border-radius: 999px;
-      font-size: 13.5px; transition: transform .15s, box-shadow .15s;
-    }
-    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(15,23,42,.25); text-decoration: none; }
+    .nav-link:hover { color: var(--text-primary); background: var(--secondary-soft); text-decoration: none; }
+    .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
 
-    /* â”€â”€ Hero â”€â”€ */
-    .hero {
-      padding: 160px 24px 100px; text-align: center;
-      background: linear-gradient(180deg, #EEF2FF 0%, var(--bg) 100%);
-    }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 16px; border-radius: 999px;
-      background: #fff; border: 1px solid var(--border-strong);
-      color: var(--muted); font-size: 12.5px; font-weight: 600; margin-bottom: 28px;
-      box-shadow: 0 1px 4px rgba(15,23,42,.06);
-    }
-    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-2); }
-    .hero h1 {
-      font-size: clamp(36px, 6vw, 72px); font-weight: 800; line-height: 1.08;
-      letter-spacing: -.035em; margin-bottom: 24px; color: var(--text);
-    }
-    .hero h1 span {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .hero p { font-size: 18px; color: var(--muted); max-width: 580px; margin: 0 auto 40px; line-height: 1.65; }
-    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    /* ── Buttons ── */
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 13px 26px; border-radius: 12px; font-size: 14px; font-weight: 600;
-      border: 1px solid var(--border); cursor: pointer; transition: all .15s;
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      height: 42px; padding: 0 var(--space-5);
+      border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: 600;
+      white-space: nowrap; transition: transform .16s var(--ease-out), background .2s, border-color .2s, box-shadow .2s;
+      cursor: pointer; border: 1px solid transparent;
     }
-    .btn-primary {
-      background: var(--text); color: #fff; border: none;
+    .btn:active { transform: scale(.97); }
+    .btn--primary {
+      background: var(--primary-600); color: #fff;
+      box-shadow: inset 0 1px rgba(255,255,255,.18), 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(2,65,227,.35);
     }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,23,42,.2); text-decoration: none; }
-    .btn-secondary { background: #fff; color: var(--text); }
-    .btn-secondary:hover { border-color: var(--border-strong); text-decoration: none; }
+    [data-theme="dark"] .btn--primary {
+      background: var(--primary); color: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(92,139,255,.25);
+    }
+    .btn--primary:hover { background: var(--primary-hover); }
+    .btn--secondary {
+      background: var(--bg); color: var(--text-primary);
+      border: 1px solid var(--border-strong); box-shadow: var(--shadow-sm);
+    }
+    .btn--secondary:hover { background: var(--bg-elev-2); border-color: var(--navy-400); }
+    [data-theme="dark"] .btn--secondary { background: var(--bg-elev-1); }
+    .btn--ghost {
+      background: rgba(255,255,255,.08); color: #fff;
+      border: 1px solid rgba(255,255,255,.22);
+    }
+    .btn--ghost:hover { background: rgba(255,255,255,.15); }
+    .btn--sm { height: 34px; padding: 0 var(--space-4); border-radius: var(--radius-md); font-size: var(--fs-small); }
+    .btn-icon { width: 16px; height: 16px; }
+
+    /* ── Pills ── */
+    .pill {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      height: 26px; padding: 0 var(--space-3);
+      border-radius: var(--radius-pill); font-size: var(--fs-micro);
+      font-weight: var(--fw-semibold); letter-spacing: .02em; white-space: nowrap; flex-shrink: 0;
+    }
+    .pill--brand { background: var(--primary-soft); color: var(--primary); }
+    .pill--success { background: var(--success-soft); color: var(--success); }
+    .pill--neutral { background: var(--bg-elev-3); color: var(--text-tertiary); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+    /* ── Container ── */
+    .container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px,4vw,32px); }
+    .section { padding-block: clamp(80px,10vw,120px); }
+
+    /* ── Typography ── */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--fs-micro); font-weight: var(--fw-semibold);
+      letter-spacing: .12em; text-transform: uppercase; color: var(--primary); margin-bottom: var(--space-4);
+    }
+    .section-title {
+      font-size: clamp(32px,5vw,56px); font-weight: 600; line-height: var(--lh-tight);
+      letter-spacing: -.025em; color: var(--text-primary); text-wrap: balance;
+    }
+    .section-sub {
+      margin-top: var(--space-4); font-size: var(--fs-h4); line-height: var(--lh-normal);
+      color: var(--text-tertiary); text-wrap: pretty; max-width: 640px;
+    }
+    .grad {
+      background: var(--ai-grad); -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 148px 0 80px; text-align: center;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(92,139,255,.12) 0%, transparent 70%),
+        var(--bg-canvas);
+    }
+    [data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(2,65,227,.06) 0%, transparent 70%),
+        var(--canvas);
+    }
+    .hero h1 {
+      font-size: clamp(40px,6vw,72px); font-weight: 700; line-height: var(--lh-tight);
+      letter-spacing: -.035em; margin-bottom: var(--space-6); color: var(--text-primary);
+    }
+    .hero p {
+      font-size: 18px; color: var(--text-secondary); max-width: 580px;
+      margin: 0 auto var(--space-8); line-height: var(--lh-normal);
+    }
+    .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
     .hero-stats {
-      display: flex; justify-content: center; gap: 48px; margin-top: 64px;
-      padding-top: 40px; border-top: 1px solid var(--border);
+      display: flex; justify-content: center; gap: clamp(32px,6vw,72px);
+      margin-top: 72px; padding-top: 48px;
+      border-top: 1px solid var(--border);
     }
     .hero-stat { text-align: center; }
-    .hero-stat .num { font-size: 28px; font-weight: 800; color: var(--text); }
-    .hero-stat .label { font-size: 12px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+    .hero-stat .num { font-size: 32px; font-weight: 800; color: var(--text-primary); letter-spacing: -.02em; }
+    .hero-stat .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
 
-    /* â”€â”€ Marquee â”€â”€ */
-    .marquee-wrap { overflow: hidden; padding: 20px 0; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    /* ── Marquee ── */
+    .marquee-wrap { overflow: hidden; padding: 16px 0; background: var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .marquee { display: flex; gap: 48px; animation: marquee 30s linear infinite; white-space: nowrap; }
-    .marquee span { font-size: 14px; font-weight: 600; color: var(--muted-2); text-transform: uppercase; letter-spacing: .1em; }
-    .marquee span em { font-style: normal; color: var(--accent); }
+    .marquee span { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em; }
+    .marquee span em { font-style: normal; color: var(--primary); }
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    /* â”€â”€ Trusted logos â”€â”€ */
-    .trusted { padding: 48px 24px; text-align: center; border-bottom: 1px solid var(--border); }
-    .trusted p { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-2); margin-bottom: 24px; }
-    .logo-strip { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center; opacity: .45; }
-    .logo-strip span { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+    /* ── Trusted ── */
+    .trusted { padding: 40px 0; text-align: center; border-bottom: 1px solid var(--border); }
+    .trusted p { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 20px; }
+    .logo-strip { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; align-items: center; opacity: .45; }
+    .logo-strip span { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
 
-    /* â”€â”€ Sections â”€â”€ */
-    .section { padding: 96px 24px; max-width: 1200px; margin: 0 auto; }
-    .section-center { text-align: center; }
-    .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 12px; }
-    .section-title { font-size: clamp(26px, 4vw, 44px); font-weight: 800; letter-spacing: -.025em; margin-bottom: 16px; color: var(--text); }
-    .section-desc { font-size: 17px; color: var(--muted); max-width: 580px; margin: 0 auto 56px; line-height: 1.65; }
+    /* ── Section head ── */
+    .section-head { max-width: 720px; margin: 0 auto clamp(40px,6vw,64px); text-align: center; }
 
-    /* â”€â”€ Feature Cards â”€â”€ */
+    /* ── Feature Cards ── */
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     .feature-card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 28px; transition: border-color .15s, transform .15s, box-shadow .15s;
+      background: var(--bg-elev-1); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 28px;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
     }
-    .feature-card:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(15,23,42,.08); }
+    .feature-card:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
     .feature-icon {
-      width: 48px; height: 48px; border-radius: 14px;
+      width: 48px; height: 48px; border-radius: var(--radius-lg);
       display: grid; place-items: center; font-size: 22px; margin-bottom: 16px;
     }
-    .feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-    .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
-
-    /* â”€â”€ Pillar Section â”€â”€ */
-    .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-    .pillar { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; }
-    .pillar-num { font-size: 48px; font-weight: 800; color: var(--bg-soft); line-height: 1; margin-bottom: 12px; }
-    .pillar h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-    .pillar p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
-
-    /* â”€â”€ Steps â”€â”€ */
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; counter-reset: step; }
-    .step { position: relative; padding: 28px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); }
-    .step::before { counter-increment: step; content: counter(step); position: absolute; top: -14px; left: 24px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
-      font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%;
-      display: grid; place-items: center;
+    .feature-card h3 { font-size: var(--fs-h3); font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+    .feature-card p { font-size: var(--fs-small); color: var(--text-secondary); line-height: 1.55; }
+    .feature-card pre {
+      background: var(--bg-canvas); border-radius: var(--radius-md);
+      padding: 12px; font-size: 12px; margin-top: 12px; overflow-x: auto;
+      font-family: var(--font-mono); color: var(--text-secondary); border: 1px solid var(--border);
     }
-    .step h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; margin-top: 8px; }
-    .step p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+    .feature-card code { font-family: var(--font-mono); }
 
-    /* â”€â”€ Integration Grid â”€â”€ */
+    /* ── Pillars ── */
+    .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .pillar {
+      background: var(--bg-elev-1); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); padding: 32px;
+    }
+    .pillar-num { font-size: 48px; font-weight: 800; color: var(--bg-elev-3); line-height: 1; margin-bottom: 12px; }
+    .pillar h3 { font-size: var(--fs-h3); font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+    .pillar p { font-size: var(--fs-small); color: var(--text-secondary); line-height: 1.55; }
+
+    /* ── Integration Grid ── */
     .integration-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
     .integration-card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 18px; text-align: center; transition: all .15s; cursor: pointer;
+      background: var(--bg-elev-1); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 18px; text-align: center;
+      transition: all .15s; cursor: pointer;
     }
-    .integration-card:hover { border-color: var(--accent); background: rgba(14,165,233,.04); transform: translateY(-2px); }
+    .integration-card:hover { border-color: var(--primary); background: var(--primary-soft); transform: translateY(-2px); }
     .integration-card .icon { font-size: 26px; margin-bottom: 8px; }
-    .integration-card .name { font-size: 13px; font-weight: 600; color: var(--text); }
-    .integration-card .desc { font-size: 11px; color: var(--muted-2); margin-top: 4px; }
+    .integration-card .name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .integration-card .desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 
-    /* â”€â”€ CTA â”€â”€ */
+    /* ── Steps ── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; counter-reset: step; }
+    .step {
+      position: relative; padding: 28px; background: var(--bg-elev-1);
+      border: 1px solid var(--border); border-radius: var(--radius-xl);
+    }
+    .step::before {
+      counter-increment: step; content: counter(step);
+      position: absolute; top: -14px; left: 24px;
+      background: var(--ai-grad); color: #fff;
+      font-size: 13px; font-weight: 800; width: 28px; height: 28px;
+      border-radius: 50%; display: grid; place-items: center;
+    }
+    .step h3 { font-size: var(--fs-h4); font-weight: 600; margin-bottom: 8px; margin-top: 8px; color: var(--text-primary); }
+    .step p { font-size: var(--fs-small); color: var(--text-secondary); line-height: 1.55; }
+
+    /* ── CTA ── */
     .cta-section {
       text-align: center; padding: 96px 24px;
-      background: var(--text); color: #fff;
+      background: linear-gradient(135deg, #0e1630 0%, #060a18 100%);
+      border-top: 1px solid var(--border);
     }
-    .cta-section h2 { font-size: clamp(26px, 4vw, 44px); font-weight: 800; margin-bottom: 16px; letter-spacing: -.02em; }
-    .cta-section p { color: rgba(255,255,255,.6); font-size: 17px; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
-    .cta-section .btn-primary { background: #fff; color: var(--text); }
-    .cta-section .btn-primary:hover { box-shadow: 0 8px 24px rgba(255,255,255,.2); }
-    .cta-section .btn-secondary { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.2); }
-    .cta-section .btn-secondary:hover { background: rgba(255,255,255,.15); }
+    [data-theme="light"] .cta-section {
+      background: linear-gradient(135deg, var(--primary-600) 0%, #5b21b6 100%);
+    }
+    .cta-section h2 { font-size: clamp(28px,4vw,48px); font-weight: 700; margin-bottom: var(--space-4); letter-spacing: -.02em; color: #fff; }
+    .cta-section p { color: rgba(255,255,255,.65); font-size: 17px; margin-bottom: 40px; max-width: 480px; margin-left: auto; margin-right: auto; }
+    .cta-section .btn--primary { background: #fff; color: var(--text-primary); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+    .cta-section .btn--primary:hover { background: var(--navy-50); }
+    .cta-section .btn--ghost { border-color: rgba(255,255,255,.3); }
 
-    /* â”€â”€ Footer â”€â”€ */
+    /* ── Footer ── */
     .footer {
-      padding: 48px 24px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
-      max-width: 1200px; margin: 0 auto;
+      padding: 48px 0; border-top: 1px solid var(--border);
+      background: var(--bg-elev-2);
     }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-brand { font-weight: 700; font-size: 16px; color: var(--text-primary); }
+    .footer-copy { font-size: 12px; color: var(--text-muted); }
     .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-    .footer-links a { color: var(--muted); font-size: 13px; }
-    .footer-links a:hover { color: var(--text); }
-    .footer-copy { font-size: 12px; color: var(--muted-2); }
+    .footer-links a { color: var(--text-muted); font-size: 13px; transition: color .15s; }
+    .footer-links a:hover { color: var(--text-primary); }
 
-    /* â”€â”€ Responsive â”€â”€ */
+    /* ── Responsive ── */
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .hero-stats { gap: 24px; flex-wrap: wrap; }
       .hero h1 { font-size: 36px; }
       .section { padding: 64px 20px; }
     }
+
+    /* ── Glow panel ── */
+    .glow-panel {
+      position: relative; isolation: isolate;
+      border-radius: var(--radius-3xl); overflow: hidden;
+    }
+    .glow-panel::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: inherit; padding: 1px;
+      background: var(--ai-grad);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      pointer-events: none; opacity: .5;
+    }
+    .glow-panel > * { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
 
-  <!-- â”€â”€ Navigation â”€â”€ -->
+  <!-- ── Navigation ── -->
   <nav class="nav">
     <div class="nav-inner">
       <a href="/" class="nav-logo">
-        <svg viewBox="0 0 200 60" width="32" height="32">
+        <svg viewBox="0 0 200 60" width="28" height="28">
           <defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#0EA5E9"/><stop offset="100%" style="stop-color:#22C55E"/>
+            <stop offset="0%" style="stop-color:#5c8bff"/>
+            <stop offset="100%" style="stop-color:#8a70f6"/>
           </linearGradient></defs>
           <polygon points="30,6 48,24 30,42 12,24" fill="url(#g)" opacity="0.95"/>
-          <circle cx="30" cy="24" r="4" fill="#22C55E" opacity="0.8"/>
+          <circle cx="30" cy="24" r="4" fill="#4ade80" opacity="0.8"/>
         </svg>
         FreeAI
       </a>
       <div class="nav-links">
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#integrations" class="nav-link">Integrations</a>
-        <a href="#agents" class="nav-link">Agents</a>
-        <a href="#security" class="nav-link">Security</a>
-        <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" class="nav-link">Docs</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="nav-link" target="_blank">GitHub</a>
+        <a href="#dashboards" class="nav-link">Dashboards</a>
+        <a href="#skills" class="nav-link">Skills</a>
+        <a href="#plugins" class="nav-link">Plugins</a>
+        <a href="#mcps" class="nav-link">MCPs</a>
+        <a href="#extensions" class="nav-link">Extensions</a>
+        <a href="#workflows" class="nav-link">Workflows</a>
+        <a href="#install" class="nav-link">Install</a>
         <a href="#faq" class="nav-link">FAQ</a>
+        <a href="mailto:contact@projectzerodays.dev" class="nav-link">Contact</a>
       </div>
-      <a href="#install" class="nav-cta">Get Started</a>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
     </div>
   </nav>
 
-  <!-- â”€â”€ Hero â”€â”€ -->
+  <!-- ── Hero ── -->
   <section class="hero">
-    <div class="hero-badge"><span class="dot"></span> v1.0 â€” Now with OmniCode Slim &amp; Aikido Security</div>
-    <h1>The AI workstation<br/>that <span>thinks ahead</span>.</h1>
-    <p>FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools â€” all in one self-hosted stack.</p>
-    <div class="hero-actions">
-      <a href="#install" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Install FreeAI
-      </a>
-      <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" class="btn btn-secondary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
-        Read Docs
-      </a>
-      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn-secondary" target="_blank">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-        GitHub
-      </a>
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="num">174</div><div class="label">Features</div></div>
-      <div class="hero-stat"><div class="num">55+</div><div class="label">Skills</div></div>
-      <div class="hero-stat"><div class="num">23</div><div class="label">MCP Servers</div></div>
-      <div class="hero-stat"><div class="num">16</div><div class="label">Clients</div></div>
-      <div class="hero-stat"><div class="num">33</div><div class="label">Security Skills</div></div>
+    <div class="container">
+      <div class="eyebrow">
+        <span class="dot" style="background:var(--success)"></span>
+        v1.3.0 — Autonomous SDLC Agents &amp; Aikido Security
+      </div>
+      <h1>The AI workstation<br/><span class="grad">that thinks ahead.</span></h1>
+      <p>FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn--primary">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Install FreeAI
+        </a>
+        <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" class="btn btn--secondary">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
+          Read Docs
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">174</div><div class="label">Features</div></div>
+        <div class="hero-stat"><div class="num">55+</div><div class="label">Skills</div></div>
+        <div class="hero-stat"><div class="num">23</div><div class="label">MCP Servers</div></div>
+        <div class="hero-stat"><div class="num">16</div><div class="label">Clients</div></div>
+        <div class="hero-stat"><div class="num">33</div><div class="label">Security Skills</div></div>
+      </div>
     </div>
   </section>
 
-  <!-- â”€â”€ Marquee â”€â”€ -->
+  <!-- ── Marquee ── -->
   <div class="marquee-wrap">
     <div class="marquee">
       <span><em>Model Router</em></span>
@@ -274,7 +517,7 @@
     </div>
   </div>
 
-  <!-- â”€â”€ Trusted By â”€â”€ -->
+  <!-- ── Trusted By ── -->
   <div class="trusted">
     <p>Powered by leading AI infra</p>
     <div class="logo-strip">
@@ -289,79 +532,256 @@
     </div>
   </div>
 
-  <!-- â”€â”€ Features â”€â”€ -->
-  <section class="section" id="features">
-    <div class="section-center">
-      <div class="section-label">Core Features</div>
-      <h2 class="section-title">Everything you need.<br/>Nothing you don't.</h2>
-      <p class="section-desc">From local GPU inference to autonomous agents, security scanning to builder tools â€” FreeAI covers the full AI development lifecycle in a single stack.</p>
+  <!-- ── Dashboards ── -->
+  <section class="section" id="dashboards">
+    <div class="section-head">
+      <div class="eyebrow">Dashboards</div>
+      <h2 class="section-title">Every operational view,<br/><span class="grad">one dashboard.</span></h2>
+      <p class="section-sub">Real-time telemetry, log streams, skill management, and the FreeToken desktop console — all in one interface.</p>
     </div>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(14,165,233,.1)">â¬¡</div>
-        <h3>Model Router</h3>
-        <p>Task-aware model switching with fallback, caching, rate limiting, and per-agent overrides across 21+ providers.</p>
+        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
+        <h3>Wiki Dashboard</h3>
+        <p>3-column scroll-spy layout with filterable page TOC, live section highlighting, and AI chatbot for repo-only Q&A.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.1)">â—ˆ</div>
-        <h3>Autonomous Agents</h3>
-        <p>SDLC agents that plan, code, test, fix, document, and package projects unattended with real verification.</p>
+        <div class="feature-icon" style="background:rgba(34,197,94,.12)">⬡</div>
+        <h3>Logs Dashboard</h3>
+        <p>15 simulated services with live log injection every 3s. Text/JSON export, pattern search, and AI help modal.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(168,85,247,.1)">â—‰</div>
-        <h3>Workflow Engine</h3>
-        <p>Visual designer with validation, templates, audit logs, and export/import for complex automation pipelines.</p>
+        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
+        <h3>Network Dashboard</h3>
+        <p>12 telemetry cards — upload/download speeds, VPN/Tor/DNSCrypt status, IPv4/IPv6. Drag-drop reorder, 5s live refresh.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(239,68,68,.1)">âš </div>
-        <h3>Security Scanning</h3>
-        <p>Aikido integration, pentest agents, auto-patching, and dependency management with intelligent presets.</p>
+        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
+        <h3>FreeToken Desktop</h3>
+        <p>Draggable web cards for edge runtime config, skill/MCP/plugin links, telemetry insights, and per-card recommendations.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(245,158,11,.1)">âŸ</div>
-        <h3>Builder Agents</h3>
-        <p>Generate fullstack apps, websites, CRMs, chatbots, sales pipelines, and marketing automations from specs.</p>
+        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬢</div>
+        <h3>Blog &amp; Forum</h3>
+        <p>Community-driven content. JSON-backed posts and threads with dark/light theme matching the dashboard.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(56,189,248,.1)">â—¬</div>
-        <h3>MCP Registry</h3>
-        <p>23+ pre-configured MCP servers for memory, code intelligence, browser automation, search, and LLM access.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(6,182,212,.1)">â¬¢</div>
-        <h3>Communication Stack</h3>
-        <p>Email (SendGrid, Gmail, Proton Mail), SMS (Twilio), Telegram, WhatsApp Business, Signal â€” all agents can send.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.1)">â¬¡</div>
-        <h3>GPU Inference</h3>
-        <p>llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) â€” local GGUF serving with 21+ hosted API bridges.</p>
+        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
+        <h3>Provider Config</h3>
+        <p>22 providers, 10 clients, cross-installable skills/MCPs/plugins/agents. One config file, all clients updated.</p>
       </div>
     </div>
   </section>
 
-  <!-- â”€â”€ Pillars â”€â”€ -->
-  <section class="section">
-    <div class="section-center">
-      <div class="section-label">Architecture</div>
-      <h2 class="section-title">One platform, four pillars.</h2>
-      <p class="section-desc">Built on what FreeAI delivers today â€” a unified stack that grows with you.</p>
+  <!-- ── Skills ── -->
+  <section class="section" id="skills">
+    <div class="section-head">
+      <div class="eyebrow">Skills</div>
+      <h2 class="section-title">55+ expert skills,<br/><span class="grad">one click to install.</span></h2>
+      <p class="section-sub">From quantum C2 to creative generation, from shell scripting to music synthesis — skills are peer-reviewed, versioned, and shareable.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚔</div>
+        <h3>Red Team (14)</h3>
+        <p>APT hunting, exploit research, social engineering, LotL techniques, evasion, payload generation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(34,197,94,.12)">🛡</div>
+        <h3>Blue Team (12)</h3>
+        <p>Hardening, compliance (NIST/FedRAMP/DOD), SIEM integration, incident response, forensic analysis.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
+        <h3>Purple Team (7)</h3>
+        <p>Red↔blue orchestration, control validation, remediation bridging, autonomous validation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(14,165,233,.12)">⬡</div>
+        <h3>Creative (18)</h3>
+        <p>ASCII art, architecture diagrams, pixel art, manim videos, ComfyUI, p5.js, songwriting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div>
+        <h3>DevOps (10)</h3>
+        <p>CI/CD, Docker, Kubernetes, Terraform, monitoring, Kanban orchestration, webhook subscriptions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟁</div>
+        <h3>MLOps (8)</h3>
+        <p>Model serving (vLLM, llama.cpp), fine-tuning (SFT/DPO/RFT), evaluation harness, RAG pipelines.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Plugins ── -->
+  <section class="section" id="plugins">
+    <div class="section-head">
+      <div class="eyebrow">Plugins</div>
+      <h2 class="section-title">Plug in what you need.<br/><span class="grad">Remove what you don't.</span></h2>
+      <p class="section-sub">Plugin system with 6+ core plugins and a marketplace. Zero-downtime updates, version-pinned, and sandboxed.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
+        <h3>CI/CD Plugin</h3>
+        <p>GitHub Actions, Docker publish, release bundling — triggered on push or schedule. Zero-downtime deployments.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
+        <h3>Watcher Plugin</h3>
+        <p>File-system watcher for config changes, model downloads, and RAG document ingestion.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
+        <h3>Backup Plugin</h3>
+        <p>Config snapshot, registry export, weekly retention (keep 10). One-command restore.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
+        <h3>Watchdog Plugin</h3>
+        <p>Supervisor loop (10s), health agent (30s), recovery agent (15s). systemd units with auto-restart.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
+        <h3>Marketplace</h3>
+        <p>Browse, install, and share plugins. Version-pinned installs with rollback support.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
+        <h3>Scheduler</h3>
+        <p>Cron-driven daily cleanup, weekly backup, timed idle windows with auto-restore on activity.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MCPs ── -->
+  <section class="section" id="mcps">
+    <div class="section-head">
+      <div class="eyebrow">MCP Servers</div>
+      <h2 class="section-title">40+ MCP servers,<br/><span class="grad">zero config hassle.</span></h2>
+      <p class="section-sub">Pre-configured servers for memory, code intelligence, browser automation, search, LLM access, and more — all wired into the router.</p>
+    </div>
+    <div class="integration-grid">
+      <div class="integration-card"><div class="icon">🧠</div><div class="name">Memory</div><div class="desc">Persistent cross-session recall</div></div>
+      <div class="integration-card"><div class="icon">🔍</div><div class="name">Code Intel</div><div class="desc">AST-based search &amp; navigation</div></div>
+      <div class="integration-card"><div class="icon">🌐</div><div class="name">Browser</div><div class="desc">Headless automation + screenshots</div></div>
+      <div class="integration-card"><div class="icon">🔎</div><div class="name">Web Search</div><div class="desc">Google, Brave, DuckDuckGo</div></div>
+      <div class="integration-card"><div class="icon">🤖</div><div class="name">LLM Access</div><div class="desc">OpenAI, Anthropic, local models</div></div>
+      <div class="integration-card"><div class="icon">📧</div><div class="name">Email</div><div class="desc">IMAP/SMTP via Himalaya</div></div>
+      <div class="integration-card"><div class="icon">📊</div><div class="name">Airtable</div><div class="desc">CRUD, filters, upserts</div></div>
+      <div class="integration-card"><div class="icon">💬</div><div class="name">Telegram</div><div class="desc">Bot API + group management</div></div>
+      <div class="integration-card"><div class="icon">🐙</div><div class="name">GitHub</div><div class="desc">PRs, issues, actions, reviews</div></div>
+      <div class="integration-card"><div class="icon">📝</div><div class="name">Notion</div><div class="desc">Pages, databases, markdown</div></div>
+      <div class="integration-card"><div class="icon">☁️</div><div class="name">Azure</div><div class="desc">AI Search, Functions, AKS</div></div>
+      <div class="integration-card"><div class="icon">🛡️</div><div class="name">Aikido</div><div class="desc">Security scanning + auto-patch</div></div>
+    </div>
+  </section>
+
+  <!-- ── Extensions ── -->
+  <section class="section" id="extensions">
+    <div class="section-head">
+      <div class="eyebrow">Extensions</div>
+      <h2 class="section-title">Extend the workstation<br/><span class="grad">without limits.</span></h2>
+      <p class="section-sub">Custom extensions for VS Code, Cursor, and CLI — unified config, shared skills, and one-click install from the dashboard.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
+        <h3>Cursor Extensions</h3>
+        <p>SKILL.md editor, skill catalog browser, pattern monitor — all from within Cursor.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
+        <h3>VS Code</h3>
+        <p>Project navigation, model selection, agent runner — open any FreeAI project instantly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
+        <h3>CLI Extensions</h3>
+        <p>freeai-cli with 14 subcommands: providers, test, deploy, skills, mcp, agents, workflow.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
+        <h3>Desktop App</h3>
+        <p>Native Electron app with tray icon, auto-update, and system-wide model routing.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
+        <h3>Browser Extension</h3>
+        <p>Highlight any text, send to FreeAI for analysis, save as skill snippet.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
+        <h3>Mobile App</h3>
+        <p>iOS and Android with full feature parity — monitor agents, trigger workflows, view logs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Workflows ── -->
+  <section class="section" id="workflows">
+    <div class="section-head">
+      <div class="eyebrow">Workflows</div>
+      <h2 class="section-title">Chain agents into<br/><span class="grad">production pipelines.</span></h2>
+      <p class="section-sub">Visual workflow designer with validation, templates, audit logs, and export/import. From one-shot prompts to scheduled automation.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
+        <h3>Visual Designer</h3>
+        <p>Drag-and-drop pipeline builder. Sequential + parallel steps, conditional branching, error handling.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
+        <h3>Templates</h3>
+        <p>4 shipped templates: code review, deployment, security scan, RAG ingestion. Create your own.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
+        <h3>Audit Log</h3>
+        <p>JSONL audit trail for every run. Re-run, replay, and export pipeline history.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
+        <h3>SDLC Pipeline</h3>
+        <p>plan → code → verify (real compilers/tests) → fix → review → document → package. One spec, full project.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
+        <h3>Security Pipeline</h3>
+        <p>Semgrep → Bandit → Safety → Trivy → auto-patch → verify. CI-ready with pass/fail gates.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
+        <h3>Cron Automation</h3>
+        <p>Scheduled runs: daily reports, nightly backups, weekly audits, morning briefings. Delivery to any platform.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Architecture Pillars ── -->
+  <section class="section" style="background:var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="section-head">
+      <div class="eyebrow">Architecture</div>
+      <h2 class="section-title">One platform,<br/>four pillars.</h2>
+      <p class="section-sub">Built on what FreeAI delivers — a unified stack that grows with you.</p>
     </div>
     <div class="pillars">
       <div class="pillar">
         <div class="pillar-num">01</div>
         <h3>Model Intelligence</h3>
-        <p>Every model state understood in context â€” latency, cost, capacity, and fallback chains across providers.</p>
+        <p>Every model state understood in context — latency, cost, capacity, and fallback chains across 21+ providers.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">02</div>
         <h3>Agent Automation</h3>
-        <p>Agents deployed, updated, and retired by policy â€” across every framework and language.</p>
+        <p>Agents deployed, updated, and retired by policy — across every framework and language.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">03</div>
         <h3>Security by Operation</h3>
-        <p>Security embedded in daily operations â€” not bolted on after the fact. Aikido + pentest + auto-patch.</p>
+        <p>Security embedded in daily operations — not bolted on afterwards. Aikido + pentest + auto-patch.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">04</div>
@@ -371,43 +791,12 @@
     </div>
   </section>
 
-  <!-- â”€â”€ Integrations â”€â”€ -->
-  <section class="section" id="integrations">
-    <div class="section-center">
-      <div class="section-label">Integrations</div>
-      <h2 class="section-title">Connect everything.</h2>
-      <p class="section-desc">Unified APIs from Hermes, OpenCode, MimoCode, JCode, OpenClaw â€” all sharing the same dashboard, config, and agent system.</p>
-    </div>
-    <div class="integration-grid">
-      <div class="integration-card"><div class="icon">ðŸ“§</div><div class="name">SendGrid</div><div class="desc">Transactional email</div></div>
-      <div class="integration-card"><div class="icon">ðŸ“§</div><div class="name">Gmail</div><div class="desc">OAuth / SMTP</div></div>
-      <div class="integration-card"><div class="icon">ðŸ“§</div><div class="name">Proton Mail</div><div class="desc">Encrypted email</div></div>
-      <div class="integration-card"><div class="icon">âœˆï¸</div><div class="name">Twilio</div><div class="desc">SMS &amp; voice</div></div>
-      <div class="integration-card"><div class="icon">âœˆï¸</div><div class="name">Telegram</div><div class="desc">Bot API</div></div>
-      <div class="integration-card"><div class="icon">ðŸ’¬</div><div class="name">WhatsApp</div><div class="desc">Business API</div></div>
-      <div class="integration-card"><div class="icon">ðŸ”’</div><div class="name">Signal</div><div class="desc">Encrypted chat</div></div>
-      <div class="integration-card"><div class="icon">ðŸ™</div><div class="name">GitHub</div><div class="desc">PAT integration</div></div>
-      <div class="integration-card"><div class="icon">â˜ï¸</div><div class="name">Salad</div><div class="desc">GPU earning</div></div>
-      <div class="integration-card"><div class="icon">â˜ï¸</div><div class="name">Vast.ai</div><div class="desc">GPU instances</div></div>
-      <div class="integration-card"><div class="icon">â˜ï¸</div><div class="name">Hostinger</div><div class="desc">VPS hosting</div></div>
-      <div class="integration-card"><div class="icon">ðŸ›¡ï¸</div><div class="name">Aikido</div><div class="desc">Security scans</div></div>
-      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">Hermes</div><div class="desc">Agent platform</div></div>
-      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">OpenCode</div><div class="desc">AI coding</div></div>
-      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">MimoCode</div><div class="desc">Code gen</div></div>
-      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">OpenClaw</div><div class="desc">Agent skills</div></div>
-      <div class="integration-card"><div class="icon">âš¡</div><div class="name">OmniCode</div><div class="desc">Slim skills</div></div>
-      <div class="integration-card"><div class="icon">ðŸ”§</div><div class="name">JCode</div><div class="desc">Refactoring</div></div>
-      <div class="integration-card"><div class="icon">ðŸ”§</div><div class="name">ZCode</div><div class="desc">Code generation</div></div>
-      <div class="integration-card"><div class="icon">ðŸ“¦</div><div class="name">Docker</div><div class="desc">Container deploy</div></div>
-    </div>
-  </section>
-
-  <!-- â”€â”€ How It Works â”€â”€ -->
-  <section class="section">
-    <div class="section-center">
-      <div class="section-label">Get Started</div>
-      <h2 class="section-title">Live in minutes.<br/>Smarter every week.</h2>
-      <p class="section-desc">Three steps to a fully autonomous AI workstation.</p>
+  <!-- ── Get Started ── -->
+  <section class="section" id="install">
+    <div class="section-head">
+      <div class="eyebrow">Get Started</div>
+      <h2 class="section-title">Live in minutes.<br/><span class="grad">Smarter every week.</span></h2>
+      <p class="section-sub">Three steps to a fully autonomous AI workstation.</p>
     </div>
     <div class="steps">
       <div class="step">
@@ -416,7 +805,7 @@
       </div>
       <div class="step">
         <h3>It learns your logic</h3>
-        <p>Providers, agents, skills, MCPs â€” modeled deeply enough to predict fallbacks, costs, and capacity.</p>
+        <p>Providers, agents, skills, MCPs — modeled deeply enough to predict fallbacks, costs, and capacity.</p>
       </div>
       <div class="step">
         <h3>It acts with guardrails</h3>
@@ -429,114 +818,135 @@
     </div>
   </section>
 
-  <!-- â”€â”€ Builder Agents â”€â”€ -->
-  <section class="section" id="agents">
-    <div class="section-center">
-      <div class="section-label">Builder Agents</div>
-      <h2 class="section-title">Generate complete projects</h2>
-      <p class="section-desc">Describe what you need in plain language â€” FreeAI builder agents scaffold the complete project with code, tests, and docs.</p>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(59,130,246,.1)">âŸ</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(139,92,246,.1)">â¬¡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.1)">â—ˆ</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(16,185,129,.1)">â—‰</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.1)">â—·</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(249,115,22,.1)">â¬¢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(236,72,153,.1)">âœ¦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.1)">â—</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
-    </div>
-  </section>
-
-  <!-- â”€â”€ Security â”€â”€ -->
-  <section class="section" id="security">
-    <div class="section-center">
-      <div class="section-label">Security</div>
-      <h2 class="section-title">Secure by default.</h2>
-      <p class="section-desc">Professional-grade security scanning, vulnerability management, and compliance tracking built in from day one.</p>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.1)">â—ˆ</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(239,68,68,.1)">âš </div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy â€” comprehensive SAST/DAST scanning.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.1)">âŸ³</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(34,197,94,.1)">âœ“</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(56,189,248,.1)">â—‰</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.1)">â¬¡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
-    </div>
-  </section>
-
-  <!-- â”€â”€ Install â”€â”€ -->
-  <section class="section" id="install">
-    <div class="section-center">
-      <div class="section-label">Deploy</div>
+  <!-- ── Deploy Methods ── -->
+  <section class="section" id="deploy">
+    <div class="section-head">
+      <div class="eyebrow">Deploy</div>
       <h2 class="section-title">Choose your path.</h2>
-      <p class="section-desc">Local, Docker, or cloud â€” same stack, different runtime.</p>
+      <p class="section-sub">Local, Docker, or cloud — same stack, different runtime.</p>
     </div>
     <div class="feature-grid">
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(14,165,233,.1)">ðŸ§</div>
-        <h3>Local Install</h3>
-        <pre style="background:var(--bg-soft);border-radius:10px;padding:14px;font-size:12px;margin-top:12px;overflow-x:auto;color:var(--text)"><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI_Inference_Workstation
-pip install -r requirements.txt
-python launch.py</code></pre>
+      <div class="feature-card glow-panel">
+        <div class="feature-icon" style="background:var(--primary-soft)">🐧</div>
+        <h3>Bare Metal</h3>
+        <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
+cd FreeAI_AI-Inference-Workstation
+sudo ./hardware/install-stack.sh
+bash models/auto-download-models.sh</code></pre>
+        <p style="margin-top:12px">Drivers → CUDA → Docker → stack → systemd → UFW. Auto-detects GPU and configures everything.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.1)">ðŸ³</div>
+      <div class="feature-card glow-panel">
+        <div class="feature-icon" style="background:rgba(34,197,94,.12)">🐳</div>
         <h3>Docker Compose</h3>
-        <pre style="background:var(--bg-soft);border-radius:10px;padding:14px;font-size:12px;margin-top:12px;overflow-x:auto;color:var(--text)"><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI_Inference_Workstation
+        <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
+cd FreeAI_AI-Inference-Workstation
 docker compose --profile allinone up -d
 # Open http://localhost:8030</code></pre>
+        <p style="margin-top:12px">Any host with NVIDIA Docker. Split or all-in-one profiles.</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(168,85,247,.1)">â˜ï¸</div>
-        <h3>Cloud Deploy</h3>
-        <p>RunPod templates, Vast.ai kits, Hetzner bare-metal, and Terraform modules included. See <a href="docs/DEPLOYMENT.md">Deployment Guide</a>.</p>
+      <div class="feature-card glow-panel">
+        <div class="feature-icon" style="background:rgba(168,85,247,.12)">☁️</div>
+        <h3>Cloud &amp; Live ISO</h3>
+        <p>Kubernetes manifests, Vast.ai templates, RunPod kits, Hetzner bare-metal. Also bootable as a Live ISO — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes.</p>
+        <pre style="margin-top:12px"><code>docker pull ghcr.io/freeai/freeai:latest
+# or boot freeaios-amd64.iso</code></pre>
       </div>
     </div>
   </section>
 
-  <!-- â”€â”€ FAQ â”€â”€ -->
-  <section class="section" id="faq">
-    <div class="section-center">
-      <div class="section-label">FAQ</div>
+  <!-- ── Builder Agents ── -->
+  <section class="section" id="agents" style="background:var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="section-head">
+      <div class="eyebrow">Builder Agents</div>
+      <h2 class="section-title">Generate complete projects</h2>
+      <p class="section-sub">Describe what you need in plain language — FreeAI builder agents scaffold the complete project with code, tests, and docs.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(59,130,246,.12)">⟐</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(139,92,246,.12)">⬡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(16,185,129,.12)">◉</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.12)">◷</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(249,115,22,.12)">⬢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(236,72,153,.12)">✦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◐</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
+    </div>
+  </section>
+
+  <!-- ── Security ── -->
+  <section class="section" id="security">
+    <div class="section-head">
+      <div class="eyebrow">Security</div>
+      <h2 class="section-title">Secure by default.</h2>
+      <p class="section-sub">Professional-grade security scanning, vulnerability management, and compliance tracking built in from day one.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◈</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy — comprehensive SAST/DAST scanning.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(56,189,248,.12)">◉</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
+    </div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section class="section" id="faq" style="background:var(--bg-elev-2); border-top: 1px solid var(--border);">
+    <div class="section-head">
+      <div class="eyebrow">FAQ</div>
       <h2 class="section-title">Frequently asked questions</h2>
     </div>
     <div class="feature-grid" style="margin-top:40px">
-      <div class="feature-card"><h3>Do I need a GPU?</h3><p>No â€” use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
+      <div class="feature-card"><h3>Do I need a GPU?</h3><p>No — use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
       <div class="feature-card"><h3>How many providers are supported?</h3><p>21+ hosted APIs including OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, and more via the provider adapter system.</p></div>
-      <div class="feature-card"><h3>Can I use this for production?</h3><p>Yes â€” FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
-      <div class="feature-card"><h3>Is it open source?</h3><p>Yes â€” MIT licensed. Full source at <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>.</p></div>
-      <div class="feature-card"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/">wiki</a> for details.</p></div>
-      <div class="feature-card"><h3>Can I connect my own models?</h3><p>Yes â€” any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
+      <div class="feature-card"><h3>Can I use this for production?</h3><p>Yes — FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
+      <div class="feature-card"><h3>Is it open source?</h3><p>Yes — MIT licensed. Full source at <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" target="_blank">GitHub</a>.</p></div>
+      <div class="feature-card"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" target="_blank">docs</a> for details.</p></div>
+      <div class="feature-card"><h3>Can I connect my own models?</h3><p>Yes — any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
     </div>
   </section>
 
-  <!-- â”€â”€ CTA â”€â”€ -->
+  <!-- ── CTA ── -->
   <section class="cta-section">
-    <h2>Ready to build with AI?</h2>
-    <p>Join developers using FreeAI to build, secure, and scale AI applications â€” on their own hardware.</p>
-    <div class="hero-actions">
-      <a href="#install" class="btn btn-primary">Get Started Free</a>
-      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn-secondary" target="_blank">Star on GitHub</a>
+    <div class="container">
+      <h2>Ready to build with AI?</h2>
+      <p>Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.</p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn--primary">Get Started Free</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--ghost" target="_blank">Star on GitHub</a>
+      </div>
     </div>
   </section>
 
-  <!-- â”€â”€ Footer â”€â”€ -->
+  <!-- ── Footer ── -->
   <footer class="footer">
-    <div class="footer-copy">Â© 2026 FreeAI Â· Unified AI Workstation Â· MIT License</div>
-    <div class="footer-links">
-      <a href="/">Home</a>
-      <a href="#install">Install</a>
-      <a href="#faq">FAQ</a>
-      <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/">Documentation</a>
-      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues">Report a Bug</a>
-      <a href="mailto:admin@projectzeroai.dev">Contact</a>
-      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">FreeAI</div>
+        <div class="footer-copy">© 2026 FreeAI · Unified AI Workstation · MIT License</div>
+      </div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" target="_blank">Documentation</a>
+        <a href="mailto:contact@projectzerodays.dev">Contact</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues">Report a Bug</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>
+      </div>
     </div>
   </footer>
 
+  <script>
+    // Theme toggle
+    const html = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('theme');
+    if (saved) html.dataset.theme = saved;
+    toggle.addEventListener('click', () => {
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+    });
+  </script>
 </body>
 </html>
-
