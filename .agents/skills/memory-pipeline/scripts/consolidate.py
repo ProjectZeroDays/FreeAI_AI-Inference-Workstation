@@ -119,6 +119,10 @@ def run_consolidation(memory_root: Path, config: dict, dry_run: bool = False,
     
     Returns True if consolidation was performed, False if skipped.
     """
+    # Validate memory_root path
+    if ".." in str(memory_root):
+        raise Exception("Invalid file path")
+    
     # Check cooldown only if cooldown_hours > 0 (default is 0 = no cooldown)
     if not force and config["phase2_cooldown_hours"] > 0:
         cooldown_file = memory_root / ".last_consolidation"
