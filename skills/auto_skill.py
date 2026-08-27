@@ -192,9 +192,16 @@ def create_skill_from_pattern(pattern):
     """Write a SKILL.md file from a detected pattern."""
     name, content = generate_skill_from_pattern(pattern)
     skill_dir = SKILLS_DIR / name
-    skill_dir.mkdir(parents=True, exist_ok=True)
-    (skill_dir / "SKILL.md").write_text(content, encoding="utf-8")
-    return str(skill_dir / "SKILL.md")
+    base_dir = SKILLS_DIR.resolve()
+    skill_dir_resolved = skill_dir.resolve()
+    try:
+        skill_dir_resolved.relative_to(base_dir)
+    except ValueError:
+        raise Exception("Invalid file path")
+    skill_dir_resolved.mkdir(parents=True, exist_ok=True)
+    skill_file = skill_dir_resolved / "SKILL.md"
+    skill_file.write_text(content, encoding="utf-8")
+    return str(skill_file)
 
 
 def scan_and_create(min_occurrences=2, max_skills=10):

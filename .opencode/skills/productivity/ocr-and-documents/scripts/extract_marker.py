@@ -45,7 +45,11 @@ def convert(path, output_dir=None, output_format="markdown", use_llm=False):
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         for name, img_data in rendered.images.items():
             img_path = os.path.join(output_dir, name)
-            with open(img_path, "wb") as f:
+            base_real = os.path.realpath(output_dir)
+            target_real = os.path.realpath(img_path)
+            if os.path.commonpath([base_real, target_real]) != base_real:
+                raise Exception("Invalid file path")
+            with open(target_real, "wb") as f:
                 f.write(img_data)
         print(f"\nSaved {len(rendered.images)} image(s) to {output_dir}/", file=sys.stderr)
 

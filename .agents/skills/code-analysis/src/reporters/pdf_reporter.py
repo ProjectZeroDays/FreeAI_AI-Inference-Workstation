@@ -86,6 +86,8 @@ class PdfReporter(BaseReporter):
     @staticmethod
     def _try_xhtml2pdf(html_content: str, output_path: str) -> str:
         from xhtml2pdf import pisa
+        if ".." in output_path:
+            raise Exception("Invalid file path")
         with open(output_path, "wb") as f:
             pisa.CreatePDF(html_content, dest=f)
         logger.info("PDF generated with xhtml2pdf: %s", output_path)
