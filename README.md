@@ -60,7 +60,7 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
 
 ```
                     ┌─────────────────────────────────────────────────────────┐
-                    │              FreeAI Dashboard (:8030)               │
+                    │              FreeAI Dashboard (:8080)               │
                     │        Flask + Chart.js + SSE + Authentication      │
                     ├─────────────────────────┬─────────────────┬───────────┤
                     │  Router  │ Agents   │ Workflow │   Autonomous       │
