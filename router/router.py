@@ -210,6 +210,8 @@ def stream_provider(provider_model, prompt, payload_base=None):
     pname, pcfg, pmodel = provider_model
     payload = dict(payload_base or {})
     started = time.monotonic()
+    tokens = 0
+    yield _sse_retry(3000)
     try:
         if pcfg.get("style") == "openai":
             url, headers, body = build_request(
@@ -221,6 +223,7 @@ def stream_provider(provider_model, prompt, payload_base=None):
             r.raise_for_status()
             yield f'data: {json.dumps({"model": f"{pname}/{pmodel}"})}\n\n'
             for text in _sse_frames(r):
+                tokens += len(text.split())
                 yield f'data: {json.dumps({"content": text})}\n\n'
         else:
             result = call_provider(pname, pcfg, pmodel, prompt,
@@ -231,6 +234,8 @@ def stream_provider(provider_model, prompt, payload_base=None):
             yield f'data: {json.dumps({"content": result["content"]})}\n\n'
         metrics_model(f"{pname}/{pmodel}")
         metrics_latency(int((time.monotonic() - started) * 1000))
+        latency_ms = int((time.monotonic() - started) * 1000)
+        yield f'data: {json.dumps({"event": "completion", "model": f"{pname}/{pmodel}", "task_type": "provider", "tokens": tokens, "latency_ms": latency_ms})}\n\n'
         # Prometheus
         reg, helpers = get_registry()
         if helpers is not None:
@@ -261,6 +266,8 @@ def stream_route(prompt, task_type, agent, payload_base=None):
 
     from models import MODEL_REGISTRY
     started = time.monotonic()
+    tokens = 0
+    yield _sse_retry(3000)
     for candidate in select_chain(task_type, agent):
         model_meta = MODEL_REGISTRY[candidate]
         endpoint = model_meta["endpoint"]
@@ -276,6 +283,7 @@ def stream_route(prompt, task_type, agent, payload_base=None):
             r.raise_for_status()
             first = True
             for text in _sse_frames(r):
+                tokens += len(text.split())
                 if first:
                     yield f'data: {json.dumps({"model": MODEL_REGISTRY[candidate]["name"], "task_type": task_type})}\n\n'
                     first = False
