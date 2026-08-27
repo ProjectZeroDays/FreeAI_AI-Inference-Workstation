@@ -366,7 +366,7 @@ def oracle_review(req: OracleRequest):
 {_ctx}
 Target: {req.target}
 Question: {req.question}
-{('Context files:\n' + context + '\n') if context else ''}
+{("Context files:" + _nl + context + _nl) if context else ""}
 
 Deliver a thorough analysis covering:
 - Architectural strengths and weaknesses
@@ -390,7 +390,7 @@ def council_decide(req: CouncilRequest):
 
 {_ctx}Question: {req.question}
 Options: {json.dumps(req.options)}
-{('Evaluation criteria: ' + req.criteria + '\n') if req.criteria else ''}
+{("Evaluation criteria: " + req.criteria + _nl) if req.criteria else ""}
 
 For each option, have 3 experts (Architect, Engineer, Product) give their view.
 Then provide a consensus recommendation with weighted scoring."""
@@ -434,7 +434,7 @@ def designer_spec(req: DesignerRequest):
 
 {_ctx}Spec: {req.spec}
 Style: {req.style}
-{('Constraints: ' + req.constraints + '\n') if req.constraints else ''}
+{("Constraints: " + req.constraints + _nl) if req.constraints else ""}
 
 Deliver a complete design spec:
 - Design tokens (colors, typography, spacing scale)
