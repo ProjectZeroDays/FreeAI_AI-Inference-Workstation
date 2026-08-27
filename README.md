@@ -804,6 +804,8 @@ Layering: defaults < config/config.json < config/providers.json (external backen
 | Env | Used by | Default |
 |---|---|---|
 | ROUTER_API_KEY | router auth | empty (off) |
+| AGENT_API_KEY | agent API auth | empty (off) |
+| AUTONOMOUS_API_KEY | autonomous API auth | empty (off) |
 | RATE_LIMIT_CAPACITY / _REFILL_PER_MIN | router | 60 / 60 |
 | CACHE_ENABLED / CACHE_SIZE | router | true / 128 |
 | MOCK_LLM | router | false |

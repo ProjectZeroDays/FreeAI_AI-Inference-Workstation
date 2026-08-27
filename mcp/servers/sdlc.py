@@ -2,6 +2,23 @@
 import os, sys, json, requests
 AUTO_API = os.environ.get("AUTO_API", "http://localhost:8050")
 ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8020")
+AUTONOMOUS_API_KEY = os.environ.get("AUTONOMOUS_API_KEY", "")
+AGENT_API_KEY = os.environ.get("AGENT_API_KEY", "")
+
+def _headers():
+    """Build headers with authentication if keys are set."""
+    h = {}
+    if AUTONOMOUS_API_KEY:
+        h["X-API-Key"] = AUTONOMOUS_API_KEY
+    return h
+
+def _agent_headers():
+    """Build headers for agent API calls."""
+    h = {}
+    if AGENT_API_KEY:
+        h["X-API-Key"] = AGENT_API_KEY
+    return h
+
 def reply(id, result):
     sys.stdout.write(json.dumps({"jsonrpc":"2.0","id":id,"result":result})+"\n"); sys.stdout.flush()
 def error(id, code, msg):
@@ -20,13 +37,13 @@ def handle(req):
         n=p.get("name"); a=p.get("arguments",{})
         try:
             if n=="sdlc_start":
-                r=requests.post(f"{AUTO_API}/auto/start", json={"spec":a["spec"],"profile":a.get("profile","balanced"),"enable_shell":True}, timeout=30); r.raise_for_status(); res=r.json()
+                r=requests.post(f"{AUTO_API}/auto/start", json={"spec":a["spec"],"profile":a.get("profile","balanced"),"enable_shell":True}, headers=_headers(), timeout=30); r.raise_for_status(); res=r.json()
             elif n=="sdlc_status":
                 r=requests.get(f"{AUTO_API}/auto/runs/{a['run_id']}", timeout=15); r.raise_for_status(); res=r.json()
             elif n=="sdlc_fetch": res={"artifact_url": f"{AUTO_API}/auto/runs/{a['run_id']}/artifact"}
             elif n=="sdlc_security_gate":
-                r=requests.post(f"{ROUTER_API}/agent/red", json={"operation":"chain","target":a["run_id"]}, timeout=660); red=r.json()
-                b=requests.post(f"{ROUTER_API}/agent/blue", json={"operation":"harden","target":a["run_id"]}, timeout=660); blue=b.json()
+                r=requests.post(f"{ROUTER_API}/agent/red", json={"operation":"chain","target":a["run_id"]}, headers=_agent_headers(), timeout=660); red=r.json()
+                b=requests.post(f"{ROUTER_API}/agent/blue", json={"operation":"harden","target":a["run_id"]}, headers=_agent_headers(), timeout=660); blue=b.json()
                 res={"red":red,"blue":blue,"gate":"security gate executed"}
             else: return error(id,-32601,f"unknown {n}")
             reply(id, {"content":[{"type":"text","text": json.dumps(res, indent=2)}]})
