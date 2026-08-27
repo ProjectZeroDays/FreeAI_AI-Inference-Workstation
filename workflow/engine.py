@@ -18,22 +18,35 @@ except ImportError:
     _CFG = {}
 
 AGENT_API = _CFG.get("agent_api",
-                     os.environ.get("AGENT_API", "http://localhost:8020"))
-AUDIT_LOG = _CFG.get("audit_log",
-                     os.environ.get("WORKFLOW_AUDIT_LOG",
-                                    "logs/workflow-audit.jsonl"))
+                      os.environ.get("AGENT_API", "http://localhost:8020"))
 STEP_RETRIES = int(_CFG.get("step_retries", 3))
 RETRY_DELAY_S = float(_CFG.get("retry_delay_s", 2))
 
 
+try:
+    from workflow.audit import log_execution as _log_execution
+    from workflow.validator import validate_workflow
+except ImportError:
+    from audit import log_execution as _log_execution
+    from validator import validate_workflow
+
+
+KNOWN_KEYS = {"workflow", "workflow_id", "status", "steps", "error"}
+
+
 def _audit(event: dict):
-    try:
-        os.makedirs(os.path.dirname(AUDIT_LOG) or ".", exist_ok=True)
-        event = {"ts": datetime.now(timezone.utc).isoformat(), **event}
-        with open(AUDIT_LOG, "a") as f:
-            f.write(json.dumps(event) + "\n")
-    except OSError:
-        pass
+    """Backward-compatible wrapper: accepts either a flat dict (old style)
+    or keyword args (new structured style via log_execution)."""
+    known = KNOWN_KEYS & set(event)
+    extra = {k: v for k, v in event.items() if k not in KNOWN_KEYS}
+    return _log_execution(
+        workflow=event.get("workflow"),
+        workflow_id=event.get("workflow_id"),
+        status=event.get("status"),
+        steps=event.get("steps"),
+        error=event.get("error"),
+        extra=extra if extra else None,
+    )
 
 
 def _extract_text(result: Dict[str, Any]) -> str:

@@ -1,0 +1,12 @@
+{
+  "$id": "services.json",
+  "type": "object",
+  "properties": {
+    "_comment": {"type": "string"},
+    "version": {"type": "string"},
+    "generated": {"type": "string"},
+    "services": {"type": "object"},
+    "port_map": {"type": "object"},
+    "priority_groups": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}}
+  }
+}

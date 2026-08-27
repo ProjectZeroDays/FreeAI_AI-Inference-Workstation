@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Security Scan</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .scan-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    /* KPI row */
+    .kpi-row { display: flex; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+    .kpi-card { flex: 1; min-width: 120px; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); }
+    .kpi-card .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-2); margin-bottom: 6px; }
+    .kpi-card .kpi-value { font-size: 28px; font-weight: 800; line-height: 1; }
+    .kpi-critical .kpi-value { color: #EF4444; }
+    .kpi-high .kpi-value { color: #F97316; }
+    .kpi-medium .kpi-value { color: #F59E0B; }
+    .kpi-low .kpi-value { color: #38BDF8; }
+    .kpi-total .kpi-value { color: var(--accent); }
+    /* Toolbar */
+    .toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+    .toolbar button { padding: 7px 16px; border-radius: 9px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .toolbar button:hover { border-color: var(--accent-2); }
+    .toolbar button.primary { background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; border: none; font-weight: 700; }
+    .toolbar button.primary:hover { opacity: .9; }
+    .toolbar button.primary:disabled { opacity: .5; cursor: not-allowed; }
+    .toolbar .separator { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+    .toolbar select, .toolbar input[type="checkbox"] { font-size: 12px; color: var(--text); }
+    .toolbar select { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-weight: 600; cursor: pointer; }
+    .toolbar label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    /* Findings area */
+    .findings-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    .findings-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); }
+    .findings-header h2 { font-size: 14px; font-weight: 700; }
+    .findings-header span { font-size: 12px; color: var(--muted-2); }
+    .findings-list { flex: 1; overflow-y: auto; padding: 12px 24px; }
+    .finding-card { padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 8px; background: var(--panel); transition: all .15s; }
+    .finding-card:hover { border-color: var(--accent-2); }
+    .finding-card.severity-critical { border-left: 3px solid #EF4444; }
+    .finding-card.severity-high { border-left: 3px solid #F97316; }
+    .finding-card.severity-medium { border-left: 3px solid #F59E0B; }
+    .finding-card.severity-low { border-left: 3px solid #38BDF8; }
+    .finding-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .severity-badge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0; }
+    .severity-badge.critical { background: rgba(239,68,68,.15); color: #EF4444; }
+    .severity-badge.high { background: rgba(249,115,22,.15); color: #F97316; }
+    .severity-badge.medium { background: rgba(245,158,11,.15); color: #F59E0B; }
+    .severity-badge.low { background: rgba(56,189,248,.15); color: #38BDF8; }
+    .finding-type { font-size: 11px; font-weight: 600; color: var(--muted-2); text-transform: uppercase; letter-spacing: .04em; }
+    .finding-cat { font-size: 11px; color: var(--muted); background: var(--panel-2); padding: 2px 8px; border-radius: 6px; margin-left: auto; }
+    .finding-file { font-size: 12px; color: var(--accent-2); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+    .finding-snippet { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; background: var(--bg-soft); padding: 6px 10px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+    .finding-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .finding-actions button { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel-2); color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; }
+    .finding-actions button:hover { border-color: var(--accent-2); color: var(--text); }
+    /* Empty state */
+    .empty-state { text-align: center; padding: 60px 24px; color: var(--muted-2); }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 16px; color: var(--muted); margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; }
+    /* Progress */
+    .progress-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin: 8px 24px; flex-shrink: 0; }
+    .progress-bar .progress-fill { height: 100%; background: linear-gradient(90deg, #0EA5E9, #22C55E); border-radius: 2px; transition: width .3s; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Security Scan</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> Model Training</a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Persistent Memory</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Security</span>
+        <a href="/security" class="nav-item active"><span class="nav-dot"></span> Security Scan</a>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Service Logs</a>
+        <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <h1>Security Scanner</h1>
+          <p>Secrets detection, vulnerability scanning, and CVE analysis</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill" id="scan-status-pill">ready</span>
+        </div>
+      </header>
+
+      <!-- KPI cards -->
+      <div class="kpi-row">
+        <div class="kpi-card kpi-critical">
+          <div class="kpi-label">Critical</div>
+          <div class="kpi-value" id="kpi-critical">0</div>
+        </div>
+        <div class="kpi-card kpi-high">
+          <div class="kpi-label">High</div>
+          <div class="kpi-value" id="kpi-high">0</div>
+        </div>
+        <div class="kpi-card kpi-medium">
+          <div class="kpi-label">Medium</div>
+          <div class="kpi-value" id="kpi-medium">0</div>
+        </div>
+        <div class="kpi-card kpi-low">
+          <div class="kpi-label">Low</div>
+          <div class="kpi-value" id="kpi-low">0</div>
+        </div>
+        <div class="kpi-card kpi-total">
+          <div class="kpi-label">Total</div>
+          <div class="kpi-value" id="kpi-total">0</div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-bar" id="progress-bar" style="display:none">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button class="primary" id="btn-scan" onclick="runScan()">▶ Run Scan</button>
+        <div class="separator"></div>
+        <select id="severity-filter" onchange="filterFindings()">
+          <option value="all">All Severities</option>
+          <option value="critical">Critical</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <select id="category-filter" onchange="filterFindings()">
+          <option value="all">All Categories</option>
+          <option value="secrets">Secrets</option>
+          <option value="injection">Injection</option>
+          <option value="xss">XSS</option>
+          <option value="dependency">Dependency</option>
+          <option value="config">Config</option>
+        </select>
+        <label><input type="checkbox" id="include-tests" /> Include tests</label>
+        <div class="separator"></div>
+        <button onclick="copyFindings()">📋 Copy Findings</button>
+        <button onclick="exportReport()">📄 Export JSON</button>
+        <button onclick="loadLatest()">🔄 Reload Last</button>
+      </div>
+
+      <!-- Findings list -->
+      <div class="findings-main">
+        <div class="findings-header">
+          <h2>Findings</h2>
+          <span id="findings-count">No scan results yet</span>
+        </div>
+        <div class="findings-list" id="findings-list">
+          <div class="empty-state">
+            <div class="empty-icon">🛡️</div>
+            <h3>No security scan results</h3>
+            <p>Click "Run Scan" to scan the codebase for secrets, vulnerabilities, and CVEs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allFindings = [];
+    let currentScanId = null;
+
+    async function runScan() {
+      const btn = document.getElementById('btn-scan');
+      const statusPill = document.getElementById('scan-status-pill');
+      const progressBar = document.getElementById('progress-bar');
+      const progressFill = document.getElementById('progress-fill');
+      const includeTests = document.getElementById('include-tests').checked;
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Scanning...';
+      statusPill.textContent = 'scanning';
+      statusPill.style.background = 'rgba(245,158,11,.15)';
+      statusPill.style.color = '#F59E0B';
+      progressBar.style.display = 'block';
+      progressFill.style.width = '10%';
+
+      try {
+        const resp = await fetch('/api/security/scan', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({include_tests: includeTests}),
+        });
+        progressFill.style.width = '80%';
+        const data = await resp.json();
+        if (data.ok) {
+          currentScanId = data.scan_id;
+          allFindings = data.findings || [];
+          progressFill.style.width = '100%';
+          updateUI(data);
+        } else {
+          throw new Error(data.error || 'Scan failed');
+        }
+      } catch (e) {
+        alert('Scan failed: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '▶ Run Scan';
+        statusPill.textContent = 'complete';
+        statusPill.style.background = 'rgba(34,197,94,.15)';
+        statusPill.style.color = '#22C55E';
+        setTimeout(() => { progressBar.style.display = 'none'; }, 500);
+      }
+    }
+
+    function updateUI(report) {
+      const summary = report.summary || {};
+      document.getElementById('kpi-critical').textContent = summary.critical || 0;
+      document.getElementById('kpi-high').textContent = summary.high || 0;
+      document.getElementById('kpi-medium').textContent = summary.medium || 0;
+      document.getElementById('kpi-low').textContent = summary.low || 0;
+      document.getElementById('kpi-total').textContent = report.total_findings || 0;
+      renderFindings(allFindings);
+    }
+
+    function renderFindings(findings) {
+      const list = document.getElementById('findings-list');
+      const countEl = document.getElementById('findings-count');
+      countEl.textContent = `${findings.length} finding${findings.length !== 1 ? 's' : ''}`;
+
+      if (findings.length === 0) {
+        list.innerHTML = `<div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <h3>No findings</h3>
+          <p>No security issues detected matching the current filters.</p>
+        </div>`;
+        return;
+      }
+
+      list.innerHTML = findings.map((f, i) => `
+        <div class="finding-card severity-${f.severity}" data-severity="${f.severity}" data-category="${f.category}">
+          <div class="finding-top">
+            <span class="severity-badge ${f.severity}">${f.severity}</span>
+            <span class="finding-type">${f.subtype || f.type}</span>
+            <span class="finding-cat">${f.category}</span>
+          </div>
+          <div class="finding-file">${escHtml(f.file)}${f.line ? ' — line ' + f.line : ''}</div>
+          ${f.snippet ? `<div class="finding-snippet">${escHtml(f.snippet)}</div>` : ''}
+          <div class="finding-actions">
+            <button onclick="copyFinding(${i})">📋 Copy</button>
+            <button onclick="viewOnDisk('${escHtml(f.file)}')">📁 Open File</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterFindings() {
+      const sev = document.getElementById('severity-filter').value;
+      const cat = document.getElementById('category-filter').value;
+      let filtered = allFindings;
+      if (sev !== 'all') filtered = filtered.filter(f => f.severity === sev);
+      if (cat !== 'all') filtered = filtered.filter(f => f.category === cat);
+      renderFindings(filtered);
+    }
+
+    async function loadLatest() {
+      try {
+        const resp = await fetch('/api/security/latest');
+        const data = await resp.json();
+        if (data.findings && data.findings.length > 0) {
+          currentScanId = data.scan_id;
+          allFindings = data.findings;
+          updateUI(data);
+        }
+      } catch (e) {
+        alert('Failed to load latest scan: ' + e.message);
+      }
+    }
+
+    function copyFindings() {
+      const text = allFindings.map(f =>
+        `[${f.severity.toUpperCase()}] ${f.subtype || f.type} — ${f.file}${f.line ? ':' + f.line : ''}\n  ${f.snippet || ''}`
+      ).join('\n\n');
+      navigator.clipboard.writeText(text).then(() => alert('Findings copied to clipboard!'));
+    }
+
+    function copyFinding(idx) {
+      const f = allFindings[idx];
+      const text = `[${f.severity.toUpperCase()}] ${f.subtype || f.type} — ${f.file}${f.line ? ':' + f.line : ''}\n  ${f.snippet || ''}`;
+      navigator.clipboard.writeText(text).then(() => {});
+    }
+
+    function exportReport() {
+      const report = {
+        scan_id: currentScanId,
+        scan_time: new Date().toISOString(),
+        findings: allFindings,
+        summary: allFindings.length ? {
+          critical: allFindings.filter(f => f.severity === 'critical').length,
+          high: allFindings.filter(f => f.severity === 'high').length,
+          medium: allFindings.filter(f => f.severity === 'medium').length,
+          low: allFindings.filter(f => f.severity === 'low').length,
+          total: allFindings.length,
+        } : {},
+      };
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `security-report-${Date.now()}.json`;
+      a.click();
+    }
+
+    function viewOnDisk(filepath) {
+      window.open(`/static/${filepath.replace(/^[A-Z]:\\|^[A-Za-z]+\//, '')}`, '_blank');
+    }
+
+    function escHtml(t) {
+      return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Auto-load latest on page visit
+    loadLatest();
+  </script>
+</body>
+</html>

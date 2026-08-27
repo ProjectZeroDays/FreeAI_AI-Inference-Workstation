@@ -178,3 +178,36 @@ input[type="number"]{width:110px}
 }
 .banner.hidden{display:none}
 .foot{margin-top:18px; padding-top:14px; border-top:1px solid var(--border); font-size:12px; display:flex; gap:10px; flex-wrap:wrap}
+
+/* ── i18n language switcher ───────────────────────────────────── */
+.i18n-switcher-wrap select.i18n-sel {
+  background: rgba(2,6,23,.6);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+  font-family: Inter, system-ui, sans-serif;
+}
+.i18n-switcher-wrap select.i18n-sel:hover,
+.i18n-switcher-wrap select.i18n-sel:focus {
+  border-color: rgba(56,189,248,.45);
+  color: var(--text);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56,189,248,.12);
+}
+.i18n-switcher-wrap select.i18n-sel option {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+/* RTL adjustments */
+html[dir="rtl"] .sidebar {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+html[dir="rtl"] .i18n-switcher-wrap {
+  margin-right: auto;
+  margin-left: 0;
+}

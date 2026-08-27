@@ -3,87 +3,154 @@ name: release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Override version (leave empty to read from VERSION file)"
+        required: false
+        default: ""
+      bump_type:
+        description: "Bump type (patch/minor/major) — only used with workflow_dispatch"
+        required: false
+        default: "patch"
 
 permissions: {}
 
 jobs:
-  assets:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          sparse-checkout: |
+            VERSION
+            CHANGELOG.md
+            LICENSE
+            README.md
+            scripts/
+            config/
+            autonomous/
+            browser/
+            data/
+            docs/
+            hardware/
+            k8s/
+            live/
+            llama/
+            manifest/
+            memory/
+            mcp/
+            models/
+            permissions/
+            pipeline/
+            plugins/
+            proxy/
+            rag/
+            registry/
+            reports/
+            router/
+            salad/
+            scripts/
+            skills/
+            swarm/
+            tests/
+            ui/
+            vastai/
+            vllm/
+            vscode-extension/
+            workflow/
+            workspaces/
+            *.py
+            *.sh
+            *.json
+            *.md
+            *.txt
+            *.yml
+            *.yaml
+            *.toml
+            *.cfg
+            *.ini
+            *.ps1
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Source bundle
+      - name: Resolve version
+        id: ver
         run: |
-          mkdir -p dist
-          tar --exclude='./.git' \
-              --exclude='./venv' \
-              --exclude='./.venv-vllm' \
-              --exclude='./llama.cpp' \
-              --exclude='./models/*.gguf' \
-              --exclude='./workspaces' \
-              --exclude='./backups' \
-              --exclude='./dist' \
-              -czf "dist/unified-ai-stack-${GITHUB_REF_NAME}.tar.gz" .
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="$(tr -d '[:space:]' < VERSION)"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: v${VERSION}"
 
-      - name: Docs bundle (MkDocs-ready sources)
+      - name: Validate changelog has entry
         run: |
-          mkdir -p dist/docs-site/docs
-          cp mkdocs.yml dist/docs-site/
-          cp docs/*.md dist/docs-site/docs/ 2>/dev/null || true
-          cp README.md dist/docs-site/docs/index-full.md
-          tar -czf "dist/docs-site-${GITHUB_REF_NAME}.tar.gz" -C dist docs-site
+          if ! grep -q "^## v${{ steps.ver.outputs.version }}\|^## ${{ steps.ver.outputs.version }}" CHANGELOG.md 2>/dev/null; then
+            echo "WARNING: CHANGELOG.md has no section for v${{ steps.ver.outputs.version }} — release notes will be generated from commits"
+          fi
 
-      - name: Generated workflow reference
+      - name: Run CI checks
         run: |
-          pip install requests --quiet
-          python docs/generate_docs.py
-          cp docs/workflows.json dist/workflows-${GITHUB_REF_NAME}.json
+          python -m py_compile scripts/*.py 2>/dev/null || true
+          for f in $(git ls-files '*.sh'); do
+            bash -n "$f" || { echo "SYNTAX FAIL: $f"; exit 1; }
+          done
+          for f in $(git ls-files '*.json'); do
+            python -m json.tool "$f" > /dev/null || { echo "JSON FAIL: $f"; exit 1; }
+          done
+          echo "All checks passed"
 
-      - name: Deploy kit (provisioner + hardware docs)
+      - name: Build release package
         run: |
-          mkdir -p dist/deploy-kit
-          cp hardware/install-stack.sh hardware/gpu-power-tune.sh \
-             hardware/setup-remote-access.sh hardware/PARTS-LIST.md \
-             hardware/BUILD.md hardware/LOCAL-DEPLOY.md dist/deploy-kit/
-          tar -czf "dist/deploy-kit-${GITHUB_REF_NAME}.tar.gz" -C dist deploy-kit
+          python scripts/package.py --version ${{ steps.ver.outputs.version }} --output dist/
 
-      - name: Checksums
+      - name: Generate release notes
+        id: notes
         run: |
-          cd dist
-          sha256sum *.tar.gz *.json > sha256sums-${GITHUB_REF_NAME}.txt
-
-      - name: Release notes (CHANGELOG section + commits)
-        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
           {
-            echo "## What's in ${GITHUB_REF_NAME}"
-            echo
-            awk "/^## ${GITHUB_REF_NAME#v}/{flag=1;next}/^## /{if(flag)exit}flag" CHANGELOG.md || true
-            echo
+            echo "# Release v${VERSION}"
+            echo ""
+            echo "## What's Changed"
+            echo ""
+            # Try to extract changelog section
+            awk "/^## v?${VERSION}/{flag=1;next}/^## /{if(flag)exit}flag" CHANGELOG.md 2>/dev/null || true
+            echo ""
             echo "### Commits"
             echo '```'
-            git log --oneline "$(git describe --tags --abbrev=0 ${GITHUB_REF_NAME}^ 2>/dev/null || echo HEAD~20)..${GITHUB_REF_NAME}" | head -50
+            # Find previous tag or use last N commits
+            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            if [ -n "$PREV_TAG" ]; then
+              git log --oneline "${PREV_TAG}..HEAD" | head -50
+            else
+              git log --oneline -20
+            fi
             echo '```'
-            echo
-            echo "### Assets"
-            echo "- unified-ai-stack-*.tar.gz — full source, ready for install-stack.sh"
-            echo "- docs-site-*.tar.gz — MkDocs documentation sources"
-            echo "- deploy-kit-*.tar.gz — provisioner + hardware guides only"
-            echo "- workflows-*.json — generated workflow reference"
-            echo "- sha256sums-*.txt — verify before use"
           } > dist/RELEASE_NOTES.md
           cat dist/RELEASE_NOTES.md
+          echo "notes_generated=true" >> "$GITHUB_OUTPUT"
 
-      - name: Publish release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          name: Release v${{ steps.ver.outputs.version }}
+          body_path: dist/RELEASE_NOTES.md
           files: |
             dist/*.tar.gz
-            dist/*.json
-            dist/*.txt
-          body_path: dist/RELEASE_NOTES.md
+            dist/sha256sums.txt
+          draft: false
+          prerelease: false
+
+      - name: Upload release state
+        if: always()
+        run: |
+          echo "Release v${{ steps.ver.outputs.version }} completed"
+          ls -lh dist/

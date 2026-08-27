@@ -1,0 +1,85 @@
+{
+  "models": [
+    {
+      "id": "qwen2.5-7b",
+      "name": "Qwen2.5-7B-Q6_K",
+      "shard_path": "models/qwen2.5-7b/Qwen2.5-7B-Q6_K.gguf",
+      "gpu_id": 0,
+      "cuda_visible_devices": "0",
+      "port": 8001,
+      "context_length": 4096,
+      "threads": 8,
+      "gpu_layers": 35,
+      "loaded": false,
+      "health": "unknown",
+      "last_health_check": null,
+      "active": false
+    },
+    {
+      "id": "deepseek-v3",
+      "name": "DeepSeek-V3-Chat",
+      "shard_path": "models/deepseek-v3/DeepSeek-V3-Chat-Q4_K_M.gguf",
+      "gpu_id": 1,
+      "cuda_visible_devices": "1",
+      "port": 8002,
+      "context_length": 32768,
+      "threads": 8,
+      "gpu_layers": 80,
+      "loaded": false,
+      "health": "unknown",
+      "last_health_check": null,
+      "active": false
+    },
+    {
+      "id": "thinking-i1",
+      "name": "THINKING-i1-8B",
+      "shard_path": "models/thinking-i1/THINKING-i1-8B-Q5_K_M.gguf",
+      "gpu_id": 2,
+      "cuda_visible_devices": "2",
+      "port": 8003,
+      "context_length": 8192,
+      "threads": 8,
+      "gpu_layers": 33,
+      "loaded": false,
+      "health": "unknown",
+      "last_health_check": null,
+      "active": false
+    },
+    {
+      "id": "freetoken-290b",
+      "name": "FreeToken-290B-MoE",
+      "shard_path": "models/freetoken-290b/FreeToken-290B-MoE-Q4_K_M.gguf",
+      "gpu_id": 3,
+      "cuda_visible_devices": "3",
+      "port": 8004,
+      "context_length": 4096,
+      "threads": 16,
+      "gpu_layers": 120,
+      "loaded": false,
+      "health": "unknown",
+      "last_health_check": null,
+      "active": false
+    },
+    {
+      "id": "llama3.1-70b",
+      "name": "Llama-3.1-70B-Q5_K_M",
+      "shard_path": "models/llama3.1-70b/Llama-3.1-70B-Q5_K_M.gguf",
+      "gpu_id": -1,
+      "cuda_visible_devices": "0,1,2,3",
+      "port": 8005,
+      "context_length": 4096,
+      "threads": 16,
+      "gpu_layers": -1,
+      "loaded": false,
+      "health": "unknown",
+      "last_health_check": null,
+      "active": false
+    }
+  ],
+  "active_model_id": null,
+  "health_check_interval_s": 30,
+  "health_threshold": {
+    "max_response_time_s": 5.0,
+    "max_consecutive_errors": 3
+  }
+}

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Health Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+    .svc-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+      background: rgba(2,6,23,.45); border: 1px solid var(--border); font-size: 13px; transition: border-color .18s; }
+    .svc-card.up   { border-color: rgba(34,197,94,.35); }
+    .svc-card.down { border-color: rgba(239,68,68,.35); }
+    .svc-card.warn { border-color: rgba(245,158,11,.35); }
+    .svc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .svc-dot.up   { background: #22C55E; box-shadow: 0 0 8px rgba(34,197,94,.7); }
+    .svc-dot.down { background: #EF4444; box-shadow: 0 0 8px rgba(239,68,68,.7); }
+    .svc-dot.warn { background: #F59E0B; box-shadow: 0 0 8px rgba(245,158,11,.7); }
+    .svc-name { font-weight: 600; }
+    .svc-meta { color: var(--muted); font-size: 11px; }
+    .resource-bar { height: 8px; border-radius: 999px; background: rgba(148,163,184,.12); overflow: hidden; margin-top: 4px; }
+    .resource-fill { height: 100%; border-radius: 999px; transition: width .4s ease; }
+    .resource-fill.ok  { background: linear-gradient(90deg, #22C55E, #16A34A); }
+    .resource-fill.warn { background: linear-gradient(90deg, #F59E0B, #D97706); }
+    .resource-fill.danger { background: linear-gradient(90deg, #EF4444, #DC2626); }
+    .gpu-device { padding: 10px; border-radius: 10px; background: rgba(2,6,23,.45); border: 1px solid var(--border); margin-bottom: 8px; }
+    .gpu-device h4 { margin: 0 0 6px; font-size: 13px; }
+    .dep-node { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px;
+      background: rgba(148,163,184,.08); border: 1px solid var(--border); font-size: 12px; margin: 3px; }
+    .dep-arrow { color: var(--muted-2); }
+    .countdown { font-family: Fira Code, monospace; font-size: 20px; font-weight: 600; color: var(--accent-2); }
+    .last-check { font-size: 12px; color: var(--muted); }
+    #check-now-btn { min-width: 120px; }
+    .alerts-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .alerts-list li { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px;
+      background: rgba(2,6,23,.38); border: 1px solid var(--border); font-size: 13px; }
+    .timeline { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+    .tl-item { display: flex; gap: 8px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .tl-time { color: var(--muted-2); font-family: Fira Code, monospace; white-space: nowrap; }
+    .tl-msg { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Health Dashboard</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/health" class="nav-item active"><span class="nav-dot"></span> Health</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Integrations</span>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <h1>System Health</h1>
+          <p>Real-time service, GPU, and resource monitoring</p>
+        </div>
+        <div class="topbar-actions">
+          <div style="text-align:right">
+            <div class="last-check" id="last-check">Last check: —</div>
+            <div class="countdown" id="countdown">30s</div>
+          </div>
+          <button id="check-now-btn">Check Now</button>
+        </div>
+      </header>
+
+      <div class="bento">
+        <!-- Service Status Grid -->
+        <section class="card span-2" id="services-panel">
+          <div class="card-head">
+            <h2>Service Status</h2>
+            <span id="svc-summary" class="pill">loading…</span>
+          </div>
+          <div class="svc-grid" id="svc-grid"></div>
+        </section>
+
+        <!-- GPU Health -->
+        <section class="card" id="gpu-panel">
+          <div class="card-head">
+            <h2>GPU Health</h2>
+            <span class="card-icon">⬢</span>
+          </div>
+          <div id="gpu-content"><span class="muted">scanning…</span></div>
+        </section>
+
+        <!-- System Resources -->
+        <section class="card" id="resources-panel">
+          <div class="card-head">
+            <h2>System Resources</h2>
+            <span class="card-icon">◉</span>
+          </div>
+          <div id="resources-content"><span class="muted">loading…</span></div>
+        </section>
+
+        <!-- Dependency Graph -->
+        <section class="card" id="deps-panel">
+          <div class="card-head">
+            <h2>Service Dependencies</h2>
+            <span class="card-icon">⟁</span>
+          </div>
+          <div id="deps-content"><span class="muted">loading…</span></div>
+        </section>
+
+        <!-- Alerts -->
+        <section class="card span-2" id="alerts-panel">
+          <div class="card-head">
+            <h2>Alerts</h2>
+            <span id="alert-count" class="pill">0</span>
+          </div>
+          <ul class="alerts-list" id="alerts-list"><li class="muted">No alerts.</li></ul>
+        </section>
+
+        <!-- Health History -->
+        <section class="card span-2" id="history-panel">
+          <div class="card-head">
+            <h2>Health History</h2>
+            <span class="card-icon">⏱</span>
+          </div>
+          <div class="timeline" id="health-history"><span class="muted">waiting for data…</span></div>
+        </section>
+      </div>
+
+      <footer class="foot muted">FreeAI Health Monitor · <span id="foot-time"></span></footer>
+    </div>
+  </div>
+
+  <script>
+    const AUTO_INTERVAL = 30;
+    let countdownVal = AUTO_INTERVAL;
+    let countdownTimer = null;
+    let healthHistory = [];
+
+    async function runHealthCheck(manual = false) {
+      try {
+        const res = await fetch('/api/health/full');
+        const data = await res.json();
+        renderServices(data.services);
+        renderGPU(data.gpu);
+        renderResources(data.disk, data.memory);
+        renderDeps(data.dependencies);
+        renderAlerts(data.alerts || []);
+        renderHistory(data);
+        document.getElementById('last-check').textContent = 'Last check: ' + new Date().toLocaleTimeString();
+        if (!manual) {
+          // Record history
+          const up = data.summary?.up ?? 0;
+          const total = data.summary?.total ?? 0;
+          healthHistory.unshift({ ts: Date.now(), up, total });
+          if (healthHistory.length > 60) healthHistory.pop();
+        }
+      } catch (e) {
+        console.error('Health check failed:', e);
+        if (!manual) {
+          document.getElementById('svc-grid').innerHTML = '<span class="muted">Failed to fetch health data</span>';
+        }
+      }
+    }
+
+    function renderServices(services) {
+      const grid = document.getElementById('svc-grid');
+      const names = Object.keys(services).sort();
+      let upCount = 0;
+      grid.innerHTML = names.map(name => {
+        const s = services[name];
+        const cls = s.status === 'UP' ? 'up' : 'down';
+        if (s.status === 'UP') upCount++;
+        const deps = s.dependencies ? ` · deps: ${s.dependencies.join(',') || 'none'}` : '';
+        return `<div class="svc-card ${cls}">
+          <span class="svc-dot ${cls}"></span>
+          <div>
+            <div class="svc-name">${name}</div>
+            <div class="svc-meta">:${s.port} · ${s.priority} · ${s.detail}${deps}</div>
+          </div>
+        </div>`;
+      }).join('');
+      const total = names.length;
+      const pill = document.getElementById('svc-summary');
+      pill.textContent = `${upCount}/${total} UP`;
+      pill.style.background = upCount === total ? 'rgba(34,197,94,.16)' : 'rgba(245,158,11,.16)';
+      pill.style.color = upCount === total ? '#BBF7D0' : '#FDE68A';
+      pill.style.borderColor = upCount === total ? 'rgba(34,197,94,.28)' : 'rgba(245,158,11,.28)';
+    }
+
+    function renderGPU(gpu) {
+      const el = document.getElementById('gpu-content');
+      if (!gpu.available) {
+        el.innerHTML = '<span class="muted">nvidia-smi not available — GPU info unavailable</span>';
+        return;
+      }
+      el.innerHTML = gpu.devices.map(d => {
+        const tempCls = d.temperature_c >= 85 ? 'danger' : d.temperature_c >= 70 ? 'warn' : 'ok';
+        const vramPct = d.total_vram_mb ? Math.round(d.used_vram_mb / d.total_vram_mb * 100) : 0;
+        const vramCls = vramPct >= 90 ? 'danger' : vramPct >= 75 ? 'warn' : 'ok';
+        return `<div class="gpu-device">
+          <h4>${d.name}</h4>
+          <div class="metric-grid">
+            <div class="metric">
+              <span class="metric-label">VRAM</span>
+              <span class="metric-value">${Math.round(d.used_vram_mb/1024)}/${Math.round(d.total_vram_mb/1024)} GB</span>
+              <div class="resource-bar"><div class="resource-fill ${vramCls}" style="width:${vramPct}%"></div></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Temperature</span>
+              <span class="metric-value">${d.temperature_c}°C</span>
+              <div class="resource-bar"><div class="resource-fill ${tempCls}" style="width:${Math.min(d.temperature_c,100)}%"></div></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Power</span>
+              <span class="metric-value">${d.power_w.toFixed(0)}W / ${d.power_limit_w.toFixed(0)}W</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Utilization</span>
+              <span class="metric-value">${d.utilization_pct}%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Clock</span>
+              <span class="metric-value">${d.clock_current_mhz}</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Free VRAM</span>
+              <span class="metric-value">${Math.round(d.free_vram_mb/1024)} GB</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('') + `<div style="margin-top:8px;font-size:12px;color:var(--muted)">Overall: ${gpu.utilization_pct}% util · ${gpu.temperature_c}°C · ${gpu.power_w.toFixed(0)}W total</div>`;
+    }
+
+    function renderResources(disk, memory) {
+      const el = document.getElementById('resources-content');
+      const memPct = memory.percent ?? 0;
+      const memCls = memPct >= 90 ? 'danger' : memPct >= 75 ? 'warn' : 'ok';
+      const diskPct = disk.percent ?? 0;
+      const diskCls = diskPct >= 90 ? 'danger' : diskPct >= 75 ? 'warn' : 'ok';
+      el.innerHTML = `
+        <div class="metric" style="margin-bottom:10px">
+          <span class="metric-label">Memory Usage</span>
+          <span class="metric-value">${memory.used_gb} GB / ${memory.total_gb} GB (${memPct}%)</span>
+          <div class="resource-bar"><div class="resource-fill ${memCls}" style="width:${memPct}%"></div></div>
+          <span class="metric-label" style="margin-top:4px">Available</span>
+          <span class="metric-value">${memory.available_gb} GB</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Disk Usage</span>
+          <span class="metric-value">${disk.used_gb} GB / ${disk.total_gb} GB (${diskPct}%)</span>
+          <div class="resource-bar"><div class="resource-fill ${diskCls}" style="width:${diskPct}%"></div></div>
+          <span class="metric-label" style="margin-top:4px">Free</span>
+          <span class="metric-value">${disk.free_gb} GB</span>
+        </div>`;
+    }
+
+    function renderDeps(depGraph) {
+      const el = document.getElementById('deps-content');
+      if (!depGraph || !depGraph.forward) { el.innerHTML = '<span class="muted">no data</span>'; return; }
+      const entries = Object.entries(depGraph.forward).sort((a, b) => a[0].localeCompare(b[0]));
+      el.innerHTML = entries.map(([svc, deps]) => {
+        if (!deps || deps.length === 0) {
+          return `<div class="dep-node">${svc} <span class="dep-arrow">→ none</span></div>`;
+        }
+        return `<div class="dep-node">${svc} <span class="dep-arrow">→</span> ${deps.map(d => `<span>${d}</span>`).join('<span class="dep-arrow">,</span>')}</div>`;
+      }).join('');
+    }
+
+    function renderAlerts(alerts) {
+      const list = document.getElementById('alerts-list');
+      const countEl = document.getElementById('alert-count');
+      countEl.textContent = alerts.length;
+      if (!alerts.length) {
+        list.innerHTML = '<li class="muted">No alerts.</li>';
+        return;
+      }
+      list.innerHTML = alerts.slice(0, 20).map(a => {
+        const cls = a.level === 'critical' ? 'down' : 'warn';
+        return `<li><span class="badge ${cls}">${a.level.toUpperCase()}</span><span>${a.message} · <span class="muted">${a.ts}</span></span></li>`;
+      }).join('');
+    }
+
+    function renderHistory(data) {
+      const el = document.getElementById('health-history');
+      const items = healthHistory.slice(0, 20);
+      el.innerHTML = items.map(h => {
+        const time = new Date(h.ts).toLocaleTimeString();
+        const cls = h.up === h.total ? 'up' : 'down';
+        return `<div class="tl-item"><span class="tl-time">${time}</span><span class="badge ${cls}">${h.up}/${h.total}</span><span class="tl-msg">services UP</span></div>`;
+      }).join('') || '<span class="muted">no history yet</span>';
+    }
+
+    function startCountdown() {
+      countdownVal = AUTO_INTERVAL;
+      if (countdownTimer) clearInterval(countdownTimer);
+      countdownTimer = setInterval(() => {
+        countdownVal--;
+        if (countdownVal <= 0) countdownVal = AUTO_INTERVAL;
+        document.getElementById('countdown').textContent = countdownVal + 's';
+      }, 1000);
+    }
+
+    document.getElementById('check-now-btn').addEventListener('click', () => {
+      countdownVal = AUTO_INTERVAL;
+      runHealthCheck(true);
+      startCountdown();
+    });
+
+    // Initial load + auto-refresh
+    runHealthCheck();
+    startCountdown();
+    setInterval(() => runHealthCheck(), AUTO_INTERVAL * 1000);
+
+    document.getElementById('foot-time').textContent = new Date().toLocaleTimeString();
+  </script>
+</body>
+</html>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FreeAI Dashboard — Unified GPU Stack</title>
   <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -18,34 +19,34 @@
         </div>
       </div>
       <div class="nav-section">
-        <span class="nav-label">Stack</span>
-        <a href="#status" class="nav-item active"><span class="nav-dot"></span> Dashboard</a>
-        <a href="#models" class="nav-item"><span class="nav-dot"></span> Models</a>
-        <a href="#clients" class="nav-item"><span class="nav-dot"></span> Clients</a>
-        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
-        <a href="#runs" class="nav-item"><span class="nav-dot"></span> SDLC Runs</a>
+        <span class="nav-label" data-i18n="nav.stack">Stack</span>
+        <a href="#status" class="nav-item active"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="#models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
+        <a href="#clients" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.clients">Clients</span></a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
+        <a href="#runs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.runs">SDLC Runs</span></a>
       </div>
       <div class="nav-section">
-        <span class="nav-label">Control</span>
-        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/hermes" class="nav-item hermes-link" data-hermes-port="8090"><span class="nav-dot"></span> Hermes</a>
-        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
-        <a href="#files" class="nav-item"><span class="nav-dot"></span> Files</a>
+        <span class="nav-label" data-i18n="nav.control">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sdlc">SDLC & Pipelines</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/hermes" class="nav-item hermes-link" data-hermes-port="8090"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="#files" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.files">Files</span></a>
       </div>
       <div class="nav-section">
-        <span class="nav-label">Integrations</span>
-        <a href="/salad" class="nav-item" id="salad-nav-link"><span class="nav-dot"></span> Salad GPU</a>
-        <a href="/aikido" class="nav-item" id="aikido-nav-link"><span class="nav-dot"></span> Aikido</a>
-        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
-        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
-        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
-        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
-        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <span class="nav-label" data-i18n="nav.integrations">Integrations</span>
+        <a href="/salad" class="nav-item" id="salad-nav-link"><span class="nav-dot"></span> <span data-i18n="nav.salad">Salad GPU</span></a>
+        <a href="/aikido" class="nav-item" id="aikido-nav-link"><span class="nav-dot"></span> <span data-i18n="nav.aikido">Aikido</span></a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.mcp">MCP Registry</span></a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.scheduler">Scheduler</span></a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.workflows">Workflows</span></a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.browser">Browser</span></a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.subagents">Subagents</span></a>
       </div>
       <div class="sidebar-foot">
         <span class="live-dot" aria-hidden="true"></span>
-        <span class="muted">Live</span>
+        <span class="muted" data-i18n="status.running">Live</span>
         <span id="sidebar-version" class="muted" style="margin-left:auto"></span>
       </div>
     </nav>
@@ -53,12 +54,13 @@
     <div class="main">
       <header class="topbar">
         <div>
-          <h1>FreeAI Dashboard</h1>
-          <p>Unified GPU Inference Stack — Health &amp; Metrics</p>
+          <h1 data-i18n="topbar.title">FreeAI Dashboard</h1>
+          <p data-i18n="topbar.subtitle">Unified GPU Inference Stack — Health &amp; Metrics</p>
         </div>
         <div class="topbar-actions">
           <span id="power-mode-badge" class="pill">balanced</span>
           <span id="timestamp" class="muted"></span>
+          <div id="notif-bell" title="Notifications">🔔<span id="notif-badge" style="display:none"></span></div>
         </div>
       </header>
 
@@ -259,7 +261,37 @@
     </div>
   </div>
 
+  <script src="/static/i18n.js"></script>
   <script src="/static/auth.js"></script>
   <script src="/static/dashboard.js"></script>
+  <script src="/static/notifications.js"></script>
+
+  <!-- Notification panel -->
+  <div id="notif-overlay" onclick="closeNotifPanel()"></div>
+  <div id="notif-panel">
+    <div class="notif-header">
+      <h2>Notifications</h2>
+      <div class="notif-header-actions">
+        <button id="notif-settings-btn">⚙ Settings</button>
+        <button id="notif-clear-btn">Clear all</button>
+        <button id="notif-panel-close">✕</button>
+      </div>
+    </div>
+    <div class="notif-body" id="notif-log-body">
+      <div class="notif-empty">No notifications yet.</div>
+    </div>
+  </div>
+
+  <!-- Notification settings modal -->
+  <div id="notif-settings-modal">
+    <div id="notif-settings-backdrop"></div>
+    <div id="notif-settings-box">
+      <h3>Notification Settings</h3>
+      <div id="notif-settings-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="notif-toasts"></div>
 </body>
 </html>

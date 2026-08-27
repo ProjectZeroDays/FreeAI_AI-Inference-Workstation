@@ -1,0 +1,69 @@
+{
+  "rules": {
+    "secret_scan": {
+      "enabled": true,
+      "patterns": [
+        "aws_access_key",
+        "aws_secret_key",
+        "github_token",
+        "generic_api_key",
+        "password_assignment",
+        "private_key",
+        "jwt_token",
+        "slack_token",
+        "google_api_key",
+        "stripe_key"
+      ]
+    },
+    "vuln_scan": {
+      "enabled": true,
+      "patterns": [
+        "sql_injection",
+        "xss_reflected",
+        "command_injection",
+        "hardcoded_secret",
+        "insecure_https",
+        "deserialization",
+        "path_traversal"
+      ]
+    },
+    "cve_scan": {
+      "enabled": true,
+      "tool": "pip-audit"
+    }
+  },
+  "exclusions": [
+    ".git/",
+    "__pycache__/",
+    "*.pyc",
+    "node_modules/",
+    ".venv/",
+    "venv/",
+    "env/",
+    ".env",
+    ".pytest_cache/",
+    ".mimocode/",
+    ".codex/",
+    ".claude/",
+    "logs/",
+    "reports/",
+    "data/",
+    "build/",
+    "dist/",
+    ".cache/"
+  ],
+  "scan_dirs": [
+    "config",
+    "scripts",
+    "agents",
+    "router",
+    "browser",
+    "dashboard",
+    "autonomous",
+    "brain",
+    "memory",
+    "skills"
+  ],
+  "severity_threshold": "low",
+  "auto_fix": false
+}

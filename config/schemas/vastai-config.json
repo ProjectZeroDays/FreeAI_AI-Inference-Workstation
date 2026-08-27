@@ -1,0 +1,25 @@
+{
+  "$id": "vastai-config.json",
+  "type": "object",
+  "properties": {
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "image": {"type": "string"},
+    "version_tag": {"type": "string"},
+    "disk": {"type": "integer", "minimum": 0},
+    "ssh_keys_env": {"type": "array", "items": {"type": "string"}},
+    "env": {"type": "object", "additionalProperties": {"type": "string"}},
+    "ports": {"type": "object"},
+    "gpu": {
+      "type": "object",
+      "properties": {
+        "minVRAM": {"type": "integer", "minimum": 0},
+        "gpuName": {"type": "string"},
+        "maxPrice": {"type": "number", "minimum": 0}
+      }
+    },
+    "extra_filters": {"type": "string"},
+    "onstart_script": {"type": "string"}
+  },
+  "required": ["name", "image"]
+}

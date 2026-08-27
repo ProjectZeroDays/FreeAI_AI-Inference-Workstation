@@ -1,0 +1,83 @@
+{
+  "templates": [
+    {
+      "id": "api_build",
+      "name": "API Build",
+      "description": "Fetch code, lint, run tests, build, and deploy an API service.",
+      "triggers": ["push", "manual"],
+      "steps": [
+        {
+          "name": "fetch",
+          "agent": "orchestrate",
+          "consumes": ["spec"],
+          "produces": ["code"],
+          "prompt": "Fetch the source code for the spec: {{spec}}."
+        },
+        {
+          "name": "lint",
+          "agent": "analyze",
+          "consumes": ["code"],
+          "produces": ["lint_result"],
+          "prompt": "Lint the code and return issues found."
+        },
+        {
+          "name": "test",
+          "agent": "orchestrate",
+          "consumes": ["code", "lint_result"],
+          "produces": ["test_result"],
+          "prompt": "Run the test suite and return pass/fail results."
+        },
+        {
+          "name": "build",
+          "agent": "orchestrate",
+          "consumes": ["test_result"],
+          "produces": ["artifact"],
+          "prompt": "Build the deployment artifact from the tested code."
+        },
+        {
+          "name": "deploy",
+          "agent": "orchestrate",
+          "consumes": ["artifact"],
+          "produces": ["deploy_status"],
+          "prompt": "Deploy the artifact and report status."
+        }
+      ]
+    },
+    {
+      "id": "microservice_build",
+      "name": "Microservice Build",
+      "description": "Scaffold a new microservice, configure it, run tests, and package for deployment.",
+      "triggers": ["manual"],
+      "steps": [
+        {
+          "name": "scaffold",
+          "agent": "orchestrate",
+          "consumes": ["spec"],
+          "produces": ["scaffold"],
+          "prompt": "Scaffold a microservice from the spec: {{spec}}."
+        },
+        {
+          "name": "config",
+          "agent": "orchestrate",
+          "consumes": ["scaffold"],
+          "produces": ["config"],
+          "prompt": "Generate configuration files (Dockerfile, CI, env) for the scaffolded service."
+        },
+        {
+          "name": "test",
+          "agent": "orchestrate",
+          "consumes": ["config"],
+          "produces": ["test_result"],
+          "prompt": "Run tests on the configured microservice."
+        },
+        {
+          "name": "package",
+          "agent": "orchestrate",
+          "consumes": ["test_result"],
+          "produces": ["image"],
+          "prompt": "Package the microservice into a container image."
+        }
+      ]
+    }
+  ]
+}

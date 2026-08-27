@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Hot Models</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .hm-page { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+    .hm-page h1 { font-size: 22px; margin: 0 0 4px; }
+    .hm-page p { color: var(--muted); font-size: 13px; margin: 0 0 24px; }
+    .hm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+    .hm-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 16px; transition: border-color .18s;
+    }
+    .hm-card.active { border-color: rgba(99,102,241,.5); box-shadow: 0 0 18px rgba(99,102,241,.18); }
+    .hm-card.unhealthy { border-color: rgba(239,68,68,.4); }
+    .hm-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .hm-card-title { font-size: 14px; font-weight: 600; flex: 1; }
+    .hm-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: .04em; }
+    .hm-badge.active { background: rgba(99,102,241,.2); color: #818CF8; }
+    .hm-badge.loaded { background: rgba(34,197,94,.15); color: #22C55E; }
+    .hm-badge.unloaded { background: rgba(100,116,139,.15); color: #64748B; }
+    .hm-badge.healthy { background: rgba(34,197,94,.15); color: #22C55E; }
+    .hm-badge.unhealthy { background: rgba(239,68,68,.15); color: #EF4444; }
+    .hm-badge.loading { background: rgba(245,158,11,.15); color: #F59E0B; }
+    .hm-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+    .hm-label { color: var(--muted-2); }
+    .hm-val { color: var(--text); font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .hm-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+    .hm-btn {
+      padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--muted); cursor: pointer;
+      font-size: 12px; transition: all .15s;
+    }
+    .hm-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
+    .hm-btn.primary { background: rgba(99,102,241,.18); border-color: rgba(99,102,241,.4); color: #818CF8; }
+    .hm-btn.primary:hover { background: rgba(99,102,241,.28); }
+    .hm-btn.danger { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.3); color: #EF4444; }
+    .hm-btn.danger:hover { background: rgba(239,68,68,.2); }
+    .hm-summary {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 20px; padding: 14px 16px;
+      background: rgba(99,102,241,.06); border: 1px solid rgba(99,102,241,.15);
+      border-radius: 12px;
+    }
+    .hm-summary-item { font-size: 13px; color: var(--muted); }
+    .hm-summary-item strong { color: var(--text); font-size: 18px; display: block; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--panel);
+             border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px;
+             font-size: 13px; color: var(--text); box-shadow: var(--shadow);
+             transform: translateY(80px); opacity: 0; transition: all .25s ease; z-index: 999; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(34,197,94,.4); }
+    .toast.error { border-color: rgba(239,68,68,.4); }
+  </style>
+</head>
+<body>
+  <div class="hm-page">
+    <h1>Hot Models</h1>
+    <p>Load, switch, and monitor model shards across GPUs. Changes apply without restart.</p>
+
+    <div class="hm-summary" id="hmSummary">
+      <div class="hm-summary-item"><strong id="sTotal">—</strong> Total</div>
+      <div class="hm-summary-item"><strong id="sLoaded">—</strong> Loaded</div>
+      <div class="hm-summary-item"><strong id="sActive">—</strong> Active</div>
+      <div class="hm-summary-item"><strong id="sHealthy">—</strong> Healthy</div>
+    </div>
+
+    <div class="hm-grid" id="hmGrid">
+      <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--muted-2)">Loading…</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const GRID_KEY = 'freeai-hot-models-order';
+    let modelOrder = [];
+    try { modelOrder = JSON.parse(localStorage.getItem(GRID_KEY) || '[]'); } catch(e) {}
+
+    async function fetchState() {
+      const r = await fetch('/api/hot-models');
+      return r.json();
+    }
+
+    async function postAction(url, body) {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+      });
+      return r.json();
+    }
+
+    async function deleteAction(url) {
+      return fetch(url, {method: 'DELETE'}).then(r => r.json());
+    }
+
+    function healthBadge(h) {
+      const map = {healthy: 'healthy', unhealthy: 'unhealthy', loading: 'loading', unknown: 'unloaded'};
+      const cls = map[h] || 'unloaded';
+      return `<span class="hm-badge ${cls}">${h}</span>`;
+    }
+
+    function statusBadge(m) {
+      if (m.active) return `<span class="hm-badge active">ACTIVE</span>`;
+      if (m.loaded) return `<span class="hm-badge loaded">LOADED</span>`;
+      return `<span class="hm-badge unloaded">IDLE</span>`;
+    }
+
+    function render(models, activeId) {
+      const grid = document.getElementById('hmGrid');
+      const ids = modelOrder.length ? modelOrder : Object.keys(models);
+      const filtered = ids.filter(id => models[id]).map(id => models[id]);
+      const rest = Object.entries(models).filter(([id]) => !ids.includes(id));
+      const all = [...filtered, ...rest.map(([,m]) => m)];
+
+      const total = all.length;
+      const loaded = all.filter(m => m.loaded).length;
+      const active = all.filter(m => m.active).length;
+      const healthy = all.filter(m => m.health === 'healthy').length;
+      document.getElementById('sTotal').textContent = total;
+      document.getElementById('sLoaded').textContent = loaded;
+      document.getElementById('sActive').textContent = active;
+      document.getElementById('sHealthy').textContent = healthy;
+
+      grid.innerHTML = '';
+      all.forEach((m, idx) => {
+        const card = document.createElement('div');
+        const cardCls = ['hm-card'];
+        if (m.active) cardCls.push('active');
+        if (m.health === 'unhealthy') cardCls.push('unhealthy');
+        card.className = cardCls.join(' ');
+
+        const gpuLabel = m.gpu_id >= 0 ? `GPU ${m.gpu_id}` : 'CPU/Multi-GPU';
+        const vramEst = m.context_length >= 8192 ? '~12 GB' : m.context_length >= 4096 ? '~6 GB' : '~3 GB';
+
+        card.innerHTML = `
+          <div class="hm-card-header">
+            <span class="hm-card-title">${m.name}</span>
+            ${statusBadge(m)}
+            ${healthBadge(m.health)}
+          </div>
+          <div class="hm-row"><span class="hm-label">Model ID</span><span class="hm-val">${m.id}</span></div>
+          <div class="hm-row"><span class="hm-label">Shard</span><span class="hm-val" style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${m.shard_path}</span></div>
+          <div class="hm-row"><span class="hm-label">GPU</span><span class="hm-val">${gpuLabel} (CVD: ${m.cuda_visible_devices})</span></div>
+          <div class="hm-row"><span class="hm-label">Serving Port</span><span class="hm-val">${m.port}</span></div>
+          <div class="hm-row"><span class="hm-label">Context</span><span class="hm-val">${m.context_length}</span></div>
+          <div class="hm-row"><span class="hm-label">GPU Layers</span><span class="hm-val">${m.gpu_layers < 0 ? 'all' : m.gpu_layers}</span></div>
+          <div class="hm-row"><span class="hm-label">Est. VRAM</span><span class="hm-val">${vramEst}</span></div>
+          <div class="hm-row"><span class="hm-label">Errors</span><span class="hm-val ${m.error_count > 0 ? 'err' : ''}">${m.error_count}</span></div>
+          <div class="hm-row"><span class="hm-label">Load Time</span><span class="hm-val">${m.load_time_s ? m.load_time_s + 's' : '—'}</span></div>
+          <div class="hm-actions">
+            ${!m.loaded ? `<button class="hm-btn primary" onclick="loadModel('${m.id}')">▶ Load</button>` : ''}
+            ${m.loaded && !m.active ? `<button class="hm-btn" onclick="switchModel('${m.id}')">★ Set Active</button>` : ''}
+            ${m.active ? `<button class="hm-btn" disabled>● Active</button>` : ''}
+            ${m.loaded ? `<button class="hm-btn danger" onclick="unloadModel('${m.id}')">■ Unload</button>` : ''}
+            <button class="hm-btn" onclick="checkHealth('${m.id}')">♥ Health</button>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    async function loadModel(id) {
+      const r = await postAction('/admin/hot-models', {model_id: id});
+      toast(r.ok ? `Loaded ${id}` : r.error, r.ok);
+      if (r.ok) refresh();
+    }
+
+    async function unloadModel(id) {
+      const r = await deleteAction(`/admin/hot-models/${id}`);
+      toast(r.ok ? `Unloaded ${id}` : r.error, r.ok);
+      if (r.ok) refresh();
+    }
+
+    async function switchModel(id) {
+      const r = await postAction('/admin/model-switch', {model_id: id});
+      toast(r.ok ? `Active → ${id}` : r.error, r.ok);
+      if (r.ok) refresh();
+    }
+
+    async function checkHealth(id) {
+      const r = await postAction('/admin/hot-models/health', {model_id: id});
+      toast(`Health check: ${JSON.stringify(r.results?.[id])}`, true);
+      refresh();
+    }
+
+    function toast(msg, ok) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + (ok ? 'success' : 'error');
+      setTimeout(() => { t.className = 'toast'; }, 2500);
+    }
+
+    async function refresh() {
+      try {
+        const state = await fetchState();
+        render(state.models, state.active_model_id);
+      } catch(e) {}
+    }
+
+    refresh();
+    setInterval(refresh, 15000);
+  </script>
+</body>
+</html>

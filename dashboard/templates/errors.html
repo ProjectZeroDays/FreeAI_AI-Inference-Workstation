@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Error Tracker</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .errors-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    /* KPI row */
+    .kpi-row { display: flex; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; }
+    .kpi-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 18px; flex: 1; min-width: 140px; }
+    .kpi-card .kpi-label { font-size: 11px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+    .kpi-card .kpi-value { font-size: 24px; font-weight: 700; color: var(--text); }
+    .kpi-card.danger .kpi-value { color: var(--danger); }
+    .kpi-card.warn .kpi-value { color: var(--warn); }
+    .kpi-card.accent .kpi-value { color: var(--accent-2); }
+    /* Filter bar */
+    .filter-bar { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); flex-wrap: wrap; align-items: center; }
+    .filter-bar select, .filter-bar input { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .filter-bar input { flex: 1; min-width: 160px; }
+    .filter-bar label { font-size: 12px; color: var(--muted-2); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .filter-bar input[type="checkbox"] { accent-color: var(--accent); }
+    /* Error list */
+    .errors-main { flex: 1; overflow-y: auto; padding: 16px 24px; background: #0a0e1a; }
+    .errors-main::-webkit-scrollbar { width: 6px; }
+    .errors-main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .error-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s; }
+    .error-card:hover { border-color: var(--border-strong); }
+    .error-card.unacked { border-left: 3px solid var(--danger); }
+    .error-card.acknowledged { border-left: 3px solid var(--warn); opacity: .75; }
+    .error-card.resolved { border-left: 3px solid var(--accent); opacity: .65; }
+    .error-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .error-type-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(239,68,68,.12); color: #F87171; flex-shrink: 0; }
+    .error-type-badge.crash { background: rgba(239,68,68,.2); color: #EF4444; }
+    .error-type-badge.warn { background: rgba(245,158,11,.12); color: #FDE68A; }
+    .error-service { font-size: 11px; color: var(--muted-2); background: var(--panel-2); padding: 2px 8px; border-radius: 6px; flex-shrink: 0; }
+    .error-count { font-size: 11px; color: var(--accent-2); margin-left: auto; flex-shrink: 0; }
+    .error-card-body { display: flex; gap: 12px; align-items: baseline; }
+    .error-msg { font-size: 13px; color: #CBD5E1; flex: 1; word-break: break-word; }
+    .error-time { font-size: 11px; color: var(--muted-2); flex-shrink: 0; }
+    /* Traceback modal */
+    .trace-modal-overlay { display: none; position: fixed; inset: 0; z-index: 600; background: rgba(2,6,23,.85); backdrop-filter: blur(8px); }
+    .trace-modal-overlay.open { display: flex; align-items: center; justify-content: center; }
+    .trace-modal { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); width: 760px; max-width: 92vw; max-height: 85vh; display: flex; flex-direction: column; }
+    .trace-modal-header { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .trace-modal-header h3 { font-size: 15px; font-weight: 700; flex: 1; }
+    .trace-modal-header button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; }
+    .trace-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .trace-modal-body pre { background: #0a0e1a; border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #F87171; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+    .trace-meta { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .trace-meta-item { font-size: 12px; color: var(--muted); }
+    .trace-meta-item span { color: var(--accent-2); font-weight: 600; }
+    .trace-modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .trace-modal-footer button { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .trace-modal-footer button:hover { border-color: var(--accent-2); }
+    .trace-modal-footer button.danger:hover { border-color: var(--danger); color: var(--danger); }
+    .trace-modal-footer button.primary { background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; border: none; }
+    /* Service badges */
+    .svc-badges { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); flex-wrap: wrap; }
+    .svc-badge { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel-2); font-size: 12px; color: var(--muted); cursor: pointer; transition: all .15s; }
+    .svc-badge:hover { border-color: var(--accent-2); color: var(--text); }
+    .svc-badge.active { border-color: var(--accent); color: var(--accent); background: rgba(34,197,94,.08); }
+    .svc-badge .badge-count { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: rgba(239,68,68,.15); color: #F87171; }
+    .svc-badge .badge-count.critical { background: rgba(239,68,68,.3); color: #EF4444; }
+    /* Bottom bar */
+    .errors-bottom { display: flex; align-items: center; gap: 12px; padding: 10px 24px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+    .errors-bottom .eb-label { font-size: 12px; color: var(--muted-2); }
+    .errors-bottom .eb-count { font-size: 12px; color: var(--accent-2); font-weight: 600; }
+    .errors-bottom .eb-spacer { flex: 1; }
+    .errors-bottom .eb-actions { display: flex; gap: 8px; }
+    .errors-bottom .eb-actions button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .errors-bottom .eb-actions button:hover { border-color: var(--accent-2); }
+    .errors-bottom .eb-actions button.export:hover { border-color: var(--accent); color: var(--accent); }
+    .errors-bottom .eb-actions button.clear:hover { border-color: var(--danger); color: var(--danger); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted-2); }
+    .empty-state .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Error Tracker</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Service Logs</a>
+        <a href="/errors" class="nav-item active"><span class="nav-dot"></span> Errors</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Integrations</span>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main" style="padding:0;overflow:hidden">
+      <header class="topbar" style="padding:16px 24px;border-bottom:1px solid var(--border)">
+        <div>
+          <h1>Error Tracker</h1>
+          <p>Centralized error logging, deduplication & crash reporting</p>
+        </div>
+        <div class="topbar-actions">
+          <button onclick="loadErrors()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
+        </div>
+      </header>
+
+      <!-- KPI row -->
+      <div class="kpi-row" id="kpi-row">
+        <div class="kpi-card danger"><div class="kpi-label">Total Errors</div><div class="kpi-value" id="kpi-total">—</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Unacknowledged</div><div class="kpi-value" id="kpi-unacked">—</div></div>
+        <div class="kpi-card warn"><div class="kpi-label">Crashes</div><div class="kpi-value" id="kpi-crashes">—</div></div>
+        <div class="kpi-card accent"><div class="kpi-label">Services Affected</div><div class="kpi-value" id="kpi-services">—</div></div>
+      </div>
+
+      <!-- Service badges -->
+      <div class="svc-badges" id="svc-badges">
+        <div class="svc-badge active" data-svc="all" onclick="filterService('all')">All <span class="badge-count" id="badge-all">0</span></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input type="text" id="err-filter" placeholder="Search errors..." oninput="applyFilters()" />
+        <select id="err-type-filter" onchange="applyFilters()">
+          <option value="all">All Types</option>
+          <option value="crash">Crashes</option>
+          <option value="error">Errors</option>
+        </select>
+        <select id="err-time-filter" onchange="applyFilters()">
+          <option value="0">All Time</option>
+          <option value="3600">Last Hour</option>
+          <option value="86400">Last 24h</option>
+          <option value="604800">Last 7 Days</option>
+        </select>
+        <label><input type="checkbox" id="err-show-unacked" onchange="applyFilters()" /> Unacked only</label>
+      </div>
+
+      <!-- Error list -->
+      <div class="errors-main" id="errors-main">
+        <div class="empty-state">
+          <div class="empty-icon">◈</div>
+          <p>Loading errors...</p>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="errors-bottom">
+        <span class="eb-label">Total:</span>
+        <span class="eb-count" id="err-total">0</span>
+        <span class="eb-label" style="margin-left:12px">Showing:</span>
+        <span class="eb-count" id="err-visible">0</span>
+        <span class="eb-spacer"></span>
+        <div class="eb-actions">
+          <button class="export" onclick="exportErrors()">📋 Export JSON</button>
+          <button onclick="ackAllVisible()">✓ Acknowledge All</button>
+          <button class="clear" onclick="clearErrors()">🗑 Clear Log</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Traceback modal -->
+  <div class="trace-modal-overlay" id="trace-modal">
+    <div class="trace-modal">
+      <div class="trace-modal-header">
+        <h3 id="trace-title">Error Details</h3>
+        <button onclick="closeTrace()">×</button>
+      </div>
+      <div class="trace-modal-body">
+        <pre id="trace-tb"></pre>
+        <div class="trace-meta" id="trace-meta"></div>
+      </div>
+      <div class="trace-modal-footer">
+        <button onclick="closeTrace()">Close</button>
+        <button class="primary" id="trace-ack-btn" onclick="ackFromModal()">Acknowledge</button>
+        <button onclick="copyTrace()">Copy Traceback</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allErrors = [];
+    let activeService = 'all';
+    let currentTrace = null;
+
+    const SERVICE_NAMES = ['dashboard', 'router', 'agents', 'browser', 'proxy', 'skills', 'rag', 'memory', 'workflow', 'mcp'];
+
+    async function loadErrors() {
+      try {
+        const [resp, statsResp] = await Promise.all([
+          fetch('/api/errors'),
+          fetch('/api/errors/stats'),
+        ]);
+        const data = await resp.json();
+        const stats = await statsResp.json();
+        allErrors = data.errors || [];
+        renderKPI(stats);
+        renderBadges(stats.services || {});
+        applyFilters();
+      } catch (e) {
+        document.getElementById('errors-main').innerHTML =
+          '<div class="empty-state"><div class="empty-icon">⚠</div><p>Failed to load errors: ' + escHtml(e.message) + '</p></div>';
+      }
+    }
+
+    function renderKPI(stats) {
+      document.getElementById('kpi-total').textContent = stats.total || 0;
+      document.getElementById('kpi-unacked').textContent = stats.unacked || 0;
+      document.getElementById('kpi-crashes').textContent = stats.crashes || 0;
+      const svcCount = Object.keys(stats.services || {}).length;
+      document.getElementById('kpi-services').textContent = svcCount;
+    }
+
+    function renderBadges(services) {
+      const container = document.getElementById('svc-badges');
+      let html = `<div class="svc-badge ${activeService === 'all' ? 'active' : ''}" data-svc="all" onclick="filterService('all')">All <span class="badge-count" id="badge-all">${Object.values(services).reduce((s, v) => s + (v.unacked || 0), 0)}</span></div>`;
+      for (const [svc, data] of Object.entries(services)) {
+        const unacked = data.unacked || 0;
+        const cls = unacked > 0 ? 'critical' : '';
+        html += `<div class="svc-badge ${activeService === svc ? 'active' : ''}" data-svc="${svc}" onclick="filterService('${svc}')">${svc} <span class="badge-count ${cls}">${unacked}</span></div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function filterService(svc) {
+      activeService = svc;
+      applyFilters();
+      renderBadges(_lastStats);
+    }
+
+    let _lastStats = {};
+
+    function applyFilters() {
+      const search = document.getElementById('err-filter').value.toLowerCase();
+      const typeFilter = document.getElementById('err-type-filter').value;
+      const timeFilter = parseInt(document.getElementById('err-time-filter').value) || 0;
+      const unackedOnly = document.getElementById('err-show-unacked').checked;
+      const cutoff = timeFilter ? Date.now() / 1000 - timeFilter : 0;
+
+      let filtered = allErrors;
+      if (activeService !== 'all') filtered = filtered.filter(e => e.service === activeService);
+      if (search) filtered = filtered.filter(e => (e.message || '').toLowerCase().includes(search) || (e.exception_type || '').toLowerCase().includes(search));
+      if (typeFilter === 'crash') filtered = filtered.filter(e => e.kind === 'crash');
+      if (typeFilter === 'error') filtered = filtered.filter(e => e.kind !== 'crash');
+      if (cutoff) filtered = filtered.filter(e => (e.ts || 0) >= cutoff);
+      if (unackedOnly) filtered = filtered.filter(e => !(e.id in (_acked || {})) && !e.acknowledged);
+
+      document.getElementById('err-total').textContent = allErrors.length;
+      document.getElementById('err-visible').textContent = filtered.length;
+
+      const main = document.getElementById('errors-main');
+      if (filtered.length === 0) {
+        main.innerHTML = '<div class="empty-state"><div class="empty-icon">✓</div><p>No errors found</p></div>';
+        return;
+      }
+      main.innerHTML = filtered.map(e => {
+        const statusClass = (e.id in (_acked || {})) || e.acknowledged ? 'acknowledged' : (e.kind === 'crash' ? 'unacked' : 'unacked');
+        const timeStr = e.ts ? new Date(e.ts * 1000).toLocaleString() : '—';
+        const count = e.count > 1 ? ` ×${e.count}` : '';
+        const kind = e.kind === 'crash' ? 'crash' : (e.exception_type === 'Warning' ? 'warn' : 'error');
+        return `<div class="error-card ${statusClass}" onclick="showTrace('${e.id}')">
+          <div class="error-card-header">
+            <span class="error-type-badge ${kind}">${e.exception_type || 'Error'}</span>
+            <span class="error-service">${e.service || 'unknown'}</span>
+            <span class="error-count">${count}</span>
+          </div>
+          <div class="error-card-body">
+            <span class="error-msg">${escHtml(e.message || '')}</span>
+            <span class="error-time">${timeStr}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    let _acked = {};
+
+    async function showTrace(errId) {
+      const e = allErrors.find(x => x.id === errId);
+      if (!e) return;
+      currentTrace = e;
+      document.getElementById('trace-title').textContent = `${e.exception_type || 'Error'} — ${e.service}`;
+      document.getElementById('trace-tb').textContent = e.traceback || 'No traceback available';
+      const meta = document.getElementById('trace-meta');
+      meta.innerHTML = `
+        <div class="trace-meta-item"><span>Service:</span> ${escHtml(e.service || 'unknown')}</div>
+        <div class="trace-meta-item"><span>Time:</span> ${e.ts ? new Date(e.ts * 1000).toLocaleString() : '—'}</div>
+        <div class="trace-meta-item"><span>Occurrences:</span> ${e.count || 1}</div>
+        <div class="trace-meta-item"><span>Kind:</span> ${e.kind || 'error'}</div>
+        <div class="trace-meta-item"><span>Dedup Key:</span> ${escHtml(e.dedup_key || '')}</div>
+        <div class="trace-meta-item"><span>Status:</span> ${(e.id in (_acked || {})) || e.acknowledged ? 'Acknowledged' : 'Unacknowledged'}</div>
+      `;
+      const ackBtn = document.getElementById('trace-ack-btn');
+      const isAck = (e.id in (_acked || {})) || e.acknowledged;
+      ackBtn.textContent = isAck ? 'Acknowledged ✓' : 'Acknowledge';
+      ackBtn.className = isAck ? '' : 'primary';
+      document.getElementById('trace-modal').classList.add('open');
+    }
+
+    function closeTrace() { document.getElementById('trace-modal').classList.remove('open'); currentTrace = null; }
+
+    async function ackFromModal() {
+      if (!currentTrace) return;
+      await fetch(`/api/errors/ack/${encodeURIComponent(currentTrace.id)}`, { method: 'POST' });
+      if (!_acked) _acked = {};
+      _acked[currentTrace.id] = true;
+      closeTrace();
+      loadErrors();
+    }
+
+    async function ackAllVisible() {
+      const search = document.getElementById('err-filter').value.toLowerCase();
+      const typeFilter = document.getElementById('err-type-filter').value;
+      const timeFilter = parseInt(document.getElementById('err-time-filter').value) || 0;
+      const cutoff = timeFilter ? Date.now() / 1000 - timeFilter : 0;
+      let filtered = allErrors;
+      if (activeService !== 'all') filtered = filtered.filter(e => e.service === activeService);
+      if (search) filtered = filtered.filter(e => (e.message || '').toLowerCase().includes(search));
+      if (typeFilter === 'crash') filtered = filtered.filter(e => e.kind === 'crash');
+      if (cutoff) filtered = filtered.filter(e => (e.ts || 0) >= cutoff);
+      const unacked = filtered.filter(e => !(e.id in (_acked || {})) && !e.acknowledged);
+      for (const e of unacked) {
+        await fetch(`/api/errors/ack/${encodeURIComponent(e.id)}`, { method: 'POST' });
+        if (!_acked) _acked = {};
+        _acked[e.id] = true;
+      }
+      loadErrors();
+    }
+
+    function copyTrace() {
+      if (!currentTrace) return;
+      navigator.clipboard.writeText(currentTrace.traceback || '').then(() => {
+        const btn = event.target;
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = orig, 1500);
+      });
+    }
+
+    async function exportErrors() {
+      const params = new URLSearchParams();
+      if (activeService !== 'all') params.set('service', activeService);
+      const typeFilter = document.getElementById('err-type-filter').value;
+      if (typeFilter !== 'all') params.set('kind', typeFilter);
+      const timeFilter = parseInt(document.getElementById('err-time-filter').value) || 0;
+      if (timeFilter) params.set('since', timeFilter);
+      const resp = await fetch('/api/errors/export?' + params.toString());
+      const data = await resp.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `freeai-errors-${activeService}-${Date.now()}.json`;
+      a.click();
+    }
+
+    async function clearErrors() {
+      if (!confirm('Clear the error log? This cannot be undone.')) return;
+      await fetch('/api/errors/clear', { method: 'POST' });
+      allErrors = [];
+      _acked = {};
+      loadErrors();
+    }
+
+    function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Init
+    loadErrors();
+    setInterval(loadErrors, 30000);
+  </script>
+</body>
+</html>

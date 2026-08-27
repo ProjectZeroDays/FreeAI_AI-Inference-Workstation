@@ -1,0 +1,54 @@
+{
+  "$id": "browser.json",
+  "type": "object",
+  "properties": {
+    "stealth": {
+      "type": "object",
+      "properties": {
+        "enable": {"type": "boolean"},
+        "randomize_fingerprint": {"type": "boolean"},
+        "mask_webdriver": {"type": "boolean"},
+        "fake_headers": {"type": "boolean"},
+        "override_navigator": {"type": "boolean"},
+        "canvas_noise": {"type": "boolean"},
+        "webgl_noise": {"type": "boolean"},
+        "audio_noise": {"type": "boolean"}
+      }
+    },
+    "anonymity": {
+      "type": "object",
+      "properties": {
+        "mode": {"type": "string", "enum": ["none", "tor", "proxy"]},
+        "tor_socks_port": {"type": "integer"}
+      }
+    },
+    "healing": {
+      "type": "object",
+      "properties": {
+        "max_retries": {"type": "integer", "minimum": 0},
+        "retry_backoff": {"type": "number", "minimum": 0},
+        "adaptive_selectors": {"type": "boolean"},
+        "screenshot_on_fail": {"type": "boolean"},
+        "scroll_into_view": {"type": "boolean"}
+      }
+    },
+    "manifestx": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "god_mode": {"type": "boolean"}
+      }
+    },
+    "cdp": {"type": "object"},
+    "observability": {"type": "object"},
+    "viewport": {
+      "type": "object",
+      "properties": {
+        "width": {"type": "integer", "minimum": 320},
+        "height": {"type": "integer", "minimum": 200}
+      }
+    },
+    "headless": {"type": "boolean"},
+    "api_port": {"type": "integer", "minimum": 1, "maximum": 65535}
+  }
+}

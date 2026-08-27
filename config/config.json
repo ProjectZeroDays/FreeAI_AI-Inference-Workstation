@@ -25,5 +25,10 @@
     "port": 8030,
     "gpu_temp_alert_c": 85,
     "gpu_util_alert_pct": 90
+  },
+  "audit": {
+    "enabled": true,
+    "log_path": "config/audit.jsonl",
+    "max_entries": 100000
   }
 }

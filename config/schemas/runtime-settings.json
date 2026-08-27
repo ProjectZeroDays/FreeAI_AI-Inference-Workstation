@@ -1,0 +1,24 @@
+{
+  "$id": "runtime-settings.json",
+  "type": "object",
+  "properties": {
+    "auto_management": {"type": "boolean"},
+    "forced_mode": {"type": "string", "enum": ["balanced", "eco", "performance"]},
+    "power_limit_w": {"type": "integer", "minimum": 0, "maximum": 500},
+    "locked_clock_mhz": {"type": "integer", "minimum": 0, "maximum": 3000},
+    "eco_power_w": {"type": "integer", "minimum": 0, "maximum": 500},
+    "eco_clock_mhz": {"type": "integer", "minimum": 0, "maximum": 3000},
+    "repeat_penalty": {"type": "number", "minimum": 1.0, "maximum": 2.0},
+    "repeat_last_n": {"type": "integer", "minimum": 0, "maximum": 256},
+    "llama_ctx": {"type": "integer", "minimum": 256, "maximum": 32768},
+    "max_concurrent_runs": {"type": "integer", "minimum": 1, "maximum": 16},
+    "idle": {
+      "type": "object",
+      "properties": {
+        "active": {"type": "boolean"},
+        "until_epoch": {"type": "number"},
+        "restore": {"type": "object"}
+      }
+    }
+  }
+}

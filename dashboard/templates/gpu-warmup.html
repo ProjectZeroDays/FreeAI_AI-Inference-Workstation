@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPU Warmup — FreeAI Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container { max-width: 640px; width: 100%; }
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    .subtitle { color: #8b949e; font-size: 0.85rem; margin-bottom: 24px; }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card h2 { font-size: 1rem; margin-bottom: 12px; color: #58a6ff; }
+    .row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+    label { font-size: 0.85rem; color: #8b949e; min-width: 100px; }
+    input, select {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      width: 120px;
+    }
+    button {
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: #2ea043; }
+    button:disabled { background: #30363d; color: #8b949e; cursor: not-allowed; }
+    button.secondary { background: #21262d; border: 1px solid #30363d; }
+    button.secondary:hover { background: #30363d; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    .metric-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+    .metric-box .label { font-size: 0.75rem; color: #8b949e; margin-bottom: 4px; }
+    .metric-box .value { font-size: 1.3rem; font-weight: 600; color: #58a6ff; }
+    .metric-box .value.ok { color: #3fb950; }
+    .metric-box .value.warn { color: #d29922; }
+    .metric-box .value.err { color: #f85149; }
+    .device-list { margin-top: 12px; }
+    .device-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+      padding: 10px 14px; margin-bottom: 8px; font-size: 0.85rem;
+    }
+    .device-item .name { color: #e6edf3; }
+    .device-item .stats { color: #8b949e; }
+    .device-item .stats span { color: #58a6ff; }
+    .status-bar {
+      padding: 10px 14px; border-radius: 6px; font-size: 0.85rem;
+      margin-bottom: 12px; display: none;
+    }
+    .status-bar.hidden { display: none; }
+    .status-bar.running { background: #1a2332; border: 1px solid #1f6feb; color: #58a6ff; display: block; }
+    .status-bar.done    { background: #1a2a1a; border: 1px solid #238636; color: #3fb950; display: block; }
+    .status-bar.fail    { background: #2a1a1a; border: 1px solid #f85149; color: #f85149; display: block; }
+    .status-bar.skip    { background: #2a2a1a; border: 1px solid #d29922; color: #d29922; display: block; }
+    .back-link { display: inline-block; margin-top: 16px; color: #58a6ff; text-decoration: none; font-size: 0.85rem; }
+    .back-link:hover { text-decoration: underline; }
+    .config-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .config-row input { width: 80px; }
+    .log-area {
+      background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+      padding: 12px; font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.78rem; color: #8b949e; max-height: 200px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all; margin-top: 12px; display: none;
+    }
+    .log-area.visible { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>GPU Warmup &amp; Benchmark</h1>
+    <p class="subtitle">FreeAI Workstation — Prime CUDA kernels and measure GPU inference throughput</p>
+
+    <div id="status-bar" class="status-bar hidden"></div>
+
+    <div class="card">
+      <h2>Configuration</h2>
+      <div class="config-row">
+        <label for="warmup-runs">Warmup runs</label>
+        <input type="number" id="warmup-runs" min="1" max="20" value="3" />
+        <label for="bench-runs">Benchmark runs</label>
+        <input type="number" id="bench-runs" min="1" max="50" value="10" />
+        <label for="seq-len">Seq len</label>
+        <input type="number" id="seq-len" min="16" max="512" value="64" step="16" />
+        <label for="batch-size">Batch</label>
+        <input type="number" id="batch-size" min="1" max="16" value="1" />
+      </div>
+      <div class="row">
+        <button id="btn-warmup">Run Warmup</button>
+        <button id="btn-benchmark" class="secondary">Run Benchmark</button>
+        <button id="btn-results" class="secondary">View Saved Results</button>
+        <button id="btn-toggle-log" class="secondary">Toggle Log</button>
+      </div>
+    </div>
+
+    <div class="card" id="devices-card" style="display:none;">
+      <h2>Device Results</h2>
+      <div id="device-list" class="device-list"></div>
+    </div>
+
+    <div class="card" id="summary-card" style="display:none;">
+      <h2>Summary</h2>
+      <div class="metrics">
+        <div class="metric-box">
+          <div class="label">Avg Latency</div>
+          <div id="sum-latency" class="value">—</div>
+        </div>
+        <div class="metric-box">
+          <div class="label">Peak VRAM</div>
+          <div id="sum-vram" class="value">—</div>
+        </div>
+        <div class="metric-box">
+          <div class="label">GPUs Warmed</div>
+          <div id="sum-count" class="value">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="log-area" class="log-area"></div>
+
+    <a class="back-link" href="/">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const statusBar = $("status-bar");
+    const deviceList = $("device-list");
+    const devicesCard = $("devices-card");
+    const summaryCard = $("summary-card");
+    const logArea = $("log-area");
+
+    function setStatus(type, msg) {
+      statusBar.className = "status-bar " + type;
+      statusBar.textContent = msg;
+    }
+
+    function appendLog(msg) {
+      logArea.textContent += msg + "\n";
+      logArea.scrollTop = logArea.scrollHeight;
+    }
+
+    function renderDevices(results) {
+      deviceList.innerHTML = "";
+      if (!results || !results.length) {
+        deviceList.innerHTML = '<div class="device-item"><span class="name">No results</span></div>';
+        return;
+      }
+      let totalLat = 0, count = 0, peakVram = 0;
+      results.forEach(r => {
+        const lat = r.avg_latency_ms != null ? r.avg_latency_ms + " ms" : "—";
+        const vram = r.peak_vram_mb != null ? r.peak_vram_mb + " MB" : "—";
+        const latClass = r.avg_latency_ms != null
+          ? (r.avg_latency_ms < 50 ? "ok" : r.avg_latency_ms < 200 ? "warn" : "err")
+          : "";
+        totalLat += r.avg_latency_ms || 0;
+        peakVram = Math.max(peakVram, r.peak_vram_mb || 0);
+        count++;
+        const div = document.createElement("div");
+        div.className = "device-item";
+        div.innerHTML =
+          `<span class="name">GPU ${r.device_index}: ${r.device_name || "unknown"}</span>` +
+          `<span class="stats">latency: <span class="${latClass}">${lat}</span> &nbsp; peak VRAM: <span>${vram}</span></span>`;
+        deviceList.appendChild(div);
+      });
+      $("sum-latency").textContent = count ? (totalLat / count).toFixed(1) + " ms" : "—";
+      $("sum-vram").textContent = peakVram.toFixed(1) + " MB";
+      $("sum-count").textContent = count;
+      devicesCard.style.display = "block";
+      summaryCard.style.display = "block";
+    }
+
+    async function runWarmup() {
+      const seqLen = parseInt($("seq-len").value, 10) || 64;
+      const batchSize = parseInt($("batch-size").value, 10) || 1;
+      const warmupRuns = parseInt($("warmup-runs").value, 10) || 3;
+      setStatus("running", "Warming GPUs…");
+      appendLog(`> warmup batch=${batchSize} seq=${seqLen} iters=${warmupRuns}`);
+      try {
+        const res = await fetch("/api/gpu/warmup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ batch_size: batchSize, seq_len: seqLen, warmup_iters: warmupRuns })
+        });
+        const data = await res.json();
+        if (data.skipped) {
+          setStatus("skip", "Skipped: " + (data.reason || "no GPU"));
+          appendLog("  skipped: " + data.reason);
+        } else {
+          setStatus("done", `Warmed ${data.gpu_count} GPU(s)`);
+          renderDevices(data.results);
+          data.results.forEach(r =>
+            appendLog(`  GPU ${r.device_index}: ${r.status} lat=${r.avg_latency_ms}ms vram=${r.peak_vram_mb}MB`)
+          );
+        }
+      } catch (e) {
+        setStatus("fail", "Error: " + e.message);
+        appendLog("  error: " + e.message);
+      }
+    }
+
+    async function runBenchmark() {
+      const seqLen = parseInt($("seq-len").value, 10) || 64;
+      const batchSize = parseInt($("batch-size").value, 10) || 1;
+      const benchRuns = parseInt($("bench-runs").value, 10) || 10;
+      setStatus("running", "Running benchmark…");
+      appendLog(`> benchmark batch=${batchSize} seq=${seqLen} iters=${benchRuns}`);
+      try {
+        const res = await fetch("/api/gpu/warmup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            batch_size: batchSize, seq_len: seqLen,
+            warmup_iters: benchRuns, benchmark: true
+          })
+        });
+        const data = await res.json();
+        if (data.skipped) {
+          setStatus("skip", "Skipped: " + (data.reason || "no GPU"));
+        } else {
+          setStatus("done", `Benchmark complete — ${data.gpu_count} GPU(s)`);
+          renderDevices(data.results);
+          if (data.throughput_per_sec) {
+            $("sum-latency").textContent = data.throughput_per_sec + " tok/s";
+          }
+          data.results.forEach(r =>
+            appendLog(`  GPU ${r.device_index}: lat=${r.avg_latency_ms}ms throughput=${r.throughput_gflops}GFLOPS`)
+          );
+        }
+      } catch (e) {
+        setStatus("fail", "Error: " + e.message);
+      }
+    }
+
+    async function loadResults() {
+      try {
+        const res = await fetch("/api/gpu/warmup/results");
+        const data = await res.json();
+        if (data.results && data.results.length) {
+          setStatus("done", `Loaded results from ${data.timestamp || "unknown"}`);
+          renderDevices(data.results);
+        } else {
+          setStatus("skip", "No saved results found");
+        }
+      } catch (e) {
+        setStatus("fail", "Error loading results: " + e.message);
+      }
+    }
+
+    $("btn-warmup").addEventListener("click", runWarmup);
+    $("btn-benchmark").addEventListener("click", runBenchmark);
+    $("btn-results").addEventListener("click", loadResults);
+    $("btn-toggle-log").addEventListener("click", () => {
+      logArea.classList.toggle("visible");
+    });
+  </script>
+</body>
+</html>

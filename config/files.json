@@ -1,0 +1,15 @@
+{
+  "root": "C:\\Users\\Project Zero\\ai-workstation",
+  "allowed_extensions": [
+    ".txt", ".md", ".py", ".js", ".ts", ".jsx", ".tsx", ".json", ".yaml", ".yml",
+    ".html", ".css", ".scss", ".less", ".sh", ".bat", ".ps1", ".sql", ".r",
+    ".csv", ".log", ".env", ".toml", ".ini", ".cfg", ".conf", ".xml",
+    ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico", ".bmp",
+    ".mp4", ".webm", ".ogg", ".mp3", ".wav", ".flac",
+    ".zip", ".tar", ".gz", ".rar", ".7z",
+    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"
+  ],
+  "max_upload_size_mb": 50,
+  "text_preview_max_bytes": 524288,
+  "image_preview_max_dims": 1200
+}

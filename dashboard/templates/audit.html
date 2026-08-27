@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Audit Log</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .audit-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    /* Filters */
+    .audit-filters { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); align-items: center; }
+    .audit-filters label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .audit-filters input, .audit-filters select { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .audit-filters input[type="text"] { flex: 1; min-width: 180px; }
+    .audit-filters input[type="date"] { width: 150px; }
+    /* Stats bar */
+    .audit-stats { display: flex; gap: 16px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel-2); font-size: 12px; }
+    .audit-stats .stat { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+    .audit-stats .stat-val { color: var(--accent-2); font-weight: 700; }
+    /* Table */
+    .audit-table-wrap { flex: 1; overflow: auto; }
+    table.audit-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    table.audit-table thead { position: sticky; top: 0; z-index: 2; }
+    table.audit-table th { padding: 8px 12px; text-align: left; background: var(--panel); color: var(--muted-2); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    table.audit-table td { padding: 7px 12px; border-bottom: 1px solid rgba(148,163,184,.07); color: #CBD5E1; vertical-align: top; }
+    table.audit-table tr:hover td { background: rgba(255,255,255,.02); }
+    .ts { color: var(--muted-2); white-space: nowrap; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    .action-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+    .action-badge.login { background: rgba(168,85,247,.15); color: #a855f7; }
+    .action-badge.route_request { background: rgba(56,189,248,.12); color: #38BDF8; }
+    .action-badge.agent_call { background: rgba(34,197,94,.12); color: #22C55E; }
+    .action-badge.workflow_exec { background: rgba(251,191,36,.12); color: #FBBF24; }
+    .action-badge.config_change { background: rgba(245,158,11,.12); color: #F59E0B; }
+    .action-badge.deploy { background: rgba(239,68,68,.12); color: #EF4444; }
+    .action-badge.admin_action { background: rgba(244,63,94,.12); color: #F43F5E; }
+    .result-ok { color: #22C55E; }
+    .result-error { color: #EF4444; }
+    .result-forbidden { color: #F59E0B; }
+    .result-skip { color: var(--muted-2); }
+    .detail-cell { max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 11px; }
+    .detail-cell:hover { white-space: normal; word-break: break-all; }
+    /* Bottom bar */
+    .audit-bottom { display: flex; align-items: center; gap: 12px; padding: 10px 24px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+    .audit-bottom .ab-label { font-size: 12px; color: var(--muted-2); }
+    .audit-bottom .ab-count { font-size: 12px; color: var(--accent-2); font-weight: 600; }
+    .audit-bottom .ab-spacer { flex: 1; }
+    .audit-bottom .ab-actions { display: flex; gap: 8px; }
+    .audit-bottom .ab-actions button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .audit-bottom .ab-actions button:hover { border-color: var(--accent-2); }
+    .audit-bottom .ab-actions button.export:hover { border-color: var(--accent); color: var(--accent); }
+    .audit-bottom .ab-actions button.clear:hover { border-color: var(--danger); color: var(--danger); }
+    /* Pagination */
+    .audit-pag { display: flex; align-items: center; gap: 8px; margin-left: 16px; }
+    .audit-pag button { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 11px; cursor: pointer; }
+    .audit-pag button:disabled { opacity: .4; cursor: default; }
+    .audit-pag button:hover:not(:disabled) { border-color: var(--accent-2); }
+    .audit-pag span { font-size: 12px; color: var(--muted); }
+    /* Empty state */
+    .empty-state { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--muted-2); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Audit Log</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> Model Training</a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Persistent Memory</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+        <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+        <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="/audit" class="nav-item active"><span class="nav-dot"></span> Audit</a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main" style="padding:0;overflow:hidden">
+      <header class="topbar" style="padding:16px 24px;border-bottom:1px solid var(--border)">
+        <div>
+          <h1>Audit Log</h1>
+          <p>Structured activity log — all API requests, agent calls, and admin actions</p>
+        </div>
+        <div class="topbar-actions">
+          <button style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer" onclick="loadLogs()">↻ Refresh</button>
+        </div>
+      </header>
+
+      <!-- Filters -->
+      <div class="audit-filters">
+        <input type="text" id="search-input" placeholder="Search logs..." oninput="debounceSearch()" />
+        <select id="action-filter" onchange="loadLogs()">
+          <option value="all">All Actions</option>
+          <option value="login">login</option>
+          <option value="route_request">route_request</option>
+          <option value="agent_call">agent_call</option>
+          <option value="workflow_exec">workflow_exec</option>
+          <option value="config_change">config_change</option>
+          <option value="deploy">deploy</option>
+          <option value="admin_action">admin_action</option>
+        </select>
+        <input type="date" id="date-from" onchange="loadLogs()" />
+        <input type="date" id="date-to" onchange="loadLogs()" />
+        <select id="result-filter" onchange="loadLogs()">
+          <option value="all">All Results</option>
+          <option value="ok">ok</option>
+          <option value="error">error</option>
+          <option value="forbidden">forbidden</option>
+        </select>
+      </div>
+
+      <!-- Stats -->
+      <div class="audit-stats" id="audit-stats">
+        <div class="stat">Total: <span class="stat-val" id="stat-total">0</span></div>
+        <div class="stat">Showing: <span class="stat-val" id="stat-showing">0</span></div>
+        <div class="stat">login: <span class="stat-val" id="stat-login">0</span></div>
+        <div class="stat">agent_call: <span class="stat-val" id="stat-agent">0</span></div>
+        <div class="stat">config_change: <span class="stat-val" id="stat-config">0</span></div>
+        <div class="stat">admin_action: <span class="stat-val" id="stat-admin">0</span></div>
+      </div>
+
+      <!-- Table -->
+      <div class="audit-table-wrap">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Resource</th>
+              <th>Result</th>
+              <th>IP</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody">
+            <tr><td colspan="7" class="empty-state">Loading audit logs...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="audit-bottom">
+        <span class="ab-label">Page</span>
+        <div class="audit-pag" id="pagination"></div>
+        <span class="ab-spacer"></span>
+        <span class="ab-label">Entries:</span>
+        <span class="ab-count" id="entry-count">0</span>
+        <div class="ab-actions">
+          <button class="export" onclick="exportLogs('json')">📋 Export JSON</button>
+          <button class="export" onclick="exportLogs('csv')">📊 Export CSV</button>
+          <button class="clear" id="clear-btn" onclick="clearLog()">🗑 Clear Log</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAGE_SIZE = 50;
+    let currentPage = 0;
+    let totalEntries = 0;
+    let currentData = [];
+    let searchTimer = null;
+
+    async function loadLogs() {
+      const action = document.getElementById('action-filter').value;
+      const result = document.getElementById('result-filter').value;
+      const dateFrom = document.getElementById('date-from').value;
+      const dateTo = document.getElementById('date-to').value;
+
+      const params = new URLSearchParams({
+        limit: PAGE_SIZE,
+        offset: currentPage * PAGE_SIZE,
+      });
+      if (action !== 'all') params.set('action', action);
+      if (result !== 'all') params.set('result', result);
+      if (dateFrom) params.set('from', dateFrom + 'T00:00:00Z');
+      if (dateTo) params.set('to', dateTo + 'T23:59:59Z');
+
+      try {
+        const resp = await fetch(`/api/audit/query?${params}`);
+        const data = await resp.json();
+        currentData = data.entries || [];
+        totalEntries = data.total || 0;
+        renderTable(currentData);
+        renderPagination();
+        updateStats(data.summary || {});
+      } catch (e) {
+        document.getElementById('audit-tbody').innerHTML =
+          `<tr><td colspan="7" class="empty-state">Failed to load: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderTable(entries) {
+      const tbody = document.getElementById('audit-tbody');
+      if (!entries.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No audit entries found.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = entries.map(e => `
+        <tr>
+          <td class="ts">${fmtTs(e.timestamp)}</td>
+          <td>${esc(e.user)}</td>
+          <td><span class="action-badge ${e.action}">${esc(e.action)}</span></td>
+          <td>${esc(e.resource || '')}</td>
+          <td class="result-${e.result}">${esc(e.result || 'ok')}</td>
+          <td class="ts">${esc(e.ip || '')}</td>
+          <td class="detail-cell" title="${esc(JSON.stringify(e.details || {}))}">${esc(JSON.stringify(e.details || {}))}</td>
+        </tr>
+      `).join('');
+      document.getElementById('entry-count').textContent = entries.length;
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(totalEntries / PAGE_SIZE);
+      const pag = document.getElementById('pagination');
+      if (totalPages <= 1) { pag.innerHTML = ''; return; }
+      const btn = (label, page, disabled = false) =>
+        `<button ${disabled ? 'disabled' : `onclick="goToPage(${page})"`}>${label}</button>`;
+      pag.innerHTML =
+        btn('‹', currentPage - 1, currentPage === 0) +
+        ` <span>${currentPage + 1}/${totalPages}</span>` +
+        btn('›', currentPage + 1, currentPage + 1 >= totalPages);
+    }
+
+    function goToPage(p) { currentPage = p; loadLogs(); }
+
+    function updateStats(summary) {
+      document.getElementById('stat-total').textContent = totalEntries;
+      document.getElementById('stat-showing').textContent = currentData.length;
+      const s = summary || {};
+      document.getElementById('stat-login').textContent = s.login || 0;
+      document.getElementById('stat-agent').textContent = s.agent_call || 0;
+      document.getElementById('stat-config').textContent = s.config_change || 0;
+      document.getElementById('stat-admin').textContent = s.admin_action || 0;
+    }
+
+    function fmtTs(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleString();
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function debounceSearch() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        const q = document.getElementById('search-input').value.trim().toLowerCase();
+        if (!q) { loadLogs(); return; }
+        const action = document.getElementById('action-filter').value;
+        const result = document.getElementById('result-filter').value;
+        fetch(`/api/audit/query?limit=200&offset=0&action=${action}&result=${result}`)
+          .then(r => r.json())
+          .then(data => {
+            currentData = (data.entries || []).filter(e =>
+              (e.user || '').toLowerCase().includes(q) ||
+              (e.action || '').toLowerCase().includes(q) ||
+              (e.resource || '').toLowerCase().includes(q) ||
+              (e.ip || '').toLowerCase().includes(q) ||
+              JSON.stringify(e.details || {}).toLowerCase().includes(q)
+            );
+            totalEntries = currentData.length;
+            renderTable(currentData);
+            renderPagination();
+            updateStats(data.summary || {});
+          });
+      }, 300);
+    }
+
+    function exportLogs(format) {
+      const data = currentData.length ? currentData : [];
+      if (!data.length) { alert('No data to export. Run a search or refresh first.'); return; }
+      let blob, filename;
+      if (format === 'json') {
+        blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        filename = `audit-${Date.now()}.json`;
+      } else {
+        const header = 'timestamp,user,action,resource,result,ip,details\n';
+        const rows = data.map(e =>
+          [e.timestamp, e.user, e.action, e.resource, e.result, e.ip, `"${(e.details||{}).toString()}"`]
+            .map(v => '"' + v.replace(/"/g,'""') + '"').join(',')
+        ).join('\n');
+        blob = new Blob([header + rows], { type: 'text/csv' });
+        filename = `audit-${Date.now()}.csv`;
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    async function clearLog() {
+      if (!confirm('Clear all audit logs? This cannot be undone.')) return;
+      try {
+        const resp = await fetch('/api/audit/clear', { method: 'POST' });
+        const data = await resp.json();
+        if (data.ok) {
+          currentData = [];
+          totalEntries = 0;
+          renderTable([]);
+          renderPagination();
+          updateStats({});
+          alert(`Cleared ${data.removed} entries.`);
+        } else {
+          alert('Failed to clear: ' + (data.error || 'unknown error'));
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    // Init
+    loadLogs();
+  </script>
+</body>
+</html>

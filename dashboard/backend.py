@@ -12,9 +12,39 @@ import uuid
 from pathlib import Path
 
 try:
-    from flask import Flask, render_template, request, jsonify, send_from_directory
+    from flask import Flask, render_template, request, jsonify, send_from_directory, session
 except ImportError:
     Flask = None
+
+try:
+    from notifications_ws import notify, get_settings, update_settings, get_log, clear_log, get_unread_count
+except ImportError:
+    pass
+
+# ── i18n ──────────────────────────────────────────────────────────
+try:
+    from i18n import (
+        _load_all as _i18n_load_all,
+        detect_locale,
+        set_locale_in_session,
+        get_locale_from_session,
+        is_rtl,
+        get_supported_locales,
+        t as _i18n_t,
+        add_jinja_extensions,
+    )
+except ImportError:
+    from .i18n import (
+        _load_all as _i18n_load_all,
+        detect_locale,
+        set_locale_in_session,
+        get_locale_from_session,
+        is_rtl,
+        get_supported_locales,
+        t as _i18n_t,
+        add_jinja_extensions,
+    )
+_i18n_load_all()
 
 ROOT = Path(__file__).parent
 DASHBOARD_DIR = ROOT
@@ -23,6 +53,17 @@ TEMPLATES_DIR = DASHBOARD_DIR / "templates"
 CONFIG_DIR = ROOT.parent / "config"
 SKILLS_DIR = ROOT.parent / "skills"
 ACTIVITY_LOG = CONFIG_DIR / "activity_log.jsonl"
+
+# ── Audit subsystem ──────────────────────────────────────────────
+try:
+    from audit.logging import (
+        audit_log, read_audit_log, clear_audit_log,
+        set_audit_log_path, get_action_summary,
+    )
+    from audit.middleware import attach_audit_middleware
+    _AUDIT_AVAILABLE = True
+except ImportError:
+    _AUDIT_AVAILABLE = False
 
 # ── Test hooks: mockable module-level constants ────────────────
 UPLOAD_DIR = CONFIG_DIR / "uploads"
@@ -35,11 +76,25 @@ ROOT_DIR = CONFIG_DIR.parent
 app = Flask(__name__,
             static_folder=str(STATIC_DIR),
             template_folder=str(TEMPLATES_DIR))
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "freeai-dev-secret-key-2024")
+
+# ── i18n Jinja2 extensions ────────────────────────────────────────
+add_jinja_extensions(app)
+
+# ── Audit middleware ──────────────────────────────────────────────
+if _AUDIT_AVAILABLE:
+    attach_audit_middleware(app)
 
 # ── In-memory state ──────────────────────────────────────────────
 _services = {}
 _requests_log = []
 _LOCK = threading.Lock()
+
+# ── Loot / Browser / Army / C2 state ────────────────────────────
+_LOOT_DATA = {"cookies": [], "creds": []}
+_browser_status = {"engine": "stopped"}
+_c2_events = []
+_c2_hosts = []
 
 
 def _load_json(path, default=None):
@@ -59,29 +114,69 @@ def _save_json(path, data):
 
 
 # ── Pages ────────────────────────────────────────────────────────
+@app.before_request
+def _i18n_before_request():
+    """Detect and persist locale for the current request."""
+    lang = request.args.get("lang", "")
+    locale = detect_locale(
+        header=request.headers.get("Accept-Language", ""),
+        query=lang,
+        session=get_locale_from_session(session),
+    )
+    set_locale_in_session(session, locale)
+
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    locale = get_locale_from_session(session)
+    return render_template("index.html", i18n_locale=locale)
 
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("index.html")
+    locale = get_locale_from_session(session)
+    return render_template("index.html", i18n_locale=locale)
 
 
 @app.route("/skills")
 def skills_page():
-    return render_template("skills.html")
+    locale = get_locale_from_session(session)
+    return render_template("skills.html", i18n_locale=locale)
 
 
 @app.route("/sdlc")
 def sdlc_page():
-    return render_template("sdlc.html")
+    locale = get_locale_from_session(session)
+    return render_template("sdlc.html", i18n_locale=locale)
 
 
 @app.route("/static/<path:filename>")
 def static_files(filename):
     return send_from_directory(str(STATIC_DIR), filename)
+
+
+# ── i18n API routes ───────────────────────────────────────────────
+@app.route("/api/i18n/locales")
+def api_i18n_locales():
+    return jsonify(get_supported_locales())
+
+
+@app.route("/api/i18n/strings/<locale>")
+def api_i18n_strings(locale):
+    from i18n import _translations
+    data = _translations.get(locale, _translations.get("en", {}))
+    return jsonify(data)
+
+
+@app.route("/api/i18n/set", methods=["POST"])
+def api_i18n_set():
+    data = request.get_json(silent=True) or {}
+    lang = data.get("lang", "")
+    from i18n import SUPPORTED
+    if lang in SUPPORTED:
+        set_locale_in_session(session, lang)
+        return jsonify({"ok": True, "locale": lang})
+    return jsonify({"error": "unsupported locale"}), 400
 
 
 # ── API: Services health ─────────────────────────────────────────
@@ -304,27 +399,267 @@ def api_log_activity():
 # ── API: General ─────────────────────────────────────────────────
 @app.route("/api/health")
 def health():
-    import urllib.request
-    services_ports = {
-        "proxy": 8100, "memory": 8110, "agents": 8120,
-        "registry": 8130, "rag": 8140, "brain": 8150, "skills": 8160,
-        "dashboard": 8080,
-    }
-    svc_health = {}
-    all_up = True
-    for name, port in services_ports.items():
+    return jsonify({"status": "ok", "service": "dashboard"})
+
+
+# ── Health cache & periodic auto-check ───────────────────────────
+_HEALTH_CACHE = {}
+_HEALTH_CACHE_LOCK = threading.Lock()
+_HEALTH_LAST_RUN = 0
+_HEALTH_INTERVAL = 30
+ALERTS_CFG = CONFIG_DIR / "alerts.json"
+DISK_WARN_PCT = 85.0
+MEM_WARN_PCT = 85.0
+
+
+def _build_dep_graph(services_cfg):
+    svcs = services_cfg.get("services", {})
+    forward, reverse = {}, {}
+    for name, svc in svcs.items():
+        deps = svc.get("dependencies", [])
+        forward[name] = deps
+        if name not in reverse:
+            reverse[name] = []
+        for dep in deps:
+            reverse.setdefault(dep, []).append(name)
+    return {"forward": forward, "reverse": reverse}
+
+
+def _run_full_health_check():
+    """Run a complete health check and cache results."""
+    global _HEALTH_LAST_RUN
+    try:
+        import socket as _sock
+        import subprocess as _sp
+        from datetime import datetime as _dt
+
+        cfg = _load_json(SERVICES_CFG, {})
+        services = cfg.get("services", {})
+        dep_graph = _build_dep_graph(cfg)
+
+        results = []
+        for name, svc in services.items():
+            port = svc["port"]
+            host = "127.0.0.1"
+            reachable, latency = False, None
+            start = time.monotonic()
+            try:
+                s = _sock.socket(_sock.AF_INET, _sock.SOCK_STREAM)
+                s.settimeout(2.0)
+                result = s.connect_ex((host, port))
+                latency = (time.monotonic() - start) * 1000
+                s.close()
+                reachable = result == 0
+            except Exception:
+                pass
+            health_path = svc.get("health_path")
+            http_ok, http_status = None, None
+            if reachable and health_path:
+                try:
+                    import urllib.request as _ur
+                    url = f"http://{host}:{port}{health_path}"
+                    r = _ur.urlopen(url, timeout=3)
+                    http_ok = True
+                    http_status = r.status
+                except Exception:
+                    pass
+            status = "UP" if reachable else "DOWN"
+            detail = f"{latency:.0f}ms" if latency is not None else "—"
+            if http_ok:
+                detail += f" HTTP {http_status}"
+            results.append({
+                "name": name,
+                "port": port,
+                "status": status,
+                "latency_ms": latency,
+                "http_ok": http_ok,
+                "http_status": http_status,
+                "detail": detail,
+                "priority": svc.get("priority", "unknown"),
+                "dependencies": svc.get("dependencies", []),
+            })
+
+        # GPU
+        gpu = {"available": False, "devices": [], "total_vram_mb": 0,
+               "used_vram_mb": 0, "utilization_pct": 0, "temperature_c": 0, "power_w": 0}
         try:
-            r = urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2)
-            svc_health[name] = {"port": port, "status": "up", "ok": r.status == 200}
+            r = _sp.run(
+                ["nvidia-smi",
+                 "--query-gpu=name,memory.total,memory.used,memory.free,"
+                 "utilization.gpu,temperature.cores,power.draw,power.limit,"
+                 "clocks.current.graphics,clocks.max.graphics",
+                 "--format=csv,noheader,nounits"],
+                capture_output=True, text=True, timeout=10
+            )
+            if r.returncode == 0:
+                devices = []
+                for line in r.stdout.strip().split("\n"):
+                    parts = [p.strip() for p in line.split(",")]
+                    if len(parts) < 10:
+                        continue
+                    total_mb = int(parts[1]) * 1024 if parts[1] else 0
+                    used_mb = int(parts[2]) * 1024 if parts[2] else 0
+                    free_mb = int(parts[3]) * 1024 if parts[3] else 0
+                    devices.append({
+                        "name": parts[0],
+                        "total_vram_mb": total_mb,
+                        "used_vram_mb": used_mb,
+                        "free_vram_mb": free_mb,
+                        "utilization_pct": int(parts[4].replace("%", "")),
+                        "temperature_c": int(parts[5]) if parts[5] else 0,
+                        "power_w": float(parts[6]) if parts[6] else 0,
+                        "power_limit_w": float(parts[7]) if parts[7] else 0,
+                        "clock_current_mhz": parts[8].strip() if len(parts) > 8 else "—",
+                        "clock_max_mhz": parts[9].strip() if len(parts) > 9 else "—",
+                    })
+                if devices:
+                    gpu.update({
+                        "available": True,
+                        "devices": devices,
+                        "total_vram_mb": sum(d["total_vram_mb"] for d in devices),
+                        "used_vram_mb": sum(d["used_vram_mb"] for d in devices),
+                        "utilization_pct": max(d["utilization_pct"] for d in devices),
+                        "temperature_c": max(d["temperature_c"] for d in devices),
+                        "power_w": sum(d["power_w"] for d in devices),
+                    })
         except Exception:
-            svc_health[name] = {"port": port, "status": "down", "ok": False}
-            all_up = False
-    return jsonify({
-        "status": "ok" if all_up else "degraded",
-        "service": "dashboard",
-        "services": svc_health,
-        "uptime": int(time.time()),
-    })
+            pass
+
+        # Disk
+        disk = {"error": "unavailable"}
+        try:
+            import psutil as _ps
+            du = _ps.disk_usage("/")
+            disk = {
+                "total_gb": round(du.total / 1e9, 1),
+                "used_gb": round(du.used / 1e9, 1),
+                "free_gb": round(du.free / 1e9, 1),
+                "percent": du.percent,
+                "warning": du.percent >= DISK_WARN_PCT,
+            }
+        except Exception:
+            try:
+                r = _sp.run(["df", "-h", "/"], capture_output=True, text=True, timeout=5)
+                lines = r.stdout.strip().split("\n")
+                if len(lines) >= 2:
+                    p = lines[1].split()
+                    disk = {
+                        "total_gb": p[1], "used_gb": p[2], "free_gb": p[3],
+                        "percent": int(p[4].replace("%", "")),
+                        "warning": int(p[4].replace("%", "")) >= DISK_WARN_PCT,
+                    }
+            except Exception:
+                pass
+
+        # Memory
+        memory = {"error": "unavailable"}
+        try:
+            import psutil as _ps2
+            vm = _ps2.virtual_memory()
+            memory = {
+                "total_gb": round(vm.total / 1e9, 1),
+                "used_gb": round(vm.used / 1e9, 1),
+                "free_gb": round(vm.free / 1e9, 1),
+                "available_gb": round(vm.available / 1e9, 1),
+                "percent": vm.percent,
+                "warning": vm.percent >= MEM_WARN_PCT,
+            }
+        except Exception:
+            pass
+
+        # Alerts — log when services go down
+        alerts = []
+        if ALERTS_CFG.exists():
+            try:
+                alerts = json.loads(ALERTS_CFG.read_text())
+            except (json.JSONDecodeError, OSError):
+                alerts = []
+        now_iso = _dt.now().isoformat()
+        for s in results:
+            if s["status"] == "DOWN":
+                dup = any(a.get("service") == s["name"] and
+                          abs(_dt.fromisoformat(a.get("ts", "1970-01-01")).timestamp() - time.time()) < 120
+                          for a in alerts if isinstance(a.get("ts"), str))
+                if not dup:
+                    alerts.append({
+                        "ts": now_iso,
+                        "service": s["name"],
+                        "port": s["port"],
+                        "level": "critical" if s["priority"] == "critical" else "warning",
+                        "message": f"Service '{s['name']}' on port {s['port']} is DOWN",
+                    })
+        alerts = alerts[-50:]
+        try:
+            ALERTS_CFG.parent.mkdir(parents=True, exist_ok=True)
+            ALERTS_CFG.write_text(json.dumps(alerts, indent=2))
+        except OSError:
+            pass
+
+        up = sum(1 for r in results if r["status"] == "UP")
+        total = len(results)
+
+        with _HEALTH_CACHE_LOCK:
+            _HEALTH_CACHE = {
+                "timestamp": now_iso,
+                "summary": {"total": total, "up": up, "down": total - up,
+                            "status": "ok" if up == total else "degraded"},
+                "services": results,
+                "gpu": gpu,
+                "disk": disk,
+                "memory": memory,
+                "dependencies": dep_graph,
+                "alerts": alerts,
+            }
+            _HEALTH_LAST_RUN = time.time()
+    except Exception as e:
+        print(f"[health] Auto-check error: {e}", file=sys.stderr)
+
+
+def _health_auto_loop():
+    """Periodic health check every 30 seconds."""
+    while True:
+        try:
+            _run_full_health_check()
+        except Exception:
+            pass
+        time.sleep(_HEALTH_INTERVAL)
+
+
+# Start background health thread
+_health_thread = threading.Thread(target=_health_auto_loop, daemon=True)
+_health_thread.start()
+
+
+@app.route("/api/health/full")
+def api_health_full():
+    """Return cached full health data (GPU, disk, memory, deps, alerts)."""
+    with _HEALTH_CACHE_LOCK:
+        data = dict(_HEALTH_CACHE)
+    data["last_run"] = _HEALTH_LAST_RUN
+    data["next_check_in_s"] = max(0, int(_HEALTH_INTERVAL - (time.time() - _HEALTH_LAST_RUN)))
+    return jsonify(data)
+
+
+@app.route("/api/health/trigger", methods=["POST"])
+def api_health_trigger():
+    """Manually trigger a health check."""
+    _run_full_health_check()
+    with _HEALTH_CACHE_LOCK:
+        data = dict(_HEALTH_CACHE)
+    data["last_run"] = _HEALTH_LAST_RUN
+    return jsonify({"ok": True, "health": data})
+
+
+@app.route("/api/health/alerts")
+def api_health_alerts():
+    """Return current alerts from alerts.json."""
+    alerts = []
+    if ALERTS_CFG.exists():
+        try:
+            alerts = json.loads(ALERTS_CFG.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    return jsonify({"alerts": alerts, "total": len(alerts)})
 
 
 @app.route("/api/config")
@@ -470,70 +805,39 @@ def logs_page():
     return render_template("logs.html")
 
 
+@app.route("/audit")
+def audit_page():
+    return render_template("audit.html")
+
+
+@app.route("/terminal")
+def terminal_page():
+    return render_template("terminal.html")
+
+
+@app.route("/ws-test")
+def ws_test_page():
+    return render_template("ws-test.html")
+
+
+@app.route("/health")
+def health_page():
+    return render_template("health.html")
+
+
 @app.route("/network")
 def network_page():
     return render_template("network.html")
 
 
-# ── Page Routes: New Dashboard Pages ─────────────────────────────
-@app.route("/providers")
-def providers_page():
-    return render_template("providers.html")
+@app.route("/gpu")
+def gpu_page():
+    return render_template("gpu.html")
 
 
-@app.route("/hermes")
-def hermes_page():
-    return render_template("hermes.html")
-
-
-@app.route("/workflows")
-def workflows_page():
-    return render_template("workflows.html")
-
-
-@app.route("/scheduler")
-def scheduler_page():
-    return render_template("scheduler.html")
-
-
-@app.route("/mcp")
-def mcp_page():
-    return render_template("mcp.html")
-
-
-@app.route("/plugins-manage")
-def plugins_manage_page():
-    return render_template("plugins-manage.html")
-
-
-@app.route("/browser-v2")
-def browser_v2_page():
-    return render_template("browser-v2.html")
-
-
-@app.route("/loot")
-def loot_page():
-    return render_template("loot.html")
-
-
-@app.route("/c2")
-def c2_page():
-    return render_template("c2.html")
-
-
-@app.route("/salad")
-def salad_page():
-    return render_template("salad.html")
-
-
-@app.route("/aikido")
-def aikido_page():
-    return render_template("aikido.html")
-
-
-@app.route("/desktop")
-def desktop_page():
-    return render_template("desktop.html")
+@app.route("/files")
+def files_page():
+    return render_template("files.html")
 
 
 # ── API: Subagents ────────────────────────────────────────────────
@@ -605,7 +909,13 @@ def api_create_subagent():
                     if s["id"] == sa["id"]:
                         s["progress"] = min(p, 100)
                         if p >= 100:
-                            s["status"] = random.choice(["done", "done", "done", "failed"])
+                            s["status"] = st = random.choice(["done", "done", "done", "failed"])
+                            notify(
+                                f"Subagent {st.title()}",
+                                f"{sa['name']} ({sa['role']}) completed — {desc[:60]}",
+                                level="success" if st == "done" else "error",
+                                source="subagents",
+                            )
                         break
 
     threading.Thread(target=_simulate, args=(spawned[0],), daemon=True).start()
@@ -718,8 +1028,14 @@ def api_create_job():
             with _TRAINING_LOCK:
                 job["progress"] = min(p, 100)
                 if p >= 100:
-                    job["status"] = random.choice(["done", "failed"])
-                    if job["status"] == "done" and jtype == "sft":
+                    job["status"] = st = random.choice(["done", "failed"])
+                    notify(
+                        f"Training job {st.title()}",
+                        f"{job['name']} ({jtype}) — {st}",
+                        level="success" if st == "done" else "error",
+                        source="training",
+                    )
+                    if st == "done" and jtype == "sft":
                         _TRAINING_DATA["models"].append({
                             "id": str(uuid.uuid4())[:8],
                             "name": job["name"],
@@ -940,6 +1256,12 @@ def api_automation_run_now(job_id):
                 _AUTOMATIONS["history"].insert(0, entry)
                 if len(_AUTOMATIONS["history"]) > 50:
                     _AUTOMATIONS["history"] = _AUTOMATIONS["history"][:50]
+                notify(
+                    f"Automation {entry['status'].title()}",
+                    f"'{j['name']}' {'succeeded' if entry['status'] == 'success' else 'failed'} in {entry['duration_ms']}ms",
+                    level="success" if entry["status"] == "success" else "error",
+                    source="automations",
+                )
                 return jsonify({"ok": True, "entry": entry})
     return jsonify({"error": "not found"}), 404
 
@@ -998,6 +1320,12 @@ def api_gateway_connect(name):
     with _GATEWAY_LOCK:
         if name in _GATEWAY["platforms"]:
             _GATEWAY["platforms"][name]["connected"] = True
+            notify(
+                f"{name.title()} connected",
+                f"Gateway platform '{name}' is now connected",
+                level="success",
+                source="gateway",
+            )
             return jsonify({"ok": True, "platform": name, "connected": True})
     return jsonify({"error": "unknown platform"}), 404
 
@@ -1007,6 +1335,12 @@ def api_gateway_disconnect(name):
     with _GATEWAY_LOCK:
         if name in _GATEWAY["platforms"]:
             _GATEWAY["platforms"][name]["connected"] = False
+            notify(
+                f"{name.title()} disconnected",
+                f"Gateway platform '{name}' is now offline",
+                level="warning",
+                source="gateway",
+            )
             return jsonify({"ok": True, "platform": name, "connected": False})
     return jsonify({"error": "unknown platform"}), 404
 
@@ -1149,6 +1483,30 @@ _gpu_state = {
 
 @app.route("/api/gpu")
 def api_gpu():
+    """GPU telemetry endpoint — returns flat state (backward compat) plus
+    live telemetry with 60-sample history from gpu_poll.py."""
+    import sys as _sys
+    _poller_path = str(Path(__file__).parent.parent / "scripts" / "gpu_poll.py")
+    try:
+        result = subprocess.run(
+            [_sys.executable, _poller_path],
+            capture_output=True, text=True, timeout=8
+        )
+        if result.returncode == 0:
+            data = json.loads(result.stdout)
+            # Merge flat state into existing _gpu_state for scan-compatible consumers
+            if data.get("samples"):
+                _gpu_state.update({
+                    "devices": data["devices"],
+                    "total_vram_mb": data.get("total_vram_mb", _gpu_state["total_vram_mb"]),
+                    "used_vram_mb": data.get("used_vram_mb", _gpu_state["used_vram_mb"]),
+                    "utilization_pct": data.get("utilization_pct", _gpu_state["utilization_pct"]),
+                    "temperature_c": data.get("temperature_c", _gpu_state["temperature_c"]),
+                    "power_w": data.get("power_w", _gpu_state["power_w"]),
+                })
+            return jsonify({**_gpu_state, **data})
+    except Exception:
+        pass
     return jsonify(_gpu_state)
 
 
@@ -1334,85 +1692,6 @@ def api_workflow_registries():
     return jsonify({"registries": reg})
 
 
-# ── API: Services Health ──────────────────────────────────────────
-@app.route("/api/services/health")
-def api_services_health():
-    ports = {
-        "proxy": 8100, "memory": 8110, "agents": 8120,
-        "registry": 8130, "rag": 8140, "brain": 8150, "skills": 8160,
-        "pipeline": 8170,
-    }
-    import urllib.request
-    results = {}
-    for name, port in ports.items():
-        try:
-            r = urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2)
-            results[name] = {"status": "running", "port": port, "health": r.status == 200}
-        except Exception:
-            try:
-                r = urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=2)
-                results[name] = {"status": "running", "port": port, "health": r.status == 200}
-            except Exception:
-                results[name] = {"status": "stopped", "port": port, "health": False}
-    up = sum(1 for v in results.values() if v["health"])
-    total = len(results)
-    return jsonify({"services": results, "up": up, "total": total, "all_healthy": up == total})
-
-
-# ── API: Workflow Run and Schedule ────────────────────────────────
-WORKFLOW_RUNS = []
-_WORKFLOW_RUN_LOCK = threading.Lock()
-
-
-@app.route("/api/workflow/run-and-schedule", methods=["POST"])
-def api_workflow_run_and_schedule():
-    data = request.get_json(silent=True) or {}
-    workflow_id = data.get("workflow_id", "")
-    cron = data.get("cron", None)
-    immediate = data.get("immediate", True)
-    params = data.get("params", {})
-    run_id = str(uuid.uuid4())[:8]
-    entry = {
-        "run_id": run_id,
-        "workflow_id": workflow_id,
-        "status": "queued",
-        "scheduled_cron": cron,
-        "started_at": time.time(),
-        "params": params,
-        "result": None,
-    }
-    with _WORKFLOW_RUN_LOCK:
-        WORKFLOW_RUNS.append(entry)
-    if immediate and workflow_id:
-        def _execute():
-            import random
-            for p in range(0, 101, random.randint(5, 20)):
-                time.sleep(random.uniform(0.3, 1))
-                with _WORKFLOW_RUN_LOCK:
-                    entry["progress"] = min(p, 100)
-                    if p >= 100:
-                        entry["status"] = random.choice(["done", "done", "failed"])
-                        entry["result"] = {"output": f"workflow-{workflow_id}-complete", "steps_completed": random.randint(3, 10)}
-            entry.pop("progress", None)
-        threading.Thread(target=_execute, daemon=True).start()
-    return jsonify({"ok": True, "run_id": run_id, "entry": entry})
-
-
-@app.route("/api/workflow/runs", methods=["GET"])
-def api_workflow_runs():
-    with _WORKFLOW_RUN_LOCK:
-        return jsonify({"runs": list(reversed(WORKFLOW_RUNS)), "total": len(WORKFLOW_RUNS)})
-
-
-@app.route("/api/workflow/runs/<run_id>", methods=["GET"])
-def api_workflow_run(run_id):
-    with _WORKFLOW_RUN_LOCK:
-        for r in WORKFLOW_RUNS:
-            if r["run_id"] == run_id:
-                return jsonify(r)
-    return jsonify({"error": "not found"}), 404
-
-
 # ── API: MCP Registry ────────────────────────────────────────────
 MCP_DIR = ROOT.parent / "mcp"
 
@@ -1449,35 +1728,6 @@ def api_mcp_register():
     if not name or not command:
         return jsonify({"error": "name and command required"}), 400
     return jsonify({"ok": True, "server": {"name": name, "command": command, "args": args}})
-
-
-@app.route("/api/mcp/tools")
-def api_mcp_tools():
-    """Aggregate tools from all MCP server definitions in mcp/servers/."""
-    tools = []
-    servers_dir = MCP_DIR / "servers"
-    if servers_dir.exists():
-        for f in sorted(servers_dir.iterdir()):
-            if not f.is_file() or not f.name.endswith(".py"):
-                continue
-            try:
-                content = f.read_text(encoding="utf-8", errors="ignore")
-                import re as _re
-                # Extract TOOLS array from Python source
-                tools_match = _re.search(r"TOOLS\s*=\s*\[([\s\S]*?)\]", content)
-                if tools_match:
-                    tools_json_str = tools_match.group(1)
-                    try:
-                        server_tools = json.loads(f"[{tools_json_str}]")
-                        server_name = f.stem
-                        for t in server_tools:
-                            t["server"] = server_name
-                        tools.extend(server_tools)
-                    except (json.JSONDecodeError, ValueError):
-                        pass
-            except (OSError, UnicodeDecodeError):
-                continue
-    return jsonify({"tools": tools, "total": len(tools)})
 
 
 # ── API: Skills Aggregator ───────────────────────────────────────
@@ -1629,96 +1879,166 @@ def api_metrics():
     return jsonify({"services": services, "dashboard": {"status": "up", "uptime": int(time.time())}})
 
 
-# ── API: Loot (harvested cookies, creds, hashes) ─────────────────
-_LOOT_DATA = {
-    "cookies": [], "creds": [], "hashes": [], "sessions": [], "files": []
-}
-_LOOT_LOCK = threading.Lock()
+# ── API: Evals ──────────────────────────────────────────────────
+_EVALS_DIR = ROOT.parent / "evals"
+_EVAL_HISTORY_PATH = _EVALS_DIR / "history.jsonl"
+_EVAL_REPORT_PATH = _EVALS_DIR / "report.json"
+_EVAL_LOCK = threading.Lock()
+_eval_runs_cache: dict[str, dict] = {}
 
 
-@app.route("/api/loot")
-def api_loot():
-    with _LOOT_LOCK:
-        return jsonify(_LOOT_DATA)
+def _load_eval_history() -> list[dict]:
+    if not _EVAL_HISTORY_PATH.exists():
+        return []
+    runs = []
+    for line in open(_EVAL_HISTORY_PATH, encoding="utf-8"):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            runs.append(json.loads(line))
+        except (json.JSONDecodeError, OSError):
+            continue
+    return runs
 
 
-@app.route("/api/loot/<tab>/<int:idx>", methods=["DELETE"])
-def api_loot_delete(tab, idx):
-    with _LOOT_LOCK:
-        if tab in _LOOT_DATA and idx < len(_LOOT_DATA[tab]):
-            _LOOT_DATA[tab].pop(idx)
-            return jsonify({"deleted": True})
-    return jsonify({"error": "not found"}), 404
-
-
-@app.route("/api/loot/clear", methods=["POST"])
-def api_loot_clear():
-    with _LOOT_LOCK:
-        for k in _LOOT_DATA:
-            _LOOT_DATA[k] = []
-    return jsonify({"cleared": True})
-
-
-# ── API: Browser V2 Status ───────────────────────────────────────
-@app.route("/api/browser/status")
-def api_browser_status():
-    import urllib.request
-    status = {"engine": "stopped", "army_size": 0, "queued": 0, "completed": 0}
+@app.route("/api/evals/runs")
+def api_evals_runs():
     try:
-        r = urllib.request.urlopen("http://127.0.0.1:8180/health", timeout=2)
-        if r.status == 200:
-            status["engine"] = "running"
-    except Exception:
-        pass
-    return jsonify(status)
+        runs = _load_eval_history()
+        summaries = []
+        for r in runs:
+            summaries.append({
+                "run_id": r.get("run_id", ""),
+                "timestamp": r.get("timestamp", 0),
+                "overall_score": r.get("overall_score", 0.0),
+                "total_tasks": r.get("total_tasks", 0),
+                "category_avg": r.get("category_avg", {}),
+                "difficulty_avg": r.get("difficulty_avg", {}),
+            })
+        return jsonify({"runs": summaries, "total": len(summaries)})
+    except Exception as exc:
+        return jsonify({"error": str(exc), "runs": [], "total": 0})
 
 
-@app.route("/army/close-all", methods=["POST"])
-def api_army_close_all():
-    import urllib.request
+@app.route("/api/evals/run", methods=["POST"])
+def api_evals_run():
+    """Trigger a new eval run (sync or async)."""
+    data = request.get_json(silent=True) or {}
+    category = data.get("category")
+    model = data.get("model")
+    tasks_path = str(_EVALS_DIR / "golden_tasks.json")
+
     try:
-        urllib.request.urlopen("http://127.0.0.1:8180/army/close-all", timeout=2)
-    except Exception:
-        pass
+        from evals import reviewer
+        import threading as _th
+
+        run_result = {"status": "running", "run_id": "", "error": None}
+
+        def _do_run():
+            try:
+                r = reviewer.run_eval(tasks_path, category, model, json_output=False)
+                run_result.update({"status": "done", "run_id": r["run_id"], "score": r["overall_score"]})
+            except Exception as exc:
+                run_result.update({"status": "error", "error": str(exc)})
+
+        t = _th.Thread(target=_do_run, daemon=True)
+        t.start()
+        return jsonify({"ok": True, "status": "started", "thread": t.ident})
+    except ImportError as exc:
+        return jsonify({"error": f"evals module not available: {exc}", "status": "error"}), 503
+
+
+@app.route("/api/evals/results/<run_id>")
+def api_evals_results(run_id: str):
+    """Return full results for a specific run."""
+    try:
+        if _EVAL_REPORT_PATH.exists():
+            try:
+                report = json.loads(_EVAL_REPORT_PATH.read_text(encoding="utf-8"))
+                if report.get("run_id") == run_id:
+                    return jsonify(report)
+            except (json.JSONDecodeError, OSError):
+                pass
+        runs = _load_eval_history()
+        for r in runs:
+            if r.get("run_id") == run_id:
+                return jsonify(r)
+        return jsonify({"error": "not found"}), 404
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/evals/history")
+def api_evals_history():
+    """Return raw history entries."""
+    try:
+        runs = _load_eval_history()
+        return jsonify({"runs": runs, "total": len(runs)})
+    except Exception as exc:
+        return jsonify({"error": str(exc), "runs": [], "total": 0})
+
+
+@app.route("/api/evals/leaderboard")
+def api_evals_leaderboard():
+    """Return leaderboard summary from history."""
+    try:
+        from evals import leaderboard as lb
+        runs = lb.load_history()
+        summary = lb.summarize(runs)
+        return jsonify(summary)
+    except ImportError as exc:
+        return jsonify({"error": f"evals module not available: {exc}", "runs": [], "trend": [], "models": {}})
+    except Exception as exc:
+        return jsonify({"error": str(exc), "runs": [], "trend": [], "models": {}})
+
+
+@app.route("/api/evals/tasks")
+def api_evals_tasks():
+    """Return the golden task definitions."""
+    try:
+        tasks_file = _EVALS_DIR / "golden_tasks.json"
+        if not tasks_file.exists():
+            return jsonify({"error": "golden_tasks.json not found"}), 404
+        data = json.loads(tasks_file.read_text(encoding="utf-8"))
+        tasks = data.get("tasks", [])
+        summary = [{"id": t["id"], "category": t["category"], "difficulty": t["difficulty"],
+                     "scoring_method": t.get("scoring_method", "string")} for t in tasks]
+        return jsonify({"total": len(summary), "tasks": summary})
+    except (json.JSONDecodeError, OSError) as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/notifications")
+def api_notifications():
+    return jsonify({
+        "settings": get_settings(),
+        "log": get_log(),
+        "unread": get_unread_count(),
+    })
+
+
+@app.route("/api/notifications/settings", methods=["GET", "POST"])
+def api_notifications_settings():
+    if request.method == "POST":
+        data = request.get_json(silent=True) or {}
+        updated = update_settings(data)
+        return jsonify(updated)
+    return jsonify(get_settings())
+
+
+@app.route("/api/notifications/clear", methods=["POST"])
+def api_notifications_clear():
+    clear_log()
     return jsonify({"ok": True})
 
 
-# ── API: C2 ──────────────────────────────────────────────────────
-_C2_HOSTS = []
-_C2_LISTENERS = []
-_C2_EVENTS_24H = 0
-_C2_LOCK = threading.Lock()
-
-
-@app.route("/api/c2/events")
-def api_c2_events():
-    with _C2_LOCK:
-        return jsonify({
-            "hosts": _C2_HOSTS, "listeners": len(_C2_LISTENERS),
-            "scans": 0, "events_24h": _C2_EVENTS_24H
-        })
-
-
-@app.route("/api/c2/scan", methods=["POST"])
-def api_c2_scan():
-    global _C2_EVENTS_24H
-    data = request.get_json(silent=True) or {}
-    with _C2_LOCK:
-        _C2_EVENTS_24H += 1
-    return jsonify({"ok": True, "hosts_found": 0, "range": data.get("range", "unknown")})
-
-
-@app.route("/api/c2/shell", methods=["POST"])
-def api_c2_shell():
-    data = request.get_json(silent=True) or {}
-    cmd = data.get("command", "")
-    output = f"$ {cmd}\nCommand executed on {data.get('host_id', 'unknown')}."
-    return jsonify({"output": output})
-
-
 if __name__ == "__main__":
+    import notifications_ws as _nws
+    _nws.start(host="127.0.0.1", port=8765)
     port = int(os.environ.get("DASHBOARD_PORT", "8080"))
     print(f"[dashboard] Serving on :{port}")
+    print(f"[dashboard] Notifications WS on ws://127.0.0.1:8765")
     app.run(host="0.0.0.0", port=port, threaded=True)
 
 
@@ -1746,6 +2066,356 @@ def api_uploads():
     return jsonify({"uploads": _uploads})
 
 
+# ── API: GPU Warmup ────────────────────────────────────────────
+_WARMUP_CFG_PATH = CONFIG_DIR / "gpu-warmup.json"
+_WARMUP_RESULTS_PATH = CONFIG_DIR.parent / "scripts" / "gpu-benchmark-results.json"
+_gpu_warmup_state = {
+    "last_warmup": None,
+    "last_benchmark": None,
+    "results": [],
+    "skipped": False,
+    "reason": "",
+}
+
+
+def _load_warmup_cfg():
+    return _load_json(_WARMUP_CFG_PATH, {
+        "enabled": True, "auto_warmup_on_startup": True,
+        "batch_size": 1, "seq_len": 64, "warmup_iters": 3,
+        "benchmark_runs": 10, "fallback_to_mock": True,
+        "mock_gpu": {"name": "mock-gpu", "total_vram_mb": 24576,
+                     "avg_latency_ms": 12.5, "peak_vram_mb": 48.0},
+    })
+
+
+def _detect_gpus():
+    devices = []
+    try:
+        import torch
+        if torch.cuda.is_available():
+            for i in range(torch.cuda.device_count()):
+                devices.append({
+                    "index": i,
+                    "name": torch.cuda.get_device_name(i),
+                    "total_vram_mb": torch.cuda.get_device_properties(i).total_mem // (1024 * 1024),
+                })
+            return devices, "torch"
+    except ImportError:
+        pass
+    try:
+        r = subprocess.run(
+            ["nvidia-smi", "--query-gpu=index,name,memory.total",
+             "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if r.returncode == 0:
+            for line in r.stdout.strip().split("\n"):
+                parts = [p.strip() for p in line.split(",")]
+                if len(parts) >= 3:
+                    devices.append({
+                        "index": int(parts[0]),
+                        "name": parts[1],
+                        "total_vram_mb": int(parts[2]) * 1024,
+                    })
+            return devices, "nvidia-smi"
+    except Exception:
+        pass
+    return devices, None
+
+
+def _run_warmup_inline(batch_size, seq_len, iters):
+    devices, source = _detect_gpus()
+    if not devices:
+        cfg = _load_warmup_cfg()
+        mock = cfg.get("mock_gpu", {})
+        return {
+            "skipped": True,
+            "reason": "no-gpu",
+            "gpu_count": 0,
+            "results": [],
+            "source": None,
+        }, mock
+
+    results = []
+    for dev in devices:
+        idx = dev["index"]
+        try:
+            import torch
+            torch.cuda.set_device(idx)
+            dtype = torch.float16 if torch.cuda.is_bf16_supported() else torch.float32
+            hidden = 512
+            times = []
+            for _ in range(max(iters, 1)):
+                torch.cuda.reset_peak_memory_stats(idx)
+                torch.cuda.synchronize()
+                t0 = time.perf_counter()
+                for __ in range(5):
+                    a = torch.randn(batch_size, seq_len, hidden, device=f"cuda:{idx}", dtype=dtype)
+                    b = torch.randn(hidden, hidden, device=f"cuda:{idx}", dtype=dtype)
+                    _ = torch.mm(a.reshape(-1, hidden), b)
+                torch.cuda.synchronize()
+                times.append((time.perf_counter() - t0) * 1000)
+            peak_mb = torch.cuda.max_memory_allocated(idx) / (1024 * 1024)
+            avg_ms = sum(times) / len(times) if times else None
+            results.append({
+                "device_index": idx,
+                "device_name": dev["name"],
+                "total_vram_mb": dev["total_vram_mb"],
+                "avg_latency_ms": round(avg_ms, 2) if avg_ms else None,
+                "peak_vram_mb": round(peak_mb, 1),
+                "status": "ok",
+            })
+        except Exception as e:
+            results.append({
+                "device_index": idx,
+                "device_name": dev["name"],
+                "status": f"error: {e}",
+            })
+
+    return {
+        "skipped": False,
+        "reason": "",
+        "gpu_count": len(devices),
+        "results": results,
+        "source": source,
+    }, None
+
+
+@app.route("/api/gpu/warmup")
+def api_gpu_warmup_status():
+    return jsonify({
+        "last_warmup": _gpu_warmup_state.get("last_warmup"),
+        "last_benchmark": _gpu_warmup_state.get("last_benchmark"),
+        "results": _gpu_warmup_state.get("results", []),
+        "skipped": _gpu_warmup_state.get("skipped", False),
+        "reason": _gpu_warmup_state.get("reason", ""),
+    })
+
+
+@app.route("/api/gpu/warmup", methods=["POST"])
+def api_gpu_warmup_run():
+    data = request.get_json(silent=True) or {}
+    batch_size = data.get("batch_size", 1)
+    seq_len = data.get("seq_len", 64)
+    warmup_iters = data.get("warmup_iters", 3)
+    is_benchmark = data.get("benchmark", False)
+    iters = warmup_iters if not is_benchmark else data.get("benchmark_runs", 10)
+
+    result, mock = _run_warmup_inline(batch_size, seq_len, iters)
+    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+    if result.get("skipped"):
+        _gpu_warmup_state.update({"skipped": True, "reason": result.get("reason", ""),
+                                   "results": [], "last_warmup": None, "last_benchmark": None})
+    else:
+        key = "last_benchmark" if is_benchmark else "last_warmup"
+        _gpu_warmup_state.update({
+            "skipped": False, "reason": "",
+            "results": result["results"],
+            key: now,
+        })
+
+    # Persist results
+    try:
+        out = {
+            "timestamp": now,
+            "type": "benchmark" if is_benchmark else "warmup",
+            "batch_size": batch_size,
+            "seq_len": seq_len,
+            "iters": iters,
+            "gpu_count": result.get("gpu_count", 0),
+            "results": result["results"],
+        }
+        _WARMUP_RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _WARMUP_RESULTS_PATH.write_text(json.dumps(out, indent=2))
+    except OSError:
+        pass
+
+    return jsonify(result)
+
+
+@app.route("/api/gpu/warmup/results")
+def api_gpu_warmup_results():
+    try:
+        if _WARMUP_RESULTS_PATH.exists():
+            data = json.loads(_WARMUP_RESULTS_PATH.read_text())
+            return jsonify(data)
+    except (json.JSONDecodeError, OSError):
+        pass
+    return jsonify({"results": _gpu_warmup_state.get("results", []),
+                    "timestamp": _gpu_warmup_state.get("last_warmup") or _gpu_warmup_state.get("last_benchmark")})
+
+
+@app.route("/api/gpu/warmup/config")
+def api_gpu_warmup_config():
+    return jsonify(_load_warmup_cfg())
+
+
+@app.route("/api/gpu/warmup/detect")
+def api_gpu_warmup_detect():
+    devices, source = _detect_gpus()
+    return jsonify({"devices": devices, "count": len(devices), "source": source})
+
+
+# ── API: GPU Warmup page route ─────────────────────────────────
+@app.route("/gpu-warmup")
+def gpu_warmup_page():
+    return render_template("gpu-warmup.html")
+
+
+# ── API: GPU Warmup startup hook ───────────────────────────────
+def run_warmup_on_startup():
+    """Called by launch.py / startup.py if GPU profile is active."""
+    cfg = _load_warmup_cfg()
+    if not cfg.get("enabled", True):
+        return
+    if not cfg.get("auto_warmup_on_startup", True):
+        return
+    import logging
+    log = logging.getLogger("freeai.gpu-warmup")
+    log.info("Running GPU warmup on startup...")
+    result, _ = _run_warmup_inline(
+        cfg.get("batch_size", 1),
+        cfg.get("seq_len", 64),
+        cfg.get("warmup_iters", 3),
+    )
+    if result.get("skipped"):
+        log.info("GPU warmup skipped: %s", result.get("reason"))
+    else:
+        log.info("GPU warmup complete: %d device(s) warmed", result.get("gpu_count", 0))
+    return result
+
+
+# ── Error Tracking Subsystem ────────────────────────────────────
+try:
+    from errors.tracker import (
+        record, get_errors, service_stats, export_errors,
+        acknowledge_error, resolve_error, install_flask_error_handler,
+        install_unhandled_hook, _prune_old_crashes, ERRORS_LOG, CRASHES_DIR,
+    )
+    _ERRORS_AVAILABLE = True
+except ImportError:
+    _ERRORS_AVAILABLE = False
+
+
+@app.route("/errors")
+def errors_page():
+    return render_template("errors.html")
+
+
+@app.route("/api/errors")
+def api_errors():
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"errors": [], "total": 0})
+    service = request.args.get("service")
+    exc_type = request.args.get("exception_type")
+    since = request.args.get("since", 0, type=int)
+    limit = request.args.get("limit", 500, type=int)
+    errors = get_errors(service=service, exc_type=exc_type, since=since, limit=limit)
+    return jsonify({"errors": errors, "total": len(errors)})
+
+
+@app.route("/api/errors/stats")
+def api_errors_stats():
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"total": 0, "unacked": 0, "crashes": 0, "services": {}})
+    stats = service_stats()
+    total = sum(v["total"] for v in stats.values())
+    unacked = sum(v["unacked"] for v in stats.values())
+    crashes = sum(v["crashes"] for v in stats.values())
+    return jsonify({"total": total, "unacked": unacked, "crashes": crashes, "services": stats})
+
+
+@app.route("/api/errors/export")
+def api_errors_export():
+    if not _ERRORS_AVAILABLE:
+        return jsonify([])
+    service = request.args.get("service")
+    exc_type = request.args.get("exception_type")
+    since = request.args.get("since", 0, type=int)
+    errors = export_errors(service=service, exc_type=exc_type, since=since)
+    return jsonify(errors)
+
+
+@app.route("/api/errors/ack/<err_id>", methods=["POST"])
+def api_errors_ack(err_id):
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"ok": False})
+    ok = acknowledge_error(err_id)
+    return jsonify({"ok": ok})
+
+
+@app.route("/api/errors/clear", methods=["POST"])
+def api_errors_clear():
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"ok": False})
+    try:
+        if ERRORS_LOG.exists():
+            ERRORS_LOG.write_text("", encoding="utf-8")
+        return jsonify({"ok": True})
+    except OSError:
+        return jsonify({"ok": False}), 500
+
+
+@app.route("/api/crashes")
+def api_crashes():
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"crashes": []})
+    crashes = []
+    if CRASHES_DIR.exists():
+        for f in sorted(CRASHES_DIR.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+                crashes.append({
+                    "file": f.name,
+                    "timestamp": data.get("timestamp"),
+                    "service": data.get("service"),
+                    "exception_type": data.get("exception_type"),
+                    "exception_message": data.get("exception_message", "")[:120],
+                })
+            except (json.JSONDecodeError, OSError):
+                pass
+    return jsonify({"crashes": crashes, "total": len(crashes)})
+
+
+@app.route("/api/crashes/<filename>", methods=["GET"])
+def api_crash_detail(filename):
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"error": "not available"}), 503
+    crash_file = CRASHES_DIR / filename
+    if not crash_file.exists():
+        return jsonify({"error": "not found"}), 404
+    try:
+        data = json.loads(crash_file.read_text(encoding="utf-8"))
+        return jsonify(data)
+    except (json.JSONDecodeError, OSError):
+        return jsonify({"error": "invalid crash file"}), 500
+
+
+@app.route("/api/crashes/prune", methods=["POST"])
+def api_crashes_prune():
+    if not _ERRORS_AVAILABLE:
+        return jsonify({"ok": False})
+    days = request.args.get("days", 7, type=int)
+    removed = _prune_old_crashes(days)
+    return jsonify({"ok": True, "removed": removed})
+
+
+# ── Startup: install error hooks ───────────────────────────────
+def _install_error_hooks():
+    """Called once at app startup to install global error handlers."""
+    if not _ERRORS_AVAILABLE:
+        return
+    try:
+        install_flask_error_handler(app)
+        install_unhandled_hook(service="dashboard")
+    except Exception:
+        pass
+
+
+_install_error_hooks()
+
+
 # ── API: Settings ──────────────────────────────────────────────
 def _apply_gpu_tune(settings):
     return True, ""
@@ -1766,6 +2436,12 @@ def api_settings():
             return jsonify({"error": f"power_limit_w must be <= {_POWER_CAP}"}), 400
         _save_json(OPT_SETTINGS_PATH, data)
         _apply_gpu_tune(data)
+        notify(
+            "Settings saved",
+            "Dashboard settings have been updated",
+            level="info",
+            source="settings",
+        )
         return jsonify({"ok": True})
     return jsonify(_load_json(OPT_SETTINGS_PATH, {}))
 
@@ -1874,3 +2550,737 @@ def api_apply_preset(name):
         result["idle_minutes"] = idle_minutes
         result["revert_at_epoch"] = settings["idle"]["until_epoch"]
     return jsonify(result)
+
+
+# ── API: File Browser ────────────────────────────────────────────
+_FILES_CFG_PATH = CONFIG_DIR / "files.json"
+_FILE_CFG = _load_json(_FILES_CFG_PATH, {
+    "root": str(ROOT_DIR),
+    "allowed_extensions": [
+        ".txt", ".md", ".py", ".js", ".ts", ".jsx", ".tsx", ".json",
+        ".yaml", ".yml", ".html", ".css", ".scss", ".sh", ".bat",
+        ".ps1", ".sql", ".csv", ".log", ".env", ".toml", ".ini",
+        ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico",
+        ".mp4", ".webm", ".ogg", ".mp3", ".wav",
+        ".zip", ".tar", ".gz", ".rar", ".7z", ".pdf",
+    ],
+    "max_upload_size_mb": 50,
+    "text_preview_max_bytes": 524288,
+})
+
+
+def _resolve_path(user_path):
+    root = Path(_FILE_CFG.get("root", str(ROOT_DIR)))
+    if not root.is_absolute():
+        root = root.resolve()
+    if user_path:
+        target = (root / user_path).resolve()
+    else:
+        target = root.resolve()
+    if str(target) != str(root) and not str(target).startswith(str(root) + os.sep):
+        return None
+    return target
+
+
+def _is_allowed(name):
+    ext = os.path.splitext(name)[1].lower()
+    allowed = _FILE_CFG.get("allowed_extensions", [])
+    if not allowed:
+        return True
+    return ext in allowed
+
+
+def _scan_dir(path):
+    items = []
+    try:
+        for entry in sorted(path.iterdir(), key=lambda p: (not p.is_dir(), p.name.lower())):
+            stat = entry.stat()
+            items.append({
+                "name": entry.name,
+                "type": "dir" if entry.is_dir() else "file",
+                "size": entry.stat().st_size if entry.is_file() else 0,
+                "modified": stat.st_mtime,
+                "items": len(list(entry.iterdir())) if entry.is_dir() else None,
+            })
+    except PermissionError:
+        pass
+    except OSError:
+        pass
+    return items
+
+
+@app.route("/api/files/list")
+def api_files_list():
+    path_str = request.args.get("path", "")
+    target = _resolve_path(path_str)
+    if target is None:
+        return jsonify({"error": "Invalid path"}), 403
+    if not target.is_dir():
+        return jsonify({"error": "Not a directory"}), 404
+    return jsonify({"path": str(target), "items": _scan_dir(target)})
+
+
+@app.route("/api/files/read")
+def api_files_read():
+    path_str = request.args.get("path", "")
+    download = request.args.get("download", "0") == "1"
+    thumb = request.args.get("thumb", "0") == "1"
+    target = _resolve_path(path_str)
+    if target is None:
+        return jsonify({"error": "Invalid path"}), 403
+    if not target.is_file():
+        return jsonify({"error": "Not a file"}), 404
+    if not _is_allowed(target.name):
+        return jsonify({"error": "File type not allowed"}), 403
+    try:
+        size = target.stat().st_size
+        if size > _FILE_CFG.get("text_preview_max_bytes", 524288):
+            if download:
+                return send_from_directory(str(target.parent), target.name)
+            return jsonify({"error": "File too large to preview"})
+        content = target.read_text(encoding="utf-8", errors="replace")
+        if download:
+            return send_from_directory(str(target.parent), target.name)
+        if thumb and size < 1024 * 1024:
+            return send_from_directory(str(target.parent), target.name)
+        return jsonify({"path": str(target), "content": content, "size": size, "name": target.name})
+    except UnicodeDecodeError:
+        if download:
+            return send_from_directory(str(target.parent), target.name)
+        return jsonify({"error": "Binary file"})
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/files/upload", methods=["POST"])
+def api_files_upload():
+    f = request.files.get("file")
+    if not f:
+        return jsonify({"error": "No file provided"}), 400
+    name = os.path.basename(f.filename or "upload")
+    if not name:
+        return jsonify({"error": "Invalid filename"}), 400
+    if not _is_allowed(name):
+        return jsonify({"error": "File type not allowed: " + name}), 403
+    max_bytes = _FILE_CFG.get("max_upload_size_mb", 50) * 1024 * 1024
+    path_str = request.form.get("path", "")
+    target_dir = _resolve_path(path_str)
+    if target_dir is None:
+        return jsonify({"error": "Invalid path"}), 403
+    if not target_dir.is_dir():
+        return jsonify({"error": "Target is not a directory"}), 404
+    dest = target_dir / name
+    try:
+        f.save(str(dest))
+        actual_size = dest.stat().st_size
+        if actual_size > max_bytes:
+            dest.unlink(missing_ok=True)
+            return jsonify({"error": f"File exceeds {_FILE_CFG.get('max_upload_size_mb', 50)} MB limit"}), 413
+        return jsonify({"ok": True, "name": name, "size": actual_size, "path": str(dest)})
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/files/mkdir", methods=["POST"])
+def api_files_mkdir():
+    data = request.get_json(silent=True) or {}
+    path_str = data.get("path", "")
+    if not path_str:
+        return jsonify({"error": "Path required"}), 400
+    target = _resolve_path(path_str)
+    if target is None:
+        return jsonify({"error": "Invalid path"}), 403
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+        return jsonify({"ok": True, "path": str(target)})
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/files/delete", methods=["DELETE"])
+def api_files_delete():
+    path_str = request.args.get("path", "")
+    if not path_str:
+        return jsonify({"error": "Path required"}), 400
+    target = _resolve_path(path_str)
+    if target is None:
+        return jsonify({"error": "Invalid path"}), 403
+    try:
+        if target.is_dir():
+            import shutil
+            shutil.rmtree(target)
+        else:
+            target.unlink()
+        return jsonify({"ok": True, "path": str(target)})
+    except PermissionError:
+        return jsonify({"error": "Permission denied"}), 403
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/files/search")
+def api_files_search():
+    q = request.args.get("q", "").strip().lower()
+    path_str = request.args.get("path", "")
+    if not q:
+        return jsonify({"results": []})
+    base = _resolve_path(path_str) or _resolve_path("")
+    if base is None:
+        return jsonify({"error": "Invalid path"}), 403
+    results = []
+    try:
+        for path in base.rglob("*"):
+            if not _is_allowed(path.name):
+                continue
+            try:
+                stat = path.stat()
+                if path.is_dir():
+                    results.append({
+                        "name": path.name,
+                        "path": str(path.relative_to(base)),
+                        "type": "dir",
+                        "size": 0,
+                        "modified": stat.st_mtime,
+                        "items": len(list(path.iterdir())),
+                    })
+                else:
+                    results.append({
+                        "name": path.name,
+                        "path": str(path.relative_to(base)),
+                        "type": "file",
+                        "size": stat.st_size,
+                        "modified": stat.st_mtime,
+                    })
+            except OSError:
+                continue
+    except PermissionError:
+        pass
+    if q:
+        filtered = [r for r in results if q in r["name"].lower()]
+    else:
+        filtered = results
+    return jsonify({"results": filtered[:200], "query": q})
+
+
+# ── API: Security Scanner ───────────────────────────────────────
+_SECURITY_FINDINGS_CACHE = {}
+_SECURITY_SCAN_LOCK = threading.Lock()
+
+
+@app.route("/security")
+def security_page():
+    return render_template("security.html")
+
+
+@app.route("/api/security/scan", methods=["POST"])
+def api_security_scan():
+    data = request.get_json(silent=True) or {}
+    scan_dirs = data.get("dirs", None)
+    include_tests = data.get("include_tests", False)
+    config_path = data.get("config_path", str(CONFIG_DIR / "security.json"))
+
+    try:
+        from agents.specialized.security_scanner import SecurityScanner
+        scanner = SecurityScanner(config_path=config_path)
+        if scan_dirs:
+            scanner.set_dirs(scan_dirs)
+        scanner.set_include_tests(include_tests)
+        report = scanner.run_scan()
+        scan_id = str(uuid.uuid4())[:8]
+        with _SECURITY_SCAN_LOCK:
+            _SECURITY_FINDINGS_CACHE[scan_id] = report
+        return jsonify({"ok": True, "scan_id": scan_id, **report})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@app.route("/api/security/findings")
+def api_security_findings():
+    scan_id = request.args.get("scan_id", "")
+    severity_filter = request.args.get("severity", None)
+    with _SECURITY_SCAN_LOCK:
+        if scan_id and scan_id in _SECURITY_FINDINGS_CACHE:
+            report = _SECURITY_FINDINGS_CACHE[scan_id]
+            findings = report.get("findings", [])
+            if severity_filter:
+                findings = [f for f in findings if f.get("severity") == severity_filter]
+            return jsonify({"scan_id": scan_id, "findings": findings, "total": len(findings)})
+        return jsonify({"findings": [], "total": 0})
+
+
+@app.route("/api/security/latest")
+def api_security_latest():
+    with _SECURITY_SCAN_LOCK:
+        if _SECURITY_FINDINGS_CACHE:
+            latest_id = max(_SECURITY_FINDINGS_CACHE, key=lambda k: _SECURITY_FINDINGS_CACHE[k].get("scan_time", ""))
+            return jsonify({"scan_id": latest_id, **_SECURITY_FINDINGS_CACHE[latest_id]})
+        return jsonify({"findings": [], "total": 0, "summary": {"critical": 0, "high": 0, "medium": 0, "low": 0}})
+
+# -- API: Workflow Designer -----------------------------------------
+_WORKFLOW_SAVE_DIR = ROOT.parent / 'workflow' / 'workflows'
+_WORKFLOW_SAVE_DIR.mkdir(parents=True, exist_ok=True)
+_workflow_saves_lock = threading.Lock()
+
+
+@app.route('/workflow-designer')
+def workflow_designer_page():
+    return render_template('../workflow/ui/designer.html')
+
+
+@app.route('/api/workflow/save', methods=['POST'])
+def api_workflow_save():
+    data = request.get_json(silent=True) or {}
+    name = data.get('name', '').strip()
+    if not name:
+        return jsonify({'error': 'name required'}), 400
+    safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    defn = data.get('definition', {})
+    if not defn:
+        return jsonify({'error': 'definition required'}), 400
+    defn['name'] = name
+    path = _WORKFLOW_SAVE_DIR / f'{safe_name}.json'
+    path.write_text(json.dumps(defn, indent=2), encoding='utf-8')
+    return jsonify({'ok': True, 'path': str(path)})
+
+
+@app.route('/api/workflow/delete/<name>', methods=['DELETE'])
+def api_workflow_delete(name):
+    safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    path = _WORKFLOW_SAVE_DIR / f'{safe_name}.json'
+    if path.exists():
+        path.unlink()
+        return jsonify({'ok': True})
+    return jsonify({'error': 'not found'}), 404
+
+
+# ── API: Config Management ───────────────────────────────────────
+import gzip as _gzip
+import tarfile as _tarfile
+from datetime import datetime as _dt
+from pathlib import Path as _Path
+
+CONFIG_DIR = Path(__file__).parent.parent / "config"
+BACKUP_DIR = CONFIG_DIR / "backups"
+SCHEMAS_DIR = CONFIG_DIR / "schemas"
+
+
+def _human_size(n):
+    for u in ("B", "KB", "MB", "GB"):
+        if n < 1024:
+            return f"{n:.0f} {u}"
+        n /= 1024
+    return f"{n:.1f} TB"
+
+
+def _ts():
+    return _dt.now().strftime("%Y%m%d_%H%M%S")
+
+
+def _list_config_files():
+    result = []
+    if not CONFIG_DIR.exists():
+        return result
+    for fpath in sorted(CONFIG_DIR.glob("*.json")):
+        if fpath.name.startswith("."):
+            continue
+        schema = SCHEMAS_DIR / fpath.name
+        result.append({
+            "name": fpath.name,
+            "size": _human_size(fpath.stat().st_size),
+            "has_schema": schema.exists(),
+            "modified": _dt.fromtimestamp(fpath.stat().st_mtime).strftime("%Y-%m-%d %H:%M"),
+        })
+    return result
+
+
+@app.route("/api/configs")
+def api_configs_list():
+    return jsonify({"configs": _list_config_files()})
+
+
+@app.route("/api/configs/<path:name>", methods=["GET"])
+def api_configs_get(name):
+    safe = _Path(name).name
+    if safe != name or ".." in name or name.startswith("/"):
+        return jsonify({"error": "invalid path"}), 400
+    fpath = CONFIG_DIR / safe
+    if not fpath.exists():
+        return jsonify({"error": "not found"}), 404
+    try:
+        content = fpath.read_text(encoding="utf-8")
+        parsed = json.loads(content)
+        return jsonify({"name": safe, "content": content, "parsed": parsed})
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Invalid JSON: {e}"}), 400
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/configs/<path:name>", methods=["PUT"])
+def api_configs_put(name):
+    safe = _Path(name).name
+    if safe != name or ".." in name or name.startswith("/"):
+        return jsonify({"error": "invalid path"}), 400
+    fpath = CONFIG_DIR / safe
+    if not fpath.exists():
+        return jsonify({"error": "not found"}), 404
+    data = request.get_json(silent=True) or {}
+    content = data.get("content", "")
+    try:
+        json.loads(content)
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Invalid JSON: {e}"}), 400
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    ts = _ts()
+    backup_name = f"{safe}.backup.{ts}.json"
+    (BACKUP_DIR / backup_name).write_text(
+        fpath.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    fpath.write_text(content, encoding="utf-8")
+    return jsonify({"ok": True, "backup": backup_name, "name": safe})
+
+
+@app.route("/api/configs/<path:name>", methods=["DELETE"])
+def api_configs_delete(name):
+    safe = _Path(name).name
+    if safe != name or ".." in name or name.startswith("/"):
+        return jsonify({"error": "invalid path"}), 400
+    fpath = CONFIG_DIR / safe
+    if not fpath.exists():
+        return jsonify({"error": "not found"}), 404
+    fpath.unlink()
+    return jsonify({"ok": True, "name": safe})
+
+
+@app.route("/api/configs/backup", methods=["POST"])
+def api_configs_backup():
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    ts = _ts()
+    backed_up = []
+    errors = []
+    for fpath in sorted(CONFIG_DIR.glob("*.json")):
+        if fpath.name.startswith("."):
+            continue
+        try:
+            content = fpath.read_text(encoding="utf-8")
+            backup_name = f"{fpath.stem}__{ts}.json"
+            (BACKUP_DIR / backup_name).write_text(content, encoding="utf-8")
+            backed_up.append({"original": fpath.name, "backup": backup_name})
+        except Exception as e:
+            errors.append({"file": fpath.name, "error": str(e)})
+    for stem in {Path(b["original"]).stem for b in backed_up}:
+        backups = sorted(BACKUP_DIR.glob(f"{stem}_*.json"))
+        while len(backups) > 30:
+            old = backups.pop(0)
+            try:
+                old.unlink()
+            except OSError:
+                pass
+    return jsonify({
+        "ok": True,
+        "timestamp": ts,
+        "backed_up": backed_up,
+        "errors": errors,
+        "count": len(backed_up),
+    })
+
+
+@app.route("/api/configs/backups/<path:name>")
+def api_configs_backups_list(name):
+    safe = _Path(name).name
+    if safe != name or ".." in name or name.startswith("/"):
+        return jsonify({"error": "invalid path"}), 400
+    backups = sorted(
+        BACKUP_DIR.glob(f"{safe}_*.json") + BACKUP_DIR.glob(f"{safe}_*.json.gz"),
+        reverse=True,
+    )
+    result = []
+    for b in backups:
+        st = b.stat()
+        mtime = _dt.fromtimestamp(st.st_mtime)
+        result.append({
+            "filename": b.name,
+            "timestamp": mtime.strftime("%Y-%m-%d %H:%M:%S"),
+            "size": _human_size(st.st_size),
+            "compressed": b.suffix == ".gz",
+        })
+    return jsonify({"backups": result})
+
+
+@app.route("/api/configs/backups/<path:name>/<path:backup_name>", methods=["POST"])
+def api_configs_backup_restore(name, backup_name):
+    safe = _Path(name).name
+    if safe != name or ".." in name or name.startswith("/"):
+        return jsonify({"error": "invalid path"}), 400
+    if ".." in backup_name or backup_name.startswith("/"):
+        return jsonify({"error": "invalid backup name"}), 400
+    fpath = CONFIG_DIR / safe
+    bpath = BACKUP_DIR / backup_name
+    if not bpath.exists():
+        return jsonify({"error": "backup not found"}), 404
+    try:
+        if backup_name.endswith(".gz"):
+            with _gzip.open(bpath, "rt", encoding="utf-8") as f:
+                content = f.read()
+        else:
+            content = bpath.read_text(encoding="utf-8")
+        json.loads(content)
+        fpath.write_text(content, encoding="utf-8")
+        return jsonify({"ok": True, "content": content})
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Invalid JSON in backup: {e}"}), 400
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/configs/export")
+def api_configs_export():
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    ts = _ts()
+    archive_path = BACKUP_DIR / f"configs_export_{ts}.tar.gz"
+    with _tarfile.open(archive_path, "w:gz") as tar:
+        for fpath in sorted(CONFIG_DIR.glob("*.json")):
+            if fpath.name.startswith("."):
+                continue
+            tar.add(fpath, arcname=fpath.name)
+    return send_from_directory(str(BACKUP_DIR), archive_path.name)
+
+
+@app.route("/config")
+def config_page():
+    return render_template("config.html")
+
+
+# ── API: Audit ────────────────────────────────────────────────────
+if _AUDIT_AVAILABLE:
+    _AUDIT_CONFIG = _load_json(CONFIG_DIR / "config.json", {}).get("audit", {})
+    _AUDIT_MAX_ENTRIES = int(_AUDIT_CONFIG.get("max_entries", 100000))
+
+    @app.route("/api/audit/query", methods=["POST"])
+    def api_audit_query():
+        data = request.get_json(silent=True) or {}
+        action = data.get("action", "all")
+        result = data.get("result", "all")
+        user = data.get("user", "")
+        date_from = data.get("from", "")
+        date_to = data.get("to", "")
+        limit = min(int(data.get("limit", 200)), 500)
+        offset = int(data.get("offset", 0))
+
+        entries, total = read_audit_log(limit=limit + offset, offset=0)
+
+        # Apply filters in Python (date range is ISO string)
+        filtered = []
+        for e in entries:
+            if action != "all" and e.get("action") != action:
+                continue
+            if result != "all" and e.get("result") != result:
+                continue
+            if user and e.get("user", "") != user:
+                continue
+            if date_from and e.get("timestamp", "") < date_from:
+                continue
+            if date_to and e.get("timestamp", "") > date_to:
+                continue
+            filtered.append(e)
+
+        # Re-slice after filtering
+        total_filtered = len(filtered)
+        page = filtered[offset:offset + limit]
+
+        # Build summary
+        from collections import Counter
+        summary = dict(Counter(e.get("action", "") for e in entries))
+
+        return jsonify({
+            "entries": page,
+            "total": total_filtered,
+            "summary": summary,
+        })
+
+    @app.route("/api/audit/clear", methods=["POST"])
+    def api_audit_clear():
+        if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+            return jsonify({"error": "unauthorized"}), 401
+        removed = clear_audit_log()
+        return jsonify({"ok": True, "removed": removed})
+
+    @app.route("/api/audit/summary")
+    def api_audit_summary():
+        entries, total = read_audit_log(limit=0)
+        from collections import Counter
+        summary = dict(Counter(e.get("action", "") for e in entries))
+        return jsonify({
+            "total_entries": total,
+            "summary": summary,
+        })
+
+# ── API: Hot Models ────────────────────────────────────────────
+from agents.hot_models import get_manager  # noqa: E402
+
+
+@app.route("/admin/hot-models")
+def admin_hot_models_page():
+    return render_template("hot-models.html")
+
+
+@app.route("/admin/hot-models", methods=["POST"])
+def admin_hot_models_load():
+    data = request.get_json(silent=True) or {}
+    model_id = data.get("model_id", "")
+    if not model_id:
+        return jsonify({"error": "model_id required"}), 400
+    result = get_manager().load_model(model_id)
+    status = 201 if result.get("ok") else 400
+    return jsonify(result), status
+
+
+@app.route("/admin/hot-models/<model_id>", methods=["DELETE"])
+def admin_hot_models_unload(model_id):
+    result = get_manager().unload_model(model_id)
+    status = 200 if result.get("ok") else 400
+    return jsonify(result), status
+
+
+@app.route("/admin/model-switch", methods=["POST"])
+def admin_model_switch():
+    data = request.get_json(silent=True) or {}
+    model_id = data.get("model_id", "")
+    if not model_id:
+        return jsonify({"error": "model_id required"}), 400
+    result = get_manager().switch_model(model_id)
+    status = 200 if result.get("ok") else 400
+    return jsonify(result), status
+
+
+@app.route("/admin/hot-models/health", methods=["POST"])
+def admin_hot_models_health():
+    data = request.get_json(silent=True) or {}
+    model_id = data.get("model_id")
+    result = get_manager().check_health(model_id)
+    return jsonify(result)
+
+
+@app.route("/api/hot-models")
+def api_hot_models():
+    return jsonify(get_manager().get_state())
+
+
+# ── Missing page routes (required by tests) ─────────────────────
+
+@app.route("/providers")
+def providers_page():
+    return render_template("providers.html")
+
+@app.route("/hermes")
+def hermes_page():
+    return render_template("hermes.html")
+
+@app.route("/workflows")
+def workflows_page():
+    return render_template("workflows.html")
+
+@app.route("/scheduler")
+def scheduler_page():
+    return render_template("scheduler.html")
+
+@app.route("/mcp")
+def mcp_page():
+    return render_template("mcp.html")
+
+@app.route("/plugins-manage")
+def plugins_manage_page():
+    return render_template("plugins-manage.html")
+
+@app.route("/browser-v2")
+def browser_v2_page():
+    return render_template("browser-v2.html")
+
+@app.route("/loot")
+def loot_page():
+    return render_template("loot.html")
+
+@app.route("/c2")
+def c2_page():
+    return render_template("c2.html")
+
+@app.route("/salad")
+def salad_page():
+    return render_template("salad.html")
+
+@app.route("/aikido")
+def aikido_page():
+    return render_template("aikido.html")
+
+
+# ── Loot API ────────────────────────────────────────────────────
+
+@app.route("/api/loot", methods=["GET"])
+def api_loot_get():
+    return jsonify(_LOOT_DATA)
+
+@app.route("/api/loot/<category>/<idx>", methods=["DELETE"])
+def api_loot_delete(category, idx):
+    try:
+        idx = int(idx)
+    except ValueError:
+        return jsonify({"error": "invalid index"}), 400
+    if category not in _LOOT_DATA:
+        return jsonify({"error": "unknown category"}), 404
+    items = _LOOT_DATA[category]
+    if idx < 0 or idx >= len(items):
+        return jsonify({"deleted": False}), 404
+    items.pop(idx)
+    return jsonify({"deleted": True})
+
+@app.route("/api/loot/clear", methods=["POST"])
+def api_loot_clear():
+    for k in _LOOT_DATA:
+        _LOOT_DATA[k] = []
+    return jsonify({"cleared": True})
+
+
+# ── Browser Status API ──────────────────────────────────────────
+
+@app.route("/api/browser/status", methods=["GET"])
+def api_browser_status():
+    try:
+        r = urllib.request.urlopen("http://localhost:8180/health", timeout=1)
+        if r.status == 200:
+            _browser_status["engine"] = "running"
+        else:
+            _browser_status["engine"] = "stopped"
+    except Exception:
+        _browser_status["engine"] = "stopped"
+    return jsonify(_browser_status)
+
+
+# ── Army API ────────────────────────────────────────────────────
+
+@app.route("/army/close-all", methods=["POST"])
+def army_close_all():
+    try:
+        r = urllib.request.urlopen("http://localhost:8180/army/close-all", timeout=2)
+        return jsonify({"ok": True})
+    except Exception:
+        return jsonify({"ok": True, "reason": "browser service unavailable"})
+
+
+# ── C2 API ──────────────────────────────────────────────────────
+
+@app.route("/api/c2/events", methods=["GET"])
+def api_c2_events():
+    return jsonify({"hosts": _c2_hosts, "listeners": len(_c2_events)})
+
+@app.route("/api/c2/scan", methods=["POST"])
+def api_c2_scan():
+    data = request.get_json(silent=True) or {}
+    _c2_events.append({"type": "scan", "range": data.get("range", ""), "ts": time.time()})
+    return jsonify({"ok": True, "events": len(_c2_events)})
+
+@app.route("/api/c2/shell", methods=["POST"])
+def api_c2_shell():
+    data = request.get_json(silent=True) or {}
+    cmd = data.get("command", "")
+    return jsonify({"host_id": data.get("host_id", ""), "output": f"{cmd}: command executed", "ts": time.time()})
+

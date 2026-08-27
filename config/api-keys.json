@@ -1,0 +1,7 @@
+{
+  "_comment": "Allowed API keys for X-API-Key header auth. Remove this file or leave empty to disable auth (opt-in).",
+  "keys": [
+    "dev-key-001",
+    "prod-key-002"
+  ]
+}

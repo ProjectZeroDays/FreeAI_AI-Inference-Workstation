@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "auto_warmup_on_startup": true,
+  "batch_size": 1,
+  "seq_len": 64,
+  "warmup_iters": 3,
+  "benchmark_runs": 10,
+  "results_path": "scripts/gpu-benchmark-results.json",
+  "log_path": "logs/gpu-warmup.log",
+  "fallback_to_mock": true,
+  "mock_gpu": {
+    "name": "mock-gpu",
+    "total_vram_mb": 24576,
+    "avg_latency_ms": 12.5,
+    "peak_vram_mb": 48.0
+  }
+}

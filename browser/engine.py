@@ -17,6 +17,7 @@ Usage:
     await engine.close()
 """
 import asyncio
+import base64
 import hashlib
 import json
 import os
@@ -198,13 +199,31 @@ class FingerprintProfile:
             "Object.defineProperty(navigator,'usb',{get:()=>undefined});"
             "Object.defineProperty(navigator,'hid',{get:()=>undefined});"
             "Object.defineProperty(navigator,'serial',{get:()=>undefined});"
+            "Object.defineProperty(navigator,'vendor',{get:()=>'" + platform + "'});"
+            "Object.defineProperty(navigator,'appCodeName',{get:()=> 'Mozilla'});"
+            "Object.defineProperty(navigator,'appName',{get:()=> 'Netscape'});"
+            "Object.defineProperty(navigator,'appVersion',{get:()=>'" + ua + "'});"
+            "Object.defineProperty(navigator,'product',{get:()=> 'Gecko'});"
+            "Object.defineProperty(navigator,'productSub',{get:()=> '20030107'});"
+            "Object.defineProperty(navigator,'oscillateCPU',{get:()=>false});"
+            "Object.defineProperty(navigator,'oscillateMemory',{get:()=>false});"
+            "window.chrome={runtime:{},loadTimes:function(){},csi:function(){},app:{}};"
+            "Object.defineProperty(navigator,'credentials',{get:()=>({})});"
+            "Object.defineProperty(navigator,'permissions',{get:()=>({query:async()=>({state:'granted'}),notify:async()=>{}})});"
+            "Object.defineProperty(navigator,'sharing',{get:()=>({share:async()=>false,addEventListener:async()=>{},removeEventListener:async()=>{}})});"
+            "Object.defineProperty(navigator,'clipboard',{get:()=>({readText:async()=>'',writeText:async()=>true})});"
+            "Object.defineProperty(navigator,'keyboard',{get:()=>({getLayoutMap:async()=>new Map(),onkeydown:new EventTarget(),onkeyup:new EventTarget(),onkeypress:new EventTarget()})});"
+            "Object.defineProperty(navigator,'virtualKeyboard',{get:()=>({overlaysContent:false,addOnPolyfillVisibilityChangeListener:async()=>{},removeOnPolyfillVisibilityChangeListener:async()=>{}})});"
             "Object.defineProperty(screen,'width',{get:()=>" + str(sw) + "});"
             "Object.defineProperty(screen,'height',{get:()=>" + str(sh) + "});"
             "Object.defineProperty(screen,'availWidth',{get:()=>" + str(saw) + "});"
             "Object.defineProperty(screen,'availHeight',{get:()=>" + str(sah) + "});"
+            "Object.defineProperty(screen,'colorDepth',{get:()=>" + str(cd) + "});"
+            "Object.defineProperty(screen,'pixelDepth',{get:()=>" + str(cd) + "});"
             "Object.defineProperty(window,'devicePixelRatio',{get:()=>" + str(pr) + "});"
             "Object.defineProperty(window,'orientation',{get:()=>({type:'landscape-primary',angle:0})});"
-            "Object.defineProperty(window,'colorDepth',{get:()=>" + str(cd) + "});"
+            "Object.defineProperty(window,'chrome',{get:()=>({app:{},runtime:{},loadTimes:function(){},csi:function(){},csi_:function(){}}})});"
+            "Object.defineProperty(window,'navigator',{value:navigator,writable:false,configurable:false,enumerable:false});"
             "Object.defineProperty(Date,'getTimezoneOffset',{value:()=> " + str(tzoff) + "});"
             "Object.defineProperty(Intl.DateTimeFormat.prototype,'formatToParts',{value:function(){return [];}});"
             "const origRTCP=RTCPeerConnection;"
@@ -224,6 +243,14 @@ class FingerprintProfile:
             "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;"
             "const origEnum=navigator.enumerateDevices;"
             "if(origEnum){navigator.enumerateDevices=function(){return Promise.resolve([]);}};"
+            "window.outerHeight=window.innerHeight;"
+            "window.outerWidth=window.innerWidth;"
+            "window.screenX=0;window.screenY=0;"
+            "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Array;"
+            "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Promise;"
+            "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;"
+            "Object.defineProperty(navigator,'ks_version',{get:()=>undefined});"
+            "Object.defineProperty(navigator,'ks_build',{get:()=>undefined});"
         )
         await page.add_init_script(script)
 
@@ -675,6 +702,10 @@ class BrowserEngine:
         self._healing = HealingEngine(self.config.get("healing", {}))
         self._session_id = uuid.uuid4().hex[:8]
         self._last_selector = None
+        self._tabs = {}
+        self._active_tab = None
+        self._download_path = str(Path.home() / "Downloads")
+        self._proxy = None
         self._manifestx.load_extensions()
 
     @property
@@ -714,6 +745,21 @@ class BrowserEngine:
                 "--disable-sync",
                 "--disable-translate",
                 "--no-pings",
+                "--disable-extensions-except=",
+                "--disable-component-update",
+                "--disable-domain-reliability",
+                "--disable-background-networking",
+                "--disable-background-timer-throttling",
+                "--disable-backgrounding-occluded-windows",
+                "--disable-breakpad",
+                "--disable-hang-monitor",
+                "--disable-prompt-on-repost",
+                "--disable-ipc-flooding-protection",
+                "--enable-features=NetworkService,NetworkServiceInProcess",
+                "--password-store=basic",
+                "--use-mock-keychain",
+                "--lang=en-US",
+                "--remote-allow-origins=*",
                 "--window-size={},{}".format(
                     self.config.get("viewport", {}).get("width", 1920),
                     self.config.get("viewport", {}).get("height", 1080)),
@@ -870,7 +916,172 @@ class BrowserEngine:
             "is_open": self.is_open,
             "healing_stats": self._healing.stats,
             "manifestx_extensions": list(self._manifestx._extensions.keys()),
+            "tabs": list(self._tabs.keys()),
+            "active_tab": self._active_tab,
+            "download_path": self._download_path,
+            "proxy": self._proxy,
         }
+
+    async def wait_for(self, selector, state="visible", timeout=30000):
+        """Wait for a selector to appear or disappear."""
+        if not self._page:
+            raise RuntimeError("No active page")
+        try:
+            if state == "visible":
+                await self._page.wait_for_selector(selector, state="visible", timeout=timeout)
+                return {"found": selector, "state": "visible"}
+            elif state == "hidden":
+                await self._page.wait_for_selector(selector, state="hidden", timeout=timeout)
+                return {"found": selector, "state": "hidden"}
+            elif state == "attached":
+                await self._page.wait_for_selector(selector, state="attached", timeout=timeout)
+                return {"found": selector, "state": "attached"}
+            elif state == "detached":
+                await self._page.wait_for_selector(selector, state="detached", timeout=timeout)
+                return {"found": selector, "state": "detached"}
+            else:
+                raise ValueError(f"Unknown wait state: {state}")
+        except Exception as exc:
+            return {"error": str(exc), "selector": selector, "state": state}
+
+    async def wait_for_url(self, pattern, timeout=30000):
+        """Wait for URL to match a regex pattern."""
+        if not self._page:
+            raise RuntimeError("No active page")
+        regex = re.compile(pattern)
+        deadline = time.time() + timeout / 1000
+        while time.time() < deadline:
+            current = await self.get_url()
+            if regex.search(current):
+                return {"url": current, "matched": pattern}
+            await asyncio.sleep(0.2)
+        return {"error": f"URL did not match {pattern} within {timeout}ms", "last_url": await self.get_url()}
+
+    async def new_tab(self, url=None):
+        """Open a new tab and return its index."""
+        if not self._page:
+            await self.start()
+        ctx = self._page.context
+        page = await ctx.new_page()
+        tab_id = f"tab_{uuid.uuid4().hex[:6]}"
+        self._tabs[tab_id] = page
+        await self._switch_to_tab(tab_id)
+        if url:
+            await page.goto(url, wait_until="networkidle", timeout=30000)
+        return {"tab_id": tab_id, "url": await page.url if page else ""}
+
+    async def switch_tab(self, tab_id):
+        """Switch to an existing tab by ID."""
+        if tab_id not in self._tabs:
+            raise ValueError(f"Tab not found: {tab_id}")
+        return await self._switch_to_tab(tab_id)
+
+    async def _switch_to_tab(self, tab_id):
+        self._active_tab = tab_id
+        self._page = self._tabs[tab_id]
+        return {"active_tab": tab_id, "url": await self._page.url}
+
+    async def close_tab(self, tab_id=None):
+        """Close a tab. If none given, close the active one."""
+        tid = tab_id or self._active_tab
+        if not tid or tid not in self._tabs:
+            return {"error": "No tab to close"}
+        page = self._tabs.pop(tid)
+        try:
+            await page.close()
+        except Exception:
+            pass
+        if self._active_tab == tid:
+            if self._tabs:
+                remaining = next(iter(self._tabs))
+                await self._switch_to_tab(remaining)
+            else:
+                self._active_tab = None
+                self._page = None
+        return {"closed": tid, "remaining": list(self._tabs.keys())}
+
+    async def list_tabs(self):
+        """List all open tabs with their URLs."""
+        tabs = []
+        for tid, page in self._tabs.items():
+            try:
+                url = await page.url
+                title = await page.title()
+            except Exception:
+                url = ""
+                title = ""
+            tabs.append({"tab_id": tid, "url": url, "title": title, "active": tid == self._active_tab})
+        return {"tabs": tabs, "active": self._active_tab, "count": len(tabs)}
+
+    async def set_download_path(self, path):
+        """Set the download directory for the browser context."""
+        self._download_path = str(Path(path).expanduser().resolve())
+        Path(self._download_path).mkdir(parents=True, exist_ok=True)
+        if self._ctx:
+            await self._ctx.set_storage_state({"cookies": [], "origins": []})
+        try:
+            if hasattr(self._ctx, '_impl_obj'):
+                await self._cdp.send("Browser.setDownloadBehavior", {
+                    "behavior": "allowAndName",
+                    "downloadPath": self._download_path,
+                } if self._cdp else {})
+        except Exception:
+            pass
+        return {"download_path": self._download_path}
+
+    async def list_downloads(self):
+        """List files in the download directory."""
+        dl_dir = Path(self._download_path)
+        if not dl_dir.exists():
+            return {"downloads": [], "count": 0}
+        files = []
+        for f in sorted(dl_dir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
+            if f.is_file():
+                files.append({
+                    "name": f.name,
+                    "size": f.stat().st_size,
+                    "modified": f.stat().st_mtime,
+                    "path": str(f),
+                })
+        return {"downloads": files, "count": len(files), "path": str(dl_dir)}
+
+    async def set_proxy(self, host, port, scheme="http", username=None, password=None):
+        """Configure proxy for the browser context."""
+        self._proxy = {"host": host, "port": port, "scheme": scheme}
+        proxy_opts = {"server": f"{scheme}://{host}:{port}"}
+        if username and password:
+            proxy_opts["username"] = username
+            proxy_opts["password"] = password
+        if self._browser and not self._page:
+            try:
+                old_ctx = self._ctx
+                if old_ctx:
+                    try: await old_ctx.close()
+                    except Exception: pass
+                self._ctx = await self._browser.new_context(proxy=proxy_opts)
+                if self._active_tab and self._active_tab in self._tabs:
+                    self._page = self._tabs[self._active_tab]
+                else:
+                    self._page = await self._ctx.new_page()
+            except Exception as exc:
+                return {"error": str(exc)}
+        return {"proxy": self._proxy}
+
+    async def screenshot_base64(self, full_page=False, format="png"):
+        """Return screenshot as base64-encoded string for API responses."""
+        if not self._page:
+            return None
+        import io
+        img_bytes = await self._page.screenshot(full_page=full_page, type=format if format == "jpeg" else "png")
+        return base64.b64encode(img_bytes).decode("utf-8")
+
+    async def get_url_sync(self):
+        """Synchronous wrapper for get_url."""
+        return await self.get_url()
+
+    async def get_title_sync(self):
+        """Synchronous wrapper for get_title."""
+        return await self.get_title()
 
 
 def create_engine(config=None):

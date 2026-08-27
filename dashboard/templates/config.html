@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Config Manager</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .config-layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+    .config-main { padding:22px 28px 32px; min-width:0; overflow-y:auto; }
+    .config-topbar { display:flex; align-items:center; justify-content:space-between;
+                     padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                     margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .config-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .config-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .config-topbar-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+    /* Tree */
+    .tree-panel { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .tree-header { padding:12px 14px; border-bottom:1px solid var(--border); font-size:12px;
+                   text-transform:uppercase; letter-spacing:.06em; color:var(--muted-2); font-weight:600;
+                   display:flex; align-items:center; justify-content:space-between; }
+    .tree-search { width:100%; background:var(--bg-soft); border:none; color:var(--text);
+                   padding:8px 14px; font-size:13px; border-bottom:1px solid var(--border);
+                   outline:none; }
+    .tree-search:focus { background:var(--bg); }
+    .tree-search::placeholder { color:var(--muted-2); }
+    .tree-list { padding:8px; max-height:calc(100vh - 220px); overflow-y:auto; }
+    .tree-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:8px;
+                 cursor:pointer; font-size:13px; color:var(--muted); transition:all .15s;
+                 border:1px solid transparent; user-select:none; }
+    .tree-item:hover { background:rgba(148,163,184,.07); color:var(--text); }
+    .tree-item.active { background:rgba(34,197,94,.10); border-color:rgba(34,197,94,.25); color:#DCFCE7; }
+    .tree-icon { font-size:14px; width:18px; text-align:center; flex-shrink:0; }
+    .tree-name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .tree-meta { font-size:11px; color:var(--muted-2); flex-shrink:0; }
+    .tree-section-label { font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+                          color:var(--muted-2); padding:8px 10px 4px; font-weight:600; }
+
+    /* Editor */
+    .editor-panel { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .editor-header { padding:12px 16px; border-bottom:1px solid var(--border);
+                     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .editor-title { font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; }
+    .editor-title .file-icon { color:var(--accent-2); }
+    .editor-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .editor-body { position:relative; }
+    .editor-wrap { position:relative; }
+    #json-editor {
+      width:100%; min-height:480px; background:var(--bg-soft); color:#E2E8F0;
+      border:none; padding:16px 18px; font-family:'Fira Code',monospace; font-size:13px;
+      line-height:1.65; resize:vertical; outline:none; tab-size:2;
+      overflow-y:auto;
+    }
+    #json-editor:focus { background:#0B1525; }
+    .editor-status { padding:8px 16px; border-top:1px solid var(--border);
+                     display:flex; align-items:center; gap:10px; font-size:12px; flex-wrap:wrap; }
+    .status-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .status-dot.ok { background:var(--accent); box-shadow:0 0 8px rgba(34,197,94,.6); }
+    .status-dot.err { background:var(--danger); box-shadow:0 0 8px rgba(239,68,68,.6); }
+    .status-dot.warn { background:var(--warn); box-shadow:0 0 8px rgba(245,158,11,.6); }
+    .status-text { color:var(--muted); }
+    .status-text.err { color:var(--danger); }
+    .status-text.warn { color:var(--warn); }
+
+    /* Diff */
+    .diff-panel { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-top:14px; display:none; }
+    .diff-panel.open { display:block; }
+    .diff-header { padding:12px 16px; border-bottom:1px solid var(--border);
+                   display:flex; align-items:center; justify-content:space-between; }
+    .diff-header h3 { margin:0; font-size:14px; }
+    .diff-body { max-height:320px; overflow-y:auto; padding:12px 16px;
+                 font-family:'Fira Code',monospace; font-size:12px; line-height:1.7; }
+    .diff-line { padding:1px 8px; border-radius:3px; white-space:pre; }
+    .diff-line.added { background:rgba(34,197,94,.12); color:#86EFAC; }
+    .diff-line.removed { background:rgba(239,68,68,.12); color:#FCA5A5; }
+    .diff-line.context { color:var(--muted-2); }
+    .diff-label { display:inline-block; padding:1px 6px; border-radius:4px; font-size:11px;
+                  font-weight:600; margin-right:8px; }
+    .diff-label.added { background:rgba(34,197,94,.2); color:#86EFAC; }
+    .diff-label.removed { background:rgba(239,68,68,.2); color:#FCA5A5; }
+
+    /* Buttons */
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px;
+           font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border);
+           background:rgba(255,255,255,.05); color:var(--text); transition:all .15s; }
+    .btn:hover { background:rgba(255,255,255,.09); border-color:var(--border-strong); }
+    .btn-primary { background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.35); color:#86EFAC; }
+    .btn-primary:hover { background:rgba(34,197,94,.25); }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .btn-danger:hover { background:rgba(239,68,68,.2); }
+    .btn-sm { padding:4px 9px; font-size:11px; }
+
+    /* Toast */
+    .toast-container { position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+    .toast { padding:10px 16px; border-radius:10px; font-size:13px; font-weight:500;
+             border:1px solid var(--border); animation:toast-in .25s ease;
+             box-shadow:0 8px 24px rgba(0,0,0,.4); max-width:320px; }
+    .toast.ok { background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.3); color:#86EFAC; }
+    .toast.err { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .toast.info { background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.3); color:#BAE6FD; }
+    @keyframes toast-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+    /* Backup list */
+    .backup-list { margin-top:14px; background:var(--panel); border:1px solid var(--border);
+                   border-radius:var(--radius); overflow:hidden; }
+    .backup-list-header { padding:12px 16px; border-bottom:1px solid var(--border);
+                          font-size:14px; font-weight:600; display:flex; align-items:center;
+                          justify-content:space-between; }
+    .backup-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .backup-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                       border-bottom:1px solid var(--border); text-transform:uppercase;
+                       letter-spacing:.05em; font-size:10px; }
+    .backup-table td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .backup-table tr:last-child td { border-bottom:none; }
+    .backup-table tr:hover td { background:rgba(255,255,255,.02); }
+    .backup-file { font-family:monospace; color:var(--accent-2); }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+    .empty-state .empty-icon { font-size:36px; opacity:.3; margin-bottom:10px; }
+
+    /* Schema badge */
+    .schema-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px;
+                    border-radius:999px; font-size:11px; font-weight:600;
+                    background:rgba(168,85,247,.15); color:#DDD6FE; border:1px solid rgba(168,85,247,.25); }
+    .no-schema { color:var(--muted-2); font-size:11px; font-style:italic; }
+
+    /* Modal */
+    .modal-overlay { position:fixed; inset:0; background:rgba(2,6,23,.8); backdrop-filter:blur(4px);
+                     z-index:1000; display:none; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+             padding:24px; max-width:420px; width:90%; box-shadow:var(--shadow); }
+    .modal h3 { margin:0 0 12px; font-size:16px; }
+    .modal p { color:var(--muted); font-size:13px; margin:0 0 20px; line-height:1.6; }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; }
+  </style>
+</head>
+<body>
+  <div class="config-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Config Manager</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/config" class="nav-item active"><span class="nav-dot"></span> Configs</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="config-main">
+      <header class="config-topbar">
+        <div>
+          <h1>Config Manager</h1>
+          <p>Manage, edit, and version all JSON configuration files</p>
+        </div>
+        <div class="config-topbar-actions">
+          <button class="btn" onclick="loadConfigs()" title="Refresh list">↻ Refresh</button>
+          <button class="btn" onclick="doBackup()" title="Back up all configs">⬇ Backup All</button>
+          <button class="btn btn-primary" onclick="exportAll()" title="Download all configs as tar.gz">⤓ Export All</button>
+        </div>
+      </header>
+
+      <div style="display:grid; grid-template-columns:280px 1fr; gap:16px; align-items:start;">
+        <!-- Tree Panel -->
+        <div class="tree-panel">
+          <div class="tree-header">
+            <span>Config Files</span>
+            <span id="config-count" class="muted" style="font-size:11px; text-transform:none; letter-spacing:0"></span>
+          </div>
+          <input type="text" class="tree-search" id="tree-search" placeholder="Filter configs…" oninput="filterTree(this.value)" />
+          <div class="tree-list" id="tree-list">
+            <div class="empty-state"><div class="empty-icon">⬡</div><p>Loading configs…</p></div>
+          </div>
+        </div>
+
+        <!-- Editor Panel -->
+        <div id="editor-area" style="display:none; flex-direction:column; gap:14px;">
+          <div class="editor-panel">
+            <div class="editor-header">
+              <div class="editor-title">
+                <span class="file-icon">📄</span>
+                <span id="editor-filename">—</span>
+                <span id="schema-badge" class="no-schema"></span>
+              </div>
+              <div class="editor-actions">
+                <button class="btn btn-sm" onclick="formatJSON()" title="Pretty-print JSON">⊞ Format</button>
+                <button class="btn btn-sm" onclick="toggleDiff()" id="diff-btn" title="Show diff">◫ Diff</button>
+                <button class="btn btn-sm" onclick="downloadCurrent()" title="Download this file">⤓ Download</button>
+                <button class="btn btn-sm btn-danger" onclick="confirmDelete()" title="Delete this file">⊘ Delete</button>
+                <button class="btn btn-primary btn-sm" onclick="saveConfig()" id="save-btn" title="Save changes">✓ Save</button>
+              </div>
+            </div>
+            <div class="editor-body">
+              <textarea id="json-editor" spellcheck="false" placeholder="Select a config file to edit…"></textarea>
+            </div>
+            <div class="editor-status">
+              <span class="status-dot" id="status-dot"></span>
+              <span class="status-text" id="status-text">Ready</span>
+              <span class="muted" id="diff-info" style="margin-left:auto; display:none">
+                <span id="diff-stats"></span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Diff Panel -->
+          <div class="diff-panel" id="diff-panel">
+            <div class="diff-header">
+              <h3>Changes vs Saved</h3>
+              <button class="btn btn-sm" onclick="toggleDiff()">✕ Close</button>
+            </div>
+            <div class="diff-body" id="diff-body"></div>
+          </div>
+
+          <!-- Backup Panel -->
+          <div class="backup-list">
+            <div class="backup-list-header">
+              <span>Backups</span>
+              <button class="btn btn-sm" onclick="loadBackups()">↻ Refresh</button>
+            </div>
+            <table class="backup-table" id="backup-table">
+              <thead><tr><th>Filename</th><th>Timestamp</th><th>Size</th><th>Actions</th></tr></thead>
+              <tbody id="backup-tbody"></tbody>
+            </table>
+            <div id="backup-empty" class="empty-state" style="display:none">
+              <div class="empty-icon">◷</div>
+              <p>No backups yet. Click "Backup All" to create one.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Welcome state -->
+        <div id="welcome-area" style="display:flex; align-items:center; justify-content:center; min-height:400px;">
+          <div class="empty-state">
+            <div class="empty-icon" style="font-size:48px;opacity:.25">⚙</div>
+            <h2 style="color:var(--text);margin:12px 0 6px">Config Manager</h2>
+            <p style="color:var(--muted);max-width:360px">Select a configuration file from the tree to view and edit it. All edits are auto-backed up before saving.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal">
+      <h3>Delete Config?</h3>
+      <p id="delete-modal-text">Are you sure you want to delete this config file? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" id="delete-confirm-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    const CONFIG_DIR = 'config';
+    let configs = [];
+    let currentFile = null;
+    let savedContent = {};
+    let backupList = [];
+
+    // ── Toast ───────────────────────────────────────────────────────
+    function toast(msg, type = 'info') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 250); }, 3000);
+    }
+
+    // ── Load config list ────────────────────────────────────────────
+    async function loadConfigs() {
+      try {
+        const r = await fetch('/api/configs');
+        const data = await r.json();
+        configs = data.configs || [];
+        renderTree(configs);
+        document.getElementById('config-count').textContent = `${configs.length} files`;
+      } catch(e) { toast('Failed to load configs: ' + e.message, 'err'); }
+    }
+
+    function renderTree(list) {
+      const el = document.getElementById('tree-list');
+      if (!list.length) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-icon">⬡</div><p>No config files found.</p></div>';
+        return;
+      }
+      el.innerHTML = list.map(c => `
+        <div class="tree-item" data-name="${c.name}" onclick="selectConfig('${c.name}')">
+          <span class="tree-icon">${c.has_schema ? '⚙' : '📄'}</span>
+          <span class="tree-name">${c.name}</span>
+          <span class="tree-meta">${c.size}</span>
+        </div>`).join('');
+    }
+
+    function filterTree(q) {
+      const filter = q.toLowerCase();
+      const filtered = configs.filter(c => c.name.toLowerCase().includes(filter));
+      renderTree(filtered);
+    }
+
+    // ── Select config ───────────────────────────────────────────────
+    async function selectConfig(name) {
+      currentFile = name;
+      document.querySelectorAll('.tree-item').forEach(el =>
+        el.classList.toggle('active', el.dataset.name === name));
+      document.getElementById('welcome-area').style.display = 'none';
+      document.getElementById('editor-area').style.display = 'flex';
+
+      try {
+        const r = await fetch(`/api/configs/${encodeURIComponent(name)}`);
+        if (!r.ok) { toast('Failed to load ' + name, 'err'); return; }
+        const data = await r.json();
+        savedContent[name] = data.content;
+        const formatted = JSON.stringify(data.parsed, null, 2);
+        document.getElementById('json-editor').value = formatted;
+        document.getElementById('editor-filename').textContent = name;
+        setStatus('ok', 'Loaded');
+        updateDiff();
+        updateSchemaBadge(name);
+      } catch(e) { toast('Error: ' + e.message, 'err'); }
+    }
+
+    function updateSchemaBadge(name) {
+      const badge = document.getElementById('schema-badge');
+      const cfg = configs.find(c => c.name === name);
+      if (cfg && cfg.has_schema) {
+        badge.className = 'schema-badge';
+        badge.textContent = '✓ Has schema';
+      } else {
+        badge.className = 'no-schema';
+        badge.textContent = 'No schema';
+      }
+    }
+
+    // ── Validate & status ───────────────────────────────────────────
+    function validateJSON(text) {
+      try {
+        JSON.parse(text);
+        return { ok: true, parsed: null };
+      } catch(e) {
+        const m = e.message.match(/position\s+(\d+)/);
+        const pos = m ? parseInt(m[1]) : null;
+        let preview = '';
+        if (pos !== null && pos < text.length) {
+          const line = text.substring(0, pos).split('\n').length;
+          const col = pos - text.lastIndexOf('\n', pos - 1) - 1;
+          preview = ` (line ${line}, col ${col})`;
+        }
+        return { ok: false, error: e.message + preview };
+      }
+    }
+
+    function setStatus(type, msg) {
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      dot.className = 'status-dot ' + type;
+      text.className = 'status-text' + (type === 'err' ? ' err' : type === 'warn' ? ' warn' : '');
+      text.textContent = msg;
+    }
+
+    document.getElementById('json-editor').addEventListener('input', () => {
+      if (!currentFile) return;
+      const text = document.getElementById('json-editor').value;
+      const v = validateJSON(text);
+      if (v.ok) {
+        setStatus('ok', 'Valid JSON');
+        v.parsed = JSON.parse(text);
+      } else {
+        setStatus('err', v.error);
+      }
+      updateDiff();
+    });
+
+    // ── Format ──────────────────────────────────────────────────────
+    function formatJSON() {
+      const editor = document.getElementById('json-editor');
+      try {
+        const parsed = JSON.parse(editor.value);
+        editor.value = JSON.stringify(parsed, null, 2);
+        editor.dispatchEvent(new Event('input'));
+        toast('Formatted', 'ok');
+      } catch(e) { toast('Cannot format: invalid JSON', 'err'); }
+    }
+
+    // ── Diff ────────────────────────────────────────────────────────
+    function toggleDiff() {
+      const panel = document.getElementById('diff-panel');
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) updateDiff();
+    }
+
+    function updateDiff() {
+      if (!currentFile || !savedContent[currentFile]) {
+        document.getElementById('diff-info').style.display = 'none';
+        return;
+      }
+      const editor = document.getElementById('json-editor').value;
+      const diff = computeDiff(savedContent[currentFile], editor);
+      const body = document.getElementById('diff-body');
+      if (!diff.length) {
+        body.innerHTML = '<span style="color:var(--accent)">No changes — file is identical to saved version.</span>';
+      } else {
+        body.innerHTML = diff.map(d =>
+          `<div class="diff-line ${d.type}">${d.type === 'added' ? '+' : d.type === 'removed' ? '−' : ' '}${escHtml(d.text)}</div>`
+        ).join('');
+      }
+      const added = diff.filter(d => d.type === 'added').length;
+      const removed = diff.filter(d => d.type === 'removed').length;
+      document.getElementById('diff-info').style.display = '';
+      document.getElementById('diff-stats').textContent =
+        added ? `<span style="color:#86EFAC">+${added}</span>` : '' +
+        removed ? `<span style="color:#FCA5A5">−${removed}</span>` : '';
+    }
+
+    function computeDiff(oldText, newText) {
+      const oldLines = oldText.split('\n');
+      const newLines = newText.split('\n');
+      // Simple LCS-based diff
+      const m = oldLines.length, n = newLines.length;
+      const dp = Array.from({length: m+1}, () => Array(n+1).fill(0));
+      for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+          dp[i][j] = oldLines[i-1] === newLines[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+      const result = [];
+      let i = m, j = n;
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && oldLines[i-1] === newLines[j-1]) {
+          result.unshift({type:'context', text: oldLines[i-1]}); i--; j--;
+        } else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) {
+          result.unshift({type:'added', text: newLines[j-1]}); j--;
+        } else {
+          result.unshift({type:'removed', text: oldLines[i-1]}); i--;
+        }
+      }
+      return result;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── Save ────────────────────────────────────────────────────────
+    async function saveConfig() {
+      if (!currentFile) return;
+      const text = document.getElementById('json-editor').value;
+      const v = validateJSON(text);
+      if (!v.ok) { toast('Invalid JSON — fix errors before saving', 'err'); setStatus('err', v.error); return; }
+      setStatus('warn', 'Saving…');
+      try {
+        const r = await fetch(`/api/configs/${encodeURIComponent(currentFile)}`, {
+          method: 'PUT',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({content: text})
+        });
+        const data = await r.json();
+        if (data.ok) {
+          savedContent[currentFile] = text;
+          setStatus('ok', 'Saved successfully');
+          toast(`Saved ${currentFile}`, 'ok');
+          updateDiff();
+          loadConfigs(); // refresh tree sizes
+        } else {
+          setStatus('err', data.error || 'Save failed');
+          toast('Save failed: ' + (data.error || 'unknown error'), 'err');
+        }
+      } catch(e) { setStatus('err', e.message); toast('Save error: ' + e.message, 'err'); }
+    }
+
+    // ── Delete ──────────────────────────────────────────────────────
+    function confirmDelete() {
+      if (!currentFile) return;
+      document.getElementById('delete-modal-text').textContent =
+        `Are you sure you want to delete "${currentFile}"? This cannot be undone.`;
+      document.getElementById('delete-modal').classList.add('open');
+      document.getElementById('delete-confirm-btn').onclick = async () => {
+        closeDeleteModal();
+        try {
+          const r = await fetch(`/api/configs/${encodeURIComponent(currentFile)}`, {method:'DELETE'});
+          const data = await r.json();
+          if (data.ok) {
+            toast(`Deleted ${currentFile}`, 'ok');
+            currentFile = null;
+            delete savedContent[currentFile];
+            document.getElementById('editor-area').style.display = 'none';
+            document.getElementById('welcome-area').style.display = 'flex';
+            loadConfigs();
+          } else {
+            toast('Delete failed: ' + (data.error || 'unknown'), 'err');
+          }
+        } catch(e) { toast('Error: ' + e.message, 'err'); }
+      };
+    }
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.remove('open');
+    }
+
+    // ── Download ────────────────────────────────────────────────────
+    function downloadCurrent() {
+      if (!currentFile) return;
+      const text = document.getElementById('json-editor').value;
+      const blob = new Blob([text], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = currentFile;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast(`Downloaded ${currentFile}`, 'ok');
+    }
+
+    // ── Backup ──────────────────────────────────────────────────────
+    async function doBackup() {
+      toast('Creating backup…', 'info');
+      try {
+        const r = await fetch('/api/configs/backup', {method:'POST'});
+        const data = await r.json();
+        if (data.ok) toast(`Backup created: ${data.backup_file}`, 'ok');
+        else toast('Backup failed: ' + (data.error || ''), 'err');
+        loadBackups();
+      } catch(e) { toast('Backup error: ' + e.message, 'err'); }
+    }
+
+    async function loadBackups() {
+      if (!currentFile) {
+        document.getElementById('backup-tbody').innerHTML = '';
+        document.getElementById('backup-empty').style.display = '';
+        return;
+      }
+      try {
+        const r = await fetch(`/api/configs/backups/${encodeURIComponent(currentFile)}`);
+        const data = await r.json();
+        backupList = data.backups || [];
+        const tbody = document.getElementById('backup-tbody');
+        if (!backupList.length) {
+          tbody.innerHTML = '';
+          document.getElementById('backup-empty').style.display = '';
+          return;
+        }
+        document.getElementById('backup-empty').style.display = 'none';
+        tbody.innerHTML = backupList.map(b => `
+          <tr>
+            <td class="backup-file">${b.filename}</td>
+            <td>${b.timestamp}</td>
+            <td>${b.size}</td>
+            <td>
+              <button class="btn btn-sm" onclick="restoreBackup('${escAttr(b.filename)}')">↺ Restore</button>
+            </td>
+          </tr>`).join('');
+      } catch(e) { toast('Failed to load backups: ' + e.message, 'err'); }
+    }
+
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+
+    async function restoreBackup(filename) {
+      if (!currentFile) return;
+      try {
+        const r = await fetch(`/api/configs/backups/${encodeURIComponent(currentFile)}/${encodeURIComponent(filename)}`, {method:'POST'});
+        const data = await r.json();
+        if (data.ok) {
+          document.getElementById('json-editor').value = data.content;
+          savedContent[currentFile] = data.content;
+          document.getElementById('json-editor').dispatchEvent(new Event('input'));
+          toast(`Restored from ${filename}`, 'ok');
+        } else {
+          toast('Restore failed: ' + (data.error || ''), 'err');
+        }
+      } catch(e) { toast('Error: ' + e.message, 'err'); }
+    }
+
+    // ── Export All ──────────────────────────────────────────────────
+    async function exportAll() {
+      toast('Preparing export…', 'info');
+      window.open('/api/configs/export', '_blank');
+    }
+
+    // ── Init ────────────────────────────────────────────────────────
+    loadConfigs();
+    loadBackups();
+  </script>
+</body>
+</html>

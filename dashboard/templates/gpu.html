@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — GPU Telemetry</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    .gpu-main{padding:22px 24px 32px; min-width:0; overflow-y:auto;}
+    .gpu-topbar{display:flex; align-items:center; justify-content:space-between;
+                padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                margin-bottom:18px; flex-wrap:wrap; gap:10px;}
+    .gpu-topbar h1{margin:0; font-size:22px; letter-spacing:-.02em;}
+    .gpu-topbar p{margin:4px 0 0; color:var(--muted); font-size:13px;}
+    .gpu-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:14px; margin-bottom:18px;}
+    .gpu-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:14px;
+      padding:16px; box-shadow:0 10px 30px rgba(2,6,23,.45);
+      backdrop-filter:blur(8px); transition:border-color .18s, transform .18s;
+    }
+    .gpu-card:hover{border-color:var(--border-strong); transform:translateY(-1px);}
+    .gpu-card.warn{border-color:rgba(245,158,11,.5); box-shadow:0 0 20px rgba(245,158,11,.12);}
+    .gpu-card.danger{border-color:rgba(239,68,68,.5); box-shadow:0 0 20px rgba(239,68,68,.15);}
+    .gpu-card-header{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+    .gpu-card-icon{width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:15px; flex-shrink:0;}
+    .gpu-card-title{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; flex:1;}
+    .gpu-alert-badge{font-size:10px; font-weight:700; padding:2px 7px; border-radius:999px; display:none;}
+    .gpu-alert-badge.show{display:inline-block;}
+    .gpu-alert-badge.temp{background:rgba(239,68,68,.18); color:#FCA5A5; border:1px solid rgba(239,68,68,.35);}
+    .gpu-alert-badge.power{background:rgba(245,158,11,.18); color:#FDE68A; border:1px solid rgba(245,158,11,.35);}
+    .gpu-metric{display:flex; flex-direction:column; gap:3px;}
+    .gpu-metric-value{font-family:'Fira Code',monospace; font-size:26px; font-weight:600; line-height:1.1;}
+    .gpu-metric-sub{font-size:11px; color:var(--muted-2); letter-spacing:.04em;}
+    .gpu-bar-track{height:6px; background:rgba(2,6,23,.6); border-radius:999px; overflow:hidden; margin-top:6px;}
+    .gpu-bar-fill{height:100%; border-radius:999px; transition:width .6s ease;}
+    .gpu-chart-wrap{background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
+                    border:1px solid var(--border); border-radius:14px; padding:16px;
+                    box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px);}
+    .gpu-chart-title{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase;
+                     letter-spacing:.06em; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+    .gpu-chart-title .live-dot{width:7px; height:7px; border-radius:50%; background:var(--accent);
+                               box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite;}
+    .gpu-info-bar{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px; padding:10px 12px;
+                  background:rgba(2,6,23,.4); border:1px solid var(--border); border-radius:12px;
+                  font-size:12px; color:var(--muted);}
+    .gpu-info-bar strong{color:var(--text);}
+    .gpu-source-badge{font-size:10px; padding:2px 6px; border-radius:6px; background:rgba(56,189,248,.12);
+                      color:var(--accent-2); border:1px solid rgba(56,189,248,.25);}
+    .gpu-refresh-btn{background:linear-gradient(180deg, #111D33, #0F172A); color:var(--text);
+                     border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+                     font-size:13px; font-weight:500; cursor:pointer; transition:all .15s;}
+    .gpu-refresh-btn:hover{border-color:var(--border-strong); transform:translateY(-1px);}
+    .gpu-thresholds{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+    .gpu-threshold{font-size:11px; padding:4px 10px; border-radius:8px;
+                   background:rgba(2,6,23,.5); border:1px solid var(--border); color:var(--muted);}
+    .gpu-threshold span{font-weight:600; color:var(--text);}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>GPU Telemetry</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+        <a href="/gpu" class="nav-item active"><span class="nav-dot"></span> GPU</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="refresh-count" class="muted" style="margin-left:auto">0 samples</span>
+      </div>
+    </nav>
+
+    <div class="gpu-main">
+      <header class="gpu-topbar">
+        <div>
+          <h1>GPU Telemetry</h1>
+          <p>Real-time GPU monitoring · <span id="gpu-source" class="gpu-source-badge">—</span> · refreshes every 5s</p>
+        </div>
+        <button class="gpu-refresh-btn" id="btn-refresh">↻ Refresh Now</button>
+      </header>
+
+      <div class="gpu-info-bar" id="gpu-info-bar">
+        <span><strong>GPU:</strong> <span id="info-name">Detecting…</span></span>
+        <span><strong>VRAM:</strong> <span id="info-vram">—</span></span>
+        <span><strong>Clock:</strong> <span id="info-clock">—</span></span>
+        <span><strong>ECC:</strong> <span id="info-ecc">—</span></span>
+      </div>
+
+      <div class="gpu-grid" id="gpu-grid">
+        <!-- cards injected by JS -->
+      </div>
+
+      <div class="gpu-chart-wrap">
+        <div class="gpu-chart-title"><span class="live-dot"></span> Utilization History (last 60 samples)</div>
+        <canvas id="gpuChart" height="110"></canvas>
+        <div class="gpu-thresholds">
+          <div class="gpu-threshold">Temp threshold: <span id="thresh-temp">80°C</span></div>
+          <div class="gpu-threshold">Power threshold: <span id="thresh-power">300W</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const THRESHOLD_TEMP = 80;
+const THRESHOLD_POWER = 300;
+const REFRESH_MS = 5000;
+
+let chart;
+let sampleCount = 0;
+let refreshTimer;
+
+// ── Card definitions ──────────────────────────────────────────────
+const CARD_DEFS = [
+  { id:'temp',     icon:'🌡', bg:'rgba(239,68,68,.12)',  color:'#EF4444', unit:'°C',  threshold: THRESHOLD_TEMP,  alertClass:'temp',    thresholdLabel:'temp' },
+  { id:'power',    icon:'⚡', bg:'rgba(245,158,11,.12)', color:'#F59E0B', unit:'W',   threshold: THRESHOLD_POWER, alertClass:'power',   thresholdLabel:'power' },
+  { id:'util',     icon:'◈', bg:'rgba(34,197,94,.12)',  color:'#22C55E', unit:'%',  threshold: null,             alertClass:null,       thresholdLabel:null },
+  { id:'clock',    icon:'⚙', bg:'rgba(56,189,248,.12)', color:'#38BDF8', unit:'MHz', threshold: null,             alertClass:null,       thresholdLabel:null },
+  { id:'vram',     icon:'⬡', bg:'rgba(168,85,247,.12)', color:'#A855F7', unit:'GB', threshold: null,             alertClass:null,       thresholdLabel:null },
+  { id:'mem_util', icon:'⟁', bg:'rgba(6,182,212,.12)',  color:'#06B6D4', unit:'%',  threshold: null,             alertClass:null,       thresholdLabel:null },
+];
+
+function fmtTemp(v)  { return v != null ? v.toFixed(1) + '°C' : '—'; }
+function fmtPower(v) { return v != null ? v.toFixed(1) + 'W' : '—'; }
+function fmtUtil(v)  { return v != null ? v.toFixed(0) + '%'  : '—'; }
+function fmtClock(v) { return v != null ? v.toLocaleString() + ' MHz' : '—'; }
+function fmtVram(v)  { return v != null ? (v/1024).toFixed(1) + ' GB' : '—'; }
+const formatters = { temp: fmtTemp, power: fmtPower, util: fmtUtil, clock: fmtClock, vram: fmtVram, mem_util: fmtUtil };
+
+function renderCards(samples) {
+  const grid = document.getElementById('gpu-grid');
+  grid.innerHTML = '';
+  if (!samples.length) return;
+  const s = samples[0];
+
+  // info bar
+  document.getElementById('info-name').textContent = s.name || 'Unknown GPU';
+  document.getElementById('info-vram').textContent = s.vram_total_mb ? (s.vram_used_mb/1024).toFixed(1) + ' / ' + (s.vram_total_mb/1024).toFixed(1) + ' GB' : '—';
+  document.getElementById('info-clock').textContent = s.clock_mhz ? s.clock_mhz.toLocaleString() + ' MHz' : '—';
+  document.getElementById('info-ecc').textContent = s.ecc_errors || 'N/A';
+  document.getElementById('gpu-source').textContent = s._mock ? 'mock' : s._wmi ? 'WMI' : 'nvidia-smi';
+
+  CARD_DEFS.forEach(def => {
+    let value, sub;
+    switch(def.id) {
+      case 'temp':    value = fmtTemp(s.temperature_c); sub = s.temperature_c > THRESHOLD_TEMP ? 'OVER HEAT' : 'normal'; break;
+      case 'power':   value = fmtPower(s.power_w);      sub = s.power_w > THRESHOLD_POWER ? 'OVER LIMIT' : (s.power_limit_w ? 'max ' + s.power_limit_w.toFixed(0) + 'W' : ''); break;
+      case 'util':    value = fmtUtil(s.utilization_pct); sub = s.memory_util_pct != null ? 'mem ' + s.memory_util_pct + '%' : ''; break;
+      case 'clock':   value = fmtClock(s.clock_mhz);     sub = ''; break;
+      case 'vram':    value = fmtVram(s.vram_used_mb);   sub = s.vram_total_mb ? (s.vram_total_mb/1024).toFixed(0) + ' GB total' : ''; break;
+      case 'mem_util':value = fmtUtil(s.memory_util_pct);sub = ''; break;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'gpu-card';
+    if (def.threshold && s[def.thresholdLabel + '_alert']) card.classList.add('danger');
+    else if (def.threshold && s[def.thresholdLabel + '_alert'] === false && (s.temperature_c > THRESHOLD_TEMP * 0.85 || s.power_w > THRESHOLD_POWER * 0.85)) card.classList.add('warn');
+
+    const barPct = def.id === 'vram'
+      ? (s.vram_total_mb ? (s.vram_used_mb / s.vram_total_mb * 100) : 0)
+      : def.id === 'util' ? s.utilization_pct :
+        def.id === 'mem_util' ? s.memory_util_pct :
+        def.id === 'temp' ? (s.temperature_c / THRESHOLD_TEMP * 100) :
+        def.id === 'power' ? (s.power_limit_w ? (s.power_w / s.power_limit_w * 100) : 0) : 0;
+
+    const barColor = def.id === 'temp' && s.temperature_c > THRESHOLD_TEMP ? 'var(--danger)'
+                   : def.id === 'power' && s.power_w > THRESHOLD_POWER  ? 'var(--warn)'
+                   : def.color;
+
+    const alertHtml = def.alertClass
+      ? `<span class="gpu-alert-badge ${def.alertClass} ${s[def.thresholdLabel + '_alert'] ? 'show' : ''}">⚠ ALERT</span>` : '';
+
+    card.innerHTML = `
+      <div class="gpu-card-header">
+        <div class="gpu-card-icon" style="background:${def.bg};color:${def.color}">${def.icon}</div>
+        <div class="gpu-card-title">${def.id.toUpperCase().replace('_',' ')}</div>
+        ${alertHtml}
+      </div>
+      <div class="gpu-metric">
+        <div class="gpu-metric-value" style="color:${barColor}">${value}</div>
+        <div class="gpu-metric-sub">${sub}</div>
+        <div class="gpu-bar-track">
+          <div class="gpu-bar-fill" style="width:${Math.min(barPct,100).toFixed(1)}%;background:${barColor}"></div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function initChart(history) {
+  const ctx = document.getElementById('gpuChart').getContext('2d');
+  const labels = (history.timestamps || []).map(ts => {
+    const d = new Date(ts * 1000);
+    return d.toLocaleTimeString();
+  });
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Util %',
+          data: history.util || [],
+          borderColor: '#22C55E',
+          backgroundColor: 'rgba(34,197,94,.1)',
+          fill: true,
+          tension: 0.35,
+          pointRadius: 0,
+          borderWidth: 2,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Temp °C',
+          data: history.temp || [],
+          borderColor: '#EF4444',
+          backgroundColor: 'rgba(239,68,68,.08)',
+          fill: true,
+          tension: 0.35,
+          pointRadius: 0,
+          borderWidth: 2,
+          yAxisID: 'y1',
+        },
+        {
+          label: 'Power W',
+          data: history.power || [],
+          borderColor: '#F59E0B',
+          backgroundColor: 'rgba(245,158,11,.08)',
+          fill: false,
+          tension: 0.35,
+          pointRadius: 0,
+          borderWidth: 1.5,
+          borderDash: [4,3],
+          yAxisID: 'y1',
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#94A3B8', font: { size: 11 } } },
+        annotation: {}
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(148,163,184,.08)' },
+          ticks: { color: '#64748B', font: { size: 10 }, maxTicksLimit: 10 }
+        },
+        y: {
+          position: 'left',
+          min: 0, max: 100,
+          grid: { color: 'rgba(148,163,184,.08)' },
+          ticks: { color: '#22C55E', font: { size: 10 }, callback: v => v + '%' }
+        },
+        y1: {
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { color: '#94A3B8', font: { size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+function updateChart(history) {
+  if (!chart) return;
+  const labels = (history.timestamps || []).map(ts => new Date(ts * 1000).toLocaleTimeString());
+  chart.data.labels = labels;
+  chart.data.datasets[0].data = history.util || [];
+  chart.data.datasets[1].data = history.temp || [];
+  chart.data.datasets[2].data = history.power || [];
+  chart.update('none');
+}
+
+async function fetchGpuData() {
+  try {
+    const r = await fetch('/api/gpu');
+    const data = await r.json();
+    sampleCount++;
+    document.getElementById('refresh-count').textContent = sampleCount + ' samples';
+    renderCards(data.samples || []);
+    updateChart(data.history || {});
+  } catch(e) {
+    console.error('GPU fetch failed:', e);
+  }
+}
+
+document.getElementById('btn-refresh').addEventListener('click', () => {
+  fetchGpuData();
+});
+
+// initial load + interval
+fetchGpuData();
+refreshTimer = setInterval(fetchGpuData, REFRESH_MS);
+</script>
+</body>
+</html>

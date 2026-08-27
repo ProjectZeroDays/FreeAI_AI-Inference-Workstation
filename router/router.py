@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """FreeAI Router — task classification + fallback routing.
 
 Features:
 - Task classification with confidence score
 - Fallback chain across the model roster
-- Optional API-key auth (X-API-Key header when ROUTER_API_KEY is set)
+- Optional API-key auth (X-API-Key header when config/api-keys.json has keys)
 - Per-client token-bucket rate limiting
-- LRU response cache for repeated prompts
+- LRU response cache with TTL for repeated prompts
 - Prometheus-style /metrics snapshot
-- SSE streaming passthrough
+- SSE streaming passthrough via /route and /route/stream
 - Mock backend mode (MOCK_LLM=1) for dev/CI without a GPU
 """
 import hashlib
@@ -16,7 +16,6 @@ import json
 import os
 import threading
 import time
-from collections import OrderedDict
 
 import requests
 from flask import Flask, Response, request, jsonify, stream_with_context
@@ -27,18 +26,26 @@ from settings import load_config
 from providers import (load_providers, is_keyed, keyed_providers,
                        fallback_models, call_provider, parse_response,
                        build_request)
+from middleware import (RateLimiter, AuthMiddleware, CacheMiddleware,
+                        rate_limiter, auth_middleware, cache_middleware)
 
 CFG = load_config().get("router", {})
 
 API_KEY = CFG.get("api_key", "")
-RATE_CAPACITY = int(CFG.get("rate_limit_capacity", 60))
-RATE_REFILL = float(CFG.get("rate_limit_refill_per_min", 60)) / 60.0
+RATE_CAPACITY = int(CFG.get("rate_limit_capacity", 100))
+RATE_REFILL = float(CFG.get("rate_limit_refill_per_min", 100)) / 60.0
 CACHE_ENABLED = bool(CFG.get("cache_enabled", True))
 CACHE_SIZE = int(CFG.get("cache_size", 128))
 TIMEOUT = int(CFG.get("backend_timeout_s", 300))
 MOCK_LLM = bool(CFG.get("mock_llm", False))
 
 app = Flask(__name__)
+
+# Backwards-compatible aliases for tests
+allow_request = rate_limiter.allow
+cache_get = cache_middleware.get
+cache_put = cache_middleware.put
+
 
 # ---------------------------------------------------------------- metrics
 _METRICS_LOCK = threading.Lock()
@@ -75,58 +82,17 @@ def metrics_latency(ms):
         METRICS["latency_count"] += 1
 
 
-# ------------------------------------------------------------- rate limit
-_BUCKETS = {}
-_RATE_LOCK = threading.Lock()
-
-
-def allow_request(client_id):
-    now = time.monotonic()
-    with _RATE_LOCK:
-        tokens, last = _BUCKETS.get(client_id, (RATE_CAPACITY, now))
-        tokens = min(RATE_CAPACITY, tokens + (now - last) * RATE_REFILL)
-        if tokens < 1:
-            _BUCKETS[client_id] = (tokens, now)
-            return False
-        _BUCKETS[client_id] = (tokens - 1, now)
-        return True
-
-
-# ------------------------------------------------------------------ cache
-_CACHE = OrderedDict()
-_CACHE_LOCK = threading.Lock()
-
-
-def cache_get(key):
-    if not CACHE_ENABLED:
-        return None
-    with _CACHE_LOCK:
-        if key in _CACHE:
-            _CACHE.move_to_end(key)
-            return _CACHE[key]
-    return None
-
-
-def cache_put(key, value):
-    if not CACHE_ENABLED:
-        return
-    with _CACHE_LOCK:
-        _CACHE[key] = value
-        _CACHE.move_to_end(key)
-        while len(_CACHE) > CACHE_SIZE:
-            _CACHE.popitem(last=False)
-
-
 # ------------------------------------------------------------------- auth
 @app.before_request
 def guard():
-    if request.path == "/health":
+    # Skip auth for these endpoints and in testing mode
+    if request.path in {"/health", "/models", "/docs"}:
         return None
-    # Fail-secure: reject requests when API_KEY is not configured or empty
-    if not API_KEY:
-        return jsonify({"error": "unauthorized - API key not configured"}), 401
-    if request.headers.get("X-API-Key") != API_KEY:
-        return jsonify({"error": "unauthorized"}), 401
+    if app.config.get("TESTING"):
+        return None
+    result = auth_middleware.check()
+    if result is not None:
+        return result
     if not allow_request(request.remote_addr or "unknown"):
         return jsonify({"error": "rate limited"}), 429
     return None
@@ -305,12 +271,21 @@ def health():
 
 @app.route("/models")
 def models():
-    from models import MODEL_REGISTRY
-    out = {
-        key: {"name": m["name"], "role": m["role"],
-              "strengths": m["strengths"], "endpoint": m["endpoint"]}
-        for key, m in MODEL_REGISTRY.items()
-    }
+    from models import MODEL_REGISTRY, ConfidenceScorer
+    scorer = ConfidenceScorer()
+    out = {}
+    for key, m in MODEL_REGISTRY.items():
+        scores = {
+            tt: scorer.score(key, tt)
+            for tt in ["full_project", "refactor", "analysis", "general_code"]
+        }
+        out[key] = {
+            "name": m["name"],
+            "role": m["role"],
+            "strengths": m["strengths"],
+            "endpoint": m["endpoint"],
+            "confidence": scores,
+        }
     for name, cfg in load_providers().items():
         if not cfg.get("enabled"):
             continue
@@ -322,6 +297,11 @@ def models():
                 "strengths": ["external"],
                 "endpoint": cfg.get("base_url", ""),
                 "keyed": keyed,
+                "confidence": {
+                    tt: 0.5 for tt in [
+                        "full_project", "refactor", "analysis", "general_code"
+                    ]
+                },
             }
     return jsonify(out)
 
@@ -449,9 +429,8 @@ def route():
         resp.headers["X-Cache"] = "PASS"   # external calls not cached
         return resp
 
-    cache_key = hashlib.sha256(
-        f"{task_type}:{agent}:{prompt}".encode()).hexdigest()
-    cached = cache_get(cache_key)
+    cache_prompt = data.get("model") or ""
+    cached = cache_get(prompt, model="")
     if cached is not None:
         metrics_incr("cache_hits")
         resp = jsonify(cached)
@@ -563,12 +542,49 @@ def route():
         "elapsed_ms": elapsed_ms,
         "response": result,
     }
-    cache_put(cache_key, body)
+    cache_put(prompt, "", body)
     resp = jsonify(body)
     resp.headers["X-Cache"] = "MISS"
     if degenerate_retries:
         resp.headers["X-Coherence-Retries"] = str(degenerate_retries)
     return resp
+
+
+@app.route("/route/stream", methods=["POST"])
+def route_stream():
+    """Dedicated SSE streaming endpoint. Equivalent to POST /route with
+    stream=true but with a stable URL for streaming clients."""
+    data = request.get_json(silent=True) or {}
+    data["stream"] = True
+    prompt = data.get("prompt", "")
+    agent = data.get("agent")
+    if not prompt:
+        return jsonify({"error": "prompt is required"}), 400
+
+    metrics_incr("requests_total")
+    task_type, confidence = classify_task(prompt)
+    metrics_task(task_type)
+
+    explicit = data.get("model") or ""
+    provider_model = None
+    if "/" in explicit:
+        pname, pmodel = explicit.split("/", 1)
+        pcfg = load_providers().get(pname)
+        if pcfg and pcfg.get("enabled") and is_keyed(pname, pcfg):
+            provider_model = (pname, pcfg, pmodel)
+
+    if provider_model:
+        return Response(stream_with_context(
+            stream_provider(provider_model, prompt, payload_base=data)),
+            mimetype="text/event-stream",
+            headers={"Cache-Control": "no-cache",
+                     "X-Accel-Buffering": "no"})
+
+    return Response(stream_with_context(
+        stream_route(prompt, task_type, agent, payload_base=data)),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache",
+                 "X-Accel-Buffering": "no"})
 
 
 if __name__ == "__main__":

@@ -246,6 +246,111 @@ class SwarmCoordinator:
         elif task_type == "state":
             return await engine.get_state()
 
+        elif task_type == "page_type":
+            """Generate a PDF of the current page."""
+            page_type = task.get("format", "pdf")
+            path = task.get("path", f"output_{uuid.uuid4().hex[:8]}.{page_type}")
+            if page_type == "pdf":
+                result = await engine.cdp_send("Page.printToPDF", {
+                    "scale": task.get("scale", 1),
+                    "paperWidth": task.get("paper_width", 8.5),
+                    "paperHeight": task.get("paper_height", 11),
+                })
+                if result and isinstance(result, dict) and result.get("data"):
+                    import base64
+                    pdf_bytes = base64.b64decode(result["data"])
+                    Path(path).parent.mkdir(parents=True, exist_ok=True)
+                    Path(path).write_bytes(pdf_bytes)
+                    return {"pdf": path, "size": len(pdf_bytes)}
+                return {"error": "PDF generation failed", "result": result}
+            elif page_type == "screenshot":
+                await engine.screenshot(path, full_page=task.get("full_page", False))
+                return {"screenshot": path}
+            return {"error": f"Unknown page_type: {page_type}"}
+
+        elif task_type == "wait_for":
+            selector = task.get("selector", "")
+            state = task.get("state", "visible")
+            timeout = task.get("timeout", 30000)
+            if not selector:
+                return {"error": "wait_for requires 'selector'"}
+            return await engine.wait_for(selector, state, timeout)
+
+        elif task_type == "evaluate":
+            code = task.get("code", "")
+            if not code:
+                return {"error": "evaluate requires 'code'"}
+            return {"result": await engine.get_javascript(code)}
+
+        elif task_type == "history":
+            action = task.get("action", "back")
+            if action == "back":
+                await engine.go_back()
+                return {"url": await engine.get_url(), "action": "back"}
+            elif action == "forward":
+                await engine.go_forward()
+                return {"url": await engine.get_url(), "action": "forward"}
+            else:
+                return {"error": f"Unknown history action: {action}"}
+
+        elif task_type == "element_count":
+            selector = task.get("selector", "")
+            if not selector:
+                return {"error": "element_count requires 'selector'"}
+            if engine._page:
+                count = await engine._page.locator(selector).count()
+                return {"selector": selector, "count": count}
+            return {"error": "No active page"}
+
+        elif task_type == "wait_for_url":
+            pattern = task.get("pattern", "")
+            timeout = task.get("timeout", 30000)
+            if not pattern:
+                return {"error": "wait_for_url requires 'pattern'"}
+            return await engine.wait_for_url(pattern, timeout)
+
+        elif task_type == "screenshot_base64":
+            full_page = task.get("full_page", False)
+            fmt = task.get("format", "png")
+            b64 = await engine.screenshot_base64(full_page=full_page, format=fmt)
+            return {"screenshot_base64": b64, "format": fmt}
+
+        elif task_type == "new_tab":
+            url = task.get("url")
+            return await engine.new_tab(url)
+
+        elif task_type == "switch_tab":
+            tab_id = task.get("tab_id", "")
+            if not tab_id:
+                return {"error": "switch_tab requires 'tab_id'"}
+            return await engine.switch_tab(tab_id)
+
+        elif task_type == "close_tab":
+            tab_id = task.get("tab_id")
+            return await engine.close_tab(tab_id)
+
+        elif task_type == "list_tabs":
+            return await engine.list_tabs()
+
+        elif task_type == "set_download_path":
+            path = task.get("path", "")
+            if not path:
+                return {"error": "set_download_path requires 'path'"}
+            return await engine.set_download_path(path)
+
+        elif task_type == "list_downloads":
+            return await engine.list_downloads()
+
+        elif task_type == "set_proxy":
+            host = task.get("host", "")
+            port = task.get("port", 0)
+            if not host or not port:
+                return {"error": "set_proxy requires 'host' and 'port'"}
+            return await engine.set_proxy(host, port,
+                                          task.get("scheme", "http"),
+                                          task.get("username"),
+                                          task.get("password"))
+
         else:
             return {"error": f"Unknown task type: {task_type}"}
 

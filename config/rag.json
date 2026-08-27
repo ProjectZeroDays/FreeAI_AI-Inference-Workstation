@@ -1,0 +1,19 @@
+{
+  "qdrant": {
+    "url": "http://localhost:6333",
+    "api_key": "",
+    "default_collection": "freeai_docs",
+    "vector_size": 384,
+    "distance": "COSINE"
+  },
+  "watch": {
+    "docs_dir": "config/documents",
+    "poll_interval_s": 30,
+    "chunk_size": 800,
+    "chunk_overlap": 120
+  },
+  "embedding": {
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "fallback": "hash"
+  }
+}

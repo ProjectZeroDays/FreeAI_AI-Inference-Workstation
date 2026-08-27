@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Terminal</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+  <style>
+    html,body{height:100%;overflow:hidden}
+    .terminal-layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    .terminal-main{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    /* Toolbar */
+    .term-toolbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;flex-wrap:wrap}
+    .term-toolbar .tb-label{font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+    .term-toolbar button{padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .term-toolbar button:hover{border-color:var(--accent-2);color:var(--accent-2)}
+    .term-toolbar button.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:var(--accent)}
+    .tb-spacer{flex:1}
+    .tb-sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+    /* Tabs */
+    .term-tabs{display:flex;align-items:center;gap:2px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--panel-2);flex-shrink:0;overflow-x:auto}
+    .term-tab{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:all .15s;white-space:nowrap;background:transparent}
+    .term-tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+    .term-tab.active{color:var(--accent);background:var(--panel);border-color:var(--border);border-bottom:1px solid var(--panel)}
+    .term-tab .tab-close{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:10px;color:var(--muted-2);cursor:pointer;transition:all .12s}
+    .term-tab .tab-close:hover{background:rgba(239,68,68,.2);color:var(--danger)}
+    .term-tab-add{padding:8px 12px;border-radius:8px 8px 0 0;border:1px solid transparent;border-bottom:none;cursor:pointer;font-size:14px;color:var(--muted-2);transition:all .15s;background:transparent;display:flex;align-items:center}
+    .term-tab-add:hover{color:var(--accent);background:rgba(34,197,94,.06)}
+    /* Terminal container */
+    .term-body{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#0a0e1a}
+    .term-container{flex:1;overflow:hidden;padding:0}
+    .term-container.xterm{height:100%!important}
+    .xterm-viewport::-webkit-scrollbar{width:6px}
+    .xterm-viewport::-webkit-scrollbar-track{background:transparent}
+    .xterm-viewport::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .xterm-screen{font-family:'JetBrains Mono','Fira Code','Cascadia Code',monospace!important}
+    /* Status bar */
+    .term-status{display:flex;align-items:center;gap:12px;padding:6px 16px;border-top:1px solid var(--border);background:var(--panel);flex-shrink:0;font-size:11px;color:var(--muted-2)}
+    .term-status .ss-dot{width:6px;height:6px;border-radius:50%;background:var(--muted-2)}
+    .term-status .ss-dot.connected{background:var(--accent);box-shadow:0 0 6px rgba(34,197,94,.6)}
+    .term-status .ss-dot.connecting{background:var(--warn);animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .term-status .ss-spacer{flex:1}
+    /* Fit */
+    #fit-toggle{font-size:11px}
+  </style>
+</head>
+<body>
+  <div class="terminal-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Terminal</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/terminal" class="nav-item active"><span class="nav-dot"></span> Terminal</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="terminal-main">
+      <!-- Toolbar -->
+      <div class="term-toolbar">
+        <span class="tb-label">Quick</span>
+        <button onclick="sendQuick('ls')">ls</button>
+        <button onclick="sendQuick('ps aux')">ps</button>
+        <button onclick="sendQuick('docker ps -a')">docker</button>
+        <button onclick="sendQuick('nvidia-smi')">GPU</button>
+        <button onclick="sendQuick('git status')">git</button>
+        <div class="tb-sep"></div>
+        <span class="tb-label">Font</span>
+        <button onclick="changeFontSize(-1)">A-</button>
+        <button id="font-size-display" onclick="resetFontSize()">14px</button>
+        <button onclick="changeFontSize(1)">A+</button>
+        <div class="tb-sep"></div>
+        <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶ Full</button>
+        <div class="tb-spacer"></div>
+        <span class="tb-label">Shell</span>
+        <select id="shell-select" onchange="switchShell(this.value)" style="padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--text);font-size:12px;cursor:pointer">
+          <option value="powershell">PowerShell</option>
+          <option value="cmd">CMD</option>
+          <option value="bash">Bash</option>
+        </select>
+      </div>
+
+      <!-- Tabs -->
+      <div class="term-tabs" id="term-tabs">
+        <button class="term-tab active" data-tab="0" onclick="switchTab(0)">
+          <span>PowerShell</span>
+          <span class="tab-close" onclick="event.stopPropagation();closeTab(0)">✕</span>
+        </button>
+        <button class="term-tab-add" onclick="addTab()" title="New Tab">+</button>
+      </div>
+
+      <!-- Terminal body -->
+      <div class="term-body">
+        <div class="term-container" id="term-container"></div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="term-status">
+        <span class="ss-dot" id="conn-dot"></span>
+        <span id="conn-status">Connecting...</span>
+        <span class="ss-spacer"></span>
+        <span id="term-info">xterm-256color · <span id="tab-count">1</span> tab(s)</span>
+        <span id="cursor-pos" class="muted">0,0</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // ── State ──────────────────────────────────────────────────────
+  const state = {
+    tabs: [],
+    activeTab: 0,
+    fontSize: 14,
+    shellType: 'powershell',
+    ws: null,
+    wsUrl: null,
+    reconnectTimer: null,
+    reconnectDelay: 1000,
+  };
+
+  const TERM = { cols: 120, rows: 30 };
+
+  // ── xterm setup ────────────────────────────────────────────────
+  const fitAddon = new FitAddon.FitAddon();
+  const term = new Terminal({
+    cursorBlink: true,
+    cursorStyle: 'block',
+    fontSize: state.fontSize,
+    fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+    theme: {
+      background: '#0a0e1a',
+      foreground: '#e2e8f0',
+      cursor: '#22C55E',
+      cursorAccent: '#020617',
+      selectionBackground: 'rgba(34,197,94,0.25)',
+      black: '#0f172a',
+      red: '#ef4444',
+      green: '#22c55e',
+      yellow: '#f59e0b',
+      blue: '#3b82f6',
+      magenta: '#a855f7',
+      cyan: '#06b6d4',
+      white: '#e2e8f0',
+      brightBlack: '#475569',
+      brightRed: '#f87171',
+      brightGreen: '#4ade80',
+      brightYellow: '#fbbf24',
+      brightBlue: '#60a5fa',
+      brightMagenta: '#c084fc',
+      brightCyan: '#22d3ee',
+      brightWhite: '#f8fafc',
+    },
+    rows: TERM.rows,
+    cols: TERM.cols,
+    allowProposedApi: true,
+    scrollback: 5000,
+  });
+
+  term.loadAddon(fitAddon);
+  term.open(document.getElementById('term-container'));
+  fitAddon.fit();
+
+  // ── Resize observer ────────────────────────────────────────────
+  const ro = new ResizeObserver(() => fitAddon.fit());
+  ro.observe(document.getElementById('term-container'));
+
+  // ── WebSocket ──────────────────────────────────────────────────
+  function getWsUrl() {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const port = 8081;
+    return `${proto}//${location.hostname}:${port}/ws/terminal`;
+  }
+
+  function connectWS() {
+    if (state.ws && (state.ws.readyState === WebSocket.OPEN || state.ws.readyState === WebSocket.CONNECTING)) return;
+    state.wsUrl = getWsUrl();
+    updateStatus('connecting');
+    try {
+      state.ws = new WebSocket(state.wsUrl);
+    } catch(e) {
+      updateStatus('error');
+      setTimeout(connectWS, state.reconnectDelay);
+      return;
+    }
+    state.ws.onopen = () => {
+      updateStatus('connected');
+      state.reconnectDelay = 1000;
+      term.writeln('\x1b[32m✓ Connected to terminal server\x1b[0m');
+      term.writeln('');
+    };
+    state.ws.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        if (msg.output) term.write(msg.output);
+        if (msg.error) term.writeln('\x1b[31m' + escHtml(msg.error) + '\x1b[0m');
+        if (msg.prompt) term.write('\x1b[32m' + escHtml(msg.prompt) + '\x1b[0m');
+      } catch(e) {
+        term.write(ev.data);
+      }
+    };
+    state.ws.onclose = () => {
+      updateStatus('disconnected');
+      term.writeln('\x1b[33m⚠ Connection lost. Reconnecting...\x1b[0m');
+      state.reconnectDelay = Math.min(state.reconnectDelay * 2, 30000);
+      setTimeout(connectWS, state.reconnectDelay);
+    };
+    state.ws.onerror = () => {
+      updateStatus('error');
+    };
+  }
+
+  function send(data) {
+    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+      state.ws.send(JSON.stringify(data));
+    }
+  }
+
+  function updateStatus(s) {
+    const dot = document.getElementById('conn-dot');
+    const txt = document.getElementById('conn-status');
+    dot.className = 'ss-dot';
+    if (s === 'connected') { dot.classList.add('connected'); txt.textContent = 'Connected'; }
+    else if (s === 'connecting') { dot.classList.add('connecting'); txt.textContent = 'Connecting...'; }
+    else if (s === 'error') { dot.style.background = 'var(--danger)'; txt.textContent = 'Error'; }
+    else { txt.textContent = 'Disconnected'; }
+  }
+
+  // ── Input handling ─────────────────────────────────────────────
+  let rawBuffer = '';
+  term.onData((data) => {
+    // Handle paste
+    if (data.includes('\x16') || (data.length > 1 && data.charCodeAt(0) === 30)) {
+      // Terminal escape sequences — send raw
+      send({ type: 'input', data: data });
+      return;
+    }
+    // Handle special keys
+    if (data === '\r') {
+      send({ type: 'keypress', key: 'Enter' });
+      return;
+    }
+    if (data === '\x7f') { // Backspace
+      send({ type: 'keypress', key: 'Backspace' });
+      return;
+    }
+    if (data === '\t') {
+      send({ type: 'keypress', key: 'Tab' });
+      return;
+    }
+    if (data === '\x03') { // Ctrl+C
+      send({ type: 'keypress', key: 'Ctrl+C' });
+      return;
+    }
+    if (data === '\x0c') { // Ctrl+L clear
+      term.clear();
+      return;
+    }
+    // Arrow keys
+    if (data === '\x1b[A') { send({ type: 'keypress', key: 'ArrowUp' }); return; }
+    if (data === '\x1b[B') { send({ type: 'keypress', key: 'ArrowDown' }); return; }
+    if (data === '\x1b[C') { send({ type: 'keypress', key: 'ArrowRight' }); return; }
+    if (data === '\x1b[D') { send({ type: 'keypress', key: 'ArrowLeft' }); return; }
+    if (data === '\x1b[1~') { send({ type: 'keypress', key: 'Home' }); return; }
+    if (data === '\x1b[4~') { send({ type: 'keypress', key: 'End' }); return; }
+    if (data === '\x1b[2~') { send({ type: 'keypress', key: 'Insert' }); return; }
+    if (data === '\x1b[3~') { send({ type: 'keypress', key: 'Delete' }); return; }
+    if (data === '\x1b[5~') { send({ type: 'keypress', key: 'PageUp' }); return; }
+    if (data === '\x1b[6~') { send({ type: 'keypress', key: 'PageDown' }); return; }
+    // Delete
+    if (data === '\x1b[3~') { send({ type: 'keypress', key: 'Delete' }); return; }
+    // F-keys
+    for (let i = 1; i <= 12; i++) {
+      if (data === '\x1b[' + (11+i) + '~') { send({ type: 'keypress', key: 'F' + i }); return; }
+    }
+    // Regular character
+    send({ type: 'input', data: data });
+  });
+
+  term.onCursorMove(() => {
+    const pos = term.buffer.active.cursorY + 1 + ',' + (term.buffer.active.cursorX + 1);
+    document.getElementById('cursor-pos').textContent = pos;
+  });
+
+  // ── Copy/paste ─────────────────────────────────────────────────
+  document.addEventListener('paste', (e) => {
+    const text = (e.clipboardData || window.clipboardData).getData('text');
+    if (text && state.ws && state.ws.readyState === WebSocket.OPEN) {
+      send({ type: 'paste', data: text });
+      e.preventDefault();
+    }
+  });
+
+  // Prevent default browser copy inside terminal
+  term.textarea?.addEventListener('copy', (e) => {
+    if (term.getSelection()) {
+      e.clipboardData.setData('text', term.getSelection());
+      e.preventDefault();
+    }
+  });
+
+  // ── Tabs ───────────────────────────────────────────────────────
+  let tabIdCounter = 0;
+
+  function addTab() {
+    const id = ++tabIdCounter;
+    const tab = { id, title: 'Shell ' + id, shell: state.shellType, ws: null };
+    state.tabs.push(tab);
+    renderTabs();
+    switchTab(state.tabs.length - 1);
+    connectForTab(tab);
+  }
+
+  function connectForTab(tab) {
+    // Reuse main WebSocket for all tabs (simplified)
+    // Each tab gets its own WS for isolation
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${proto}//${location.hostname}:8081/ws/terminal?tab=${tab.id}&shell=${tab.shell}`;
+    const ws = new WebSocket(wsUrl);
+    tab.ws = ws;
+    ws.onopen = () => {
+      tab.connected = true;
+      if (state.activeTab === state.tabs.indexOf(tab)) {
+        term.writeln('\x1b[32m✓ Tab connected\x1b[0m');
+      }
+    };
+    ws.onmessage = (ev) => {
+      if (state.activeTab === state.tabs.indexOf(tab)) {
+        try {
+          const msg = JSON.parse(ev.data);
+          if (msg.output) term.write(msg.output);
+          if (msg.error) term.writeln('\x1b[31m' + escHtml(msg.error) + '\x1b[0m');
+          if (msg.prompt) term.write('\x1b[32m' + escHtml(msg.prompt) + '\x1b[0m');
+        } catch(e) { term.write(ev.data); }
+      }
+    };
+    ws.onclose = () => { tab.connected = false; };
+    ws.onerror = () => { tab.connected = false; };
+  }
+
+  function switchTab(idx) {
+    state.activeTab = idx;
+    renderTabs();
+    // Reconnect if needed
+    const tab = state.tabs[idx];
+    if (tab && !tab.ws) connectForTab(tab);
+  }
+
+  function closeTab(idx) {
+    if (state.tabs.length <= 1) return;
+    state.tabs[idx].ws?.close();
+    state.tabs.splice(idx, 1);
+    if (state.activeTab >= state.tabs.length) state.activeTab = state.tabs.length - 1;
+    renderTabs();
+    document.getElementById('tab-count').textContent = state.tabs.length;
+  }
+
+  function renderTabs() {
+    const container = document.getElementById('term-tabs');
+    const addBtn = container.querySelector('.term-tab-add');
+    container.querySelectorAll('.term-tab').forEach(t => t.remove());
+    state.tabs.forEach((tab, i) => {
+      const el = document.createElement('button');
+      el.className = 'term-tab' + (i === state.activeTab ? ' active' : '');
+      el.dataset.tab = i;
+      el.onclick = () => switchTab(i);
+      el.innerHTML = `<span>${escHtml(tab.title)}</span><span class="tab-close" onclick="event.stopPropagation();closeTab(${i})">✕</span>`;
+      container.insertBefore(el, addBtn);
+    });
+  }
+
+  // ── Toolbar actions ────────────────────────────────────────────
+  window.sendQuick = function(cmd) {
+    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+      term.writeln();
+      send({ type: 'input', data: cmd + '\r' });
+    }
+  };
+
+  window.changeFontSize = function(delta) {
+    state.fontSize = Math.max(10, Math.min(24, state.fontSize + delta));
+    term.options.fontSize = state.fontSize;
+    document.getElementById('font-size-display').textContent = state.fontSize + 'px';
+    fitAddon.fit();
+  };
+
+  window.resetFontSize = function() {
+    state.fontSize = 14;
+    term.options.fontSize = state.fontSize;
+    document.getElementById('font-size-display').textContent = state.fontSize + 'px';
+    fitAddon.fit();
+  };
+
+  window.toggleFullscreen = function() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(()=>{});
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  window.switchShell = function(val) {
+    state.shellType = val;
+    // Close all and reconnect
+    state.tabs.forEach(t => t.ws?.close());
+    state.tabs = [];
+    tabIdCounter = 0;
+    addTab();
+  };
+
+  // ── Init ───────────────────────────────────────────────────────
+  addTab();
+  document.getElementById('tab-count').textContent = state.tabs.length;
+
+  // Global connect for first tab
+  setTimeout(connectWS, 100);
+
+  // Periodic health check
+  setInterval(() => {
+    if (state.ws && state.ws.readyState !== WebSocket.OPEN) {
+      updateStatus('disconnected');
+    }
+  }, 5000);
+})();
+
+function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

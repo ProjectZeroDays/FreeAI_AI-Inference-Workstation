@@ -1,0 +1,35 @@
+{
+  "name": "freeai-agent",
+  "version": "1.0.0",
+  "description": "FreeAI workstation agent configuration",
+  "default_profile": "balanced",
+  "memory_max_turns": 20,
+  "profiles": ["strict", "balanced", "creative", "verbose", "minimal"],
+  "agents": {
+    "chat": {
+      "profile": "balanced",
+      "max_tokens": 2048,
+      "temperature": 0.2
+    },
+    "orchestrator": {
+      "profile": "balanced",
+      "max_tokens": 4096,
+      "temperature": 0.2
+    },
+    "red": {
+      "profile": "creative",
+      "max_tokens": 4096,
+      "temperature": 0.6
+    },
+    "blue": {
+      "profile": "strict",
+      "max_tokens": 2048,
+      "temperature": 0.0
+    },
+    "purple": {
+      "profile": "balanced",
+      "max_tokens": 4096,
+      "temperature": 0.2
+    }
+  }
+}

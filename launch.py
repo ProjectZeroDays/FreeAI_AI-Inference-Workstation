@@ -162,6 +162,23 @@ def status_all():
     return all_up
 
 
+def run_startup_gpu_warmup():
+    """Run GPU warmup once after dashboard is up, if enabled in config."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "gw_backend", ROOT / "dashboard" / "backend.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    try:
+        result = mod.run_warmup_on_startup()
+        if result and not result.get("skipped"):
+            print(f"[launch] GPU warmup: {result.get('gpu_count', 0)} device(s) warmed")
+        else:
+            print(f"[launch] GPU warmup skipped: {result.get('reason', 'no GPU')}")
+    except Exception as e:
+        print(f"[launch] GPU warmup error (non-fatal): {e}")
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="FreeAI Service Launcher")
@@ -173,6 +190,8 @@ def main():
                         help="Show status of all services")
     parser.add_argument("--bg", action="store_true",
                         help="Start in background (daemon mode)")
+    parser.add_argument("--no-warmup", action="store_true",
+                        help="Skip GPU warmup on startup")
     args = parser.parse_args()
 
     if args.status:
@@ -189,6 +208,12 @@ def main():
     targets = [args.service] if args.service and args.service != "all" else list(SERVICES.keys())
     for name in targets:
         start_service(name)
+
+    # GPU warmup (after dashboard is up)
+    if not args.no_warmup and not args.bg:
+        import time as _t
+        _t.sleep(3)  # wait for dashboard to be ready
+        run_startup_gpu_warmup()
 
     if not args.bg:
         print("\n[launch] All services started. Use --status to check.")

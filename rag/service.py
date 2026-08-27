@@ -385,6 +385,74 @@ if HAS_FASTAPI:
     def list_projects():
         return {"projects": list(_services.keys())}
 
+    # ── Qdrant sidecar routes ──────────────────────────────────────
+    try:
+        from qdrant_sidecar import get_sidecar, load_rag_config
+        _rag_cfg = load_rag_config()
+    except Exception:
+        _rag_cfg = None
+        get_sidecar = None
+
+    class RAGIngestRequest(BaseModel):
+        path: str
+        recursive: bool = True
+
+    class RAGSearchRequest(BaseModel):
+        query: str
+        top_k: int = 10
+        filter: object = None
+
+    @app.post("/rag/ingest")
+    def rag_ingest(req: RAGIngestRequest):
+        if get_sidecar is None:
+            raise HTTPException(status_code=503, detail="qdrant-sidecar not available")
+        sc = get_sidecar(_rag_cfg)
+        count = sc.ingest_file(req.path, recursive=req.recursive)
+        return {"status": "ingested", "chunks": count, "path": req.path}
+
+    @app.get("/rag/search")
+    def rag_search(
+        query: str = None,
+        top_k: int = 10,
+        filter: str = None,
+    ):
+        if get_sidecar is None:
+            raise HTTPException(status_code=503, detail="qdrant-sidecar not available")
+        if not query:
+            raise HTTPException(status_code=400, detail="query is required")
+        sc = get_sidecar(_rag_cfg)
+        fk = None
+        if filter:
+            try:
+                fk = json.loads(filter)
+            except ValueError:
+                fk = {"path": filter}
+        results = sc.search(query, top_k=top_k, filter_dict=fk)
+        return {"query": query, "results": results, "count": len(results)}
+
+    @app.post("/rag/search")
+    def rag_search_post(req: RAGSearchRequest):
+        if get_sidecar is None:
+            raise HTTPException(status_code=503, detail="qdrant-sidecar not available")
+        sc = get_sidecar(_rag_cfg)
+        results = sc.search(req.query, top_k=req.top_k, filter_dict=req.filter)
+        return {"query": req.query, "results": results, "count": len(results)}
+
+    @app.get("/rag/collections")
+    def rag_collections():
+        if get_sidecar is None:
+            raise HTTPException(status_code=503, detail="qdrant-sidecar not available")
+        sc = get_sidecar(_rag_cfg)
+        return {"collections": sc.list_collections()}
+
+    @app.delete("/rag/collection/{name}")
+    def rag_delete_collection(name: str):
+        if get_sidecar is None:
+            raise HTTPException(status_code=503, detail="qdrant-sidecar not available")
+        sc = get_sidecar(_rag_cfg)
+        sc.delete_collection(name)
+        return {"status": "deleted", "collection": name}
+
 
 if __name__ == "__main__":
     if HAS_FASTAPI:

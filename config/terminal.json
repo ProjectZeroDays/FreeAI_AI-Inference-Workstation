@@ -1,0 +1,67 @@
+{
+  "whitelist": {
+    "commands": [
+      "ls", "dir", "cat", "type", "echo", "pwd", "whoami", "hostname",
+      "date", "time", "cls", "clear", "reset",
+      "ps", "tasklist", "netstat", "ss", "iftop", "ipconfig", "ifconfig",
+      "docker", "docker-compose",
+      "git", "git status", "git log", "git diff", "git branch", "git add", "git commit",
+      "nvidia-smi", "nvtop",
+      "python", "python3", "pip", "pip3", "node", "npm", "yarn",
+      "curl", "wget", "ping", "traceroute", "nslookup", "dig",
+      "head", "tail", "less", "more", "grep", "find", "locate",
+      "df", "du", "free", "top", "htop", "vmstat",
+      "env", "set", "printenv",
+      "tree", "file", "which", "where",
+      "uptime", "uptime", "w", "who", "last",
+      "mkdir", "touch", "cp", "mv", "rm", "rmdir",
+      "history", "history",
+      "cat /etc/os-release", "cat /etc/passwd", "cat /proc/version",
+      "systemctl", "service",
+      "kubectl", "helm",
+      "terraform", "ansible", "vagrant",
+      "ssh", "scp", "rsync",
+      "code", "vim", "nano", "emacs",
+      "make", "cmake", "cargo", "go", "gradle", "mvn",
+      "ffmpeg", "ffprobe",
+      "sqlite3", "mysql", "psql",
+      "zip", "unzip", "tar", "gzip",
+      "man", "info",
+      "slack", "teams", "discord",
+      "todo", "todoist", "reminders",
+      "spotify", "ncmpcpp", "mpd",
+      "htop", "iotop", "lsof"
+    ]
+  },
+  "paths": {
+    "allowed_roots": [],
+    "blocked_prefixes": [
+      "/etc/shadow",
+      "/etc/sudoers",
+      "/proc/kcore",
+      "C:\\Windows\\System32\\config\\SAM",
+      "C:\\Windows\\System32\\config\\SECURITY"
+    ],
+    "default_working_dir": true
+  },
+  "security": {
+    "max_command_length": 4096,
+    "timeout_seconds": 60,
+    "max_output_bytes": 100000,
+    "allow_pipe_redirection": false,
+    "allow_background_jobs": false,
+    "block_sudo": true,
+    "block_interactive_commands": ["passwd", "chsh", "chfn", "useradd", "userdel"]
+  },
+  "ui": {
+    "default_font_size": 14,
+    "font_family": "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+    "theme": "dark",
+    "cursor_blink": true,
+    "cursor_style": "block",
+    "bell_style": "none",
+    "term": "xterm-256color",
+    "rows": 30,
+    "cols": 120
+  }
+}

@@ -51,6 +51,7 @@ def client(tmp_path, monkeypatch):
     dash._gpu_state["used_vram_mb"] = 0
     dash._uploads.clear()
     dash.app.config["TESTING"] = True
+    dash.app.config["SECRET_KEY"] = "test-secret-key-for-evals"
     with dash.app.test_client() as c:
         yield c
 
@@ -891,4 +892,102 @@ def test_skills_aggregated_empty(client, tmp_path):
     res = client.get("/api/skills/aggregated")
     body = res.get_json()
     assert body["total"] >= 0  # may include system skills from .agents/ and mimocode/
+
+
+# ── Evals API ───────────────────────────────────────────────────
+
+def test_evals_runs_empty(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVAL_HISTORY_PATH", tmp_path / "history.jsonl")
+    monkeypatch.setattr(dash, "_EVAL_REPORT_PATH", tmp_path / "report.json")
+    res = client.get("/api/evals/runs")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["runs"] == []
+    assert body["total"] == 0
+
+
+def test_evals_history_empty(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVAL_HISTORY_PATH", tmp_path / "history.jsonl")
+    res = client.get("/api/evals/history")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["runs"] == []
+    assert body["total"] == 0
+
+
+def test_evals_results_not_found(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVAL_HISTORY_PATH", tmp_path / "history.jsonl")
+    monkeypatch.setattr(dash, "_EVAL_REPORT_PATH", tmp_path / "report.json")
+    res = client.get("/api/evals/results/nonexistent")
+    assert res.status_code == 404
+
+
+def test_evals_run_triggers_async(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVALS_DIR", tmp_path / "evals")
+    monkeypatch.setattr(dash, "_EVAL_HISTORY_PATH", tmp_path / "evals" / "history.jsonl")
+    monkeypatch.setattr(dash, "_EVAL_REPORT_PATH", tmp_path / "evals" / "report.json")
+    (tmp_path / "evals").mkdir(parents=True)
+    (tmp_path / "evals" / "golden_tasks.json").write_text(
+        '{"tasks": [{"id": "t1", "category": "coding", "difficulty": "easy", '
+        '"prompt": "add two numbers", "expected_answer": "a + b", '
+        '"scoring_method": "string", "max_tokens": 64}]}'
+    )
+    res = client.post("/api/evals/run", json={})
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["ok"] is True
+    assert body["status"] == "started"
+
+
+def test_evals_tasks(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVALS_DIR", tmp_path / "evals")
+    evals_dir = tmp_path / "evals"
+    evals_dir.mkdir(parents=True)
+    (evals_dir / "golden_tasks.json").write_text(
+        '{"tasks": [{"id": "c1", "category": "coding", "difficulty": "easy", '
+        '"prompt": "add two numbers", "expected_answer": "a + b", '
+        '"scoring_method": "string", "max_tokens": 64}, '
+        '{"id": "k1", "category": "knowledge", "difficulty": "easy", '
+        '"prompt": "capital of France", "expected_answer": "Paris", '
+        '"scoring_method": "exact", "max_tokens": 32}]}'
+    )
+    res = client.get("/api/evals/tasks")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["total"] == 2
+    ids = [t["id"] for t in body["tasks"]]
+    assert "c1" in ids
+    assert "k1" in ids
+
+
+def test_evals_leaderboard_empty(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVAL_HISTORY_PATH", tmp_path / "history.jsonl")
+    res = client.get("/api/evals/leaderboard")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["total_runs"] == 0
+
+
+def test_evals_results_from_report(client, tmp_path, monkeypatch):
+    monkeypatch.setattr(dash, "_EVAL_HISTORY_PATH", tmp_path / "history.jsonl")
+    monkeypatch.setattr(dash, "_EVAL_REPORT_PATH", tmp_path / "report.json")
+    report = {
+        "run_id": "abc123",
+        "timestamp": 1234567890,
+        "total_tasks": 2,
+        "overall_score": 0.85,
+        "category_avg": {"coding": 0.9, "knowledge": 0.8},
+        "difficulty_avg": {"easy": 0.85},
+        "results": [
+            {"id": "t1", "score": 1.0, "reason": "match", "model_used": "mock", "latency_ms": 100},
+            {"id": "t2", "score": 0.7, "reason": "partial", "model_used": "mock", "latency_ms": 120},
+        ],
+    }
+    (tmp_path / "report.json").write_text(json.dumps(report), encoding="utf-8")
+    res = client.get("/api/evals/results/abc123")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["run_id"] == "abc123"
+    assert body["overall_score"] == 0.85
+    assert len(body["results"]) == 2
 

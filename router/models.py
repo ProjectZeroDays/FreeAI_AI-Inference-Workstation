@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List, Optional
 
 from settings import load_config
 
@@ -10,6 +11,133 @@ _llama_bases = [b.rstrip("/") for b in os.environ.get(
     "LLAMA_BASES", f"{LLAMA_BASE},{LLAMA2_BASE}").split(",") if b.strip()]
 LLAMA_COMPLETION = f"{LLAMA_BASE}/completion"
 LLAMA2_COMPLETION = f"{LLAMA2_BASE}/completion"
+
+# Strength-to-category mapping for confidence scoring
+_STRENGTH_DOMAINS = {
+    "architecture": "code",
+    "full_project": "code",
+    "production_code": "code",
+    "multi_file": "code",
+    "api_design": "code",
+    "microservices": "code",
+    "ci_cd": "code",
+    "infrastructure": "code",
+    "refactor": "code",
+    "debug": "code",
+    "fix_code": "code",
+    "patch": "code",
+    "optimize": "code",
+    "incremental": "code",
+    "fast_completion": "code",
+    "coding_agent": "code",
+    "tool_calling": "code",
+    "coding": "code",
+    "analysis": "analysis",
+    "explain": "analysis",
+    "think_step_by_step": "analysis",
+    "planning": "analysis",
+    "decomposition": "analysis",
+    "logic": "analysis",
+    "deep_reasoning": "analysis",
+    "long_context": "analysis",
+    "function_calling": "analysis",
+    "math": "analysis",
+    "vision": "creative",
+    "creative": "creative",
+    "general": "creative",
+    "terminal_agent": "creative",
+    "chat": "creative",
+}
+
+# Task-type to domain label
+_TASK_DOMAIN = {
+    "full_project": "code",
+    "refactor": "code",
+    "analysis": "analysis",
+    "general_code": "code",
+}
+
+
+class ConfidenceScorer:
+    """Rate each model's suitability per task type based on strength overlap.
+
+    Returns a dict of {model_key: score} where score is 0.0-1.0.
+    A model with no matching strengths scores 0.0; a model whose
+    strengths fully align with the task domain scores up to 1.0.
+    """
+
+    def score(self, model_key: str, task_type: str) -> float:
+        model = MODEL_REGISTRY.get(model_key)
+        if not model:
+            return 0.0
+        strengths = model.get("strengths", [])
+        if not strengths:
+            return 0.0
+        domain = _TASK_DOMAIN.get(task_type, "code")
+        domain_hits = sum(
+            1 for s in strengths if _STRENGTH_DOMAINS.get(s) == domain
+        )
+        # Bonus for exact-match strength keywords (up to +0.15)
+        exact_hits = sum(
+            1 for s in strengths if s in (
+                "full_project", "refactor", "analysis", "general_code",
+                "deep_reasoning", "production_code", "coding_agent",
+            )
+        )
+        base = domain_hits / max(len(strengths), 1)
+        bonus = min(0.15, 0.03 * exact_hits)
+        return round(min(1.0, base + bonus), 2)
+
+    def scores_for_task(self, task_type: str) -> Dict[str, float]:
+        """Return {model_key: confidence_score} sorted descending."""
+        scores = {
+            key: self.score(key, task_type)
+            for key in MODEL_REGISTRY
+        }
+        return dict(sorted(scores.items(), key=lambda kv: -kv[1]))
+
+
+class FallbackChain:
+    """Ordered list of models to try in sequence for a given task type.
+
+    Uses FALLBACK_CHAIN as the base order, optionally prepends a
+    per-agent override, and annotates each entry with its confidence
+    score for the task type.
+    """
+
+    def __init__(self, task_type: str, agent: Optional[str] = None):
+        self.task_type = task_type
+        self.agent = agent
+        self.scorer = ConfidenceScorer()
+
+    def build(self) -> List[Dict]:
+        """Return list of {key, confidence} sorted by confidence desc,
+        with agent override forced to the front if configured."""
+        override = self._load_override()
+        chain = list(FALLBACK_CHAIN.get(
+            self.task_type, FALLBACK_CHAIN["general_code"]))
+        if override and override in MODEL_REGISTRY:
+            if override in chain:
+                chain.remove(override)
+            chain.insert(0, override)
+        out = []
+        for key in chain:
+            if key in MODEL_REGISTRY:
+                out.append({
+                    "key": key,
+                    "confidence": self.scorer.score(key, self.task_type),
+                })
+        return out
+
+    def _load_override(self) -> Optional[str]:
+        try:
+            cfg = load_config().get("router", {}).get("model_overrides", {})
+            if self.agent and self.agent in cfg:
+                return cfg[self.agent]
+        except Exception:
+            pass
+        return None
+
 
 MODEL_REGISTRY = {
     "qwen3.6-12b": {

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — WebSocket Stream Test</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    #stream-output {
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0d0d0d;
+      color: #c8ffc8;
+      padding: 16px;
+      border-radius: 8px;
+      min-height: 200px;
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid #2a2a2a;
+    }
+    #stream-output .meta { color: #888; }
+    #stream-output .err  { color: #ff8888; }
+    .conn-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 6px;
+      background: #1a1a1a; margin-bottom: 12px; font-size: 13px;
+    }
+    .conn-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #555; flex-shrink: 0;
+    }
+    .conn-dot.ok  { background: #4f4; }
+    .conn-dot.err { background: #f44; }
+    .conn-dot.mid { background: #fa0; }
+    .hint { font-size: 12px; color: #666; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>WS Stream Test</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/ws-test" class="nav-item active"><span class="nav-dot"></span> WS Test</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <h1>WebSocket Stream Test</h1>
+          <p>Connect to <code>/ws/route</code> and stream tokens live</p>
+        </div>
+      </header>
+
+      <div class="card" style="max-width: 720px;">
+        <div class="card-head">
+          <h2>Connection</h2>
+          <span class="card-icon">⚡</span>
+        </div>
+        <div class="conn-bar" id="conn-bar">
+          <span class="conn-dot" id="conn-dot"></span>
+          <span id="conn-status">Disconnected</span>
+          <span class="muted" id="conn-info" style="margin-left:auto;font-size:12px"></span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="api-key" type="password" class="text-box"
+                   placeholder="API key (optional)" style="flex:1;min-width:160px" />
+            <input id="model-input" type="text" class="text-box"
+                   placeholder="model (e.g. openai/gpt-4)" style="flex:1;min-width:160px" />
+          </div>
+          <textarea id="prompt-input" class="text-box" rows="3"
+                    placeholder="Enter your prompt…"
+                    style="resize:vertical"></textarea>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="btn-connect" class="btn btn-primary">Connect</button>
+            <button id="btn-stream"  class="btn" disabled>Stream</button>
+            <button id="btn-clear"   class="btn">Clear</button>
+            <span class="hint">ws://localhost:8011/ws/route</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width: 720px;margin-top:12px">
+        <div class="card-head">
+          <h2>Stream Output</h2>
+          <span class="card-icon">▸</span>
+        </div>
+        <div id="stream-output"><span class="meta">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PROTO = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const HOST  = location.host.split(':')[0];
+    const PORT  = '8011';   // ws server port (matches ws_routes.py default)
+    const BASE  = `${PROTO}//${HOST}:${PORT}`;
+
+    const $ = id => document.getElementById(id);
+    let ws = null;
+
+    function setConn(state, info) {
+      const dot = $('conn-dot');
+      dot.className = 'conn-dot ' + (state === 'ok' ? 'ok' : state === 'err' ? 'err' : 'mid');
+      $('conn-status').textContent =
+        { ok: 'Connected', err: 'Error', mid: 'Connecting', dis: 'Disconnected' }[state] || state;
+      $('conn-info').textContent = info || '';
+    }
+
+    function append(text, cls) {
+      const out = $('stream-output');
+      const span = document.createElement('span');
+      span.className = cls || '';
+      span.textContent = text;
+      out.appendChild(span);
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function clearOutput() { $('stream-output').innerHTML = '<span class="meta">—</span>'; }
+
+    function connect() {
+      if (ws) { ws.close(); ws = null; }
+      const key = $('api-key').value.trim();
+      const path = '/ws/route' + (key ? '?key=' + encodeURIComponent(key) : '');
+      setConn('mid', 'connecting…');
+      try {
+        ws = new WebSocket(BASE + path);
+      } catch (e) {
+        setConn('err', e.message);
+        return;
+      }
+      ws.onopen = () => {
+        setConn('ok', 'ws ready');
+        $('btn-stream').disabled = false;
+      };
+      ws.onmessage = ev => {
+        try {
+          const msg = JSON.parse(ev.data);
+          if (msg.event === 'ping') return;          // keep-alive, ignore
+          if (msg.event === 'model') {
+            append(`\n[model] ${msg.model}  task=${msg.task_type}\n`, 'meta');
+          } else if (msg.event === 'token') {
+            process.argv // noop to keep linter happy
+            append(msg.content || '', '');
+          } else if (msg.event === 'done') {
+            append('\n[done]\n', 'meta');
+            setConn('ok', 'stream complete');
+          } else if (msg.event === 'error') {
+            append(`\n[error] ${msg.message}\n`, 'err');
+            setConn('err', msg.message);
+          }
+        } catch (_) {
+          append(ev.data + '\n', 'meta');
+        }
+      };
+      ws.onerror = () => setConn('err', 'websocket error');
+      ws.onclose = () => {
+        setConn('dis', 'closed');
+        $('btn-stream').disabled = true;
+        ws = null;
+      };
+    }
+
+    function stream() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) { connect(); return; }
+      const prompt = $('prompt-input').value.trim();
+      const model  = $('model-input').value.trim();
+      if (!prompt) { alert('Enter a prompt first'); return; }
+      clearOutput();
+      ws.send(JSON.stringify({ prompt, ...(model ? { model } : {}), stream: true }));
+      setConn('ok', 'streaming…');
+    }
+
+    $('btn-connect').addEventListener('click', connect);
+    $('btn-stream').addEventListener('click', stream);
+    $('btn-clear').addEventListener('click', clearOutput);
+
+    // allow Enter to trigger stream when focused on prompt
+    $('prompt-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); stream(); }
+    });
+  </script>
+</body>
+</html>

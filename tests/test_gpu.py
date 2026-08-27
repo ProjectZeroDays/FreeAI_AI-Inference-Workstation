@@ -15,6 +15,7 @@ import backend as dash  # noqa: E402
 @pytest.fixture()
 def client():
     dash.app.config["TESTING"] = True
+    dash.app.config["SECRET_KEY"] = "test-secret-for-unit-tests"
     with dash.app.test_client() as c:
         yield c
     # Reset GPU state after each test
@@ -97,3 +98,53 @@ def test_gpu_scan_no_devices(client, monkeypatch):
     body = res.get_json()
     assert body["devices"] == []
     assert body["total_vram_mb"] == 0
+
+
+# ── GPU Warmup API tests ───────────────────────────────────────
+
+
+def test_gpu_warmup_status_empty(client):
+    res = client.get("/api/gpu/warmup")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "skipped" in body
+    assert "results" in body
+
+
+def test_gpu_warmup_detect_no_gpu(client, monkeypatch):
+    """Detect returns empty when no nvidia-smi and no torch."""
+    monkeypatch.setattr(dash, "_detect_gpus", lambda: ([], None))
+    res = client.get("/api/gpu/warmup/detect")
+    body = res.get_json()
+    assert body["count"] == 0
+    assert body["source"] is None
+
+
+def test_gpu_warmup_config(client):
+    res = client.get("/api/gpu/warmup/config")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "enabled" in body
+    assert "batch_size" in body
+
+
+def test_gpu_warmup_results_no_data(client):
+    res = client.get("/api/gpu/warmup/results")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "results" in body
+
+
+def test_gpu_warmup_post_triggers_warmup(client, monkeypatch):
+    """POST to /api/gpu/warmup returns skipped when no GPU."""
+    monkeypatch.setattr(dash, "_detect_gpus", lambda: ([], None))
+    res = client.post("/api/gpu/warmup", json={"batch_size": 1, "seq_len": 64, "warmup_iters": 1})
+    assert res.status_code == 200
+    body = res.get_json()
+    assert body["skipped"] is True
+
+
+def test_gpu_warmup_page(client):
+    res = client.get("/gpu-warmup")
+    assert res.status_code == 200
+    assert b"GPU Warmup" in res.get_data()
