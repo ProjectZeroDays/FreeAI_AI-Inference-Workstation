@@ -13,13 +13,29 @@ WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTONOMOUS_API = os.environ.get("AUTONOMOUS_API", "http://localhost:8050")
 DASH_API = os.environ.get("DASH_API", "http://localhost:8030")
 ROUTER_URL2 = ROUTER_URL
+AUTONOMOUS_API_KEY = os.environ.get("AUTONOMOUS_API_KEY", "")
+AGENT_API_KEY = os.environ.get("AGENT_API_KEY", "")
 
 
-def _req(method, url, body=None):
+def _req(method, url, body=None, auth_service=None):
+    """Make HTTP request with optional authentication.
+    
+    Args:
+        method: HTTP method
+        url: Target URL
+        body: Optional JSON body
+        auth_service: Optional service name for authentication ("auto" or "agent")
+    """
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(
-        url, data=data, method=method,
-        headers={"Content-Type": "application/json"})
+    headers = {"Content-Type": "application/json"}
+    
+    # Add authentication header if needed
+    if auth_service == "auto" and AUTONOMOUS_API_KEY:
+        headers["X-API-Key"] = AUTONOMOUS_API_KEY
+    elif auth_service == "agent" and AGENT_API_KEY:
+        headers["X-API-Key"] = AGENT_API_KEY
+    
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=660) as resp:
             return resp.status, json.loads(resp.read().decode())
@@ -86,7 +102,8 @@ def cmd_auto_start(args):
                    {"spec": args.spec,
                     "profile": args.profile,
                     "max_tasks": args.max_tasks,
-                    "enable_shell": args.shell})
+                    "enable_shell": args.shell},
+                   auth_service="auto")
     print(f"run_id: {body.get('run_id')}")
     print("poll: freeai.py auto-status " + body.get("run_id", ""))
 
@@ -128,7 +145,8 @@ def cmd_auto_runs(_):
 
 def cmd_auto_cancel(args):
     _, body = _req("POST",
-                   f"{AUTONOMOUS_API}/auto/runs/{args.run_id}/cancel")
+                   f"{AUTONOMOUS_API}/auto/runs/{args.run_id}/cancel",
+                   auth_service="auto")
     _print(body)
 
 

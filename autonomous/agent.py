@@ -146,7 +146,7 @@ def package_artifact(workspace, run_id) -> str:
 # ------------------------------------------------------------------
 
 def run_agent(spec, profile="balanced", max_tasks=8,
-              enable_shell=False, run_id=None):
+              enable_shell=False, run_id=None, owner=""):
     run_id = run_id or uuid.uuid4().hex[:12]
     use_shell = bool(enable_shell and ENABLE_SHELL)
     started = time.time()
@@ -155,6 +155,7 @@ def run_agent(spec, profile="balanced", max_tasks=8,
         "spec": spec,
         "profile": profile,
         "enable_shell": use_shell,
+        "owner": owner,
         "status": "planning",
         "tasks": [],
         "files": [],
@@ -315,6 +316,7 @@ def start_async(spec, **kwargs):
         "fix_rounds": 0, "artifact": None, "report": {}, "error": None,
         "enable_shell": bool(kwargs.get("enable_shell", False)
                              and ENABLE_SHELL),
+        "owner": kwargs.get("owner", ""),
         "created_at": time.time(), "updated_at": time.time(),
     }
     with _LOCK:

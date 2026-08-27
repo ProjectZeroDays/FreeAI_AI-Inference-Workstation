@@ -4,7 +4,7 @@ import json
 import os
 import re
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
@@ -18,6 +18,23 @@ app = FastAPI(title="FreeAI Autonomous SDLC", version="1.0")
 _SETTINGS_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
     "config", "runtime-settings.json")
+
+# Authentication: if AUTONOMOUS_API_KEY is set, require it for write operations
+AUTONOMOUS_API_KEY = os.environ.get("AUTONOMOUS_API_KEY", "")
+
+
+def _check_auth(request: Request):
+    """Verify authentication for write/execute operations.
+    
+    Checks X-API-Key, X-Auth-Token, or Authorization: Bearer <token> headers.
+    Raises HTTPException(401) if authentication is required but invalid.
+    """
+    if AUTONOMOUS_API_KEY:
+        provided = (request.headers.get("X-API-Key") or 
+                   request.headers.get("X-Auth-Token") or 
+                   request.headers.get("Authorization", "").replace("Bearer ", ""))
+        if provided != AUTONOMOUS_API_KEY:
+            raise HTTPException(status_code=401, detail="unauthorized")
 
 
 def _max_concurrent_runs() -> int:
@@ -34,6 +51,7 @@ class StartRequest(BaseModel):
     profile: str = "balanced"
     max_tasks: int = 8
     enable_shell: bool = False
+    owner: str = Field(default="", description="Optional owner identifier for run ownership tracking")
 
 
 class ShellRequest(BaseModel):
@@ -48,7 +66,9 @@ def health():
 
 
 @app.post("/auto/start")
-def start(req: StartRequest):
+def start(request: Request, req: StartRequest):
+    _check_auth(request)
+    
     if not req.spec.strip():
         raise HTTPException(status_code=400, detail="spec is required")
 
@@ -65,7 +85,8 @@ def start(req: StartRequest):
     run_id = engine.start_async(
         req.spec, profile=req.profile,
         max_tasks=max(1, min(req.max_tasks, 16)),
-        enable_shell=req.enable_shell)
+        enable_shell=req.enable_shell,
+        owner=req.owner)
     return {"run_id": run_id}
 
 
@@ -83,7 +104,9 @@ def run_detail(run_id: str):
 
 
 @app.post("/auto/runs/{run_id}/cancel")
-def run_cancel(run_id: str):
+def run_cancel(request: Request, run_id: str):
+    _check_auth(request)
+    
     if not engine.cancel(run_id):
         raise HTTPException(status_code=404, detail="run not found")
     return {"status": "cancelling"}
@@ -103,13 +126,25 @@ def run_artifact(run_id: str):
 
 
 @app.post("/auto/runs/{run_id}/shell")
-def run_shell(run_id: str, req: ShellRequest):
+def run_shell(request: Request, run_id: str, req: ShellRequest):
+    _check_auth(request)
+    
     if not engine.ENABLE_SHELL:
         raise HTTPException(status_code=403,
                             detail="shell tools disabled "
                                    "(ENABLE_SHELL_TOOLS=1 to enable)")
     if run_id not in engine.RUNS:
         raise HTTPException(status_code=404, detail="run not found")
+    
+    # Verify run ownership if owner tracking is enabled
+    state = engine.RUNS.get(run_id)
+    if state and state.get("owner"):
+        # If the run has an owner, verify the caller is authorized
+        # In a production system, you would extract the authenticated user identity
+        # from the request and compare it to the run owner
+        # For now, we rely on the API key authentication as the authorization boundary
+        pass
+    
     from workspace import Workspace
     return engine.shell_exec(run_id, req.command) \
         if hasattr(engine, "shell_exec") else _shell(run_id, req.command)
