@@ -9,7 +9,7 @@
   <meta property="og:description" content="Local models. Autonomous agents. Full SDLC automation. One self-hosted stack." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" />
-  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%235c8bff'/><stop offset='100%25' stop-color='%238a70f6'/></linearGradient></defs><polygon points='50,8 88,50 50,92 12,50' fill='url(%23g)' opacity='0.95'/><circle cx='50' cy='50' r='10' fill='%234ade80' opacity='0.9'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -32,10 +32,6 @@
       --navy-900: #010258;
       --accent: #0237C2;
       --accent-light: #6691F1;
-      --accent-50: #E5ECFC;
-      --accent-300: #6691F1;
-      --accent-500: #0241E3;
-      --accent-600: #0237C2;
       --canvas: #F1F6FF;
       --bg: #FFFFFF;
       --bg-canvas: #F1F6FF;
@@ -56,8 +52,6 @@
       --danger: #DC2626;
       --danger-soft: #FEE2E2;
       --info: #0241E3;
-      --info-soft: #DBE7FF;
-      --radius-xs: 4px;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
@@ -69,7 +63,6 @@
       --shadow-md: 0 4px 12px rgba(1, 2, 88, .08);
       --shadow-lg: 0 16px 40px rgba(1, 2, 88, .12);
       --shadow-glow: 0 0 0 4px rgba(2, 65, 227, .18);
-      --space-1: 4px;
       --space-2: 8px;
       --space-3: 12px;
       --space-4: 16px;
@@ -78,7 +71,6 @@
       --space-8: 32px;
       --space-10: 40px;
       --space-12: 48px;
-      --space-16: 64px;
       --font-sans: "Outfit", system-ui, -apple-system, sans-serif;
       --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
       --fs-display: 56px;
@@ -92,7 +84,6 @@
       --lh-tight: 1.15;
       --lh-snug: 1.35;
       --lh-normal: 1.55;
-      --fw-regular: 400;
       --fw-medium: 500;
       --fw-semibold: 600;
       --ease-out: cubic-bezier(.23, 1, .32, 1);
@@ -123,7 +114,7 @@
       --success: #4ade80;
       --success-soft: rgba(74, 222, 128, .14);
       --warning: #fbbf24;
-      --warning-soft: rgba(211, 119, 6, .14);
+      --warning-soft: rgba(251, 191, 36, .14);
       --danger: #f87171;
       --danger-soft: rgba(248, 113, 113, .15);
       --info: #5c8bff;
@@ -144,7 +135,7 @@
     body {
       background: var(--bg);
       color: var(--text-secondary);
-      font: var(--fw-regular) var(--fs-body) / var(--lh-normal) var(--font-sans);
+      font: var(--fw-medium) var(--fs-body) / var(--lh-normal) var(--font-sans);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
@@ -153,12 +144,12 @@
     ::selection { background: var(--primary-100); color: var(--primary-900); }
     [data-theme="dark"] ::selection { background: var(--primary); color: #fff; }
 
-    /* ── Theme Toggle ── */
+    /* ── Theme Toggle — clean moon icon, no square boundary ── */
     .theme-toggle {
-      width: 36px; height: 36px; border-radius: var(--radius-md);
+      width: 36px; height: 36px; border-radius: var(--radius-pill);
       display: grid; place-items: center;
       color: var(--text-muted); transition: background .15s, color .15s;
-      cursor: pointer; border: 1px solid var(--border);
+      cursor: pointer; border: none; background: transparent;
     }
     .theme-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
     .theme-toggle svg { width: 18px; height: 18px; }
@@ -201,8 +192,8 @@
     /* ── Buttons ── */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
-      height: 42px; padding: 0 var(--space-5);
-      border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: 600;
+      height: 52px; padding: 0 var(--space-6);
+      border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: var(--fw-semibold);
       white-space: nowrap; transition: transform .16s var(--ease-out), background .2s, border-color .2s, box-shadow .2s;
       cursor: pointer; border: 1px solid transparent;
     }
@@ -212,8 +203,8 @@
       box-shadow: inset 0 1px rgba(255,255,255,.18), 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(2,65,227,.35);
     }
     [data-theme="dark"] .btn--primary {
-      background: var(--primary); color: #fff;
-      box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(92,139,255,.25);
+      background: #0241e3; color: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(2,65,227,.3);
     }
     .btn--primary:hover { background: var(--primary-hover); }
     .btn--secondary {
@@ -227,8 +218,7 @@
       border: 1px solid rgba(255,255,255,.22);
     }
     .btn--ghost:hover { background: rgba(255,255,255,.15); }
-    .btn--sm { height: 34px; padding: 0 var(--space-4); border-radius: var(--radius-md); font-size: var(--fs-small); }
-    .btn-icon { width: 16px; height: 16px; }
+    .btn--sm { height: 40px; padding: 0 var(--space-5); border-radius: var(--radius-md); font-size: var(--fs-small); }
 
     /* ── Pills ── */
     .pill {
@@ -242,23 +232,22 @@
     .pill--neutral { background: var(--bg-elev-3); color: var(--text-tertiary); }
     .dot { width: 6px; height: 6px; border-radius: 50%; }
 
-    /* ── Container ── */
+    /* ── Container & Sections ── */
     .container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px,4vw,32px); }
-    .section { padding-block: clamp(80px,10vw,120px); }
-
-    /* ── Typography ── */
+    .section { padding-block: clamp(88px,10vw,136px); }
+    .section-head { max-width: 720px; margin: 0 auto clamp(48px,6vw,72px); text-align: center; }
     .eyebrow {
       display: inline-flex; align-items: center; gap: var(--space-2);
       font-size: var(--fs-micro); font-weight: var(--fw-semibold);
       letter-spacing: .12em; text-transform: uppercase; color: var(--primary); margin-bottom: var(--space-4);
     }
     .section-title {
-      font-size: clamp(32px,5vw,56px); font-weight: 600; line-height: var(--lh-tight);
+      font-size: clamp(34px,5vw,60px); font-weight: var(--fw-medium); line-height: var(--lh-tight);
       letter-spacing: -.025em; color: var(--text-primary); text-wrap: balance;
     }
     .section-sub {
       margin-top: var(--space-4); font-size: var(--fs-h4); line-height: var(--lh-normal);
-      color: var(--text-tertiary); text-wrap: pretty; max-width: 640px;
+      color: var(--text-tertiary); text-wrap: pretty;
     }
     .grad {
       background: var(--ai-grad); -webkit-background-clip: text; background-clip: text;
@@ -267,14 +256,14 @@
 
     /* ── Hero ── */
     .hero {
-      padding: 148px 0 80px; text-align: center;
+      padding: 160px 0 100px; text-align: center;
       background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(92,139,255,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(92,139,255,.10) 0%, transparent 70%),
         var(--bg-canvas);
     }
     [data-theme="light"] .hero {
       background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(2,65,227,.06) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(2,65,227,.05) 0%, transparent 70%),
         var(--canvas);
     }
     .hero h1 {
@@ -287,20 +276,128 @@
     }
     .hero-actions { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
     .hero-stats {
-      display: flex; justify-content: center; gap: clamp(32px,6vw,72px);
+      display: flex; justify-content: center; gap: clamp(24px,4vw,56px);
       margin-top: 72px; padding-top: 48px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border); flex-wrap: wrap;
     }
     .hero-stat { text-align: center; }
     .hero-stat .num { font-size: 32px; font-weight: 800; color: var(--text-primary); letter-spacing: -.02em; }
     .hero-stat .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
 
+    /* ── Ask Intelligence Composer (Applivery-style) ── */
+    .composer-section {
+      padding: 0 0 80px;
+      background: var(--bg-canvas);
+    }
+    .composer-demo {
+      max-width: 720px; margin: 0 auto;
+    }
+    .composer {
+      display: flex; flex-direction: column; gap: var(--space-3);
+      width: 100%; padding: var(--space-4);
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-3xl);
+      box-shadow: var(--shadow-lg);
+      transition: border-color .3s ease, box-shadow .3s ease;
+    }
+    .composer:focus-within {
+      border-color: var(--border-brand);
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+    }
+    .composer-preview {
+      display: flex; align-items: center; gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      min-height: 44px;
+    }
+    .composer-preview .typing-dots {
+      display: flex; gap: 4px; align-items: center;
+    }
+    .composer-preview .typing-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--primary);
+      animation: typing-bounce 1.2s infinite;
+    }
+    .composer-preview .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .composer-preview .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes typing-bounce { 0%,60%,100%{opacity:.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-3px)} }
+    .composer-preview .status-text {
+      font-size: var(--fs-small); color: var(--text-muted);
+    }
+    .composer-message {
+      display: flex; justify-content: flex-end;
+      margin-bottom: var(--space-2);
+    }
+    .composer-message .msg-bubble {
+      background: var(--primary-600);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: var(--radius-xl);
+      font-size: var(--fs-body);
+      max-width: 80%;
+      text-align: left;
+    }
+    [data-theme="dark"] .composer-message .msg-bubble {
+      background: #0241e3;
+    }
+    .composer-fields {
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .composer-tool {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: var(--radius-pill);
+      color: var(--text-tertiary); transition: background .16s ease, color .16s ease;
+      cursor: pointer; border: none; background: transparent;
+    }
+    .composer-tool:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .composer-tool svg { width: 16px; height: 16px; }
+    .composer-agents {
+      display: inline-flex; align-items: center; gap: 5px;
+      height: 32px; padding: 0 10px;
+      border-radius: var(--radius-pill);
+      font-size: var(--fs-small); font-weight: 500;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      transition: background .16s ease, color .16s ease;
+      border: none; background: transparent; cursor: pointer;
+    }
+    .composer-agents:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .composer-agents svg { width: 14px; height: 14px; }
+    .composer-send {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; margin-left: auto;
+      border-radius: var(--radius-pill);
+      background: var(--primary-soft); color: var(--primary);
+      transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .16s var(--ease-out);
+      border: none; cursor: pointer;
+    }
+    [data-theme="dark"] .composer-send {
+      background: #0241e3; color: #fff;
+    }
+    .composer-send:hover { background: var(--primary-hover); }
+    .composer-send:active { transform: scale(.94); }
+    .composer-send svg { width: 14px; height: 14px; }
+
     /* ── Marquee ── */
-    .marquee-wrap { overflow: hidden; padding: 16px 0; background: var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .marquee { display: flex; gap: 48px; animation: marquee 30s linear infinite; white-space: nowrap; }
+    .marquee-wrap { overflow: hidden; padding: 20px 0; background: var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .marquee { display: flex; gap: 48px; animation: marquee 40s linear infinite; white-space: nowrap; }
     .marquee span { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em; }
     .marquee span em { font-style: normal; color: var(--primary); }
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* ── Logo Marquee (services/integrations) ── */
+    .logo-marquee-wrap { overflow: hidden; padding: 32px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+    [data-theme="dark"] .logo-marquee-wrap { background: var(--bg-canvas); }
+    .logo-marquee { display: flex; gap: 56px; animation: logo-marquee 60s linear infinite; white-space: nowrap; align-items: center; }
+    .logo-marquee-item {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px; font-weight: 600; color: var(--text-muted);
+      opacity: .6; transition: opacity .2s, color .2s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo-marquee-item:hover { opacity: 1; color: var(--text-primary); text-decoration: none; }
+    .logo-marquee-item svg { width: 24px; height: 24px; flex-shrink: 0; }
+    @keyframes logo-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ── Trusted ── */
     .trusted { padding: 40px 0; text-align: center; border-bottom: 1px solid var(--border); }
@@ -308,29 +405,78 @@
     .logo-strip { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; align-items: center; opacity: .45; }
     .logo-strip span { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
 
-    /* ── Section head ── */
-    .section-head { max-width: 720px; margin: 0 auto clamp(40px,6vw,64px); text-align: center; }
-
-    /* ── Feature Cards ── */
+    /* ── Feature Cards — EXACT Applivery sizing ── */
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .feature-grid.centered { justify-content: center; }
+    .feature-grid.centered .feature-card { max-width: 380px; }
     .feature-card {
-      background: var(--bg-elev-1); border: 1px solid var(--border);
-      border-radius: var(--radius-xl); padding: 28px;
-      transition: border-color .15s, transform .15s, box-shadow .15s;
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      transition: border-color .15s var(--ease-out), transform .15s var(--ease-out), box-shadow .15s var(--ease-out);
+      display: flex; flex-direction: column;
     }
-    .feature-card:hover { border-color: var(--border-strong); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .feature-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .feature-card > * { flex: 1; }
     .feature-icon {
       width: 48px; height: 48px; border-radius: var(--radius-lg);
-      display: grid; place-items: center; font-size: 22px; margin-bottom: 16px;
+      display: grid; place-items: center; font-size: 22px; margin-bottom: 16px; flex-shrink: 0;
     }
     .feature-card h3 { font-size: var(--fs-h3); font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-    .feature-card p { font-size: var(--fs-small); color: var(--text-secondary); line-height: 1.55; }
+    .feature-card p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
     .feature-card pre {
       background: var(--bg-canvas); border-radius: var(--radius-md);
-      padding: 12px; font-size: 12px; margin-top: 12px; overflow-x: auto;
-      font-family: var(--font-mono); color: var(--text-secondary); border: 1px solid var(--border);
+      padding: 14px; font-size: 12px; margin-top: 12px; overflow-x: auto;
+      font-family: var(--font-mono); color: var(--text-secondary);
+      border: 1px solid var(--border); line-height: 1.6; flex: none;
     }
     .feature-card code { font-family: var(--font-mono); }
+
+    /* ── Glow Panel — Applivery exact ── */
+    .glow-panel {
+      --bb-border: conic-gradient(from var(--bb-angle), #1ed6ff 0deg, #5c8bff 120deg, #8a70f6 240deg, #1ed6ff 360deg);
+      --gp-radius: var(--radius-3xl);
+      position: relative; isolation: isolate;
+      border-radius: var(--gp-radius);
+      animation: bb-turn 3.5s linear infinite;
+      overflow: hidden;
+    }
+    .glow-panel::before {
+      content: '';
+      position: absolute; inset: -9px; z-index: 0;
+      border-radius: calc(var(--gp-radius) + 9px);
+      background: var(--bb-border);
+      filter: blur(24px);
+      opacity: .37;
+      pointer-events: none;
+    }
+    .glow-panel::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 1;
+      border-radius: inherit;
+      background: var(--bg-elev-1);
+      pointer-events: none;
+    }
+    .glow-panel > * { position: relative; z-index: 2; }
+    @property --bb-angle { syntax: "<angle>"; initial-value: 0deg; inherits: true; }
+    @keyframes bb-turn { to { --bb-angle: 360deg; } }
+
+    /* ── Reveal Animation ── */
+    .reveal {
+      opacity: 0; transform: translateY(16px);
+      transition: opacity .6s var(--ease-out), transform .6s var(--ease-out);
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+    .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* ── Float Animation ── */
+    @keyframes float-y { 0%,to{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .float { animation: float-y 4s ease-in-out infinite; }
 
     /* ── Pillars ── */
     .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
@@ -340,19 +486,27 @@
     }
     .pillar-num { font-size: 48px; font-weight: 800; color: var(--bg-elev-3); line-height: 1; margin-bottom: 12px; }
     .pillar h3 { font-size: var(--fs-h3); font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
-    .pillar p { font-size: var(--fs-small); color: var(--text-secondary); line-height: 1.55; }
+    .pillar p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
 
-    /* ── Integration Grid ── */
-    .integration-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-    .integration-card {
+    /* ── Integration Marquee Grid ── */
+    .integration-marquee-wrap { overflow: hidden; padding: 8px 0; }
+    .integration-marquee { display: flex; gap: 24px; animation: int-marquee 45s linear infinite; white-space: nowrap; }
+    .integration-marquee-item {
+      display: flex; align-items: center; gap: 10px;
       background: var(--bg-elev-1); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 18px; text-align: center;
-      transition: all .15s; cursor: pointer;
+      border-radius: var(--radius-lg); padding: 14px 20px;
+      flex-shrink: 0; min-width: 160px;
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+      text-decoration: none;
     }
-    .integration-card:hover { border-color: var(--primary); background: var(--primary-soft); transform: translateY(-2px); }
-    .integration-card .icon { font-size: 26px; margin-bottom: 8px; }
-    .integration-card .name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-    .integration-card .desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .integration-marquee-item:hover {
+      border-color: var(--primary); transform: translateY(-2px);
+      box-shadow: var(--shadow-md); text-decoration: none;
+    }
+    .integration-marquee-item .im-icon { font-size: 22px; flex-shrink: 0; }
+    .integration-marquee-item .im-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .integration-marquee-item .im-desc { font-size: 11px; color: var(--text-muted); }
+    @keyframes int-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
     /* ── Steps ── */
     .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; counter-reset: step; }
@@ -368,17 +522,60 @@
       border-radius: 50%; display: grid; place-items: center;
     }
     .step h3 { font-size: var(--fs-h4); font-weight: 600; margin-bottom: 8px; margin-top: 8px; color: var(--text-primary); }
-    .step p { font-size: var(--fs-small); color: var(--text-secondary); line-height: 1.55; }
+    .step p { font-size: var(--fs-small); color: var(--text-secondary); line-height: var(--lh-normal); }
 
-    /* ── CTA ── */
+    /* ── SDLC Auto-Workflow Panel ── */
+    .sdlc-panel {
+      background: linear-gradient(135deg, rgba(14,22,48,.95) 0%, rgba(6,10,24,.98) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-3xl);
+      padding: clamp(32px,5vw,56px);
+      text-align: center;
+      position: relative; overflow: hidden;
+      box-shadow: 0 0 60px rgba(92,139,255,.08), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .sdlc-panel::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 50% 40%, rgba(92,139,255,.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .sdlc-panel > * { position: relative; z-index: 1; }
+    .sdlc-problems { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 28px; }
+    .sdlc-solution { font-size: clamp(16px,2.5vw,22px); color: var(--text-secondary); margin-bottom: 28px; line-height: 1.5; }
+    .sdlc-solution .grad { font-weight: 700; }
+    .sdlc-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .sdlc-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 18px; border-radius: 100px;
+      font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--bg-elev-1);
+      color: var(--text-primary);
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+    }
+    .sdlc-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .sdlc-pill.problem { border-color: rgba(239,68,68,.3); color: rgba(239,68,68,.9); background: rgba(239,68,68,.06); }
+    .sdlc-pill.step { border-color: rgba(34,197,94,.3); color: rgba(34,197,94,.9); background: rgba(34,197,94,.06); }
+    .sdlc-pill .pill-icon { font-size: 12px; }
+
+    /* ── CTA Section ── */
     .cta-section {
-      text-align: center; padding: 96px 24px;
+      text-align: center; padding: clamp(80px,10vw,120px) 24px;
       background: linear-gradient(135deg, #0e1630 0%, #060a18 100%);
       border-top: 1px solid var(--border);
+      position: relative; overflow: hidden;
     }
     [data-theme="light"] .cta-section {
       background: linear-gradient(135deg, var(--primary-600) 0%, #5b21b6 100%);
     }
+    .cta-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,139,255,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section > * { position: relative; z-index: 1; }
     .cta-section h2 { font-size: clamp(28px,4vw,48px); font-weight: 700; margin-bottom: var(--space-4); letter-spacing: -.02em; color: #fff; }
     .cta-section p { color: rgba(255,255,255,.65); font-size: 17px; margin-bottom: 40px; max-width: 480px; margin-left: auto; margin-right: auto; }
     .cta-section .btn--primary { background: #fff; color: var(--text-primary); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
@@ -395,35 +592,70 @@
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
     }
     .footer-brand { font-weight: 700; font-size: 16px; color: var(--text-primary); }
-    .footer-copy { font-size: 12px; color: var(--text-muted); }
+    .footer-copy { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
     .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
     .footer-links a { color: var(--text-muted); font-size: 13px; transition: color .15s; }
-    .footer-links a:hover { color: var(--text-primary); }
+    .footer-links a:hover { color: var(--text-primary); text-decoration: none; }
+
+    /* ── Language Dropdown ── */
+    .lang-dropdown { position: relative; }
+    .lang-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 36px; padding: 0 10px;
+      border-radius: var(--radius-pill);
+      font-size: var(--fs-small); font-weight: 500;
+      color: var(--text-tertiary);
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
+      cursor: pointer; transition: all .15s;
+    }
+    .lang-btn:hover { color: var(--text-primary); border-color: var(--border-strong); }
+    .lang-btn svg { width: 16px; height: 16px; }
+    .lang-btn .chevron { width: 12px; height: 12px; transition: transform .15s; }
+    .lang-dropdown.open .lang-btn .chevron { transform: rotate(180deg); }
+    .lang-menu {
+      position: absolute; top: calc(100% + 8px); right: 0;
+      min-width: 160px;
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      opacity: 0; visibility: hidden;
+      transform: translateY(-8px);
+      transition: all .15s var(--ease-out);
+      z-index: 200;
+      overflow: hidden;
+    }
+    .lang-dropdown.open .lang-menu {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    .lang-menu-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px;
+      font-size: var(--fs-small); font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer; transition: background .1s, color .1s;
+    }
+    .lang-menu-item:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .lang-menu-item.active { color: var(--primary); }
+    .lang-menu-item .check { width: 14px; height: 14px; opacity: 0; }
+    .lang-menu-item.active .check { opacity: 1; }
+    .lang-menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .nav-links { display: none; }
-      .hero-stats { gap: 24px; flex-wrap: wrap; }
+      .hero-stats { gap: 20px; flex-wrap: wrap; }
       .hero h1 { font-size: 36px; }
       .section { padding: 64px 20px; }
     }
-
-    /* ── Glow panel ── */
-    .glow-panel {
-      position: relative; isolation: isolate;
-      border-radius: var(--radius-3xl); overflow: hidden;
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { transform: none; transition: opacity .25s ease; }
+      .float { animation: none; }
+      .glow-panel { animation: none; }
+      .marquee, .logo-marquee, .integration-marquee { animation-duration: 200s; }
     }
-    .glow-panel::before {
-      content: '';
-      position: absolute; inset: -1px;
-      border-radius: inherit; padding: 1px;
-      background: var(--ai-grad);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      pointer-events: none; opacity: .5;
-    }
-    .glow-panel > * { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
@@ -449,16 +681,40 @@
         <a href="#mcps" class="nav-link">MCPs</a>
         <a href="#extensions" class="nav-link">Extensions</a>
         <a href="#workflows" class="nav-link">Workflows</a>
+        <a href="deploy.html" class="nav-link">Deploy</a>
         <a href="#install" class="nav-link">Install</a>
         <a href="#faq" class="nav-link">FAQ</a>
         <a href="mailto:contact@projectzerodays.dev" class="nav-link">Contact</a>
       </div>
       <div class="nav-actions">
+        <!-- Language dropdown -->
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-btn" id="langBtn" aria-label="Select language">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="langLabel">EN</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="lang-menu" id="langMenu">
+            <div class="lang-menu-item active" data-lang="en"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>English</div>
+            <div class="lang-menu-item" data-lang="es"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Español</div>
+            <div class="lang-menu-item" data-lang="de"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Deutsch</div>
+            <div class="lang-menu-item" data-lang="fr"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Français</div>
+            <div class="lang-menu-item" data-lang="it"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Italiano</div>
+            <div class="lang-menu-item" data-lang="pt"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Português</div>
+            <div class="lang-menu-item" data-lang="ja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>日本語</div>
+            <div class="lang-menu-item" data-lang="ko"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>한국어</div>
+            <div class="lang-menu-item" data-lang="zh"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>中文</div>
+            <div class="lang-menu-divider"></div>
+            <div class="lang-menu-item" data-lang="ar"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>العربية</div>
+          </div>
+        </div>
+        <!-- Theme toggle — clean moon icon, no border square -->
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank">
+        <!-- GitHub button — Applivery light theme blue -->
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;box-shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(2,65,227,.25);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
           GitHub
         </a>
@@ -473,27 +729,27 @@
         <span class="dot" style="background:var(--success)"></span>
         v1.3.0 — Autonomous SDLC Agents &amp; Aikido Security
       </div>
-      <h1>The AI workstation<br/><span class="grad">that thinks ahead.</span></h1>
-      <p>FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
-      <div class="hero-actions">
+      <h1 class="reveal">The AI workstation<br/><span class="grad">that thinks ahead.</span></h1>
+      <p class="reveal" style="transition-delay:.1s">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
+      <div class="hero-actions reveal" style="transition-delay:.2s">
         <a href="#install" class="btn btn--primary">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Install FreeAI
         </a>
-        <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" class="btn btn--secondary">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
+        <a href="/wiki-dashboard" class="btn btn--secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
           Read Docs
         </a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats reveal" style="transition-delay:.3s">
         <div class="hero-stat"><div class="num">174</div><div class="label">Features</div></div>
         <div class="hero-stat"><div class="num">55+</div><div class="label">Skills</div></div>
-        <div class="hero-stat"><div class="num">23</div><div class="label">MCP Servers</div></div>
-        <div class="hero-stat"><div class="num">16</div><div class="label">Clients</div></div>
+        <div class="hero-stat"><div class="num">5</div><div class="label">MCP Servers</div></div>
+        <div class="hero-stat"><div class="num">10</div><div class="label">Clients</div></div>
         <div class="hero-stat"><div class="num">33</div><div class="label">Security Skills</div></div>
-        <div class="hero-stat"><div class="num">36</div><div class="label">Agents</div></div>
-        <div class="hero-stat"><div class="num">21+</div><div class="label">Integrations</div></div>
-        <div class="hero-stat"><div class="num">6+</div><div class="label">Plugins</div></div>
+        <div class="hero-stat"><div class="num">24</div><div class="label">Agents</div></div>
+        <div class="hero-stat"><div class="num">22</div><div class="label">Integrations</div></div>
+        <div class="hero-stat"><div class="num">3</div><div class="label">Plugins</div></div>
         <div class="hero-stat"><div class="num">6</div><div class="label">Extensions</div></div>
         <div class="hero-stat"><div class="num">40+</div><div class="label">MCPs</div></div>
         <div class="hero-stat"><div class="num">100+</div><div class="label">Settings</div></div>
@@ -501,26 +757,44 @@
     </div>
   </section>
 
-  <!-- ── Marquee ── -->
-  <div class="marquee-wrap">
-    <div class="marquee">
-      <span><em>Model Router</em></span>
-      <span><em>Autonomous Agents</em></span>
-      <span><em>Workflow Engine</em></span>
-      <span><em>Security Scanning</em></span>
-      <span><em>Builder Agents</em></span>
-      <span><em>MCP Registry</em></span>
-      <span><em>Comm Stack</em></span>
-      <span><em>GPU Inference</em></span>
-      <span><em>Model Router</em></span>
-      <span><em>Autonomous Agents</em></span>
-      <span><em>Workflow Engine</em></span>
-      <span><em>Security Scanning</em></span>
-      <span><em>Builder Agents</em></span>
-      <span><em>MCP Registry</em></span>
-      <span><em>Comm Stack</em></span>
-      <span><em>GPU Inference</em></span>
+  <!-- ── Ask Intelligence Composer Demo ── -->
+  <section class="composer-section">
+    <div class="container">
+      <div class="composer-demo reveal">
+        <div class="composer" id="composer">
+          <!-- Message history -->
+          <div class="composer-message">
+            <div class="msg-bubble" id="userMsg">Which devices are exposed to CVE-2026-4102?</div>
+          </div>
+          <div class="composer-preview" id="typingPreview" style="display:none">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+            <span class="status-text" id="statusText">Scanning 4,812 devices...</span>
+          </div>
+          <div class="composer-fields">
+            <span style="font-size:var(--fs-h4);color:var(--text-tertiary);pointer-events:none" id="composerPlaceholder">Ask FreeAI</span>
+            <button class="composer-tool" title="Add attachment">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            </button>
+            <button class="composer-tool" title="Browse skills">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </button>
+            <button class="composer-agents" id="agentsBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Agents
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="composer-send" id="sendBtn" title="Send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- ── Provider Logo Marquee ── -->
+  <div class="logo-marquee-wrap">
+    <div class="logo-marquee" id="logoMarquee"></div>
   </div>
 
   <!-- ── Trusted By ── -->
@@ -540,38 +814,38 @@
 
   <!-- ── Dashboards ── -->
   <section class="section" id="dashboards">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Dashboards</div>
       <h2 class="section-title">Every operational view,<br/><span class="grad">one dashboard.</span></h2>
       <p class="section-sub">Real-time telemetry, log streams, skill management, and the FreeToken desktop console — all in one interface.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
+    <div class="feature-grid centered">
+      <div class="feature-card reveal" style="--reveal-delay:0ms">
         <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
         <h3>Wiki Dashboard</h3>
         <p>3-column scroll-spy layout with filterable page TOC, live section highlighting, and AI chatbot for repo-only Q&A.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:50ms">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">⬡</div>
         <h3>Logs Dashboard</h3>
         <p>15 simulated services with live log injection every 3s. Text/JSON export, pattern search, and AI help modal.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:100ms">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>Network Dashboard</h3>
         <p>12 telemetry cards — upload/download speeds, VPN/Tor/DNSCrypt status, IPv4/IPv6. Drag-drop reorder, 5s live refresh.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:150ms">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
         <h3>FreeToken Desktop</h3>
         <p>Draggable web cards for edge runtime config, skill/MCP/plugin links, telemetry insights, and per-card recommendations.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:200ms">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬢</div>
         <h3>Blog &amp; Forum</h3>
         <p>Community-driven content. JSON-backed posts and threads with dark/light theme matching the dashboard.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:250ms">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
         <h3>Provider Config</h3>
         <p>22 providers, 10 clients, cross-installable skills/MCPs/plugins/agents. One config file, all clients updated.</p>
@@ -580,39 +854,39 @@
   </section>
 
   <!-- ── Skills ── -->
-  <section class="section" id="skills">
-    <div class="section-head">
+  <section class="section" id="skills" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section-head reveal">
       <div class="eyebrow">Skills</div>
       <h2 class="section-title">55+ expert skills,<br/><span class="grad">one click to install.</span></h2>
       <p class="section-sub">From quantum C2 to creative generation, from shell scripting to music synthesis — skills are peer-reviewed, versioned, and shareable.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
+    <div class="feature-grid centered">
+      <div class="feature-card reveal" style="--reveal-delay:0ms">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚔</div>
         <h3>Red Team (14)</h3>
         <p>APT hunting, exploit research, social engineering, LotL techniques, evasion, payload generation.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:50ms">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">🛡</div>
         <h3>Blue Team (12)</h3>
         <p>Hardening, compliance (NIST/FedRAMP/DOD), SIEM integration, incident response, forensic analysis.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:100ms">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>Purple Team (7)</h3>
         <p>Red↔blue orchestration, control validation, remediation bridging, autonomous validation.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:150ms">
         <div class="feature-icon" style="background:rgba(14,165,233,.12)">⬡</div>
         <h3>Creative (18)</h3>
         <p>ASCII art, architecture diagrams, pixel art, manim videos, ComfyUI, p5.js, songwriting.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:200ms">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div>
         <h3>DevOps (10)</h3>
         <p>CI/CD, Docker, Kubernetes, Terraform, monitoring, Kanban orchestration, webhook subscriptions.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:250ms">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟁</div>
         <h3>MLOps (8)</h3>
         <p>Model serving (vLLM, llama.cpp), fine-tuning (SFT/DPO/RFT), evaluation harness, RAG pipelines.</p>
@@ -622,38 +896,38 @@
 
   <!-- ── Plugins ── -->
   <section class="section" id="plugins">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Plugins</div>
       <h2 class="section-title">Plug in what you need.<br/><span class="grad">Remove what you don't.</span></h2>
       <p class="section-sub">Plugin system with 6+ core plugins and a marketplace. Zero-downtime updates, version-pinned, and sandboxed.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
+    <div class="feature-grid centered">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
         <h3>CI/CD Plugin</h3>
         <p>GitHub Actions, Docker publish, release bundling — triggered on push or schedule. Zero-downtime deployments.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:50ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
         <h3>Watcher Plugin</h3>
         <p>File-system watcher for config changes, model downloads, and RAG document ingestion.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>Backup Plugin</h3>
         <p>Config snapshot, registry export, weekly retention (keep 10). One-command restore.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:150ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
         <h3>Watchdog Plugin</h3>
         <p>Supervisor loop (10s), health agent (30s), recovery agent (15s). systemd units with auto-restart.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
         <h3>Marketplace</h3>
         <p>Browse, install, and share plugins. Version-pinned installs with rollback support.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:250ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
         <h3>Scheduler</h3>
         <p>Cron-driven daily cleanup, weekly backup, timed idle windows with auto-restore on activity.</p>
@@ -661,63 +935,53 @@
     </div>
   </section>
 
-  <!-- ── MCPs ── -->
-  <section class="section" id="mcps">
-    <div class="section-head">
+  <!-- ── MCPs with moving integration marquee ── -->
+  <section class="section" id="mcps" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section-head reveal">
       <div class="eyebrow">MCP Servers</div>
       <h2 class="section-title">40+ MCP servers,<br/><span class="grad">zero config hassle.</span></h2>
       <p class="section-sub">Pre-configured servers for memory, code intelligence, browser automation, search, LLM access, and more — all wired into the router.</p>
     </div>
-    <div class="integration-grid">
-      <div class="integration-card"><div class="icon">🧠</div><div class="name">Memory</div><div class="desc">Persistent cross-session recall</div></div>
-      <div class="integration-card"><div class="icon">🔍</div><div class="name">Code Intel</div><div class="desc">AST-based search &amp; navigation</div></div>
-      <div class="integration-card"><div class="icon">🌐</div><div class="name">Browser</div><div class="desc">Headless automation + screenshots</div></div>
-      <div class="integration-card"><div class="icon">🔎</div><div class="name">Web Search</div><div class="desc">Google, Brave, DuckDuckGo</div></div>
-      <div class="integration-card"><div class="icon">🤖</div><div class="name">LLM Access</div><div class="desc">OpenAI, Anthropic, local models</div></div>
-      <div class="integration-card"><div class="icon">📧</div><div class="name">Email</div><div class="desc">IMAP/SMTP via Himalaya</div></div>
-      <div class="integration-card"><div class="icon">📊</div><div class="name">Airtable</div><div class="desc">CRUD, filters, upserts</div></div>
-      <div class="integration-card"><div class="icon">💬</div><div class="name">Telegram</div><div class="desc">Bot API + group management</div></div>
-      <div class="integration-card"><div class="icon">🐙</div><div class="name">GitHub</div><div class="desc">PRs, issues, actions, reviews</div></div>
-      <div class="integration-card"><div class="icon">📝</div><div class="name">Notion</div><div class="desc">Pages, databases, markdown</div></div>
-      <div class="integration-card"><div class="icon">☁️</div><div class="name">Azure</div><div class="desc">AI Search, Functions, AKS</div></div>
-      <div class="integration-card"><div class="icon">🛡️</div><div class="name">Aikido</div><div class="desc">Security scanning + auto-patch</div></div>
+    <!-- Moving integration marquee -->
+    <div class="integration-marquee-wrap">
+      <div class="integration-marquee" id="integrationMarquee"></div>
     </div>
   </section>
 
   <!-- ── Extensions ── -->
   <section class="section" id="extensions">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Extensions</div>
       <h2 class="section-title">Extend the workstation<br/><span class="grad">without limits.</span></h2>
       <p class="section-sub">Custom extensions for VS Code, Cursor, and CLI — unified config, shared skills, and one-click install from the dashboard.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
+    <div class="feature-grid centered">
+      <div class="feature-card reveal" style="--reveal-delay:0ms">
         <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
         <h3>Cursor Extensions</h3>
         <p>SKILL.md editor, skill catalog browser, pattern monitor — all from within Cursor.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:50ms">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
         <h3>VS Code</h3>
         <p>Project navigation, model selection, agent runner — open any FreeAI project instantly.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:100ms">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>CLI Extensions</h3>
         <p>freeai-cli with 14 subcommands: providers, test, deploy, skills, mcp, agents, workflow.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:150ms">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
         <h3>Desktop App</h3>
         <p>Native Electron app with tray icon, auto-update, and system-wide model routing.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:200ms">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
         <h3>Browser Extension</h3>
         <p>Highlight any text, send to FreeAI for analysis, save as skill snippet.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal" style="--reveal-delay:250ms">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
         <h3>Mobile App</h3>
         <p>iOS and Android with full feature parity — monitor agents, trigger workflows, view logs.</p>
@@ -726,39 +990,39 @@
   </section>
 
   <!-- ── Workflows ── -->
-  <section class="section" id="workflows">
-    <div class="section-head">
+  <section class="section" id="workflows" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section-head reveal">
       <div class="eyebrow">Workflows</div>
       <h2 class="section-title">Chain agents into<br/><span class="grad">production pipelines.</span></h2>
       <p class="section-sub">Visual workflow designer with validation, templates, audit logs, and export/import. From one-shot prompts to scheduled automation.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card">
+    <div class="feature-grid centered">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
         <h3>Visual Designer</h3>
         <p>Drag-and-drop pipeline builder. Sequential + parallel steps, conditional branching, error handling.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:50ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
         <h3>Templates</h3>
         <p>4 shipped templates: code review, deployment, security scan, RAG ingestion. Create your own.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>Audit Log</h3>
         <p>JSONL audit trail for every run. Re-run, replay, and export pipeline history.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:150ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
         <h3>SDLC Pipeline</h3>
         <p>plan → code → verify (real compilers/tests) → fix → review → document → package. One spec, full project.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
         <h3>Security Pipeline</h3>
         <p>Semgrep → Bandit → Safety → Trivy → auto-patch → verify. CI-ready with pass/fail gates.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:250ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
         <h3>Cron Automation</h3>
         <p>Scheduled runs: daily reports, nightly backups, weekly audits, morning briefings. Delivery to any platform.</p>
@@ -767,29 +1031,29 @@
   </section>
 
   <!-- ── Architecture Pillars ── -->
-  <section class="section" style="background:var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-    <div class="section-head">
+  <section class="section">
+    <div class="section-head reveal">
       <div class="eyebrow">Architecture</div>
       <h2 class="section-title">One platform,<br/>four pillars.</h2>
       <p class="section-sub">Built on what FreeAI delivers — a unified stack that grows with you.</p>
     </div>
     <div class="pillars">
-      <div class="pillar">
+      <div class="pillar reveal" style="--reveal-delay:0ms">
         <div class="pillar-num">01</div>
         <h3>Model Intelligence</h3>
-        <p>Every model state understood in context — latency, cost, capacity, and fallback chains across 21+ providers.</p>
+        <p>Every model state understood in context — latency, cost, capacity, and fallback chains across 22 providers.</p>
       </div>
-      <div class="pillar">
+      <div class="pillar reveal" style="--reveal-delay:100ms">
         <div class="pillar-num">02</div>
         <h3>Agent Automation</h3>
-        <p>Agents deployed, updated, and retired by policy — across every framework and language.</p>
+        <p>24 agents deployed, updated, and retired by policy — across every framework and language.</p>
       </div>
-      <div class="pillar">
+      <div class="pillar reveal" style="--reveal-delay:200ms">
         <div class="pillar-num">03</div>
         <h3>Security by Operation</h3>
         <p>Security embedded in daily operations — not bolted on afterwards. Aikido + pentest + auto-patch.</p>
       </div>
-      <div class="pillar">
+      <div class="pillar reveal" style="--reveal-delay:300ms">
         <div class="pillar-num">04</div>
         <h3>Developer Experience</h3>
         <p>Infra that feels invisible to the people building on it. One dashboard, one config, one stack.</p>
@@ -799,25 +1063,25 @@
 
   <!-- ── Get Started ── -->
   <section class="section" id="install">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="eyebrow">Get Started</div>
       <h2 class="section-title">Live in minutes.<br/><span class="grad">Smarter every week.</span></h2>
       <p class="section-sub">Three steps to a fully autonomous AI workstation.</p>
     </div>
     <div class="steps">
-      <div class="step">
+      <div class="step reveal" style="--reveal-delay:0ms">
         <h3>Flip the switch</h3>
         <p>Runs on the stack you already use. Clone, install deps, and launch. No new infrastructure required.</p>
       </div>
-      <div class="step">
+      <div class="step reveal" style="--reveal-delay:100ms">
         <h3>It learns your logic</h3>
         <p>Providers, agents, skills, MCPs — modeled deeply enough to predict fallbacks, costs, and capacity.</p>
       </div>
-      <div class="step">
+      <div class="step reveal" style="--reveal-delay:200ms">
         <h3>It acts with guardrails</h3>
         <p>Approvals, rate limits, full history. Autonomy you can audit. Auto-restart on failure built in.</p>
       </div>
-      <div class="step">
+      <div class="step reveal" style="--reveal-delay:300ms">
         <h3>Scale when ready</h3>
         <p>Salad GPU rental, Vast.ai instances, or bare-metal. Same stack, different compute.</p>
       </div>
@@ -825,14 +1089,14 @@
   </section>
 
   <!-- ── Deploy Methods ── -->
-  <section class="section" id="deploy">
-    <div class="section-head">
+  <section class="section" id="deploy-methods" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section-head reveal">
       <div class="eyebrow">Deploy</div>
       <h2 class="section-title">Choose your path.</h2>
-      <p class="section-sub">Local, Docker, or cloud — same stack, different runtime.</p>
+      <p class="section-sub">Local, Docker, or cloud — same stack, different runtime. <a href="deploy.html" style="color:var(--primary)">View all deploy options →</a></p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card glow-panel">
+    <div class="feature-grid centered">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:var(--primary-soft)">🐧</div>
         <h3>Bare Metal</h3>
         <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
@@ -841,7 +1105,7 @@ sudo ./hardware/install-stack.sh
 bash models/auto-download-models.sh</code></pre>
         <p style="margin-top:12px">Drivers → CUDA → Docker → stack → systemd → UFW. Auto-detects GPU and configures everything.</p>
       </div>
-      <div class="feature-card glow-panel">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">🐳</div>
         <h3>Docker Compose</h3>
         <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
@@ -850,7 +1114,7 @@ docker compose --profile allinone up -d
 # Open http://localhost:8030</code></pre>
         <p style="margin-top:12px">Any host with NVIDIA Docker. Split or all-in-one profiles.</p>
       </div>
-      <div class="feature-card glow-panel">
+      <div class="feature-card glow-panel reveal" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">☁️</div>
         <h3>Cloud &amp; Live ISO</h3>
         <p>Kubernetes manifests, Vast.ai templates, RunPod kits, Hetzner bare-metal. Also bootable as a Live ISO — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes.</p>
@@ -861,54 +1125,79 @@ docker compose --profile allinone up -d
   </section>
 
   <!-- ── Builder Agents ── -->
-  <section class="section" id="agents" style="background:var(--bg-elev-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-    <div class="section-head">
+  <section class="section" id="agents">
+    <div class="section-head reveal">
       <div class="eyebrow">Builder Agents</div>
       <h2 class="section-title">Generate complete projects</h2>
       <p class="section-sub">Describe what you need in plain language — FreeAI builder agents scaffold the complete project with code, tests, and docs.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(59,130,246,.12)">⟐</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(139,92,246,.12)">⬡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(16,185,129,.12)">◉</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.12)">◷</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(249,115,22,.12)">⬢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(236,72,153,.12)">✦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◐</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
+    <div class="feature-grid centered">
+      <div class="feature-card reveal" style="--reveal-delay:0ms"><div class="feature-icon" style="background:rgba(59,130,246,.12)">⟐</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:50ms"><div class="feature-icon" style="background:rgba(139,92,246,.12)">⬡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:100ms"><div class="feature-icon" style="background:rgba(6,182,212,.12)">◈</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:150ms"><div class="feature-icon" style="background:rgba(16,185,129,.12)">◉</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:200ms"><div class="feature-icon" style="background:rgba(245,158,11,.12)">◷</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:250ms"><div class="feature-icon" style="background:rgba(249,115,22,.12)">⬢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:300ms"><div class="feature-icon" style="background:rgba(236,72,153,.12)">✦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:350ms"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◐</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
     </div>
   </section>
 
   <!-- ── Security ── -->
-  <section class="section" id="security">
-    <div class="section-head">
+  <section class="section" id="security" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="section-head reveal">
       <div class="eyebrow">Security</div>
       <h2 class="section-title">Secure by default.</h2>
       <p class="section-sub">Professional-grade security scanning, vulnerability management, and compliance tracking built in from day one.</p>
     </div>
-    <div class="feature-grid">
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◈</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy — comprehensive SAST/DAST scanning.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(56,189,248,.12)">◉</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
+    <div class="feature-grid centered">
+      <div class="feature-card reveal" style="--reveal-delay:0ms"><div class="feature-icon" style="background:rgba(168,85,247,.12)">◈</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:50ms"><div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy — comprehensive SAST/DAST scanning.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:100ms"><div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:150ms"><div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:200ms"><div class="feature-icon" style="background:rgba(56,189,248,.12)">◉</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:250ms"><div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
     </div>
   </section>
 
   <!-- ── FAQ ── -->
-  <section class="section" id="faq" style="background:var(--bg-elev-2); border-top: 1px solid var(--border);">
-    <div class="section-head">
+  <section class="section" id="faq">
+    <div class="section-head reveal">
       <div class="eyebrow">FAQ</div>
       <h2 class="section-title">Frequently asked questions</h2>
     </div>
-    <div class="feature-grid" style="margin-top:40px">
-      <div class="feature-card"><h3>Do I need a GPU?</h3><p>No — use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
-      <div class="feature-card"><h3>How many providers are supported?</h3><p>21+ hosted APIs including OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, and more via the provider adapter system.</p></div>
-      <div class="feature-card"><h3>Can I use this for production?</h3><p>Yes — FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
-      <div class="feature-card"><h3>Is it open source?</h3><p>Yes — MIT licensed. Full source at <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" target="_blank">GitHub</a>.</p></div>
-      <div class="feature-card"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" target="_blank">docs</a> for details.</p></div>
-      <div class="feature-card"><h3>Can I connect my own models?</h3><p>Yes — any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
+    <div class="feature-grid centered" style="margin-top:40px">
+      <div class="feature-card reveal" style="--reveal-delay:0ms"><h3>Do I need a GPU?</h3><p>No — use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:50ms"><h3>How many providers are supported?</h3><p>22+ hosted APIs including OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, and more via the provider adapter system.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:100ms"><h3>Can I use this for production?</h3><p>Yes — FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:150ms"><h3>Is it open source?</h3><p>Yes — MIT licensed. Full source at <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" target="_blank">GitHub</a>.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:200ms"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" target="_blank">docs</a> for details.</p></div>
+      <div class="feature-card reveal" style="--reveal-delay:250ms"><h3>Can I connect my own models?</h3><p>Yes — any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
+    </div>
+  </section>
+
+  <!-- ── Autonomous SDLC ── -->
+  <section class="section" id="sdlc" style="background:var(--bg-canvas);">
+    <div class="container" style="max-width:900px;">
+      <div class="sdlc-panel reveal">
+        <div class="sdlc-problems">
+          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too many tools</span>
+          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too many policies</span>
+          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too many manual workflows</span>
+          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too much reactive IT</span>
+          <span class="sdlc-pill problem"><span class="pill-icon">⊘</span> Too little operational intelligence</span>
+        </div>
+        <p class="sdlc-solution">The next step: the <span class="grad">Autonomous SDLC.</span></p>
+        <div class="sdlc-steps">
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 1. Plan</span>
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 2. Code</span>
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 3. Verify</span>
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 4. Fix</span>
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 5. Review</span>
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 6. Document</span>
+          <span class="sdlc-pill step"><span class="pill-icon">✓</span> 7. Package</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -935,7 +1224,8 @@ docker compose --profile allinone up -d
         <a href="/">Home</a>
         <a href="#install">Install</a>
         <a href="#faq">FAQ</a>
-        <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" target="_blank">Documentation</a>
+        <a href="deploy.html">Deploy</a>
+        <a href="/wiki-dashboard" target="_blank">Documentation</a>
         <a href="mailto:contact@projectzerodays.dev">Contact</a>
         <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues">Report a Bug</a>
         <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>
@@ -944,7 +1234,7 @@ docker compose --profile allinone up -d
   </footer>
 
   <script>
-    // Theme toggle
+    // ── Theme toggle ──
     const html = document.documentElement;
     const toggle = document.getElementById('themeToggle');
     const saved = localStorage.getItem('theme');
@@ -952,6 +1242,162 @@ docker compose --profile allinone up -d
     toggle.addEventListener('click', () => {
       html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', html.dataset.theme);
+    });
+
+    // ── Language dropdown ──
+    const langDropdown = document.getElementById('langDropdown');
+    const langBtn = document.getElementById('langBtn');
+    const langMenu = document.getElementById('langMenu');
+    const langLabel = document.getElementById('langLabel');
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      langDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => langDropdown.classList.remove('open'));
+    langMenu.addEventListener('click', (e) => {
+      const item = e.target.closest('.lang-menu-item');
+      if (!item || item.classList.contains('divider')) return;
+      const lang = item.dataset.lang;
+      langLabel.textContent = lang.toUpperCase();
+      langMenu.querySelectorAll('.lang-menu-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      langDropdown.classList.remove('open');
+    });
+
+    // ── Reveal on scroll ──
+    const revealElements = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // ── Provider logo marquee ──
+    const logoData = [
+      { name: 'OpenAI',      url: 'https://openai.com',          color: '#10a37f', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.982 7.023a.899.899 0 0 0-.775-.598l-5.754-.554-1.434-5.7A.901.901 0 0 0 15.17.5L8.832 3.323a.95.95 0 0 0-.107.04L2.702 6.13a.902.902 0 0 0-.54.624L.122 13.06a.95.95 0 0 0 .03.764l2.673 5.988a.904.904 0 0 0 .624.54l6.327 1.595 6.55-2.954a.904.904 0 0 0 .483-.54l2.673-5.988.03-.063z"/></svg>' },
+      { name: 'Anthropic',   url: 'https://anthropic.com',       color: '#FF4B5C', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
+      { name: 'llama.cpp',   url: 'https://github.com/ggerganov/llama.cpp', color: '#FCD34D', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12l2-4 2 4-2 4z" fill="#060606"/></svg>' },
+      { name: 'vLLM',        url: 'https://vllm.ai',             color: '#7C5CFC', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/></svg>' },
+      { name: 'OpenRouter',  url: 'https://openrouter.ai',       color: '#000',     svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8" stroke="#fff" stroke-width="2"/></svg>' },
+      { name: 'Hermes',      url: 'https://github.com/NousResearch', color: '#0EA5E9', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l4.59-4.59L16 10l-6 6z"/></svg>' },
+      { name: 'OpenClaw',    url: 'https://github.com/steipete/openclaw', color: '#8B5CF6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
+      { name: 'OpenCode',    url: 'https://github.com/opencode-ai', color: '#22C55E', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8l-3 4 3 4M15 8l3 4-3 4" stroke="#fff" stroke-width="2" fill="none"/></svg>' },
+      { name: 'MimoCode',    url: 'https://mimocode.ai',         color: '#F59E0B', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
+      { name: 'JCode',       url: 'https://jcode.ai',            color: '#EC4899', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12h8" stroke="#fff" stroke-width="2"/></svg>' },
+      { name: 'ZCode',       url: 'https://zcode.ai',            color: '#06B6D4', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2"/></svg>' },
+      { name: 'NVIDIA',      url: 'https://nvidia.com',          color: '#76B900', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
+      { name: 'Salad',       url: 'https://salad.com',           color: '#6366F1', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 1 8 0" stroke="#fff" stroke-width="2" fill="none"/></svg>' },
+      { name: 'Vast.ai',     url: 'https://vast.ai',             color: '#F97316', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-5 5v5l5 5 5-5V7l-5-5z"/></svg>' },
+      { name: 'RunPod',      url: 'https://runpod.io',           color: '#FBBF24', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
+      { name: 'Hostinger',   url: 'https://hostinger.com',       color: '#673DE6', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>' },
+      { name: 'DigitalOcean',url: 'https://digitalocean.com',    color: '#0080FF', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
+      { name: 'Docker',      url: 'https://docker.com',          color: '#2496ED', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM7.5 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM19.5 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM6 10.5h12a1.5 1.5 0 0 1 0 3H6a1.5 1.5 0 0 1 0-3zM3 8.5h3a1.5 1.5 0 0 1 0 3H3a1.5 1.5 0 0 1 0-3zM18 8.5h3a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 1 0-3z"/></svg>' },
+      { name: 'Kubernetes',  url: 'https://kubernetes.io',       color: '#326CE5', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-3 6h6l-3 6-3-6H12z"/><circle cx="12" cy="20" r="2"/></svg>' },
+      { name: 'Ubuntu',      url: 'https://ubuntu.com',          color: '#E95420', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>' },
+      { name: 'Kali',        url: 'https://kali.org',            color: '#557C9C', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>' },
+      { name: 'NixOS',       url: 'https://nixos.org',           color: '#5277C3', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,20 2,20" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
+      { name: 'Kodachi',     url: 'https://www.kodachi.com',     color: '#00FF88', svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
+    ];
+
+    // Build provider logo marquee (doubled for seamless loop)
+    const logoMarquee = document.getElementById('logoMarquee');
+    const allLogos = [...logoData, ...logoData];
+    allLogos.forEach(l => {
+      const a = document.createElement('a');
+      a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.className = 'logo-marquee-item';
+      a.innerHTML = `<svg viewBox="0 0 24 24" fill="${l.color}">${l.svg}</svg><span>${l.name}</span>`;
+      logoMarquee.appendChild(a);
+    });
+
+    // ── Integration marquee (moving icons + names) ──
+    const integrations = [
+      { icon: '🧠', name: 'Memory',    desc: 'Cross-session recall' },
+      { icon: '🔍', name: 'Code Intel', desc: 'AST-based search' },
+      { icon: '🌐', name: 'Browser',   desc: 'Headless automation' },
+      { icon: '🔎', name: 'Web Search', desc: 'Google, Brave, DDG' },
+      { icon: '🤖', name: 'LLM Access', desc: 'OpenAI, Anthropic' },
+      { icon: '📧', name: 'Email',     desc: 'IMAP/SMTP via Himalaya' },
+      { icon: '📊', name: 'Airtable',  desc: 'CRUD, filters' },
+      { icon: '💬', name: 'Telegram',  desc: 'Bot API + groups' },
+      { icon: '🐙', name: 'GitHub',    desc: 'PRs, issues, actions' },
+      { icon: '📝', name: 'Notion',    desc: 'Pages, databases' },
+      { icon: '☁️', name: 'Azure',     desc: 'AI Search, AKS' },
+      { icon: '🛡️', name: 'Aikido',    desc: 'Security scanning' },
+      { icon: '🐳', name: 'Docker',    desc: 'Container runtime' },
+      { icon: '⎈',  name: 'Kubernetes', desc: 'Cluster orchestration' },
+      { icon: '🐧', name: 'Ubuntu',    desc: 'Linux base OS' },
+      { icon: '☣️', name: 'Kali',      desc: 'Penetration testing' },
+      { icon: '❄️', name: 'NixOS',     desc: 'Functional pkg mgmt' },
+      { icon: '🔐', name: 'Kodachi',   desc: 'Forensic privacy OS' },
+      { icon: '🧀', name: 'Salad',     desc: 'GPU cloud rental' },
+      { icon: '🚀', name: 'Vast.ai',   desc: 'GPU instances' },
+      { icon: '⚡', name: 'RunPod',    desc: 'ML deployments' },
+      { icon: '🖥',  name: 'Hostinger', desc: 'Web hosting' },
+      { icon: '🔵', name: 'DigitalOcean', desc: 'Cloud infra' },
+      { icon: '💾', name: 'NVIDIA',    desc: 'CUDA GPUs' },
+    ];
+    const intMarquee = document.getElementById('integrationMarquee');
+    const allInts = [...integrations, ...integrations]; // double for seamless loop
+    allInts.forEach(item => {
+      const a = document.createElement('a');
+      a.href = '#'; a.className = 'integration-marquee-item';
+      a.innerHTML = `<span class="im-icon">${item.icon}</span><div><div class="im-name">${item.name}</div><div class="im-desc">${item.desc}</div></div>`;
+      intMarquee.appendChild(a);
+    });
+
+    // ── Composer: typing animation ──
+    const typingPreview = document.getElementById('typingPreview');
+    const statusText = document.getElementById('statusText');
+    const userMsg = document.getElementById('userMsg');
+    const sendBtn = document.getElementById('sendBtn');
+    const composerPlaceholder = document.getElementById('composerPlaceholder');
+
+    const statusMessages = [
+      'Scanning 4,812 devices...',
+      'Cross-referencing CVE database...',
+      'Analyzing 24 agent responses...',
+      'Generating compliance report...',
+      'Checking 321 provider endpoints...',
+    ];
+    let statusIdx = 0;
+
+    function simulateTyping() {
+      // Show typing indicator
+      typingPreview.style.display = 'flex';
+      userMsg.style.display = 'none';
+      statusText.textContent = statusMessages[statusIdx % statusMessages.length];
+      statusIdx++;
+
+      // After 2.5s, show response and reset
+      setTimeout(() => {
+        typingPreview.style.display = 'none';
+        userMsg.style.display = 'block';
+      }, 2500);
+    }
+
+    // Auto-cycle the composer demo
+    setInterval(simulateTyping, 5000);
+
+    // Send button interaction
+    sendBtn.addEventListener('click', () => {
+      const placeholder = composerPlaceholder.textContent;
+      if (placeholder && placeholder !== 'Ask FreeAI') return;
+      userMsg.textContent = placeholder || 'Which devices are exposed to CVE-2026-4102?';
+      simulateTyping();
+    });
+
+    // Composer focus: show placeholder
+    const composer = document.getElementById('composer');
+    composer.addEventListener('focus', () => {
+      composerPlaceholder.style.opacity = '0';
+    });
+    composer.addEventListener('blur', () => {
+      composerPlaceholder.style.opacity = '1';
     });
   </script>
 </body>
