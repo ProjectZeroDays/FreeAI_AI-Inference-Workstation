@@ -747,8 +747,6 @@
         <div class="hero-stat"><div class="num">174</div><div class="label">Features</div></div>
         <div class="hero-stat"><div class="num">55+</div><div class="label">Skills</div></div>
         <div class="hero-stat"><div class="num">5</div><div class="label">MCP Servers</div></div>
-        <div class="hero-stat"><div class="num">10</div><div class="label">Clients</div></div>
-        <div class="hero-stat"><div class="num">33</div><div class="label">Security Skills</div></div>
         <div class="hero-stat"><div class="num">24</div><div class="label">Agents</div></div>
         <div class="hero-stat"><div class="num">22</div><div class="label">Integrations</div></div>
         <div class="hero-stat"><div class="num">3</div><div class="label">Plugins</div></div>
@@ -1366,7 +1364,12 @@ docker compose --profile allinone up -d
       'Generating compliance report...',
       'Checking 321 provider endpoints...',
     ];
-    let statusIdx = 0;
+    const aiResponses = [
+      'Based on the scan, 12 devices are exposed: 5 macOS, 4 Windows, 3 Linux. Critical: CVE-2026-4102 affects 3 MacBooks in Paris office.',
+      'The agent pipeline completed 7 phases: plan → code → verify (14 tests pass) → fix → review → document → package. Artifact: /tmp/freai-project-2847.tar.gz',
+      'Security scan found 2 high-severity issues. Applied auto-patch: 1. Fixed path traversal in upload handler. 2. Added input validation to API endpoints.',
+    ];
+    let aiIdx = 0;
 
     function simulateTyping() {
       // Show typing indicator
@@ -1379,6 +1382,8 @@ docker compose --profile allinone up -d
       setTimeout(() => {
         typingPreview.style.display = 'none';
         userMsg.style.display = 'block';
+        userMsg.textContent = aiResponses[aiIdx % aiResponses.length];
+        aiIdx++;
       }, 2500);
     }
 
