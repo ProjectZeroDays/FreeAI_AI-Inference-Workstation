@@ -4,9 +4,9 @@
 #   1. mount docker/Caddyfile.public instead of this file
 #   2. set FREEAI_DOMAIN + ACME_EMAIL (+ publish ports 80/443)
 #
-# Autonomous API auth: AUTOAUTH_USER / AUTOAUTH_HASH (bcrypt).
+# Autonomous API auth: AUTOAUTH_USER / AUTOAUTH_HASH (bcrypt) - REQUIRED.
 #   generate a hash:  docker run --rm caddy caddy hash-password --plaintext 'yourpw'
-#   DEFAULT BELOW IS "changeme" - OVERRIDE BEFORE EXPOSING ANYTHING.
+#   Set AUTOAUTH_HASH in .env before starting the TLS profile.
 {
 	admin off
 }
@@ -23,7 +23,7 @@
 	# ---- Autonomous SDLC API (basic-auth protected) ----
 	handle /auto/* {
 		basic_auth {
-			{$AUTOAUTH_USER:freeai} {$AUTOAUTH_HASH:$2b$12$jaNpJiLbzS1iZVdogZuB9.u4nLCtLipqOIH880wLXwGM7n0sqqjZi}
+			{$AUTOAUTH_USER:freeai} {$AUTOAUTH_HASH}
 		}
 		reverse_proxy autonomous:8050
 	}
