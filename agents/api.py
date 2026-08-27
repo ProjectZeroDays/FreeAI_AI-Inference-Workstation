@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Unified Agent API — profiles, session memory, metrics, error envelopes."""
+"""Unified Agent API — profiles, session memory, metrics, error envelopes.
+
+SECURITY MODEL:
+- Authentication is REQUIRED for all agent and memory endpoints
+- Set AGENT_API_KEY or ROUTER_API_KEY environment variable to enable the service
+- Without a configured key, all authenticated endpoints return HTTP 503
+- Clients must provide the key via X-API-Key, X-Auth-Token, or Authorization header
+- Public endpoints: /health, /metrics, /profiles, /env/status, /env/agents, /env/plugins, /env/skills
+- Protected endpoints: All /agent/*, /memory/*, /env/chat, /env/memory/*, /env/plugins/*/install
+"""
 import os
 import threading
 import time
@@ -19,7 +28,7 @@ except ImportError:
     _CFG = {}
 
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010/route")
-AGENT_API_KEY = os.environ.get("AGENT_API_KEY", os.environ.get("ROUTER_API_KEY", ""))
+AGENT_API_KEY = os.environ.get("AGENT_API_KEY") or os.environ.get("ROUTER_API_KEY")
 DEFAULT_PROFILE = _CFG.get("default_profile", "balanced")
 MEMORY_MAX_TURNS = int(_CFG.get("memory_max_turns", 20))
 
@@ -69,10 +78,12 @@ def _recall(session_id):
         return list(_MEMORY.get(session_id, []))
 
 def _check_auth(request: Request):
-    if AGENT_API_KEY:
-        provided = request.headers.get("X-API-Key") or request.headers.get("X-Auth-Token") or request.headers.get("Authorization", "").replace("Bearer ", "")
-        if provided != AGENT_API_KEY:
-            raise HTTPException(status_code=401, detail="unauthorized")
+    """Enforce API key authentication. Rejects all requests if no key is configured."""
+    if not AGENT_API_KEY:
+        raise HTTPException(status_code=503, detail="authentication not configured - set AGENT_API_KEY or ROUTER_API_KEY")
+    provided = request.headers.get("X-API-Key") or request.headers.get("X-Auth-Token") or request.headers.get("Authorization", "").replace("Bearer ", "")
+    if provided != AGENT_API_KEY:
+        raise HTTPException(status_code=401, detail="unauthorized")
 
 def _sanitize(s: str | None, max_len: int = 2000) -> str:
     if not s:
@@ -217,12 +228,14 @@ def profiles():
 
 
 @app.get("/memory/{session_id}")
-def get_memory(session_id: str):
+def get_memory(request: Request, session_id: str):
+    _check_auth(request)
     return {"session_id": session_id, "history": _recall(session_id)}
 
 
 @app.delete("/memory/{session_id}")
-def clear_memory(session_id: str):
+def clear_memory(request: Request, session_id: str):
+    _check_auth(request)
     with _MMEM_LOCK:
         _MEMORY.pop(session_id, None)
     return {"status": "cleared"}
@@ -231,7 +244,8 @@ def clear_memory(session_id: str):
 # --------------------------- Agents ---------------------------
 
 @app.post("/agent/project")
-def project_agent(req: ProjectSpec):
+def project_agent(request: Request, req: ProjectSpec):
+    _check_auth(request)
     prompt = f"""
 You are a senior production engineer.
 
@@ -258,7 +272,8 @@ Deliver:
 
 
 @app.post("/agent/refactor")
-def refactor_agent(req: RefactorSpec):
+def refactor_agent(request: Request, req: RefactorSpec):
+    _check_auth(request)
     prompt = f"""
 You are a refactoring specialist for {req.language}.
 
@@ -279,7 +294,8 @@ Deliver:
 
 
 @app.post("/agent/debug")
-def debug_agent(req: DebugSpec):
+def debug_agent(request: Request, req: DebugSpec):
+    _check_auth(request)
     prompt = f"""
 You are a debugging specialist for {req.language}.
 
@@ -302,7 +318,8 @@ Deliver:
 
 
 @app.post("/agent/analyze")
-def analysis_agent(req: AnalysisSpec):
+def analysis_agent(request: Request, req: AnalysisSpec):
+    _check_auth(request)
     prompt = f"""
 You are a reasoning specialist.
 
@@ -318,14 +335,16 @@ Think step by step, then answer clearly.
 
 
 @app.post("/agent/orchestrate")
-def orchestrator(req: OrchestratorSpec):
+def orchestrator(request: Request, req: OrchestratorSpec):
+    _check_auth(request)
     return call_router(req.prompt, req.profile, req.max_tokens,
                        req.temperature, req.agent_hint)
 
 
 @app.post("/agent/chat")
-def chat_agent(req: ChatSpec):
+def chat_agent(request: Request, req: ChatSpec):
     """Multi-turn chat with per-session memory fed back into the prompt."""
+    _check_auth(request)
     history = _recall(req.session_id)
     transcript = "\n".join(
         f"{h['role']}: {h['content']}" for h in history[-MEMORY_MAX_TURNS:]
@@ -467,8 +486,9 @@ def env_status():
 
 
 @app.post("/env/chat")
-def env_chat(req: OrchestratorSpec):
+def env_chat(request: Request, req: OrchestratorSpec):
     """Unified chat endpoint — auto-routes to best agent."""
+    _check_auth(request)
     from agents.agent_bridge import get_bridge
     bridge = get_bridge()
     agent = req.agent_hint or bridge.route_to_agent(req.prompt)
@@ -499,8 +519,9 @@ def env_plugins(category: str = None):
 
 
 @app.post("/env/plugins/{name}/install")
-def env_install_plugin(name: str):
+def env_install_plugin(request: Request, name: str):
     """Install a plugin by name."""
+    _check_auth(request)
     from agents.plugin_registry import get_registry
     registry = get_registry()
     return registry.install_plugin(name)
@@ -519,8 +540,9 @@ def env_skills(query: str = None):
 
 
 @app.get("/env/memory/{session_id}")
-def env_memory(session_id: str):
+def env_memory(request: Request, session_id: str):
     """Recall memory for a session."""
+    _check_auth(request)
     from agents.agent_zero_memory import get_store
     store = get_store()
     entries = store.recall(session_id, limit=20)
@@ -528,8 +550,9 @@ def env_memory(session_id: str):
 
 
 @app.post("/env/memory/search")
-def env_memory_search(req: AnalysisSpec):
+def env_memory_search(request: Request, req: AnalysisSpec):
     """Search global knowledge base."""
+    _check_auth(request)
     from agents.agent_zero_memory import get_store
     store = get_store()
     results = store.search_global(req.question, limit=10)

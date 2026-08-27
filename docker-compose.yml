@@ -129,6 +129,10 @@ services:
       dockerfile: Dockerfile
     environment:
       - ROUTER_URL=http://router:8010/route
+      # SECURITY: Set AGENT_API_KEY or ROUTER_API_KEY to enable authentication.
+      # Without a key, the service will reject all requests with HTTP 503.
+      # Example: - AGENT_API_KEY=${AGENT_API_KEY:-your-secret-key-here}
+      - AGENT_API_KEY=${AGENT_API_KEY:-}
     ports:
       - "8020:8020"
     depends_on:
