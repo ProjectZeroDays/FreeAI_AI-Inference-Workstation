@@ -1,0 +1,55 @@
+((path) => {
+  try {
+    path = new URL(path || document.location.href).origin;
+  } catch {
+    path = document.location.origin;
+  }
+  const host = 'https://tracking-api.g2.com/';
+  const sid = 'ba0207d2-d568-4338-99e8-3b5bf8eedfa9';
+  const uid = '';
+
+  function pingRemoteEndpoint() {
+    window.fetch(`${host}/attribution_tracking/fingerprint_funnels`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(payload()),
+      keepalive: true
+    });
+  }
+
+  function payload() {
+    return { ...params(), ...fingerPrintComponents() };
+  }
+
+  function params() {
+    return {
+      p: path,
+      s: 'finish',
+      sid: sid,
+      stype: 'ad_conversion',
+      uid: uid
+    };
+  }
+
+  function fingerPrintComponents() {
+    const userAgent = window.navigator && window.navigator.userAgent;
+    const height = window.screen && window.screen.availHeight.toString();
+    const width = window.screen && window.screen.availWidth.toString();
+    const screenResolution = width + 'x' + height;
+    const lang = window.navigator.language;
+    const date = new Date();
+    const timeZone = date.getTimezoneOffset().toString();
+
+    return {
+      ua: userAgent,
+      sr: screenResolution,
+      lang: lang,
+      tz: timeZone
+    };
+  }
+
+  pingRemoteEndpoint();
+})('https://lp.applivery.com/en/intelligence?category=mobile-device-management-software&country=US&language=en&channel=capterra&gdmcid=94d0fdb3-7141-41ea-9620-6f771a969cb7#agents');
