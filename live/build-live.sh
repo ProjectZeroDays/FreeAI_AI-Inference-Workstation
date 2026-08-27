@@ -127,7 +127,7 @@ autoinstall:
         systemctl enable freeai-first-boot
 EOF
 
-# ---------------------------------------------------------------- grub menu
+# ---------------------------------------------------------------- grub theme + menu
 # Prepend our entries; keep the stock live entry as "Try".
 GRUB_CFG="$NEW/boot/grub/grub.cfg"
 [ -f "$GRUB_CFG" ] || { echo "[iso] no grub.cfg found at $GRUB_CFG"; exit 1; }
@@ -136,12 +136,62 @@ mv "$GRUB_CFG" "$GRUB_CFG.orig"
 # Build the header title from detected/release info
 HEADER_TITLE="FreeAI Ubuntu/Kodachi/Kali/NixOS (24.04/XFCE) Live OS"
 
+# Create GRUB theme directory
+GRUB_THEME_DIR="$NEW/boot/grub/themes/freeai"
+mkdir -p "$GRUB_THEME_DIR"
+cat > "$GRUB_THEME_DIR/theme.txt" <<'THEME_EOF'
+# FreeAI GRUB Theme — matches website dark theme (#060a18 / #5c8bff / #f1f6ff)
+desktop-color: "#060a18"
+title-color: "#f1f6ff"
+show-title: true
+terminal-font: "Unifont Regular 16"
+
++ label {
+    left = 0
+    top = 30%
+    width = 100%
+    height = 40
+    color = "#8a98ba"
+    align = "center"
+    font = "Unifont Regular 14"
+    text = "FreeAI OS — Unified AI Workstation"
+}
+
++ menu {
+    left = 25%
+    top = 30%
+    width = 50%
+    height = 55%
+    item_color = "#a5b4dc"
+    item_font = "Unifont Regular 18"
+    selected_item_color = "#f1f6ff"
+    selected_item_font = "Unifont Regular 18"
+    item_height = 40
+    item_spacing = 6
+    icon_height = 0
+    icon_width = 0
+}
+
++ label {
+    left = 0
+    top = 88%
+    width = 100%
+    height = 30
+    color = "#5a6a95"
+    align = "center"
+    font = "Unifont Regular 12"
+    text = "Press Esc for shell · Enter to select · Up/Down to navigate"
+}
+THEME_EOF
+
 {
   cat <<EOF
 set default=0
 set timeout=10
 insmod all_video
 insmod gfxterm
+insmod theme
+set theme=freeai/theme.txt
 set gfxmode=auto
 set gfxpayload=keep
 terminal_output gfxterm
@@ -210,16 +260,20 @@ EOF
   cat "$GRUB_CFG.orig"
 } > "$GRUB_CFG"
 
-# ---- original config below ----
-EOF
-  cat "$GRUB_CFG.orig"
-} > "$GRUB_CFG"
-
-# UEFI: same entries for the ESP config if present
-for efi_cfg in "$NEW/boot/grub/grub.cfg" "$NEW/EFI/boot/grub.cfg"; do
+# Also apply theme to UEFI config if present
+for efi_cfg in "$NEW/EFI/boot/grub.cfg"; do
   [ -f "$efi_cfg" ] || continue
-  grep -q "Install FreeAI" "$efi_cfg" || true
+  grep -q "set theme" "$efi_cfg" || {
+    {
+      echo "set theme=freeai/theme.txt"
+      echo "insmod theme"
+      echo "set gfxpayload=keep"
+      cat "$efi_cfg"
+    } > "$efi_cfg.tmp"
+    mv "$efi_cfg.tmp" "$efi_cfg"
+  }
 done
+echo "[iso] GRUB theme applied: $GRUB_THEME_DIR"
 
 # ---------------------------------------------------------------- repack
 echo "[iso] repacking (UEFI + BIOS hybrid)..."

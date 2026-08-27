@@ -1,8 +1,8 @@
 site_name: FreeAI — Unified AI Workstation
 site_description: Build, secure, and scale AI applications on your own hardware. Router, agents, workflows, security, and builder tools.
-site_url: https://projectzeroai.github.io/unified-ai-stack
-repo_url: https://github.com/ProjectZeroAI/unified-ai-stack
-repo_name: ProjectZeroAI/unified-ai-stack
+site_url: https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation
+repo_url: https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation
+repo_name: ProjectZeroDays/FreeAI_AI-Inference-Workstation
 
 nav:
   - Home: INDEX.md
@@ -115,7 +115,7 @@ extra:
   generator: false
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ProjectZeroAI/unified-ai-stack
+      link: https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation
     - icon: fontawesome/brands/docker
       link: https://hub.docker.com/r/projectzeroai/freeai
   analytics:

@@ -1,0 +1,44 @@
+# FreeAI GRUB Theme — matches website dark theme
+# Colors: bg=#060a18, text=#f1f6ff, highlight=#5c8bff, selected=#0241e3
+
+desktop-color: "#060a18"
+title-color: "#f1f6ff"
+show-title: true
+terminal-font: "Unifont Regular 16"
+
++ label {
+    left = 0
+    top = 30%
+    width = 100%
+    height = 40
+    color = "#8a98ba"
+    align = "center"
+    font = "Unifont Regular 14"
+    text = "FreeAI OS — Unified AI Workstation"
+}
+
++ menu {
+    left = 25%
+    top = 30%
+    width = 50%
+    height = 55%
+    item_color = "#a5b4dc"
+    item_font = "Unifont Regular 18"
+    selected_item_color = "#f1f6ff"
+    selected_item_font = "Unifont Regular 18"
+    item_height = 40
+    item_spacing = 6
+    icon_height = 0
+    icon_width = 0
+}
+
++ label {
+    left = 0
+    top = 88%
+    width = 100%
+    height = 30
+    color = "#5a6a95"
+    align = "center"
+    font = "Unifont Regular 12"
+    text = "Press Esc for shell · Enter to select · Up/Down to navigate"
+}

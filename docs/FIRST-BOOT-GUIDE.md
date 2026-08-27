@@ -42,8 +42,8 @@ nvidia-smi                           # expect: RTX 4090, 24564 MiB
 ## Step 5 — Clone the repo
 
 ```bash
-git clone https://github.com/ProjectZeroDays/FreeAI_Ubuntu-AI-Inference-Workstation.git
-cd FreeAI_Ubuntu-AI-Inference-Workstation
+git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
+cd FreeAI_AI-Inference-Workstation
 ```
 
 ## Step 6 — One-shot installer
