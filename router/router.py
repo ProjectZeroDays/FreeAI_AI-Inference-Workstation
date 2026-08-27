@@ -232,6 +232,7 @@ def stream_provider(provider_model, prompt, payload_base=None):
                                    timeout=TIMEOUT)
             yield f'data: {json.dumps({"model": f"{pname}/{pmodel}"})}\n\n'
             yield f'data: {json.dumps({"content": result["content"]})}\n\n'
+            tokens = len(result["content"].split())
         metrics_model(f"{pname}/{pmodel}")
         metrics_latency(int((time.monotonic() - started) * 1000))
         latency_ms = int((time.monotonic() - started) * 1000)
@@ -258,6 +259,8 @@ def stream_route(prompt, task_type, agent, payload_base=None):
         "temperature": base.get("temperature", 0.2),
     }
     if MOCK_LLM:
+        tokens = 0
+        yield _sse_retry(3000)
         yield f'data: {json.dumps({"model": "mock-model", "task_type": task_type})}\n\n'
         for word in mock_completion(payload)["content"].split(" ", 24):
             yield f'data: {json.dumps({"content": word + " "})}\n\n'
@@ -292,6 +295,8 @@ def stream_route(prompt, task_type, agent, payload_base=None):
                 continue  # empty stream from this backend -> try next
             metrics_model(candidate)
             metrics_latency(int((time.monotonic() - started) * 1000))
+            latency_ms = int((time.monotonic() - started) * 1000)
+            yield f'data: {json.dumps({"event": "completion", "model": MODEL_REGISTRY[candidate]["name"], "task_type": task_type, "tokens": tokens, "latency_ms": latency_ms})}\n\n'
             reg, helpers = get_registry()
             if helpers is not None:
                 helpers["model_calls_total"].labels(model=candidate).inc()
