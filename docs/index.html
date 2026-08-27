@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FreeAI — Unified AI Workstation</title>
+  <title>FreeAI â€” Unified AI Workstation</title>
   <meta name="description" content="Build, secure, and scale AI applications on your own hardware. FreeAI unifies model serving, autonomous agents, and security tools." />
-  <meta property="og:title" content="FreeAI — Unified AI Workstation" />
+  <meta property="og:title" content="FreeAI â€” Unified AI Workstation" />
   <meta property="og:description" content="Self-hosted AI inference workstation with GPU serving, autonomous agents, and security scanning." />
   <meta property="og:type" content="website" />
   <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
@@ -30,7 +30,7 @@
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* ── Nav ── */
+    /* â”€â”€ Nav â”€â”€ */
     .nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: rgba(250,250,250,.88); backdrop-filter: blur(20px);
@@ -59,7 +59,7 @@
     }
     .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(15,23,42,.25); text-decoration: none; }
 
-    /* ── Hero ── */
+    /* â”€â”€ Hero â”€â”€ */
     .hero {
       padding: 160px 24px 100px; text-align: center;
       background: linear-gradient(180deg, #EEF2FF 0%, var(--bg) 100%);
@@ -101,27 +101,27 @@
     .hero-stat .num { font-size: 28px; font-weight: 800; color: var(--text); }
     .hero-stat .label { font-size: 12px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
 
-    /* ── Marquee ── */
+    /* â”€â”€ Marquee â”€â”€ */
     .marquee-wrap { overflow: hidden; padding: 20px 0; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .marquee { display: flex; gap: 48px; animation: marquee 30s linear infinite; white-space: nowrap; }
     .marquee span { font-size: 14px; font-weight: 600; color: var(--muted-2); text-transform: uppercase; letter-spacing: .1em; }
     .marquee span em { font-style: normal; color: var(--accent); }
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    /* ── Trusted logos ── */
+    /* â”€â”€ Trusted logos â”€â”€ */
     .trusted { padding: 48px 24px; text-align: center; border-bottom: 1px solid var(--border); }
     .trusted p { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-2); margin-bottom: 24px; }
     .logo-strip { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center; opacity: .45; }
     .logo-strip span { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
 
-    /* ── Sections ── */
+    /* â”€â”€ Sections â”€â”€ */
     .section { padding: 96px 24px; max-width: 1200px; margin: 0 auto; }
     .section-center { text-align: center; }
     .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 12px; }
     .section-title { font-size: clamp(26px, 4vw, 44px); font-weight: 800; letter-spacing: -.025em; margin-bottom: 16px; color: var(--text); }
     .section-desc { font-size: 17px; color: var(--muted); max-width: 580px; margin: 0 auto 56px; line-height: 1.65; }
 
-    /* ── Feature Cards ── */
+    /* â”€â”€ Feature Cards â”€â”€ */
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
     .feature-card {
       background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
@@ -135,14 +135,14 @@
     .feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
     .feature-card p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
 
-    /* ── Pillar Section ── */
+    /* â”€â”€ Pillar Section â”€â”€ */
     .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
     .pillar { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; }
     .pillar-num { font-size: 48px; font-weight: 800; color: var(--bg-soft); line-height: 1; margin-bottom: 12px; }
     .pillar h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
     .pillar p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
 
-    /* ── Steps ── */
+    /* â”€â”€ Steps â”€â”€ */
     .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; counter-reset: step; }
     .step { position: relative; padding: 28px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); }
     .step::before { counter-increment: step; content: counter(step); position: absolute; top: -14px; left: 24px;
@@ -153,7 +153,7 @@
     .step h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; margin-top: 8px; }
     .step p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
 
-    /* ── Integration Grid ── */
+    /* â”€â”€ Integration Grid â”€â”€ */
     .integration-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
     .integration-card {
       background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm);
@@ -164,7 +164,7 @@
     .integration-card .name { font-size: 13px; font-weight: 600; color: var(--text); }
     .integration-card .desc { font-size: 11px; color: var(--muted-2); margin-top: 4px; }
 
-    /* ── CTA ── */
+    /* â”€â”€ CTA â”€â”€ */
     .cta-section {
       text-align: center; padding: 96px 24px;
       background: var(--text); color: #fff;
@@ -176,7 +176,7 @@
     .cta-section .btn-secondary { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.2); }
     .cta-section .btn-secondary:hover { background: rgba(255,255,255,.15); }
 
-    /* ── Footer ── */
+    /* â”€â”€ Footer â”€â”€ */
     .footer {
       padding: 48px 24px; border-top: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
@@ -187,7 +187,7 @@
     .footer-links a:hover { color: var(--text); }
     .footer-copy { font-size: 12px; color: var(--muted-2); }
 
-    /* ── Responsive ── */
+    /* â”€â”€ Responsive â”€â”€ */
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .hero-stats { gap: 24px; flex-wrap: wrap; }
@@ -198,7 +198,7 @@
 </head>
 <body>
 
-  <!-- ── Navigation ── -->
+  <!-- â”€â”€ Navigation â”€â”€ -->
   <nav class="nav">
     <div class="nav-inner">
       <a href="/" class="nav-logo">
@@ -216,29 +216,29 @@
         <a href="#integrations" class="nav-link">Integrations</a>
         <a href="#agents" class="nav-link">Agents</a>
         <a href="#security" class="nav-link">Security</a>
-        <a href="https://projectzeroai.github.io/unified-ai-stack/wiki/" class="nav-link">Docs</a>
-        <a href="https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation" class="nav-link" target="_blank">GitHub</a>
+        <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" class="nav-link">Docs</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="nav-link" target="_blank">GitHub</a>
         <a href="#faq" class="nav-link">FAQ</a>
       </div>
       <a href="#install" class="nav-cta">Get Started</a>
     </div>
   </nav>
 
-  <!-- ── Hero ── -->
+  <!-- â”€â”€ Hero â”€â”€ -->
   <section class="hero">
-    <div class="hero-badge"><span class="dot"></span> v1.0 — Now with OmniCode Slim &amp; Aikido Security</div>
+    <div class="hero-badge"><span class="dot"></span> v1.0 â€” Now with OmniCode Slim &amp; Aikido Security</div>
     <h1>The AI workstation<br/>that <span>thinks ahead</span>.</h1>
-    <p>FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
+    <p>FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools â€” all in one self-hosted stack.</p>
     <div class="hero-actions">
       <a href="#install" class="btn btn-primary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Install FreeAI
       </a>
-      <a href="https://projectzeroai.github.io/unified-ai-stack/wiki/" class="btn btn-secondary">
+      <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/" class="btn btn-secondary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"/></svg>
         Read Docs
       </a>
-      <a href="https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation" class="btn btn-secondary" target="_blank">
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn-secondary" target="_blank">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         GitHub
       </a>
@@ -252,7 +252,7 @@
     </div>
   </section>
 
-  <!-- ── Marquee ── -->
+  <!-- â”€â”€ Marquee â”€â”€ -->
   <div class="marquee-wrap">
     <div class="marquee">
       <span><em>Model Router</em></span>
@@ -274,7 +274,7 @@
     </div>
   </div>
 
-  <!-- ── Trusted By ── -->
+  <!-- â”€â”€ Trusted By â”€â”€ -->
   <div class="trusted">
     <p>Powered by leading AI infra</p>
     <div class="logo-strip">
@@ -289,79 +289,79 @@
     </div>
   </div>
 
-  <!-- ── Features ── -->
+  <!-- â”€â”€ Features â”€â”€ -->
   <section class="section" id="features">
     <div class="section-center">
       <div class="section-label">Core Features</div>
       <h2 class="section-title">Everything you need.<br/>Nothing you don't.</h2>
-      <p class="section-desc">From local GPU inference to autonomous agents, security scanning to builder tools — FreeAI covers the full AI development lifecycle in a single stack.</p>
+      <p class="section-desc">From local GPU inference to autonomous agents, security scanning to builder tools â€” FreeAI covers the full AI development lifecycle in a single stack.</p>
     </div>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(14,165,233,.1)">⬡</div>
+        <div class="feature-icon" style="background:rgba(14,165,233,.1)">â¬¡</div>
         <h3>Model Router</h3>
         <p>Task-aware model switching with fallback, caching, rate limiting, and per-agent overrides across 21+ providers.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.1)">◈</div>
+        <div class="feature-icon" style="background:rgba(34,197,94,.1)">â—ˆ</div>
         <h3>Autonomous Agents</h3>
         <p>SDLC agents that plan, code, test, fix, document, and package projects unattended with real verification.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(168,85,247,.1)">◉</div>
+        <div class="feature-icon" style="background:rgba(168,85,247,.1)">â—‰</div>
         <h3>Workflow Engine</h3>
         <p>Visual designer with validation, templates, audit logs, and export/import for complex automation pipelines.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(239,68,68,.1)">⚠</div>
+        <div class="feature-icon" style="background:rgba(239,68,68,.1)">âš </div>
         <h3>Security Scanning</h3>
         <p>Aikido integration, pentest agents, auto-patching, and dependency management with intelligent presets.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(245,158,11,.1)">⟁</div>
+        <div class="feature-icon" style="background:rgba(245,158,11,.1)">âŸ</div>
         <h3>Builder Agents</h3>
         <p>Generate fullstack apps, websites, CRMs, chatbots, sales pipelines, and marketing automations from specs.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(56,189,248,.1)">◬</div>
+        <div class="feature-icon" style="background:rgba(56,189,248,.1)">â—¬</div>
         <h3>MCP Registry</h3>
         <p>23+ pre-configured MCP servers for memory, code intelligence, browser automation, search, and LLM access.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(6,182,212,.1)">⬢</div>
+        <div class="feature-icon" style="background:rgba(6,182,212,.1)">â¬¢</div>
         <h3>Communication Stack</h3>
-        <p>Email (SendGrid, Gmail, Proton Mail), SMS (Twilio), Telegram, WhatsApp Business, Signal — all agents can send.</p>
+        <p>Email (SendGrid, Gmail, Proton Mail), SMS (Twilio), Telegram, WhatsApp Business, Signal â€” all agents can send.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.1)">⬡</div>
+        <div class="feature-icon" style="background:rgba(34,197,94,.1)">â¬¡</div>
         <h3>GPU Inference</h3>
-        <p>llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) — local GGUF serving with 21+ hosted API bridges.</p>
+        <p>llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) â€” local GGUF serving with 21+ hosted API bridges.</p>
       </div>
     </div>
   </section>
 
-  <!-- ── Pillars ── -->
+  <!-- â”€â”€ Pillars â”€â”€ -->
   <section class="section">
     <div class="section-center">
       <div class="section-label">Architecture</div>
       <h2 class="section-title">One platform, four pillars.</h2>
-      <p class="section-desc">Built on what FreeAI delivers today — a unified stack that grows with you.</p>
+      <p class="section-desc">Built on what FreeAI delivers today â€” a unified stack that grows with you.</p>
     </div>
     <div class="pillars">
       <div class="pillar">
         <div class="pillar-num">01</div>
         <h3>Model Intelligence</h3>
-        <p>Every model state understood in context — latency, cost, capacity, and fallback chains across providers.</p>
+        <p>Every model state understood in context â€” latency, cost, capacity, and fallback chains across providers.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">02</div>
         <h3>Agent Automation</h3>
-        <p>Agents deployed, updated, and retired by policy — across every framework and language.</p>
+        <p>Agents deployed, updated, and retired by policy â€” across every framework and language.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">03</div>
         <h3>Security by Operation</h3>
-        <p>Security embedded in daily operations — not bolted on after the fact. Aikido + pentest + auto-patch.</p>
+        <p>Security embedded in daily operations â€” not bolted on after the fact. Aikido + pentest + auto-patch.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">04</div>
@@ -371,38 +371,38 @@
     </div>
   </section>
 
-  <!-- ── Integrations ── -->
+  <!-- â”€â”€ Integrations â”€â”€ -->
   <section class="section" id="integrations">
     <div class="section-center">
       <div class="section-label">Integrations</div>
       <h2 class="section-title">Connect everything.</h2>
-      <p class="section-desc">Unified APIs from Hermes, OpenCode, MimoCode, JCode, OpenClaw — all sharing the same dashboard, config, and agent system.</p>
+      <p class="section-desc">Unified APIs from Hermes, OpenCode, MimoCode, JCode, OpenClaw â€” all sharing the same dashboard, config, and agent system.</p>
     </div>
     <div class="integration-grid">
-      <div class="integration-card"><div class="icon">📧</div><div class="name">SendGrid</div><div class="desc">Transactional email</div></div>
-      <div class="integration-card"><div class="icon">📧</div><div class="name">Gmail</div><div class="desc">OAuth / SMTP</div></div>
-      <div class="integration-card"><div class="icon">📧</div><div class="name">Proton Mail</div><div class="desc">Encrypted email</div></div>
-      <div class="integration-card"><div class="icon">✈️</div><div class="name">Twilio</div><div class="desc">SMS &amp; voice</div></div>
-      <div class="integration-card"><div class="icon">✈️</div><div class="name">Telegram</div><div class="desc">Bot API</div></div>
-      <div class="integration-card"><div class="icon">💬</div><div class="name">WhatsApp</div><div class="desc">Business API</div></div>
-      <div class="integration-card"><div class="icon">🔒</div><div class="name">Signal</div><div class="desc">Encrypted chat</div></div>
-      <div class="integration-card"><div class="icon">🐙</div><div class="name">GitHub</div><div class="desc">PAT integration</div></div>
-      <div class="integration-card"><div class="icon">☁️</div><div class="name">Salad</div><div class="desc">GPU earning</div></div>
-      <div class="integration-card"><div class="icon">☁️</div><div class="name">Vast.ai</div><div class="desc">GPU instances</div></div>
-      <div class="integration-card"><div class="icon">☁️</div><div class="name">Hostinger</div><div class="desc">VPS hosting</div></div>
-      <div class="integration-card"><div class="icon">🛡️</div><div class="name">Aikido</div><div class="desc">Security scans</div></div>
-      <div class="integration-card"><div class="icon">🤖</div><div class="name">Hermes</div><div class="desc">Agent platform</div></div>
-      <div class="integration-card"><div class="icon">🤖</div><div class="name">OpenCode</div><div class="desc">AI coding</div></div>
-      <div class="integration-card"><div class="icon">🤖</div><div class="name">MimoCode</div><div class="desc">Code gen</div></div>
-      <div class="integration-card"><div class="icon">🤖</div><div class="name">OpenClaw</div><div class="desc">Agent skills</div></div>
-      <div class="integration-card"><div class="icon">⚡</div><div class="name">OmniCode</div><div class="desc">Slim skills</div></div>
-      <div class="integration-card"><div class="icon">🔧</div><div class="name">JCode</div><div class="desc">Refactoring</div></div>
-      <div class="integration-card"><div class="icon">🔧</div><div class="name">ZCode</div><div class="desc">Code generation</div></div>
-      <div class="integration-card"><div class="icon">📦</div><div class="name">Docker</div><div class="desc">Container deploy</div></div>
+      <div class="integration-card"><div class="icon">ðŸ“§</div><div class="name">SendGrid</div><div class="desc">Transactional email</div></div>
+      <div class="integration-card"><div class="icon">ðŸ“§</div><div class="name">Gmail</div><div class="desc">OAuth / SMTP</div></div>
+      <div class="integration-card"><div class="icon">ðŸ“§</div><div class="name">Proton Mail</div><div class="desc">Encrypted email</div></div>
+      <div class="integration-card"><div class="icon">âœˆï¸</div><div class="name">Twilio</div><div class="desc">SMS &amp; voice</div></div>
+      <div class="integration-card"><div class="icon">âœˆï¸</div><div class="name">Telegram</div><div class="desc">Bot API</div></div>
+      <div class="integration-card"><div class="icon">ðŸ’¬</div><div class="name">WhatsApp</div><div class="desc">Business API</div></div>
+      <div class="integration-card"><div class="icon">ðŸ”’</div><div class="name">Signal</div><div class="desc">Encrypted chat</div></div>
+      <div class="integration-card"><div class="icon">ðŸ™</div><div class="name">GitHub</div><div class="desc">PAT integration</div></div>
+      <div class="integration-card"><div class="icon">â˜ï¸</div><div class="name">Salad</div><div class="desc">GPU earning</div></div>
+      <div class="integration-card"><div class="icon">â˜ï¸</div><div class="name">Vast.ai</div><div class="desc">GPU instances</div></div>
+      <div class="integration-card"><div class="icon">â˜ï¸</div><div class="name">Hostinger</div><div class="desc">VPS hosting</div></div>
+      <div class="integration-card"><div class="icon">ðŸ›¡ï¸</div><div class="name">Aikido</div><div class="desc">Security scans</div></div>
+      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">Hermes</div><div class="desc">Agent platform</div></div>
+      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">OpenCode</div><div class="desc">AI coding</div></div>
+      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">MimoCode</div><div class="desc">Code gen</div></div>
+      <div class="integration-card"><div class="icon">ðŸ¤–</div><div class="name">OpenClaw</div><div class="desc">Agent skills</div></div>
+      <div class="integration-card"><div class="icon">âš¡</div><div class="name">OmniCode</div><div class="desc">Slim skills</div></div>
+      <div class="integration-card"><div class="icon">ðŸ”§</div><div class="name">JCode</div><div class="desc">Refactoring</div></div>
+      <div class="integration-card"><div class="icon">ðŸ”§</div><div class="name">ZCode</div><div class="desc">Code generation</div></div>
+      <div class="integration-card"><div class="icon">ðŸ“¦</div><div class="name">Docker</div><div class="desc">Container deploy</div></div>
     </div>
   </section>
 
-  <!-- ── How It Works ── -->
+  <!-- â”€â”€ How It Works â”€â”€ -->
   <section class="section">
     <div class="section-center">
       <div class="section-label">Get Started</div>
@@ -416,7 +416,7 @@
       </div>
       <div class="step">
         <h3>It learns your logic</h3>
-        <p>Providers, agents, skills, MCPs — modeled deeply enough to predict fallbacks, costs, and capacity.</p>
+        <p>Providers, agents, skills, MCPs â€” modeled deeply enough to predict fallbacks, costs, and capacity.</p>
       </div>
       <div class="step">
         <h3>It acts with guardrails</h3>
@@ -429,26 +429,26 @@
     </div>
   </section>
 
-  <!-- ── Builder Agents ── -->
+  <!-- â”€â”€ Builder Agents â”€â”€ -->
   <section class="section" id="agents">
     <div class="section-center">
       <div class="section-label">Builder Agents</div>
       <h2 class="section-title">Generate complete projects</h2>
-      <p class="section-desc">Describe what you need in plain language — FreeAI builder agents scaffold the complete project with code, tests, and docs.</p>
+      <p class="section-desc">Describe what you need in plain language â€” FreeAI builder agents scaffold the complete project with code, tests, and docs.</p>
     </div>
     <div class="feature-grid">
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(59,130,246,.1)">⟐</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(139,92,246,.1)">⬡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.1)">◈</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(16,185,129,.1)">◉</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.1)">◷</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(249,115,22,.1)">⬢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(236,72,153,.1)">✦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.1)">◐</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(59,130,246,.1)">âŸ</div><h3>Fullstack App</h3><p>FastAPI + React, Django + Next.js, Laravel + Vue with database and auth.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(139,92,246,.1)">â¬¡</div><h3>Website</h3><p>Landing pages, portfolios, SaaS sites with Next.js + Tailwind.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.1)">â—ˆ</div><h3>CRM</h3><p>Custom CRM with contacts, deals, tasks, and email integration.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(16,185,129,.1)">â—‰</div><h3>Customer Bot</h3><p>FAQ bots, ticketing, knowledge-base powered support.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.1)">â—·</div><h3>Appointment Bot</h3><p>Booking bots for salons, clinics, auto shops, spas, and more.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(249,115,22,.1)">â¬¢</div><h3>Sales Pipeline</h3><p>Lead capture, CRM sync, email sequences, conversion tracking.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(236,72,153,.1)">âœ¦</div><h3>Marketing Agent</h3><p>Multi-channel campaigns with analytics and A/B testing.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.1)">â—</div><h3>Ads Pipeline</h3><p>Google/Facebook/LinkedIn ads with budget tracking and ROAS.</p></div>
     </div>
   </section>
 
-  <!-- ── Security ── -->
+  <!-- â”€â”€ Security â”€â”€ -->
   <section class="section" id="security">
     <div class="section-center">
       <div class="section-label">Security</div>
@@ -456,86 +456,87 @@
       <p class="section-desc">Professional-grade security scanning, vulnerability management, and compliance tracking built in from day one.</p>
     </div>
     <div class="feature-grid">
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.1)">◈</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(239,68,68,.1)">⚠</div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy — comprehensive SAST/DAST scanning.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.1)">⟳</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(34,197,94,.1)">✓</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(56,189,248,.1)">◉</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
-      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.1)">⬡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(168,85,247,.1)">â—ˆ</div><h3>Aikido Integration</h3><p>Scan code, test apps, auto-patch from the dashboard. Real-time compliance scoring.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(239,68,68,.1)">âš </div><h3>Pentest Agent</h3><p>Semgrep, Bandit, Safety, Trivy â€” comprehensive SAST/DAST scanning.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(245,158,11,.1)">âŸ³</div><h3>Auto-Patch</h3><p>Generate and apply safe fixes for critical and high vulnerabilities.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(34,197,94,.1)">âœ“</div><h3>Dependency Manager</h3><p>Monitor CVEs, auto-update with presets (conservative/balanced/aggressive/secure).</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(56,189,248,.1)">â—‰</div><h3>33 Security Skills</h3><p>14 Red Team, 12 Blue Team, 7 Purple Team expert skills for every vector.</p></div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(6,182,212,.1)">â¬¡</div><h3>API Key Rotation</h3><p>Up to 10 keys per provider, round-robin/random/least-used, auto-pause on 429.</p></div>
     </div>
   </section>
 
-  <!-- ── Install ── -->
+  <!-- â”€â”€ Install â”€â”€ -->
   <section class="section" id="install">
     <div class="section-center">
       <div class="section-label">Deploy</div>
       <h2 class="section-title">Choose your path.</h2>
-      <p class="section-desc">Local, Docker, or cloud — same stack, different runtime.</p>
+      <p class="section-desc">Local, Docker, or cloud â€” same stack, different runtime.</p>
     </div>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(14,165,233,.1)">🐧</div>
+        <div class="feature-icon" style="background:rgba(14,165,233,.1)">ðŸ§</div>
         <h3>Local Install</h3>
-        <pre style="background:var(--bg-soft);border-radius:10px;padding:14px;font-size:12px;margin-top:12px;overflow-x:auto;color:var(--text)"><code>git clone https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation.git
+        <pre style="background:var(--bg-soft);border-radius:10px;padding:14px;font-size:12px;margin-top:12px;overflow-x:auto;color:var(--text)"><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
 cd FreeAI_AI_Inference_Workstation
 pip install -r requirements.txt
 python launch.py</code></pre>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(34,197,94,.1)">🐳</div>
+        <div class="feature-icon" style="background:rgba(34,197,94,.1)">ðŸ³</div>
         <h3>Docker Compose</h3>
-        <pre style="background:var(--bg-soft);border-radius:10px;padding:14px;font-size:12px;margin-top:12px;overflow-x:auto;color:var(--text)"><code>git clone https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation.git
+        <pre style="background:var(--bg-soft);border-radius:10px;padding:14px;font-size:12px;margin-top:12px;overflow-x:auto;color:var(--text)"><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
 cd FreeAI_AI_Inference_Workstation
 docker compose --profile allinone up -d
 # Open http://localhost:8030</code></pre>
       </div>
       <div class="feature-card">
-        <div class="feature-icon" style="background:rgba(168,85,247,.1)">☁️</div>
+        <div class="feature-icon" style="background:rgba(168,85,247,.1)">â˜ï¸</div>
         <h3>Cloud Deploy</h3>
         <p>RunPod templates, Vast.ai kits, Hetzner bare-metal, and Terraform modules included. See <a href="docs/DEPLOYMENT.md">Deployment Guide</a>.</p>
       </div>
     </div>
   </section>
 
-  <!-- ── FAQ ── -->
+  <!-- â”€â”€ FAQ â”€â”€ -->
   <section class="section" id="faq">
     <div class="section-center">
       <div class="section-label">FAQ</div>
       <h2 class="section-title">Frequently asked questions</h2>
     </div>
     <div class="feature-grid" style="margin-top:40px">
-      <div class="feature-card"><h3>Do I need a GPU?</h3><p>No — use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
+      <div class="feature-card"><h3>Do I need a GPU?</h3><p>No â€” use MOCK_LLM=1 for CPU-only mode, or connect to hosted APIs (OpenAI, Anthropic, etc.) via the provider system.</p></div>
       <div class="feature-card"><h3>How many providers are supported?</h3><p>21+ hosted APIs including OpenAI, Anthropic, Gemini, Groq, Mistral, DeepSeek, and more via the provider adapter system.</p></div>
-      <div class="feature-card"><h3>Can I use this for production?</h3><p>Yes — FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
-      <div class="feature-card"><h3>Is it open source?</h3><p>Yes — MIT licensed. Full source at <a href="https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation">GitHub</a>.</p></div>
-      <div class="feature-card"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzeroai.github.io/unified-ai-stack/wiki/">wiki</a> for details.</p></div>
-      <div class="feature-card"><h3>Can I connect my own models?</h3><p>Yes — any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
+      <div class="feature-card"><h3>Can I use this for production?</h3><p>Yes â€” FreeAI is designed for production with auth, rate limiting, health checks, and auto-restart policies.</p></div>
+      <div class="feature-card"><h3>Is it open source?</h3><p>Yes â€” MIT licensed. Full source at <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>.</p></div>
+      <div class="feature-card"><h3>How do I add custom skills?</h3><p>Use the Skills API or add SKILL.md files to the skills/ directory. See the <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/">wiki</a> for details.</p></div>
+      <div class="feature-card"><h3>Can I connect my own models?</h3><p>Yes â€” any OpenAI-compatible endpoint works. Configure in config/providers.json or via the dashboard.</p></div>
     </div>
   </section>
 
-  <!-- ── CTA ── -->
+  <!-- â”€â”€ CTA â”€â”€ -->
   <section class="cta-section">
     <h2>Ready to build with AI?</h2>
-    <p>Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.</p>
+    <p>Join developers using FreeAI to build, secure, and scale AI applications â€” on their own hardware.</p>
     <div class="hero-actions">
       <a href="#install" class="btn btn-primary">Get Started Free</a>
-      <a href="https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation" class="btn btn-secondary" target="_blank">Star on GitHub</a>
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn-secondary" target="_blank">Star on GitHub</a>
     </div>
   </section>
 
-  <!-- ── Footer ── -->
+  <!-- â”€â”€ Footer â”€â”€ -->
   <footer class="footer">
-    <div class="footer-copy">© 2026 FreeAI · Unified AI Workstation · MIT License</div>
+    <div class="footer-copy">Â© 2026 FreeAI Â· Unified AI Workstation Â· MIT License</div>
     <div class="footer-links">
       <a href="/">Home</a>
       <a href="#install">Install</a>
       <a href="#faq">FAQ</a>
-      <a href="https://projectzeroai.github.io/unified-ai-stack/wiki/">Documentation</a>
-      <a href="https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation/issues">Report a Bug</a>
+      <a href="https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/">Documentation</a>
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues">Report a Bug</a>
       <a href="mailto:admin@projectzeroai.dev">Contact</a>
-      <a href="https://github.com/ProjectZeroAI/FreeAI_AI_Inference_Workstation">GitHub</a>
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation">GitHub</a>
     </div>
   </footer>
 
 </body>
 </html>
+
