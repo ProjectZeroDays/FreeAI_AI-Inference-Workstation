@@ -32,7 +32,7 @@ docker compose up -d --build
 # Download freeaios-amd64.iso from Releases → boot → Install FreeAI
 ```
 
-> **Full docs:** https://projectzerodays.github.io/FreeAI_Ubuntu-AI-Inference-Workstation/  
+> **Full docs:** https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/  
 > **Try before you clone:** `MOCK_LLM=1` runs the entire stack without a GPU (`make test` is fully offline).
 
 Production-grade, self-hosted **AI inference workstation stack**: GGUF coder models on NVIDIA GPUs, a task-classifying model router with fallback chains, a multi-agent REST layer, a workflow engine, **autonomous SDLC agents** that turn a one-line spec into a packaged project, a presets/settings control plane, an AI power optimizer, self-healing watchdogs, and a full XFCE + VNC remote desktop. Deployable bare-metal, via Docker Compose, Kubernetes, cloud GPU providers, or as a Live ISO.
