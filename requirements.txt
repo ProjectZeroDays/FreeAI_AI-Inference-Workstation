@@ -9,3 +9,5 @@ qdrant-client>=1.9
 sentence-transformers>=2.2
 playwright>=1.40
 curl_cffi>=0.7
+
+starlette==1.0.1
