@@ -27,7 +27,20 @@ from providers import (load_providers, is_keyed, keyed_providers,
                        fallback_models, call_provider, parse_response,
                        build_request)
 from middleware import (RateLimiter, AuthMiddleware, CacheMiddleware,
-                        rate_limiter, auth_middleware, cache_middleware)
+                         rate_limiter, auth_middleware, cache_middleware)
+from load_balancer import (pick_backend, record_success, record_failure,
+                           connection_start, connection_end,
+                           all_state, get_state, FAILURE_THRESHOLD,
+                           RECOVERY_TIMEOUT_S, ALGO as LB_ALGO)
+
+from metrics.prometheus import get_registry, render_metrics
+from metrics.middleware import instrument_app
+
+# Tracing integration (no-op fallback if opentelemetry unavailable)
+try:
+    import tracer.otel as otel
+except ImportError:
+    otel = None
 
 CFG = load_config().get("router", {})
 
@@ -39,7 +52,31 @@ CACHE_SIZE = int(CFG.get("cache_size", 128))
 TIMEOUT = int(CFG.get("backend_timeout_s", 300))
 MOCK_LLM = bool(CFG.get("mock_llm", False))
 
+_SSE_HEADERS = {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "X-Accel-Buffering": "no",
+    "Connection": "keep-alive",
+}
+
+
+def _send_sse_headers(response_headers: dict) -> dict:
+    out = dict(response_headers)
+    out.update(_SSE_HEADERS)
+    return out
+
+
+def _sse_event(data: dict) -> str:
+    """Format a dict as an SSE data frame with optional retry directive."""
+    return f"data: {json.dumps(data, separators=(',', ':'))}\n\n"
+
+
+def _sse_retry(retry_ms: int = 3000) -> str:
+    """Emit an SSE retry directive."""
+    return f"retry: {retry_ms}\n\n"
+
 app = Flask(__name__)
+instrument_app(app)
 
 # Backwards-compatible aliases for tests
 allow_request = rate_limiter.allow
@@ -86,7 +123,9 @@ def metrics_latency(ms):
 @app.before_request
 def guard():
     # Skip auth for these endpoints and in testing mode
-    if request.path in {"/health", "/models", "/docs"}:
+    if request.path in {"/health", "/models", "/docs",
+                        "/api/models/performance", "/api/models/benchmark",
+                        "/api/models/rankings"}:
         return None
     if app.config.get("TESTING"):
         return None
@@ -192,6 +231,12 @@ def stream_provider(provider_model, prompt, payload_base=None):
             yield f'data: {json.dumps({"content": result["content"]})}\n\n'
         metrics_model(f"{pname}/{pmodel}")
         metrics_latency(int((time.monotonic() - started) * 1000))
+        # Prometheus
+        reg, helpers = get_registry()
+        if helpers is not None:
+            helpers["model_calls_total"].labels(model=f"{pname}/{pmodel}").inc()
+            helpers["model_latency_seconds"].labels(model=f"{pname}/{pmodel}").observe(
+                (time.monotonic() - started))
         yield "data: [DONE]\n\n"
     except Exception as exc:
         yield f'data: {json.dumps({"error": str(exc)})}\n\n'
@@ -239,6 +284,11 @@ def stream_route(prompt, task_type, agent, payload_base=None):
                 continue  # empty stream from this backend -> try next
             metrics_model(candidate)
             metrics_latency(int((time.monotonic() - started) * 1000))
+            reg, helpers = get_registry()
+            if helpers is not None:
+                helpers["model_calls_total"].labels(model=candidate).inc()
+                helpers["model_latency_seconds"].labels(model=candidate).observe(
+                    (time.monotonic() - started))
             yield "data: [DONE]\n\n"
             return
         except Exception:
@@ -264,6 +314,63 @@ def stream_route(prompt, task_type, agent, payload_base=None):
 
 
 # ---------------------------------------------------------------- routes
+def _endpoint_pool(candidate: str):
+    """Return ordered list of endpoint URLs for *candidate*.
+
+    When multiple parallel instances exist (e.g. _llama_bases), all are
+    included so the load balancer can spread traffic across them.
+    """
+    from models import MODEL_REGISTRY, _llama_bases
+    meta = MODEL_REGISTRY.get(candidate)
+    if meta is None:
+        return []
+    base = meta["endpoint"]
+    # Collect all bases that share this model's endpoint prefix
+    pool = []
+    seen = set()
+    for lb in _llama_bases:
+        ep = f"{lb.rstrip('/')}/completion"
+        if ep not in seen:
+            seen.add(ep)
+            pool.append(ep)
+    if base not in seen:
+        pool.append(base)
+    return pool
+
+
+def _try_candidate(candidate, payload, stream=False):
+    """Attempt one candidate model across its endpoint pool.
+
+    Returns (result_or_None, model_used_or_None, error_or_None).
+    On success records a load-balancer success; on failure records a
+    failure and returns the last error so the caller can fall through.
+    """
+    from models import MODEL_REGISTRY
+    pool = _endpoint_pool(candidate)
+    if not pool:
+        return None, None, "no endpoints"
+    lb_key = pick_backend(pool)
+    model = MODEL_REGISTRY[candidate]
+    call_payload = dict(payload)
+    floor = model.get("min_temperature")
+    if floor is not None:
+        call_payload["temperature"] = max(
+            float(call_payload.get("temperature", 0.2)), float(floor))
+    try:
+        connection_start(lb_key)
+        if stream:
+            r = requests.post(lb_key, json=call_payload, stream=True,
+                              timeout=TIMEOUT)
+            r.raise_for_status()
+            # caller consumes the stream directly; record on completion
+            return r, f"{candidate}@{lb_key}", None
+        r = requests.post(lb_key, json=call_payload, timeout=TIMEOUT)
+        r.raise_for_status()
+        record_success(lb_key)
+        return r.json(), f"{candidate}@{lb_key}", None
+    except Exception as exc:
+        record_failure(lb_key)
+        return None, None, str(exc)
 @app.route("/health")
 def health():
     return jsonify({"status": "ok", "mock": MOCK_LLM})
@@ -324,8 +431,50 @@ def providers():
     return jsonify({"providers": rows})
 
 
+@app.route("/router/load-balancers")
+def lb_load_balancers():
+    """Show current load-balancer state for all registered backends."""
+    from models import MODEL_REGISTRY, _llama_bases
+    rows = []
+    endpoints_by_key: dict = {}
+    for key, meta in MODEL_REGISTRY.items():
+        ep = meta.get("endpoint", "")
+        endpoints_by_key.setdefault(ep, []).append(key)
+    # also include hot-shard bases
+    for base in _llama_bases:
+        ep = f"{base}/completion"
+        endpoints_by_key.setdefault(ep, []).append(f"hot-shard:{base}")
+    for ep, keys in endpoints_by_key.items():
+        state = get_state(ep)
+        rows.append({
+            "endpoint": ep,
+            "model_keys": keys,
+            **state,
+        })
+    return jsonify({"algorithm": LB_ALGO,
+                    "failure_threshold": FAILURE_THRESHOLD,
+                    "recovery_timeout_s": RECOVERY_TIMEOUT_S,
+                    "backends": rows})
+
+
+@app.route("/api/router/lb-stats")
+def lb_stats():
+    """Compact LB stats for the dashboard."""
+    return jsonify({"algorithm": LB_ALGO,
+                    "failure_threshold": FAILURE_THRESHOLD,
+                    "recovery_timeout_s": RECOVERY_TIMEOUT_S,
+                    "backends": all_state()})
+
+
 @app.route("/metrics")
 def metrics():
+    # Prometheus scrapes with Accept: text/plain; version=0.0.4; charset=utf-8
+    # all other clients get legacy JSON for backward compatibility
+    accept = request.headers.get("Accept", "")
+    prom_text = render_metrics()
+    if prom_text is not None and "text/plain" in accept:
+        from flask import Response
+        return Response(prom_text, mimetype="text/plain; version=0.0.4; charset=utf-8")
     with _METRICS_LOCK:
         snap = dict(METRICS)
         snap["by_task"] = dict(METRICS["by_task"])
@@ -372,6 +521,17 @@ def hot_models():
     return jsonify({"shards": out})
 
 
+@app.route("/api/traces")
+def api_traces():
+    """List recent traces with latency, model, and status info."""
+    limit = request.args.get("limit", 50, type=int)
+    if otel is not None:
+        traces = otel.get_recent_traces(limit=limit)
+    else:
+        traces = []
+    return jsonify({"traces": traces})
+
+
 @app.route("/route", methods=["POST"])
 def route():
     data = request.get_json(silent=True) or {}
@@ -383,8 +543,18 @@ def route():
     metrics_incr("requests_total")
     task_type, confidence = classify_task(prompt)
     metrics_task(task_type)
+    # Prometheus: task distribution + confidence
+    reg, ph = get_registry()
+    if ph is not None:
+        ph["task_type_total"].labels(task_type=task_type).inc()
+        ph["confidence_bucket"].labels(task_type=task_type).observe(confidence)
 
-    # explicit external-model selection: "provider/model" wins over chain
+    # Tracing for route endpoint
+    trace_id = otel.make_trace_id() if otel else "noop"
+    span = None
+    if otel:
+        span = otel.route_span(trace_id, task_type, confidence).__enter__()
+
     explicit = data.get("model") or ""
     provider_model = None
     if "/" in explicit:
@@ -394,18 +564,27 @@ def route():
             provider_model = (pname, pcfg, pmodel)
 
     if data.get("stream"):
+        headers = _send_sse_headers({})
         if provider_model:
             return Response(stream_with_context(
                 stream_provider(provider_model, prompt,
                                 payload_base=data)),
                 mimetype="text/event-stream",
-                headers={"Cache-Control": "no-cache",
-                         "X-Accel-Buffering": "no"})
+                headers=headers)
         return Response(stream_with_context(
             stream_route(prompt, task_type, agent, payload_base=data)),
             mimetype="text/event-stream",
-            headers={"Cache-Control": "no-cache",
-                     "X-Accel-Buffering": "no"})
+            headers=headers)
+        if span:
+            span.end()
+            if otel:
+                otel.record_trace(trace_id, task_type, None,
+                                  0, "streaming", confidence)
+
+    model_used = None
+    elapsed_ms = 0
+    status = "ok"
+    error = None
 
     if provider_model is not None:
         pname, pcfg, pmodel = provider_model
@@ -417,15 +596,40 @@ def route():
                                    timeout=TIMEOUT)
         except Exception as exc:
             metrics_incr("errors_total")
-            return jsonify({"error": str(exc), "provider": pname}), 502
+            error = str(exc)
+            status = "error"
+            elapsed_ms = int((time.monotonic() - started) * 1000)
+            if span:
+                otel.tag_status(span, 502)
+                otel.tag_latency(span, elapsed_ms)
+                span.end()
+            if otel:
+                otel.record_trace(trace_id, task_type, None,
+                                  elapsed_ms, "error", confidence)
+            return jsonify({"error": error, "provider": pname,
+                            "task_type": task_type, "trace_id": trace_id}), 502
         elapsed_ms = int((time.monotonic() - started) * 1000)
         metrics_latency(elapsed_ms)
         metrics_model(f"{pname}/{pmodel}")
-        resp = jsonify({"model_used": f"{pname}/{pmodel}",
+        if ph is not None:
+            ph["model_calls_total"].labels(model=f"{pname}/{pmodel}").inc()
+            ph["model_latency_seconds"].labels(model=f"{pname}/{pmodel}").observe(
+                elapsed_ms / 1000.0)
+        model_used = f"{pname}/{pmodel}"
+        if span:
+            otel.tag_model(span, model_used)
+            otel.tag_status(span, 200)
+            otel.tag_latency(span, elapsed_ms)
+            span.end()
+        if otel:
+            otel.record_trace(trace_id, task_type, model_used,
+                              elapsed_ms, "ok", confidence)
+        resp = jsonify({"model_used": model_used,
                         "task_type": task_type,
                         "confidence": confidence,
                         "elapsed_ms": elapsed_ms,
-                        "response": result})
+                        "response": result,
+                        "trace_id": trace_id})
         resp.headers["X-Cache"] = "PASS"   # external calls not cached
         return resp
 
@@ -433,7 +637,15 @@ def route():
     cached = cache_get(prompt, model="")
     if cached is not None:
         metrics_incr("cache_hits")
-        resp = jsonify(cached)
+        elapsed_ms = 0
+        if span:
+            otel.tag_status(span, 200)
+            otel.tag_latency(span, elapsed_ms)
+            span.end()
+        if otel:
+            otel.record_trace(trace_id, task_type, "cache",
+                              elapsed_ms, "cache_hit", confidence)
+        resp = jsonify({**cached, "trace_id": cached.get("trace_id", trace_id)})
         resp.headers["X-Cache"] = "HIT"
         return resp
 
@@ -455,39 +667,31 @@ def route():
         from models import MODEL_REGISTRY
         result = None
         model_used = None
+        model_used_prev = None
         error = None
         degenerate_retries = 0
         best_effort = None          # (payload, name) if all answers loop
         candidates = list(chain)
         while candidates:
             candidate = candidates.pop(0)
-            model = MODEL_REGISTRY[candidate]
-            # reasoning models (e.g. Qwythos) need a temperature floor to
-            # avoid greedy-decode repetition loops
-            call_payload = dict(payload)
-            floor = model.get("min_temperature")
-            if floor is not None:
-                call_payload["temperature"] = max(
-                    float(call_payload.get("temperature", 0.2)), float(floor))
-            try:
-                r = requests.post(model["endpoint"], json=call_payload,
-                                  timeout=TIMEOUT)
-                r.raise_for_status()
-                attempt = r.json()
-                if is_degenerate(_text_of(attempt)) and candidates \
-                        and best_effort is None:
-                    # looks like a repetition loop — try next backend,
-                    # but keep this as a last-resort answer
-                    best_effort = (attempt, model["name"])
-                    metrics_incr("degenerate_skips")
-                    degenerate_retries += 1
-                    continue
-                result, model_used = attempt, model["name"]
-                metrics_model(candidate)
-                break
-            except Exception as exc:
-                error = str(exc)
+            attempt, model_used, error = _try_candidate(
+                candidate, payload)
+            if attempt is None:
+                model_used_prev = candidate
                 continue
+            if is_degenerate(_text_of(attempt)) and candidates \
+                    and best_effort is None:
+                # looks like a repetition loop — try next backend,
+                # but keep this as a last-resort answer
+                best_effort = (attempt, model_used)
+                metrics_incr("degenerate_skips")
+                degenerate_retries += 1
+                continue
+            result = attempt
+            metrics_model(candidate)
+            if ph is not None:
+                ph["model_calls_total"].labels(model=candidate).inc()
+            break
         if result is None and best_effort is not None:
             result, model_used = best_effort
 
@@ -495,13 +699,23 @@ def route():
         if result is None:
             try:
                 from models import _llama_bases
+                hot_payload = dict(payload)
+                first = MODEL_REGISTRY.get(candidates[-1]) if candidates else None
+                if first:
+                    floor = first.get("min_temperature")
+                    if floor is not None:
+                        hot_payload["temperature"] = max(
+                            float(hot_payload.get("temperature", 0.2)),
+                            float(floor))
                 for base in _llama_bases[1:]:
                     try:
                         r = requests.post(f"{base}/completion",
-                                          json=call_payload, timeout=TIMEOUT)
+                                          json=hot_payload, timeout=TIMEOUT)
                         r.raise_for_status()
                         result, model_used = r.json(), f"hot-shard:{base}"
                         metrics_model("hot-shard")
+                        if ph is not None:
+                            ph["model_calls_total"].labels(model="hot-shard").inc()
                         break
                     except Exception:
                         continue
@@ -520,6 +734,13 @@ def route():
                         payload.get("temperature", 0.2), timeout=TIMEOUT)
                     model_used = fid
                     metrics_model(fid)
+                    if ph is not None:
+                        ph["model_calls_total"].labels(model=fid).inc()
+                        ph["model_latency_seconds"].labels(model=fid).observe(
+                            elapsed_ms / 1000.0)
+                        if model_used_prev is not None:
+                            ph["fallback_count"].labels(
+                                from_model=model_used_prev, to_model=fid).inc()
                     break
                 except Exception as exc:
                     error = str(exc)
@@ -527,26 +748,48 @@ def route():
 
         if result is None:
             metrics_incr("errors_total")
+            status = "error"
+            elapsed_ms = int((time.monotonic() - started) * 1000)
+            if span:
+                otel.tag_status(span, 502)
+                otel.tag_latency(span, elapsed_ms)
+                span.end()
+            if otel:
+                otel.record_trace(trace_id, task_type, None,
+                                  elapsed_ms, "error", confidence)
             return jsonify({
                 "error": error or "all backends failed",
                 "task_type": task_type,
+                "trace_id": trace_id,
             }), 502
 
     elapsed_ms = int((time.monotonic() - started) * 1000)
     metrics_latency(elapsed_ms)
-
+    if ph is not None and model_used is not None:
+        ph["model_calls_total"].labels(model=model_used).inc()
+        ph["model_latency_seconds"].labels(model=model_used).observe(
+            elapsed_ms / 1000.0)
     body = {
         "model_used": model_used,
         "task_type": task_type,
         "confidence": confidence,
         "elapsed_ms": elapsed_ms,
         "response": result,
+        "trace_id": trace_id,
     }
     cache_put(prompt, "", body)
     resp = jsonify(body)
     resp.headers["X-Cache"] = "MISS"
     if degenerate_retries:
         resp.headers["X-Coherence-Retries"] = str(degenerate_retries)
+    if span:
+        otel.tag_model(span, model_used)
+        otel.tag_status(span, 200 if status == "ok" else 502)
+        otel.tag_latency(span, elapsed_ms)
+        span.end()
+    if otel:
+        otel.record_trace(trace_id, task_type, model_used,
+                          elapsed_ms, status, confidence)
     return resp
 
 
@@ -565,6 +808,12 @@ def route_stream():
     task_type, confidence = classify_task(prompt)
     metrics_task(task_type)
 
+    # Tracing for stream endpoint
+    trace_id = otel.make_trace_id() if otel else "noop"
+    span = None
+    if otel:
+        span = otel.route_span(trace_id, task_type, confidence).__enter__()
+
     explicit = data.get("model") or ""
     provider_model = None
     if "/" in explicit:
@@ -573,18 +822,127 @@ def route_stream():
         if pcfg and pcfg.get("enabled") and is_keyed(pname, pcfg):
             provider_model = (pname, pcfg, pmodel)
 
+    def _wrap_stream(stream_gen):
+        started = time.monotonic()
+        model_set = False
+        try:
+            for frame in stream_gen:
+                yield frame
+                # Capture model from first model frame for tracing
+                if not model_set:
+                    try:
+                        raw = frame.split("data: ", 1)[-1].strip()
+                        obj = json.loads(raw)
+                        if "model" in obj:
+                            if otel:
+                                otel.tag_model(span, obj["model"])
+                            model_set = True
+                    except (ValueError, IndexError):
+                        pass
+        finally:
+            elapsed_ms = int((time.monotonic() - started) * 1000)
+            if span:
+                otel.tag_status(span, 200)
+                otel.tag_latency(span, elapsed_ms)
+                span.end()
+            if otel:
+                otel.record_trace(trace_id, task_type,
+                                  "streaming", elapsed_ms, "ok", confidence)
+
+    sse_headers = _send_sse_headers({})
     if provider_model:
         return Response(stream_with_context(
-            stream_provider(provider_model, prompt, payload_base=data)),
+            _wrap_stream(stream_provider(provider_model, prompt, payload_base=data))),
             mimetype="text/event-stream",
-            headers={"Cache-Control": "no-cache",
-                     "X-Accel-Buffering": "no"})
+            headers=sse_headers)
 
     return Response(stream_with_context(
-        stream_route(prompt, task_type, agent, payload_base=data)),
+        _wrap_stream(stream_route(prompt, task_type, agent, payload_base=data))),
         mimetype="text/event-stream",
-        headers={"Cache-Control": "no-cache",
-                 "X-Accel-Buffering": "no"})
+        headers=sse_headers)
+
+
+# ---------------------------------------------------------------- model performance
+@app.route("/api/models/performance")
+def api_models_performance():
+    """Current per-model performance scores."""
+    from models import MODEL_REGISTRY
+    from performance import scorer
+    out = {}
+    for key in MODEL_REGISTRY:
+        out[key] = scorer.score(key)
+    # also include external providers
+    for name, cfg in load_providers().items():
+        if not cfg.get("enabled"):
+            continue
+        for m in cfg.get("models", []):
+            mk = f"{name}/{m}"
+            if mk not in out:
+                out[mk] = scorer.score(mk)
+    return jsonify(out)
+
+
+@app.route("/api/models/rankings")
+def api_models_rankings():
+    """Models sorted by quality score descending."""
+    from models import MODEL_REGISTRY
+    from performance import scorer
+    entries = []
+    for key, meta in MODEL_REGISTRY.items():
+        s = scorer.score(key)
+        entries.append({
+            "key": key,
+            "name": meta.get("name", key),
+            "role": meta.get("role", ""),
+            **s,
+        })
+    for name, cfg in load_providers().items():
+        if not cfg.get("enabled"):
+            continue
+        for m in cfg.get("models", []):
+            mk = f"{name}/{m}"
+            s = scorer.score(mk)
+            entries.append({
+                "key": mk,
+                "name": f"{cfg.get('description', name)} - {m}",
+                "role": f"provider:{name}",
+                **s,
+            })
+    entries.sort(key=lambda e: (e.get("quality_score") or -1), reverse=True)
+    return jsonify({"rankings": entries})
+
+
+@app.route("/api/models/benchmark", methods=["POST"])
+def api_models_benchmark():
+    """Run benchmark against one or all registered models."""
+    from models import MODEL_REGISTRY
+    from benchmark import run_benchmark, save_report
+    data = request.get_json(silent=True) or {}
+    target = data.get("model")  # None = all
+    results = {}
+    if target:
+        if target not in MODEL_REGISTRY:
+            return jsonify({"error": f"unknown model: {target}"}), 404
+        models_to_run = {target: MODEL_REGISTRY[target]}
+    else:
+        models_to_run = MODEL_REGISTRY
+    for key, meta in models_to_run.items():
+        endpoint = meta.get("endpoint", "")
+        if not endpoint:
+            results[key] = {"error": "no endpoint configured"}
+            continue
+        r = run_benchmark(endpoint, meta.get("name", key))
+        results[key] = r
+        save_report(r)
+    return jsonify({"results": results, "completed_at": time.strftime(
+        "%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+
+
+@app.route("/api/models/benchmark/report")
+def api_models_benchmark_report():
+    """Return the last saved benchmark report."""
+    from benchmark import load_report
+    return jsonify(load_report())
 
 
 if __name__ == "__main__":

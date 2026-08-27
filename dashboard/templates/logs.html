@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="/static/dashboard.css" />
   <style>
     .logs-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
-    /* Service buttons row */
     .service-bar { display: flex; gap: 8px; padding: 16px 24px; border-bottom: 1px solid var(--border); overflow-x: auto; flex-shrink: 0; }
     .svc-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); cursor: pointer; transition: all .15s; white-space: nowrap; font-size: 13px; font-weight: 600; color: var(--muted); }
     .svc-btn:hover { border-color: var(--accent-2); color: var(--text); }
@@ -17,7 +16,6 @@
     .svc-dot.stopped { background: var(--muted-2); }
     .svc-dot.error { background: var(--danger); }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-    /* Main log area */
     .logs-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
     .logs-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .logs-header h2 { font-size: 16px; font-weight: 700; }
@@ -26,7 +24,6 @@
     .logs-header-actions button:hover { border-color: var(--accent-2); }
     .logs-header-actions button.danger:hover { border-color: var(--danger); color: var(--danger); }
     .logs-header-actions button.ai-btn:hover { border-color: #a855f7; color: #a855f7; }
-    /* Log display */
     .logs-display { flex: 1; overflow-y: auto; padding: 16px 24px; background: #0a0e1a; font-family: 'JetBrains Mono', monospace; }
     .logs-display::-webkit-scrollbar { width: 6px; }
     .logs-display::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -41,7 +38,6 @@
     .log-level.debug { color: var(--muted-2); background: rgba(148,163,184,.06); }
     .log-msg { color: #CBD5E1; word-break: break-all; }
     .log-msg code { color: #7DD3FC; }
-    /* Bottom bar */
     .logs-bottom { display: flex; align-items: center; gap: 12px; padding: 10px 24px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
     .logs-bottom .lb-label { font-size: 12px; color: var(--muted-2); }
     .logs-bottom .lb-count { font-size: 12px; color: var(--accent-2); font-weight: 600; }
@@ -52,7 +48,6 @@
     .logs-bottom .lb-actions button.export:hover { border-color: var(--accent); color: var(--accent); }
     .logs-bottom .lb-actions button.clear:hover { border-color: var(--danger); color: var(--danger); }
     .logs-bottom .lb-actions button.ai:hover { border-color: #a855f7; color: #a855f7; }
-    /* AI Help Modal */
     .ai-modal-overlay { display: none; position: fixed; inset: 0; z-index: 600; background: rgba(2,6,23,.8); backdrop-filter: blur(8px); }
     .ai-modal-overlay.open { display: flex; align-items: center; justify-content: center; }
     .ai-modal { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); width: 640px; max-width: 90vw; max-height: 80vh; display: flex; flex-direction: column; }
@@ -70,12 +65,14 @@
     .ai-modal-footer button { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
     .ai-modal-footer button:hover { border-color: var(--accent-2); }
     .ai-modal-footer button.primary { background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; border: none; }
-    /* Filter bar */
-    .filter-bar { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); }
-    .filter-bar input { flex: 1; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .filter-bar { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); flex-wrap: wrap; }
+    .filter-bar input { flex: 1; min-width: 160px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
     .filter-bar select { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
     .filter-bar label { font-size: 12px; color: var(--muted-2); display: flex; align-items: center; gap: 6px; }
     .filter-bar input[type="checkbox"] { accent-color: var(--accent); }
+    .ws-status { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+    .ws-status.connected { background: rgba(34,197,94,.15); color: var(--accent); }
+    .ws-status.disconnected { background: rgba(239,68,68,.15); color: var(--danger); }
   </style>
 </head>
 <body>
@@ -110,6 +107,7 @@
       <div class="sidebar-foot">
         <span class="live-dot" aria-hidden="true"></span>
         <span class="muted">Live</span>
+        <span id="ws-indicator" class="ws-status disconnected" style="margin-left:auto">WS: off</span>
       </div>
     </nav>
 
@@ -120,7 +118,7 @@
           <p>Real-time logs from all FreeAI services</p>
         </div>
         <div class="topbar-actions">
-          <span class="pill" id="auto-scroll-badge">auto-scroll: on</span>
+          <span id="auto-scroll-badge" class="pill">auto-scroll: on</span>
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
             <input type="checkbox" id="auto-scroll" checked onchange="toggleAutoScroll()" /> Auto-scroll
           </label>
@@ -128,19 +126,20 @@
       </header>
 
       <!-- Service buttons -->
-      <div class="service-bar" id="service-bar">
-        <!-- Populated by JS -->
-      </div>
+      <div class="service-bar" id="service-bar"></div>
 
       <!-- Filters -->
       <div class="filter-bar">
-        <input type="text" id="log-filter" placeholder="Filter logs..." oninput="applyFilters()" />
+        <input type="text" id="log-filter" placeholder="Filter logs…" oninput="applyFilters()" />
         <select id="log-level-filter" onchange="applyFilters()">
           <option value="all">All Levels</option>
           <option value="info">Info</option>
           <option value="warn">Warn</option>
           <option value="error">Error</option>
           <option value="debug">Debug</option>
+        </select>
+        <select id="log-service-filter" onchange="applyFilters()">
+          <option value="all">All Services</option>
         </select>
         <label><input type="checkbox" id="log-show-system" checked onchange="applyFilters()" /> System</label>
         <label><input type="checkbox" id="log-show-app" checked onchange="applyFilters()" /> App</label>
@@ -209,8 +208,41 @@
     let allLogs = [];
     let autoScroll = true;
     let aiResponse = '';
+    let ws = null;
+    let wsReconnectDelay = 1000;
 
-    // Generate realistic logs
+    // ── WebSocket logging ───────────────────────────────────────────
+    function connectWS() {
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${proto}//${location.host}/ws/logs`);
+      const indicator = document.getElementById('ws-indicator');
+
+      ws.onopen = () => {
+        indicator.textContent = 'WS: on';
+        indicator.className = 'ws-status connected';
+        wsReconnectDelay = 1000;
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const log = JSON.parse(event.data);
+          allLogs.push(log);
+          if (allLogs.length > 3000) allLogs = allLogs.slice(-2500);
+          renderLogs();
+        } catch(e) {}
+      };
+
+      ws.onclose = () => {
+        indicator.textContent = 'WS: off';
+        indicator.className = 'ws-status disconnected';
+        setTimeout(connectWS, wsReconnectDelay);
+        wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    // ── Simulated logs (fallback when WS unavailable) ──────────────
     const LOG_TEMPLATES = {
       dashboard: [
         { level: 'info', msg: 'Dashboard server started on :8030' },
@@ -299,6 +331,7 @@
       return logs.sort((a, b) => a.id - b.id);
     }
 
+    // ── Rendering ───────────────────────────────────────────────────
     function renderServiceBar() {
       const bar = document.getElementById('service-bar');
       bar.innerHTML = SERVICES.map(s => `
@@ -307,6 +340,13 @@
           ${s.icon} ${s.name}
         </button>
       `).join('');
+
+      // Populate service filter dropdown
+      const sel = document.getElementById('log-service-filter');
+      sel.innerHTML = '<option value="all">All Services</option>' +
+        SERVICES.filter(s => s.id !== 'all').map(s =>
+          `<option value="${s.id}" ${activeService === s.id ? 'selected' : ''}>${s.name}</option>`
+        ).join('');
     }
 
     function selectService(id) {
@@ -325,12 +365,14 @@
 
       const filter = document.getElementById('log-filter').value.toLowerCase();
       const levelFilter = document.getElementById('log-level-filter').value;
+      const serviceFilter = document.getElementById('log-service-filter').value;
       const showSystem = document.getElementById('log-show-system').checked;
       const showApp = document.getElementById('log-show-app').checked;
 
       logs = logs.filter(l => {
         if (filter && !l.msg.toLowerCase().includes(filter) && !l.service.toLowerCase().includes(filter)) return false;
         if (levelFilter !== 'all' && l.level !== levelFilter) return false;
+        if (serviceFilter !== 'all' && l.service !== serviceFilter) return false;
         if (!showSystem && l.system) return false;
         if (!showApp && !l.system) return false;
         return true;
@@ -339,7 +381,9 @@
       document.getElementById('log-count').textContent = allLogs.length;
       document.getElementById('log-visible').textContent = logs.length;
 
-      display.innerHTML = logs.map(l => `
+      // Cap DOM nodes for performance
+      const displayLogs = logs.slice(-500);
+      display.innerHTML = displayLogs.map(l => `
         <div class="log-entry" data-level="${l.level}">
           <span class="log-time">${l.time}</span>
           <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
@@ -356,6 +400,7 @@
     function toggleAutoScroll() {
       autoScroll = document.getElementById('auto-scroll').checked;
       document.getElementById('auto-scroll-badge').textContent = `auto-scroll: ${autoScroll ? 'on' : 'off'}`;
+      localStorage.setItem('freeai-logs-autoscroll', autoScroll);
     }
 
     function clearLogs() {
@@ -367,9 +412,10 @@
     function exportLogs(format) {
       let logs = allLogs;
       if (activeService !== 'all') logs = logs.filter(l => l.service === activeService);
-
       const filter = document.getElementById('log-filter').value.toLowerCase();
       if (filter) logs = logs.filter(l => l.msg.toLowerCase().includes(filter));
+      const levelFilter = document.getElementById('log-level-filter').value;
+      if (levelFilter !== 'all') logs = logs.filter(l => l.level === levelFilter);
 
       if (format === 'json') {
         const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
@@ -386,6 +432,7 @@
       a.href = URL.createObjectURL(blob);
       a.download = filename;
       a.click();
+      URL.revokeObjectURL(a.href);
     }
 
     function askAI() {
@@ -430,33 +477,54 @@
       }, 1200);
     }
 
-    function closeAI() {
-      document.getElementById('ai-modal').classList.remove('open');
-    }
+    function closeAI() { document.getElementById('ai-modal').classList.remove('open'); }
 
     function copyAIResponse() {
-      navigator.clipboard.writeText(aiResponse).then(() => {
-        alert('Copied to clipboard!');
-      });
+      navigator.clipboard.writeText(aiResponse).then(() => toast('Copied to clipboard!'));
+    }
+
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:80px;right:24px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 16px;font-size:13px;color:var(--text);box-shadow:var(--shadow);z-index:999;animation:fadeIn .2s;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2000);
     }
 
     function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-    // Init
+    // ── Init ────────────────────────────────────────────────────────
+    // Restore auto-scroll preference
+    const savedScroll = localStorage.getItem('freeai-logs-autoscroll');
+    if (savedScroll !== null) {
+      autoScroll = savedScroll === 'true';
+      document.getElementById('auto-scroll').checked = autoScroll;
+      document.getElementById('auto-scroll-badge').textContent = `auto-scroll: ${autoScroll ? 'on' : 'off'}`;
+    }
+
+    // Generate initial logs
     allLogs = [];
-    SERVICES.slice(1).forEach(s => {
-      allLogs.push(...generateLogs(s.id, 15));
-    });
+    SERVICES.slice(1).forEach(s => { allLogs.push(...generateLogs(s.id, 15)); });
     allLogs.sort((a, b) => a.id - b.id);
     renderServiceBar();
     renderLogs();
 
-    // Live log simulation
-    setInterval(() => {
-      const svc = SERVICES[1 + Math.floor(Math.random() * (SERVICES.length - 1))];
-      allLogs.push(...generateLogs(svc.id, 1));
-      if (allLogs.length > 2000) allLogs = allLogs.slice(-1500);
-      renderLogs();
+    // Try WebSocket first, fall back to simulation
+    try { connectWS(); } catch(e) { console.warn('WebSocket unavailable, using simulation'); }
+
+    // Live log simulation (only if WS not connected)
+    let simInterval = null;
+    function startSim() {
+      simInterval = setInterval(() => {
+        const svc = SERVICES[1 + Math.floor(Math.random() * (SERVICES.length - 1))];
+        allLogs.push(...generateLogs(svc.id, 1));
+        if (allLogs.length > 3000) allLogs = allLogs.slice(-2500);
+        renderLogs();
+      }, 3000);
+    }
+    // Start simulation after 3s if WS not connected
+    setTimeout(() => {
+      if (!ws || ws.readyState !== 1) startSim();
     }, 3000);
   </script>
 </body>

@@ -1,5 +1,7 @@
 {
-  "admin": ["*"],
-  "operator": ["route", "agent/*", "workflow/*"],
-  "viewer": ["status", "metrics", "health"]
+  "superadmin": ["*"],
+  "admin": ["route", "agent/*", "workflow/*", "rbac/*", "config/*", "admin/*", "models/*", "schedules/*"],
+  "developer": ["route", "agent/*", "workflow/*", "status", "metrics", "health", "models/*", "logs"],
+  "viewer": ["status", "metrics", "health", "models", "logs", "agents"],
+  "readonly": ["status", "health", "metrics"]
 }

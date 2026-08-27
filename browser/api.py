@@ -44,6 +44,7 @@ from browser.engine import BrowserEngine, create_engine, CDPClient
 from browser.anonymity import AnonymityRouter
 from browser.army import get_army, ArmyAgent
 from browser.intelligence import IntelligencePipeline
+from browser.extensions.manager import ExtensionManager, get_manager
 
 app = None
 _engine = None
@@ -212,6 +213,57 @@ if HAS_FASTAPI:
     @app.get("/browser/anonymity")
     def anonymity_status():
         return get_engine()._anonymity.describe() if hasattr(get_engine(), '_anonymity') else {"mode": "none"}
+
+    @app.get("/browser/extensions")
+    def list_extensions():
+        return get_engine()._ext_mgr.describe()
+
+    class InstallExtReq(BaseModel):
+        manifest: dict
+
+    @app.post("/api/extensions/install")
+    def install_extension(req: InstallExtReq):
+        result = get_engine()._ext_mgr.install_from_manifest(req.manifest)
+        if result.get("error"):
+            raise HTTPException(status_code=400, detail=result["error"])
+        return result
+
+    @app.get("/api/extensions")
+    def get_extensions():
+        return {"extensions": get_engine()._ext_mgr.list_all(), "total": len(get_engine()._ext_mgr.list_all())}
+
+    @app.delete("/api/extensions/{name}")
+    def uninstall_extension(name: str):
+        result = get_engine()._ext_mgr.uninstall(name)
+        if result.get("error"):
+            raise HTTPException(status_code=404, detail=result["error"])
+        return result
+
+    @app.get("/api/extensions/{name}/manifest")
+    def get_extension_manifest(name: str):
+        ext = get_engine()._ext_mgr.get(name)
+        if not ext:
+            raise HTTPException(status_code=404, detail=f"Extension not found: {name}")
+        return ext.to_dict()
+
+    @app.post("/api/extensions/{name}/toggle")
+    def toggle_extension(name: str, req: dict):
+        enabled = req.get("enabled", True)
+        result = get_engine()._ext_mgr.toggle(name, enabled)
+        if result.get("error"):
+            raise HTTPException(status_code=404, detail=result["error"])
+        return result
+
+    @app.post("/api/extensions/{name}/domain")
+    def set_domain_override(name: str, req: dict):
+        domain = req.get("domain", "")
+        enabled = req.get("enabled", True)
+        if not domain:
+            raise HTTPException(status_code=400, detail="domain is required")
+        result = get_engine()._ext_mgr.set_domain_override(name, domain, enabled)
+        if result.get("error"):
+            raise HTTPException(status_code=404, detail=result["error"])
+        return result
 
     @app.post("/browser/rotate-circuit")
     def rotate_circuit():

@@ -1,0 +1,339 @@
+# FreeAI Helm Chart Values
+# Reference: k8s/ deployment, service, ingress, network-policy manifests
+
+global:
+  namespace: freeai-stack
+  imageRegistry: your-registry
+  commonLabels: {}
+
+# ---- Registry / Images ----
+images:
+  router:
+    repository: your-registry/router
+    tag: latest
+    pullPolicy: IfNotPresent
+  agents:
+    repository: your-registry/agents
+    tag: latest
+    pullPolicy: IfNotPresent
+  dashboard:
+    repository: your-registry/dashboard
+    tag: latest
+    pullPolicy: IfNotPresent
+  workflow:
+    repository: your-registry/workflow
+    tag: latest
+    pullPolicy: IfNotPresent
+  autonomous:
+    repository: your-registry/autonomous
+    tag: latest
+    pullPolicy: IfNotPresent
+  browser:
+    repository: your-registry/browser
+    tag: latest
+    pullPolicy: IfNotPresent
+  llama:
+    repository: your-registry/llama
+    tag: latest
+    pullPolicy: IfNotPresent
+  vllm:
+    repository: vllm/vllm-openai
+    tag: latest
+    pullPolicy: IfNotPresent
+
+# ---- Namespace ----
+namespace:
+  create: true
+  name: freeai-stack
+
+# ---- PVCs ----
+persistence:
+  models:
+    enabled: true
+    size: 100Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+  auditLogs:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+  workspaces:
+    enabled: true
+    size: 50Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+  logs:
+    enabled: true
+    size: 20Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+
+# ---- ConfigMap ----
+config:
+  llamaBase: "http://llama:9001"
+  routerPort: "8010"
+  agentsPort: "8020"
+  dashboardPort: "8030"
+  workflowPort: "8040"
+  autonomousPort: "8050"
+  browserPort: "8180"
+  llamaPort: "9001"
+  vllmPort: "9002"
+  mockLLM: "0"
+  rateLimitCapacity: "60"
+  cacheEnabled: "true"
+  stackProfile: "prod"
+  nGpuLayers: "80"
+  llamaVisionEnabled: "false"
+  llamaModelPath: "/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf"
+  vllmModel: "Qwen/Qwen2.5-7B-Instruct"
+  qdrantUrl: "http://qdrant:6333"
+  memoryMaxTurns: "50"
+  memoryMaxSessions: "500"
+  enableShellTools: "0"
+  maxFixRounds: "3"
+
+# ---- Secrets (sensitive values) ----
+secrets:
+  routerApiKey: ""
+  agentApiKey: ""
+  dashboardAuthToken: ""
+  autoauthHash: ""
+  openaiApiKey: ""
+  anthropicApiKey: ""
+  hfToken: ""
+
+# ---- TLS ----
+tls:
+  enabled: false
+  host: freeai.local
+  secretName: freeai-tls-secret
+  certManager: false
+
+# ---- Ingress ----
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+  hosts:
+    - host: freeai.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: dashboard
+          port: 8030
+        - path: /api/router(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: router
+          port: 8010
+        - path: /api/agents(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: agents
+          port: 8020
+        - path: /api/workflow(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: workflow
+          port: 8040
+        - path: /api/autonomous(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: autonomous
+          port: 8050
+        - path: /api/browser(/|$)(.*)
+          pathType: ImplementationSpecific
+          service: browser
+          port: 8180
+        - path: /ws
+          pathType: Prefix
+          service: router
+          port: 8011
+        - path: /ws/.*
+          pathType: Prefix
+          service: router
+          port: 8011
+  tls: []
+
+# ---- Services ----
+services:
+  dashboard:
+    type: LoadBalancer
+    annotations: {}
+  router:
+    type: ClusterIP
+  agents:
+    type: ClusterIP
+  workflow:
+    type: ClusterIP
+  autonomous:
+    type: ClusterIP
+  browser:
+    type: ClusterIP
+  llama:
+    type: ClusterIP
+  vllm:
+    type: ClusterIP
+
+# ---- Deployments ----
+deployments:
+  router:
+    replicas: 2
+    strategy: RollingUpdate
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "2000m"
+        memory: "1Gi"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  agents:
+    replicas: 2
+    strategy: RollingUpdate
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "2000m"
+        memory: "1Gi"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  dashboard:
+    replicas: 2
+    strategy: RollingUpdate
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  workflow:
+    replicas: 2
+    strategy: RollingUpdate
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "2000m"
+        memory: "1Gi"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  autonomous:
+    replicas: 1
+    strategy: RollingUpdate
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        cpu: "2000m"
+        memory: "1Gi"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  browser:
+    replicas: 1
+    strategy: RollingUpdate
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+      limits:
+        cpu: "2000m"
+        memory: "2Gi"
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  llama:
+    replicas: 1
+    strategy: Recreate
+    gpu: true
+    resources:
+      requests:
+        cpu: "2000m"
+        memory: "8Gi"
+        nvidia.com/gpu: 1
+      limits:
+        cpu: "8000m"
+        memory: "16Gi"
+        nvidia.com/gpu: 1
+    nodeSelector:
+      nvidia.com/gpu.present: "true"
+    tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+    affinity: {}
+  vllm:
+    replicas: 1
+    strategy: Recreate
+    gpu: true
+    resources:
+      requests:
+        cpu: "4000m"
+        memory: "16Gi"
+        nvidia.com/gpu: 1
+      limits:
+        cpu: "8000m"
+        memory: "32Gi"
+        nvidia.com/gpu: 1
+    nodeSelector:
+      nvidia.com/gpu.present: "true"
+    tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+    affinity: {}
+
+# ---- HPA ----
+hpa:
+  router:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    cpuThreshold: 70
+    memoryThreshold: 80
+  agents:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    cpuThreshold: 70
+    memoryThreshold: 80
+  workflow:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    cpuThreshold: 70
+    memoryThreshold: 80
+
+# ---- Network Policy ----
+networkPolicy:
+  enabled: true
+  allowExternalToDashboard: true
+
+# ---- Prometheus ----
+prometheus:
+  scrape: true
+  port: 8010
+
+# ---- Observability ----
+observability:
+  enabled: false
+  grafana:
+    enabled: false
+  prometheus:
+    enabled: false

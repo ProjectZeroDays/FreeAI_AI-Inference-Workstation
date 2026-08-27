@@ -54,6 +54,8 @@
       background:rgba(56,189,248,.06); border:1px solid rgba(56,189,248,.15);
       font-size:11px; color:var(--accent-2); line-height:1.5;
     }
+    .web-card-body.mr-clickable { cursor:pointer; }
+    .web-card-body.mr-clickable:hover { background:rgba(255,255,255,.02); border-radius:4px; }
     .web-card-recommendation strong { color:var(--text); }
     .drag-handle { color:var(--muted-2); font-size:14px; cursor:grab; margin-right:4px; }
     /* Sortable overrides */
@@ -86,6 +88,7 @@
         <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
         <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
         <a href="/desktop" class="nav-item active"><span class="nav-dot"></span> Desktop</a>
+        <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
         <a href="/admin/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
         <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
       </div>
@@ -158,6 +161,10 @@
       { id:'hot-models', icon:'◈', bg:'rgba(99,102,241,.12)', color:'#6366F1', title:'Hot Models',
         status:'green', lines:[['Active','Qwen2.5-7B'],['Loaded','3/5'],['GPU 0','Qwen2.5-7B'],['GPU 1','DeepSeek-V3']],
         rec:'Drag to reorder. Use /admin/hot-models to load, /admin/model-switch to swap.' },
+      { id:'model-performance', icon:'⬡', bg:'rgba(6,182,212,.12)', color:'#06B6D4', title:'Model Performance',
+        status:'green', lines:[['Ranked','8 models'],['Top Score','—'],['Avg Latency','—'],['Benchmarks','0 runs']],
+        rec:'Click to view full scores, rankings, and benchmark results.',
+        link:'/model-registry' },
     ];
 
     const GRID_KEY = 'freeai-desktop-card-order';
@@ -203,6 +210,46 @@
     _fetchHotModels();
     setInterval(_fetchHotModels, 10000);
 
+    // Model performance card live data
+    let _perfCache = null;
+    async function _fetchPerf() {
+      try {
+        const r = await fetch('/api/models/rankings');
+        _perfCache = await r.json();
+        _updatePerfCard();
+      } catch(e) {}
+    }
+    function _updatePerfCard() {
+      if (!_perfCache) return;
+      const rankings = _perfCache.rankings || [];
+      const card = CARD_DEFS.find(c => c.id === 'model-performance');
+      if (!card) return;
+      const top = rankings[0] || {};
+      const scored = rankings.filter(r => r.quality_score != null);
+      const avgLatency = scored.length
+        ? (scored.reduce((s,r) => s + (r.latency_ms || 0), 0) / scored.length).toFixed(0)
+        : '—';
+      card.lines = [
+        ['Ranked', `${rankings.length} models`],
+        ['Top Score', top.quality_score != null ? top.quality_score.toFixed(3) : '—'],
+        ['Avg Latency', avgLatency + ' ms'],
+        ['Benchmarks', '0 runs'],
+      ];
+      card.status = scored.length > 0
+        ? (top.quality_score >= 0.7 ? 'green' : top.quality_score >= 0.4 ? 'yellow' : 'red')
+        : 'gray';
+      const grid = document.getElementById('cardGrid');
+      const perfCard = grid?.querySelector('[data-id="model-performance"]');
+      if (perfCard) {
+        const dots = perfCard.querySelector('.status-dot');
+        if (dots) dots.className = 'status-dot ' + (card?.status || 'gray');
+        const vals = perfCard.querySelectorAll('.web-card-value');
+        card?.lines.forEach(([,v], i) => { if (vals[i]) vals[i].textContent = v; });
+      }
+    }
+    _fetchPerf();
+    setInterval(_fetchPerf, 30000);
+
     const grid = document.getElementById('cardGrid');
     const iconMap = {};
 
@@ -236,7 +283,7 @@
               <button title="Refresh" onclick="refreshCard('${id}')">↻</button>
             </div>
           </div>
-          <div class="web-card-body">
+          <div class="web-card-body${def.link ? ' mr-clickable' : ''}" ${def.link ? `onclick="window.location.href='${def.link}'"` : ''}>
             ${linesHtml}
             <div class="web-card-recommendation"><strong>Tip:</strong> ${def.rec}</div>
           </div>`;

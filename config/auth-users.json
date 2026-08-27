@@ -1,0 +1,15 @@
+{
+  "_comment": "User accounts for JWT authentication. Format: {username: {password_hash_bcrypt, role}}",
+  "users": {
+    "admin": {
+      "password_hash": "$2b$12$P9TIX5vJvHhFSSn/Dpg4vOmARt5GngZPE7kg.vTZob0ClHWMw98o.",
+      "role": "admin"
+    }
+  },
+  "_default_password_hint": "Default admin password is 'admin123' \u00e2\u20ac\u201d change immediately after first login",
+  "_roles": [
+    "admin",
+    "developer",
+    "viewer"
+  ]
+}

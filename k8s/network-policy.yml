@@ -1,9 +1,150 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
-metadata: { name: freeai-backend }
+metadata:
+  name: freeai-allow-dashboard-to-router
+  namespace: freeai-stack
 spec:
-  podSelector: { matchLabels: { app: freeai-router } }
-  policyTypes: [Ingress]
+  podSelector:
+    matchLabels:
+      app: router
+  policyTypes:
+    - Ingress
   ingress:
-  - from: [{ podSelector: { matchLabels: { app: freeai-dashboard } } }, { podSelector: { matchLabels: { app: freeai-agents } } }]
-    ports: [{ port: 8010 }]
+    - from:
+        - podSelector:
+            matchLabels:
+              app: dashboard
+      ports:
+        - port: 8010
+        - port: 8011
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-allow-router-to-agents
+  namespace: freeai-stack
+spec:
+  podSelector:
+    matchLabels:
+      app: agents
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: router
+        - podSelector:
+            matchLabels:
+              app: dashboard
+        - podSelector:
+            matchLabels:
+              app: workflow
+        - podSelector:
+            matchLabels:
+              app: autonomous
+        - podSelector:
+            matchLabels:
+              app: browser
+      ports:
+        - port: 8020
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-block-external-to-agents
+  namespace: freeai-stack
+spec:
+  podSelector:
+    matchLabels:
+      app: agents
+  policyTypes:
+    - Ingress
+  ingress:
+    # Only allow from internal backends; no external access
+    - from:
+        - podSelector:
+            matchLabels:
+              app: router
+        - podSelector:
+            matchLabels:
+              app: dashboard
+        - podSelector:
+            matchLabels:
+              app: workflow
+        - podSelector:
+            matchLabels:
+              app: autonomous
+        - podSelector:
+            matchLabels:
+              app: browser
+      ports:
+        - port: 8020
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-backend-isolation
+  namespace: freeai-stack
+spec:
+  podSelector:
+    matchLabels:
+      tier: backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: frontend
+        - podSelector:
+            matchLabels:
+              tier: backend
+        - podSelector:
+            matchLabels:
+              tier: inference
+      ports:
+        - port: 8010
+        - port: 8020
+        - port: 8040
+        - port: 8050
+        - port: 8180
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-inference-isolation
+  namespace: freeai-stack
+spec:
+  podSelector:
+    matchLabels:
+      tier: inference
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: router
+        - podSelector:
+            matchLabels:
+              app: agents
+      ports:
+        - port: 9001
+        - port: 9002
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-allow-external-to-dashboard
+  namespace: freeai-stack
+spec:
+  podSelector:
+    matchLabels:
+      app: dashboard
+  policyTypes:
+    - Ingress
+  ingress:
+    - from: []
+      ports:
+        - port: 8030

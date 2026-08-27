@@ -21,6 +21,13 @@ try:
 except ImportError:
     pass
 
+try:
+    from log_stream import push_log as log_push, get_log_buffer, clear_log_buffer
+except ImportError:
+    def log_push(*a, **kw): pass
+    def get_log_buffer(*a, **kw): return []
+    def clear_log_buffer(*a, **kw): pass
+
 # ── i18n ──────────────────────────────────────────────────────────
 try:
     from i18n import (
@@ -803,6 +810,11 @@ def forum_page():
 @app.route("/logs")
 def logs_page():
     return render_template("logs.html")
+
+
+@app.route("/logs-stream")
+def logs_stream_page():
+    return render_template("logs-stream.html")
 
 
 @app.route("/audit")
@@ -2033,12 +2045,37 @@ def api_notifications_clear():
     return jsonify({"ok": True})
 
 
+def log(service, level, message):
+    log_push(service, level, message)
+
+
+@app.route("/api/logs")
+def api_logs():
+    service = request.args.get("service")
+    level = request.args.get("level")
+    limit = int(request.args.get("limit", 200))
+    buf = get_log_buffer(service=service, limit=limit)
+    if level:
+        buf = [e for e in buf if e.get("level") == level]
+    return jsonify({"logs": buf, "total": len(buf)})
+
+
+@app.route("/api/logs/clear", methods=["POST"])
+def api_logs_clear():
+    service = request.args.get("service")
+    clear_log_buffer(service=service)
+    return jsonify({"ok": True})
+
+
 if __name__ == "__main__":
     import notifications_ws as _nws
     _nws.start(host="127.0.0.1", port=8765)
+    import log_stream as _lws
+    _lws.start(host="127.0.0.1", port=8766)
     port = int(os.environ.get("DASHBOARD_PORT", "8080"))
     print(f"[dashboard] Serving on :{port}")
     print(f"[dashboard] Notifications WS on ws://127.0.0.1:8765")
+    print(f"[dashboard] Log stream WS on ws://127.0.0.1:8766")
     app.run(host="0.0.0.0", port=port, threaded=True)
 
 
@@ -3196,6 +3233,11 @@ def plugins_manage_page():
 def browser_v2_page():
     return render_template("browser-v2.html")
 
+
+@app.route("/extensions")
+def extensions_page():
+    return render_template("extensions.html")
+
 @app.route("/loot")
 def loot_page():
     return render_template("loot.html")
@@ -3211,6 +3253,18 @@ def salad_page():
 @app.route("/aikido")
 def aikido_page():
     return render_template("aikido.html")
+
+
+@app.route("/desktop")
+def desktop_page():
+    locale = get_locale_from_session(session)
+    return render_template("desktop.html", i18n_locale=locale)
+
+
+@app.route("/model-registry")
+def model_registry_page():
+    locale = get_locale_from_session(session)
+    return render_template("model-registry.html", i18n_locale=locale)
 
 
 # ── Loot API ────────────────────────────────────────────────────
@@ -3283,4 +3337,266 @@ def api_c2_shell():
     data = request.get_json(silent=True) or {}
     cmd = data.get("command", "")
     return jsonify({"host_id": data.get("host_id", ""), "output": f"{cmd}: command executed", "ts": time.time()})
+
+
+# ── Prompt Templates API ─────────────────────────────────────────
+_PROMPTS_FILE = ROOT / "data" / "prompts.json"
+_PROMPTS_LOCK = threading.Lock()
+
+def _load_prompts():
+    try:
+        if _PROMPTS_FILE.exists():
+            return json.loads(_PROMPTS_FILE.read_text())
+    except Exception:
+        pass
+    # Default templates
+    defaults = [
+        {"id": 1, "name": "Code Review", "category": "coding", "content": "Review the following code for bugs, security issues, and performance problems. Suggest specific improvements:\n\n{{code}}"},
+        {"id": 2, "name": "Debug Helper", "category": "coding", "content": "I'm encountering this error: {{error}}\n\nHere's the relevant code:\n{{code}}\n\nPlease help me debug this issue."},
+        {"id": 3, "name": "Refactor Suggestion", "category": "coding", "content": "Refactor the following code to improve readability and maintainability while preserving functionality:\n\n{{code}}"},
+        {"id": 4, "name": "Write Tests", "category": "coding", "content": "Write unit tests for the following function using pytest:\n\n{{code}}\n\nInclude edge cases and error handling."},
+        {"id": 5, "name": "Log Analysis", "category": "analysis", "content": "Analyze the following logs and identify patterns, errors, and recommendations:\n\n{{logs}}"},
+        {"id": 6, "name": "Performance Report", "category": "analysis", "content": "Generate a performance analysis report based on these metrics:\n\n{{metrics}}\n\nInclude bottlenecks and optimization suggestions."},
+        {"id": 7, "name": "Data Summary", "category": "analysis", "content": "Summarize the key findings from this dataset:\n\n{{data}}\n\nFocus on trends, outliers, and actionable insights."},
+        {"id": 8, "name": "Creative Story", "category": "creative", "content": "Write a short story based on this premise:\n\n{{premise}}\n\nTarget length: {{length}} words. Tone: {{tone}}."},
+        {"id": 9, "name": "Poem Generator", "category": "creative", "content": "Write a poem about {{topic}} in the style of {{style}}. Use {{form}} form with {{lines}} lines."},
+        {"id": 10, "name": "Brainstorm Ideas", "category": "creative", "content": "Brainstorm {{count}} creative ideas for: {{topic}}\n\nConsider constraints: {{constraints}}"},
+        {"id": 11, "name": "Summarize Text", "category": "general", "content": "Summarize the following text in {{count}} bullet points:\n\n{{text}}"},
+        {"id": 12, "name": "Translate", "category": "general", "content": "Translate the following text to {{language}}:\n\n{{text}}\n\nPreserve the original tone and meaning."},
+        {"id": 13, "name": "Explain Concept", "category": "general", "content": "Explain the following concept as if to a {{level}}:\n\n{{concept}}\n\nUse examples and analogies."},
+    ]
+    _PROMPTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _save_prompts(defaults)
+    return defaults
+
+def _save_prompts(prompts):
+    try:
+        _PROMPTS_FILE.write_text(json.dumps(prompts, indent=2))
+    except Exception:
+        pass
+
+@app.route("/prompts")
+def prompts_page():
+    return render_template("prompts.html")
+
+@app.route("/api/prompts", methods=["GET"])
+def api_get_prompts():
+    with _PROMPTS_LOCK:
+        return jsonify(_load_prompts())
+
+@app.route("/api/prompts", methods=["POST"])
+def api_create_prompt():
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+    content = data.get("content", "").strip()
+    category = data.get("category", "general")
+    if not name or not content:
+        return jsonify({"error": "Name and content are required"}), 400
+    with _PROMPTS_LOCK:
+        prompts = _load_prompts()
+        new_id = max([p.get("id", 0) for p in prompts], default=0) + 1
+        prompt = {"id": new_id, "name": name, "content": content, "category": category}
+        prompts.append(prompt)
+        _save_prompts(prompts)
+        return jsonify(prompt)
+
+@app.route("/api/prompts/<int:prompt_id>", methods=["PUT"])
+def api_update_prompt(prompt_id):
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+    content = data.get("content", "").strip()
+    category = data.get("category", "general")
+    if not name or not content:
+        return jsonify({"error": "Name and content are required"}), 400
+    with _PROMPTS_LOCK:
+        prompts = _load_prompts()
+        for p in prompts:
+            if p.get("id") == prompt_id:
+                p["name"] = name
+                p["content"] = content
+                p["category"] = category
+                _save_prompts(prompts)
+                return jsonify({"ok": True, "prompt": p})
+        return jsonify({"error": "Prompt not found"}), 404
+
+@app.route("/api/prompts/<int:prompt_id>", methods=["DELETE"])
+def api_delete_prompt(prompt_id):
+    with _PROMPTS_LOCK:
+        prompts = _load_prompts()
+        prompts = [p for p in prompts if p.get("id") != prompt_id]
+        _save_prompts(prompts)
+        return jsonify({"ok": True})
+
+
+# ── RBAC integration ─────────────────────────────────────────────
+try:
+    from permissions.api import rbac_bp
+    from permissions.middleware import require_role, require_permission
+    app.register_blueprint(rbac_bp)
+    _RBAC_AVAILABLE = True
+except ImportError:
+    _RBAC_AVAILABLE = False
+
+
+# ── RBAC page ────────────────────────────────────────────────────
+@app.route("/rbac")
+def rbac_page():
+    return render_template("rbac.html")
+
+
+
+# ── JWT Authentication API ──────────────────────────────────────
+_AUTH_ENABLED = bool(os.environ.get("AUTH_JWT_SECRET", "").strip())
+
+try:
+    from auth.jwt import jwt_auth, generate_access_token, generate_refresh_token, decode_token, check_login_rate_limit, record_login_attempt
+    from auth.users import users_store, list_users as _list_users
+    _AUTH_MODULE_AVAILABLE = True
+except ImportError:
+    _AUTH_MODULE_AVAILABLE = False
+
+
+@app.route("/auth/login", methods=["GET"])
+def auth_login_page():
+    locale = get_locale_from_session(session)
+    return render_template("login.html", i18n_locale=locale, auth_enabled=_AUTH_ENABLED)
+
+
+@app.route("/auth/login", methods=["POST"])
+def auth_login():
+    if not _AUTH_MODULE_AVAILABLE or not _AUTH_ENABLED:
+        return jsonify({"error": "JWT auth not configured"}), 503
+    data = request.get_json(silent=True) or {}
+    username = (data.get("username") or "").strip()
+    password = data.get("password") or ""
+    client_ip = request.remote_addr or "unknown"
+
+    if not username or not password:
+        return jsonify({"error": "username and password required"}), 400
+
+    if not check_login_rate_limit(client_ip):
+        return jsonify({"error": "too many login attempts, try again later"}), 429
+
+    user_info, error = users_store.authenticate(username, password)
+    if error:
+        record_login_attempt(client_ip, False)
+        return jsonify({"error": "invalid credentials"}), 401
+
+    record_login_attempt(client_ip, True)
+    tokens = jwt_auth.create_token(user_info["username"], user_info["role"])
+    return jsonify({
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+        "token_type": "bearer",
+        "expires_in": tokens["expires_in"],
+        "user": {"username": user_info["username"], "role": user_info["role"]},
+    })
+
+
+@app.route("/auth/refresh", methods=["POST"])
+def auth_refresh():
+    if not _AUTH_MODULE_AVAILABLE or not _AUTH_ENABLED:
+        return jsonify({"error": "JWT auth not configured"}), 503
+    data = request.get_json(silent=True) or {}
+    refresh_token = data.get("refresh_token", "").strip()
+    if not refresh_token:
+        return jsonify({"error": "refresh_token required"}), 400
+    payload = decode_token(refresh_token)
+    if not payload or payload.get("type") != "refresh":
+        return jsonify({"error": "invalid refresh token"}), 401
+    user_info = users_store.get_user(payload["sub"])
+    if not user_info:
+        return jsonify({"error": "user not found"}), 401
+    tokens = jwt_auth.create_token(payload["sub"], user_info["role"])
+    return jsonify({
+        "access_token": tokens["access_token"],
+        "refresh_token": tokens["refresh_token"],
+        "token_type": "bearer",
+        "expires_in": tokens["expires_in"],
+    })
+
+
+@app.route("/auth/me")
+def auth_me():
+    if not _AUTH_ENABLED:
+        return jsonify({"authenticated": False})
+    auth_header = request.headers.get("Authorization", "").strip()
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"authenticated": False})
+    token = auth_header[len("Bearer "):].strip()
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
+        return jsonify({"authenticated": False}), 401
+    user_info = users_store.get_user(payload["sub"])
+    if not user_info:
+        return jsonify({"authenticated": False}), 401
+    return jsonify({
+        "authenticated": True,
+        "user": {"username": payload["sub"], "role": user_info["role"]},
+    })
+
+
+@app.route("/auth/logout", methods=["POST"])
+def auth_logout():
+    return jsonify({"ok": True})
+
+
+@app.route("/auth/users", methods=["GET"])
+def auth_list_users():
+    if not _AUTH_MODULE_AVAILABLE or not _AUTH_ENABLED:
+        return jsonify({"error": "JWT auth not configured"}), 503
+    auth_header = request.headers.get("Authorization", "").strip()
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"error": "unauthorized"}), 401
+    payload = decode_token(auth_header[len("Bearer "):].strip())
+    if not payload or payload.get("type") != "access":
+        return jsonify({"error": "unauthorized"}), 401
+    user_info = users_store.get_user(payload["sub"])
+    if not user_info or user_info["role"] != "admin":
+        return jsonify({"error": "forbidden"}), 403
+    return jsonify({"users": _list_users()})
+
+
+@app.route("/auth/users", methods=["POST"])
+def auth_create_user():
+    if not _AUTH_MODULE_AVAILABLE or not _AUTH_ENABLED:
+        return jsonify({"error": "JWT auth not configured"}), 503
+    auth_header = request.headers.get("Authorization", "").strip()
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"error": "unauthorized"}), 401
+    payload = decode_token(auth_header[len("Bearer "):].strip())
+    if not payload or payload.get("type") != "access":
+        return jsonify({"error": "unauthorized"}), 401
+    user_info = users_store.get_user(payload["sub"])
+    if not user_info or user_info["role"] != "admin":
+        return jsonify({"error": "forbidden"}), 403
+    data = request.get_json(silent=True) or {}
+    username = (data.get("username") or "").strip()
+    password = data.get("password") or ""
+    role = data.get("role", "developer")
+    if not username or not password:
+        return jsonify({"error": "username and password required"}), 400
+    ok, err = users_store.create_user(username, password, role)
+    if not ok:
+        return jsonify({"error": err}), 400
+    return jsonify({"ok": True, "username": username, "role": role})
+
+
+@app.route("/auth/users/<username>", methods=["DELETE"])
+def auth_delete_user(username):
+    if not _AUTH_MODULE_AVAILABLE or not _AUTH_ENABLED:
+        return jsonify({"error": "JWT auth not configured"}), 503
+    auth_header = request.headers.get("Authorization", "").strip()
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"error": "unauthorized"}), 401
+    payload = decode_token(auth_header[len("Bearer "):].strip())
+    if not payload or payload.get("type") != "access":
+        return jsonify({"error": "unauthorized"}), 401
+    user_info = users_store.get_user(payload["sub"])
+    if not user_info or user_info["role"] != "admin":
+        return jsonify({"error": "forbidden"}), 403
+    ok, err = users_store.delete_user(username)
+    if not ok:
+        return jsonify({"error": err}), 400
+    return jsonify({"ok": True})
 

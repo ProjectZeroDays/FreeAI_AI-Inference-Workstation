@@ -44,3 +44,20 @@ jobs:
             node --check "$f" || { echo "JS FAIL: $f"; status=1; }
           done
           exit $status
+
+      - name: Install test dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Pytest — unit + regression + integration
+        run: |
+          python -m pytest tests/ \
+            tests/regression/prompts.py \
+            tests/integration/test_api.py \
+            -q --tb=short
+
+      - name: Pytest — load tests (locust smoke + GPU)
+        run: |
+          python -m pytest tests/load/test_gpu.py tests/load/test_router.py \
+            -q --tb=short
+        env:
+          MOCK_LLM: "1"

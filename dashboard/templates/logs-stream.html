@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Live Logs</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .logs-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    .logs-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .logs-header h2 { font-size: 16px; font-weight: 700; margin: 0; }
+    .logs-header-actions { display: flex; gap: 8px; align-items: center; }
+    .conn-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+    .conn-status.connected { background: rgba(34,197,94,.12); color: var(--accent); }
+    .conn-status.disconnected { background: rgba(239,68,68,.12); color: var(--danger); }
+    .conn-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .conn-status.connected .conn-dot { background: var(--accent); box-shadow: 0 0 6px rgba(34,197,94,.6); }
+    .conn-status.disconnected .conn-dot { background: var(--danger); }
+    .filter-bar { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); flex-wrap: wrap; }
+    .filter-bar input, .filter-bar select { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; }
+    .filter-bar input { flex: 1; min-width: 160px; }
+    .filter-bar label { font-size: 12px; color: var(--muted-2); display: flex; align-items: center; gap: 6px; }
+    .filter-bar input[type="checkbox"] { accent-color: var(--accent); }
+    .logs-display { flex: 1; overflow-y: auto; padding: 16px 24px; background: #0a0e1a; font-family: 'JetBrains Mono', 'Cascadia Code', monospace; }
+    .logs-display::-webkit-scrollbar { width: 6px; }
+    .logs-display::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .log-entry { display: flex; gap: 12px; padding: 3px 0; font-size: 12px; line-height: 1.6; border-bottom: 1px solid rgba(148,163,184,.06); }
+    .log-entry:hover { background: rgba(255,255,255,.02); }
+    .log-time { color: var(--muted-2); flex-shrink: 0; }
+    .log-level { flex-shrink: 0; font-weight: 700; padding: 0 6px; border-radius: 4px; font-size: 11px; }
+    .log-level.info { color: #38BDF8; background: rgba(56,189,248,.1); }
+    .log-level.warn { color: #F59E0B; background: rgba(245,158,11,.1); }
+    .log-level.error { color: #EF4444; background: rgba(239,68,68,.1); }
+    .log-level.debug { color: var(--muted-2); background: rgba(148,163,184,.06); }
+    .log-service { flex-shrink: 0; color: var(--muted-2); font-size: 11px; padding: 0 4px; border-left: 1px solid var(--border); margin-left: 4px; }
+    .log-msg { color: #CBD5E1; word-break: break-all; }
+    .logs-bottom { display: flex; align-items: center; gap: 12px; padding: 10px 24px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+    .logs-bottom .lb-label { font-size: 12px; color: var(--muted-2); }
+    .logs-bottom .lb-count { font-size: 12px; color: var(--accent-2); font-weight: 600; }
+    .logs-bottom .lb-spacer { flex: 1; }
+    .logs-bottom .lb-actions { display: flex; gap: 8px; }
+    .logs-bottom .lb-actions button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .logs-bottom .lb-actions button:hover { border-color: var(--accent-2); }
+    .logs-bottom .lb-actions button.export:hover { border-color: var(--accent); color: var(--accent); }
+    .logs-bottom .lb-actions button.clear:hover { border-color: var(--danger); color: var(--danger); }
+    .auto-scroll-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Live Logs</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Service Logs</a>
+        <a href="/logs-stream" class="nav-item active"><span class="nav-dot"></span> Live Logs</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</span></a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main" style="padding:0;overflow:hidden">
+      <header class="logs-header">
+        <h2>Live Logs</h2>
+        <div class="logs-header-actions">
+          <label class="auto-scroll-toggle">
+            <input type="checkbox" id="auto-scroll" checked onchange="toggleAutoScroll()" /> Auto-scroll
+          </label>
+          <div id="conn-status" class="conn-status disconnected">
+            <span class="conn-dot"></span>
+            <span id="conn-text">Disconnected</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="filter-bar">
+        <input type="text" id="keyword-filter" placeholder="Search logs…" oninput="applyFilters()" />
+        <select id="level-filter" onchange="applyFilters()">
+          <option value="all">All Levels</option>
+          <option value="info">Info</option>
+          <option value="warn">Warn</option>
+          <option value="error">Error</option>
+          <option value="debug">Debug</option>
+        </select>
+        <select id="service-filter" onchange="applyFilters()">
+          <option value="all">All Services</option>
+        </select>
+        <label><input type="checkbox" id="follow-live" checked onchange="applyFilters()" /> Follow live</label>
+      </div>
+
+      <div class="logs-main">
+        <div class="logs-display" id="logs-display"></div>
+      </div>
+
+      <div class="logs-bottom">
+        <span class="lb-label">Entries:</span>
+        <span class="lb-count" id="log-count">0</span>
+        <span class="lb-spacer"></span>
+        <span class="lb-label">Level:</span>
+        <span class="lb-count" id="level-count">0</span>
+        <div class="lb-actions">
+          <button class="export" onclick="exportLogs('txt')">Export TXT</button>
+          <button class="export" onclick="exportLogs('json')">Export JSON</button>
+          <button class="clear" onclick="clearLogs()">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const AUTO_RECONNECT_MAX = 5000;
+    let ws = null;
+    let reconnectDelay = 500;
+    let allLogs = [];
+    let autoScroll = true;
+    let filters = { service: 'all', level: 'all', keyword: '' };
+    let levelCounts = {};
+    let wsFilters = {};
+
+    function connectWS() {
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = location.host;
+      ws = new WebSocket(`${proto}//${host}:8766/ws/logs`);
+
+      const statusEl = document.getElementById('conn-status');
+      const textEl = document.getElementById('conn-text');
+
+      ws.onopen = () => {
+        statusEl.className = 'conn-status connected';
+        textEl.textContent = 'Connected';
+        reconnectDelay = 500;
+        sendFilter();
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const entry = JSON.parse(event.data);
+          allLogs.push(entry);
+          const lvl = entry.level || 'info';
+          levelCounts[lvl] = (levelCounts[lvl] || 0) + 1;
+          if (allLogs.length > 5000) {
+            allLogs = allLogs.slice(-4000);
+            levelCounts = {};
+            allLogs.forEach(e => { const l = e.level || 'info'; levelCounts[l] = (levelCounts[l] || 0) + 1; });
+          }
+          renderLogs();
+        } catch(e) {}
+      };
+
+      ws.onclose = () => {
+        statusEl.className = 'conn-status disconnected';
+        textEl.textContent = 'Disconnected';
+        setTimeout(connectWS, reconnectDelay);
+        reconnectDelay = Math.min(reconnectDelay * 2, AUTO_RECONNECT_MAX);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    function sendFilter() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ filter: wsFilters }));
+    }
+
+    function applyFilters() {
+      filters.service = document.getElementById('service-filter').value;
+      filters.level = document.getElementById('level-filter').value;
+      filters.keyword = document.getElementById('keyword-filter').value;
+      wsFilters = { service: filters.service === 'all' ? null : filters.service,
+                    level: filters.level === 'all' ? null : filters.level,
+                    keyword: filters.keyword };
+      renderLogs();
+      sendFilter();
+    }
+
+    function toggleAutoScroll() {
+      autoScroll = document.getElementById('auto-scroll').checked;
+    }
+
+    function renderLogs() {
+      const display = document.getElementById('logs-display');
+      let logs = allLogs;
+
+      if (filters.service !== 'all') {
+        logs = logs.filter(l => l.service === filters.service);
+      }
+      if (filters.level !== 'all') {
+        logs = logs.filter(l => l.level === filters.level);
+      }
+      if (filters.keyword) {
+        const kw = filters.keyword.toLowerCase();
+        logs = logs.filter(l => (l.message || '').toLowerCase().includes(kw));
+      }
+
+      document.getElementById('log-count').textContent = allLogs.length;
+      const errorCount = levelCounts.error || 0;
+      const warnCount = levelCounts.warn || 0;
+      document.getElementById('level-count').textContent = `err:${errorCount} warn:${warnCount}`;
+
+      const displayLogs = logs.slice(-800);
+      const html = displayLogs.map(l => {
+        const ts = l.ts ? new Date(l.ts * 1000).toLocaleTimeString() : '';
+        const msg = escHtml(l.message || '');
+        const svc = escHtml(l.service || '');
+        return `<div class="log-entry">
+          <span class="log-time">${ts}</span>
+          <span class="log-level ${l.level || 'info'}">${(l.level || 'info').toUpperCase()}</span>
+          <span class="log-service">${svc}</span>
+          <span class="log-msg">${msg}</span>
+        </div>`;
+      }).join('');
+
+      const prevScroll = display.scrollHeight - display.scrollTop;
+      display.innerHTML = html;
+      if (autoScroll || !document.getElementById('follow-live').checked) {
+        display.scrollTop = display.scrollHeight;
+      } else {
+        display.scrollTop = display.scrollHeight - prevScroll;
+      }
+    }
+
+    function clearLogs() {
+      allLogs = [];
+      levelCounts = {};
+      renderLogs();
+    }
+
+    function exportLogs(format) {
+      let logs = allLogs;
+      if (filters.service !== 'all') logs = logs.filter(l => l.service === filters.service);
+      if (filters.level !== 'all') logs = logs.filter(l => l.level === filters.level);
+      if (filters.keyword) {
+        const kw = filters.keyword.toLowerCase();
+        logs = logs.filter(l => (l.message || '').toLowerCase().includes(kw));
+      }
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+        downloadBlob(blob, `live-logs-${Date.now()}.json`);
+      } else {
+        const text = logs.map(l => {
+          const ts = l.ts ? new Date(l.ts * 1000).toISOString() : '';
+          return `[${ts}] ${(l.level || 'info').toUpperCase().padEnd(5)} [${l.service || ''}] ${l.message || ''}`;
+        }).join('\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        downloadBlob(blob, `live-logs-${Date.now()}.txt`);
+      }
+    }
+
+    function downloadBlob(blob, filename) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function escHtml(t) {
+      return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(data => {
+        const sel = document.getElementById('service-filter');
+        const services = Object.keys(data).sort();
+        sel.innerHTML = '<option value="all">All Services</option>' +
+          services.map(s => `<option value="${s}">${s}</option>`).join('');
+      })
+      .catch(() => {});
+
+    connectWS();
+  </script>
+</body>
+</html>

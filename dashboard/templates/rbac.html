@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — RBAC Manager</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .rbac-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    .rbac-header { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .rbac-header h1 { font-size: 18px; font-weight: 700; margin: 0; }
+    .rbac-body { flex: 1; overflow: hidden; display: flex; }
+    .rbac-panel { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .rbac-divider { width: 1px; background: var(--border); flex-shrink: 0; }
+    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-2); margin-bottom: 12px; }
+    /* Role hierarchy cards */
+    .role-list { display: flex; flex-direction: column; gap: 8px; }
+    .role-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); transition: all .15s; }
+    .role-card:hover { border-color: var(--accent-2); }
+    .role-level { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+    .role-level.superadmin { background: rgba(239,68,68,.15); color: #EF4444; }
+    .role-level.admin { background: rgba(249,115,22,.15); color: #F97316; }
+    .role-level.developer { background: rgba(14,165,233,.15); color: #0EA5E9; }
+    .role-level.viewer { background: rgba(245,158,11,.15); color: #F59E0B; }
+    .role-level.readonly { background: rgba(107,114,128,.15); color: #6B7280; }
+    .role-name { font-size: 14px; font-weight: 700; }
+    .role-perms { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-left: auto; text-align: right; max-width: 50%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Permission matrix */
+    .matrix-wrap { overflow-x: auto; }
+    .matrix { border-collapse: collapse; width: 100%; font-size: 12px; }
+    .matrix th { padding: 8px 12px; text-align: left; font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-2); border-bottom: 2px solid var(--border); background: var(--panel); position: sticky; top: 0; }
+    .matrix td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .matrix tr:hover td { background: var(--panel-2); }
+    .matrix .perm-toggle { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+    .matrix .perm-toggle input { cursor: pointer; }
+    .check-yes { color: #22C55E; font-weight: 700; }
+    .check-no { color: var(--muted-2); }
+    /* User management */
+    .user-list { display: flex; flex-direction: column; gap: 6px; }
+    .user-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 9px; border: 1px solid var(--border); background: var(--panel); }
+    .user-name { font-size: 13px; font-weight: 600; flex: 1; }
+    .user-row select { padding: 5px 8px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .user-row button { padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--panel-2); color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; }
+    .user-row button:hover { border-color: #EF4444; color: #EF4444; }
+    /* Add user form */
+    .add-user-form { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .add-user-form input { padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; font-weight: 600; flex: 1; min-width: 140px; }
+    .add-user-form select { padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .add-user-form button { padding: 7px 16px; border-radius: 8px; border: none; background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; font-size: 12px; font-weight: 700; cursor: pointer; }
+    /* Check permission tool */
+    .check-form { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .check-form .field { display: flex; flex-direction: column; gap: 4px; }
+    .check-form label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-2); }
+    .check-form input, .check-form select { padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; font-weight: 600; }
+    .check-form button { padding: 7px 16px; border-radius: 8px; border: none; background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; font-size: 12px; font-weight: 700; cursor: pointer; align-self: flex-end; }
+    .check-result { margin-top: 12px; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); font-size: 13px; font-weight: 600; }
+    .check-result.allowed { border-color: #22C55E; color: #22C55E; }
+    .check-result.denied { border-color: #EF4444; color: #EF4444; }
+  </style>
+</head>
+<body>
+  <div class="rbac-layout">
+    <div class="rbac-header">
+      <h1>RBAC Manager</h1>
+      <span class="muted" style="margin-left:auto;font-size:12px">Role-Based Access Control</span>
+    </div>
+    <div class="rbac-body">
+      <!-- Left: Role Hierarchy -->
+      <div class="rbac-panel" style="flex:0 0 320px">
+        <div class="section-title">Role Hierarchy</div>
+        <div class="role-list" id="role-list">
+          <div class="muted" style="font-size:12px;padding:12px">Loading roles...</div>
+        </div>
+      </div>
+      <div class="rbac-divider"></div>
+      <!-- Center: Permission Matrix -->
+      <div class="rbac-panel" style="flex:1">
+        <div class="section-title">Permission Matrix</div>
+        <div class="matrix-wrap">
+          <table class="matrix" id="perm-matrix">
+            <thead><tr><th>Resource</th><th>Action</th><th>superadmin</th><th>admin</th><th>developer</th><th>viewer</th><th>readonly</th></tr></thead>
+            <tbody id="perm-tbody">
+              <tr><td colspan="7" class="muted" style="text-align:center;padding:20px">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="rbac-divider"></div>
+      <!-- Right: Users + Check -->
+      <div class="rbac-panel" style="flex:0 0 300px">
+        <div class="section-title">Users</div>
+        <div class="user-list" id="user-list">
+          <div class="muted" style="font-size:12px;padding:12px">Loading users...</div>
+        </div>
+        <div class="add-user-form">
+          <input id="new-username" placeholder="Username" />
+          <select id="new-role">
+            <option value="readonly">readonly</option>
+            <option value="viewer">viewer</option>
+            <option value="developer">developer</option>
+            <option value="admin">admin</option>
+            <option value="superadmin">superadmin</option>
+          </select>
+          <button onclick="addUser()">Add</button>
+        </div>
+        <div style="margin-top:24px">
+          <div class="section-title">Permission Check</div>
+          <div class="check-form">
+            <div class="field">
+              <label>Resource</label>
+              <input id="check-resource" value="workflow" />
+            </div>
+            <div class="field">
+              <label>Action</label>
+              <input id="check-action" value="execute" />
+            </div>
+            <div class="field">
+              <label>Role</label>
+              <select id="check-role">
+                <option>superadmin</option>
+                <option>admin</option>
+                <option>developer</option>
+                <option>viewer</option>
+                <option>readonly</option>
+              </select>
+            </div>
+            <button onclick="checkPerm()">Check</button>
+          </div>
+          <div class="check-result" id="check-result" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const ROLES = ['superadmin','admin','developer','viewer','readonly'];
+    const RESOURCES = ['route','agent','workflow','rbac','config','admin','model','schedule','status','metric','health','log','file','user'];
+    const ACTIONS = ['read','write','delete','exec','deploy','manage','view','create','update'];
+
+    async function loadRoles() {
+      const r = await fetch('/api/rbac/roles').then(e=>e.json());
+      const list = document.getElementById('role-list');
+      list.innerHTML = r.roles.map(role => `
+        <div class="role-card">
+          <div class="role-level ${role.name}">${role.level}</div>
+          <div>
+            <div class="role-name">${role.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${role.permissions.length} permissions</div>
+          </div>
+          <div class="role-perms">${role.permissions.slice(0,3).join(', ')}${role.permissions.length>3?'...':''}</div>
+        </div>
+      `).join('');
+    }
+
+    async function loadMatrix() {
+      const r = await fetch('/api/rbac/permissions').then(e=>e.json());
+      const perms = r.permissions;
+      const tbody = document.getElementById('perm-tbody');
+      tbody.innerHTML = '';
+      for (const res of RESOURCES) {
+        for (const act of ACTIONS) {
+          const key = `${res}/*`;
+          let cellVal = false;
+          for (const role of ROLES) {
+            const rolePerms = perms[role] || [];
+            const direct = rolePerms.includes(`${res}:${act}`) || rolePerms.includes(act);
+            const wildcard = rolePerms.includes('*');
+            const resourceMatch = rolePerms.some(p => p === res || p === key || (p.endsWith('/*') && res.startsWith(p.slice(0,-1))));
+            cellVal = wildcard || direct || resourceMatch;
+          }
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${res}</td><td>${act}</td>` +
+            ROLES.map(role => {
+              const rolePerms = perms[role] || [];
+              const hasAll = rolePerms.includes('*');
+              const hasThis = rolePerms.some(p => p === `${res}:${act}` || p === act || p === res || (p.endsWith('/*') && res.startsWith(p.slice(0,-1))));
+              const cls = hasAll || hasThis ? 'check-yes' : 'check-no';
+              const icon = hasAll || hasThis ? '✓' : '—';
+              return `<td class="${cls}">${icon}</td>`;
+            }).join('');
+          tbody.appendChild(tr);
+        }
+      }
+    }
+
+    async function loadUsers() {
+      const r = await fetch('/api/rbac/users').then(e=>e.json());
+      const list = document.getElementById('user-list');
+      list.innerHTML = Object.entries(r.users).map(([u, role]) => `
+        <div class="user-row">
+          <span class="user-name">${u}</span>
+          <select onchange="updateUserRole('${u}', this.value)">
+            ${ROLES.map(r => `<option value="${r}" ${r===role?'selected':''}>${r}</option>`).join('')}
+          </select>
+          ${u !== 'admin' ? `<button onclick="deleteUser('${u}')">✕</button>` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function updateUserRole(username, role) {
+      await fetch('/api/rbac/users', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, role})
+      });
+    }
+
+    async function deleteUser(username) {
+      await fetch(`/api/rbac/users/${username}`, {method: 'DELETE'});
+      loadUsers();
+    }
+
+    async function addUser() {
+      const username = document.getElementById('new-username').value.trim();
+      const role = document.getElementById('new-role').value;
+      if (!username) return;
+      await fetch('/api/rbac/users', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, role})
+      });
+      document.getElementById('new-username').value = '';
+      loadUsers();
+    }
+
+    async function checkPerm() {
+      const resource = document.getElementById('check-resource').value.trim();
+      const action = document.getElementById('check-action').value.trim();
+      const role = document.getElementById('check-role').value;
+      const r = await fetch('/api/rbac/check', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({resource, action, role})
+      }).then(e=>e.json());
+      const el = document.getElementById('check-result');
+      el.style.display = 'block';
+      el.className = 'check-result ' + (r.allowed ? 'allowed' : 'denied');
+      el.textContent = `${r.role} ${r.allowed ? '✓' : '✕'} ${r.action} on ${r.resource}`;
+    }
+
+    loadRoles();
+    loadMatrix();
+    loadUsers();
+  </script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: freeai-ingress
+  namespace: freeai-stack
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+  labels:
+    app: freeai
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - freeai.local
+      secretName: freeai-tls-secret
+  rules:
+    - host: freeai.local
+      http:
+        paths:
+          # Dashboard — root path
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dashboard
+                port:
+                  number: 8030
+
+          # API routes — router, agents, workflow
+          - path: /api/router(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: router
+                port:
+                  number: 8010
+          - path: /api/agents(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: agents
+                port:
+                  number: 8020
+          - path: /api/workflow(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: workflow
+                port:
+                  number: 8040
+          - path: /api/autonomous(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: autonomous
+                port:
+                  number: 8050
+          - path: /api/browser(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: browser
+                port:
+                  number: 8180
+
+          # WebSocket proxy
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service:
+                name: router
+                port:
+                  number: 8011
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: freeai-ingress-ws
+  namespace: freeai-stack
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/websocket-services: "router"
+  labels:
+    app: freeai
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - freeai.local
+      secretName: freeai-tls-secret
+  rules:
+    - host: freeai.local
+      http:
+        paths:
+          - path: /ws/.*
+            pathType: Prefix
+            backend:
+              service:
+                name: router
+                port:
+                  number: 8011

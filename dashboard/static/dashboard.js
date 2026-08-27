@@ -666,3 +666,28 @@ async function fetchStatus() {
     ts.textContent = "";
   }
 }
+
+/* ── JWT auth badge ───────────────────────────────────────────── */
+(function updateAuthBadge() {
+  var badge = document.getElementById("user-badge");
+  var nameEl = document.getElementById("user-name");
+  var roleEl = document.getElementById("user-role");
+  if (!badge) return;
+  if (typeof FreeAIAuth === "undefined" || !FreeAIAuth.isAuthenticated()) {
+    badge.style.display = "none";
+    return;
+  }
+  var user = FreeAIAuth.getUser();
+  if (user) {
+    badge.style.display = "";
+    nameEl.textContent = user.username;
+    roleEl.textContent = "[" + user.role + "]";
+    badge.onclick = function () {
+      if (confirm("Logout " + user.username + "?")) {
+        FreeAIAuth.logout();
+      }
+    };
+  } else {
+    badge.style.display = "none";
+  }
+})();

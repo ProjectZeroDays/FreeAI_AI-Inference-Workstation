@@ -1,0 +1,84 @@
+{
+  "name": "freeai-workspace",
+  "displayName": "FreeAI Workspace",
+  "description": "Control FreeAI inference workstation — route prompts, manage services, debug locally",
+  "version": "0.1.0",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:freeai.status",
+    "onCommand:freeai.route",
+    "onCommand:freeai.start",
+    "onCommand:freeai.stop"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "freeai.status",
+        "title": "FreeAI: Show Service Status",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "freeai.route",
+        "title": "FreeAI: Route Prompt",
+        "icon": "$(send)"
+      },
+      {
+        "command": "freeai.start",
+        "title": "FreeAI: Start Services",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "freeai.stop",
+        "title": "FreeAI: Stop Services",
+        "icon": "$(debug-stop)"
+      }
+    ],
+    "configuration": {
+      "title": "FreeAI Workspace",
+      "properties": {
+        "freeai.routerHost": {
+          "type": "string",
+          "default": "http://localhost:8010",
+          "description": "FreeAI router base URL"
+        },
+        "freeai.dashboardHost": {
+          "type": "string",
+          "default": "http://localhost:8080",
+          "description": "FreeAI dashboard base URL"
+        },
+        "freeai.workstationRoot": {
+          "type": "string",
+          "default": "",
+          "description": "Path to FreeAI workstation root (auto-detected if empty)"
+        },
+        "freeai.refreshIntervalMs": {
+          "type": "number",
+          "default": 10000,
+          "description": "Service health check interval in milliseconds"
+        },
+        "freeai.autoStart": {
+          "type": "boolean",
+          "default": false,
+          "description": "Auto-start FreeAI services when workspace opens"
+        },
+        "freeai.debugMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable mock LLM backend (MOCK_LLM=1)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}

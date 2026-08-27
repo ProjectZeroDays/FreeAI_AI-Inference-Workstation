@@ -35,6 +35,8 @@ from browser.mcp_tools import (
     register_mcp_tools,
 )
 
+from browser.extensions import Extension, ExtensionManager, get_manager
+
 __version__ = "2.0.0"
 __all__ = [
     "BrowserEngine", "FingerprintProfile", "CDPClient", "CDPError",
@@ -45,4 +47,5 @@ __all__ = [
     "GhidraAnalyzer", "FridaInstrumentor", "BurpProxy", "IntelligencePipeline",
     "browser_app", "get_browser_engine",
     "BROWSER_TOOLS", "register_mcp_tools",
+    "Extension", "ExtensionManager", "get_manager",
 ]

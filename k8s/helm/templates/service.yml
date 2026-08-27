@@ -1,0 +1,43 @@
+{{- define "freeai.service" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    app: {{ .name }}
+    tier: {{ .tier | default "backend" }}
+    {{- toYaml $.Values.global.commonLabels | nindent 4 }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .type | default "ClusterIP" }}
+  selector:
+    app: {{ .name }}
+  ports:
+    {{- range .ports }}
+    - name: {{ .name | default "http" }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort | default .port }}
+      protocol: TCP
+    {{- end }}
+{{- end }}
+
+---
+{{- include "freeai.service" (merge (dict "name" "router" "tier" "backend" "type" .Values.services.router.type "ports" (list (dict "name" "http" "port" 8010) (dict "name" "ws" "port" 8011)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8010")) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "agents" "tier" "backend" "type" .Values.services.agents.type "ports" (list (dict "name" "http" "port" 8020)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8020")) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "dashboard" "tier" "frontend" "type" .Values.services.dashboard.type "ports" (list (dict "name" "http" "port" 8030)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8030")) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "workflow" "tier" "backend" "type" .Values.services.workflow.type "ports" (list (dict "name" "http" "port" 8040)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8040")) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "autonomous" "tier" "backend" "type" .Values.services.autonomous.type "ports" (list (dict "name" "http" "port" 8050)) {}) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "browser" "tier" "backend" "type" .Values.services.browser.type "ports" (list (dict "name" "http" "port" 8180)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8180")) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "llama" "tier" "inference" "type" .Values.services.llama.type "ports" (list (dict "name" "http" "port" 9001)) {}) .) }}
+---
+{{- include "freeai.service" (merge (dict "name" "vllm" "tier" "inference" "type" .Values.services.vllm.type "ports" (list (dict "name" "http" "port" 9002)) {}) .) }}

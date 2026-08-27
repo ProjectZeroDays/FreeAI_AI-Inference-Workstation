@@ -1,0 +1,79 @@
+{{- if .Values.persistence.models.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: freeai-models
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: freeai
+    tier: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.models.accessMode }}
+  {{- if .Values.persistence.models.storageClass }}
+  storageClassName: {{ .Values.persistence.models.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.models.size }}
+{{- end }}
+---
+{{- if .Values.persistence.auditLogs.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: freeai-audit-logs
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: freeai
+    tier: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.auditLogs.accessMode }}
+  {{- if .Values.persistence.auditLogs.storageClass }}
+  storageClassName: {{ .Values.persistence.auditLogs.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.auditLogs.size }}
+{{- end }}
+---
+{{- if .Values.persistence.workspaces.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: freeai-workspaces
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: freeai
+    tier: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.workspaces.accessMode }}
+  {{- if .Values.persistence.workspaces.storageClass }}
+  storageClassName: {{ .Values.persistence.workspaces.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.workspaces.size }}
+{{- end }}
+---
+{{- if .Values.persistence.logs.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: freeai-logs
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: freeai
+    tier: storage
+spec:
+  accessModes:
+    - {{ .Values.persistence.logs.accessMode }}
+  {{- if .Values.persistence.logs.storageClass }}
+  storageClassName: {{ .Values.persistence.logs.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.logs.size }}
+{{- end }}

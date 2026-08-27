@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Model Registry</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .mr-page { max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+    .mr-page h1 { font-size: 22px; margin: 0 0 4px; }
+    .mr-page > p { color: var(--muted); font-size: 13px; margin: 0 0 24px; }
+    .mr-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+                   margin-bottom: 18px; }
+    .mr-search { flex: 1; min-width: 200px; padding: 7px 12px; border-radius: 8px;
+                 border: 1px solid var(--border); background: var(--panel-2);
+                 color: var(--text); font-size: 13px; }
+    .mr-search:focus { outline: none; border-color: var(--accent-2); }
+    .mr-select { padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border);
+                 background: var(--panel-2); color: var(--text); font-size: 13px; }
+    .mr-btn { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+              background: var(--panel-2); color: var(--muted); cursor: pointer;
+              font-size: 13px; transition: all .15s; }
+    .mr-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
+    .mr-btn.primary { background: rgba(99,102,241,.18); border-color: rgba(99,102,241,.4); color: #818CF8; }
+    .mr-btn.primary:hover { background: rgba(99,102,241,.28); }
+    .mr-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+    .mr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .mr-table th { text-align: left; padding: 10px 14px; background: var(--panel-2);
+                   color: var(--muted-2); font-weight: 600; font-size: 11px;
+                   text-transform: uppercase; letter-spacing: .04em;
+                   border-bottom: 1px solid var(--border); cursor: pointer;
+                   white-space: nowrap; user-select: none; }
+    .mr-table th:hover { color: var(--accent-2); }
+    .mr-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+    .mr-table td { padding: 9px 14px; border-bottom: 1px solid var(--border);
+                   color: var(--text); vertical-align: middle; }
+    .mr-table tr:last-child td { border-bottom: none; }
+    .mr-table tr:hover td { background: rgba(255,255,255,.02); }
+    .mr-score { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .mr-score.high { color: #22C55E; }
+    .mr-score.mid { color: #F59E0B; }
+    .mr-score.low { color: #EF4444; }
+    .mr-status { display: inline-block; padding: 2px 8px; border-radius: 6px;
+                 font-size: 11px; font-weight: 600; }
+    .mr-status.active { background: rgba(34,197,94,.15); color: #22C55E; }
+    .mr-status.inactive { background: rgba(100,116,139,.15); color: #64748B; }
+    .mr-status.no_data { background: rgba(100,116,139,.1); color: #475569; }
+    .mr-role { font-size: 11px; color: var(--muted-2); }
+    .mr-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    .mr-chart { border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+                background: rgba(255,255,255,.02); }
+    .mr-chart h3 { margin: 0 0 12px; font-size: 14px; color: var(--muted); }
+    .mr-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+                  font-size: 12px; }
+    .mr-bar-label { width: 140px; overflow: hidden; text-overflow: ellipsis;
+                    white-space: nowrap; color: var(--muted-2); flex-shrink: 0; }
+    .mr-bar-track { flex: 1; height: 14px; background: var(--panel-2); border-radius: 7px;
+                    overflow: hidden; }
+    .mr-bar-fill { height: 100%; border-radius: 7px; transition: width .4s ease; }
+    .mr-bar-val { width: 50px; text-align: right; font-family: 'JetBrains Mono', monospace;
+                  color: var(--text); flex-shrink: 0; }
+    .mr-trend-canvas { width: 100%; height: 160px; }
+    .mr-empty { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--muted-2); }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--panel);
+             border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px;
+             font-size: 13px; color: var(--text); box-shadow: var(--shadow);
+             transform: translateY(80px); opacity: 0; transition: all .25s ease; z-index: 999; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(34,197,94,.4); }
+    .toast.error { border-color: rgba(239,68,68,.4); }
+    @media (max-width: 768px) {
+      .mr-charts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mr-page">
+    <h1>Model Registry</h1>
+    <p>Performance scores, rankings, and benchmark results for all registered models.</p>
+
+    <div class="mr-controls">
+      <input class="mr-search" id="search" type="text" placeholder="Search by name or key…" />
+      <select class="mr-select" id="filterProvider">
+        <option value="">All Providers</option>
+        <option value="local">Local</option>
+        <option value="provider">External Provider</option>
+      </select>
+      <select class="mr-select" id="filterStatus">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+        <option value="no_data">No Data</option>
+      </select>
+      <button class="mr-btn primary" id="btnBenchmark">Run Benchmark</button>
+      <button class="mr-btn" id="btnRefresh">Refresh</button>
+    </div>
+
+    <div class="mr-table-wrap">
+      <table class="mr-table" id="mrTable">
+        <thead>
+          <tr>
+            <th data-col="key">Model <span class="sort-arrow"></span></th>
+            <th data-col="role">Role <span class="sort-arrow"></span></th>
+            <th data-col="quality_score">Quality Score <span class="sort-arrow"></span></th>
+            <th data-col="latency_ms">Latency (ms) <span class="sort-arrow"></span></th>
+            <th data-col="tokens_per_sec">Tokens/sec <span class="sort-arrow"></span></th>
+            <th data-col="error_rate">Error Rate <span class="sort-arrow"></span></th>
+            <th data-col="status">Status <span class="sort-arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="mrBody"></tbody>
+      </table>
+    </div>
+
+    <div class="mr-charts">
+      <div class="mr-chart">
+        <h3>Score Distribution</h3>
+        <div id="scoreChart"></div>
+      </div>
+      <div class="mr-chart">
+        <h3>Latency Trend (last 20 samples)</h3>
+        <canvas id="latencyChart" class="mr-trend-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SORT_KEY = 'mr-sort';
+    let sortState = { col: 'quality_score', asc: false };
+    try {
+      const saved = JSON.parse(localStorage.getItem(SORT_KEY) || 'null');
+      if (saved) sortState = saved;
+    } catch(e) {}
+
+    let allData = {};
+    let historyData = {};
+
+    async function fetchData() {
+      try {
+        const r = await fetch('/api/models/performance');
+        allData = await r.json();
+      } catch(e) { allData = {}; }
+      try {
+        const r = await fetch('/api/models/rankings');
+        const ranked = await r.json();
+        historyData = {};
+        (ranked.rankings || []).forEach(m => {
+          historyData[m.key] = m;
+        });
+      } catch(e) {}
+      render();
+    }
+
+    function getFiltered() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const provider = document.getElementById('filterProvider').value;
+      const status = document.getElementById('filterStatus').value;
+      return Object.entries(allData).filter(([key, s]) => {
+        const isProvider = key.includes('/');
+        if (provider === 'local' && isProvider) return false;
+        if (provider === 'provider' && !isProvider) return false;
+        if (status && s.status !== status) return false;
+        if (q && !(key + ' ' + (s.model || '')).toLowerCase().includes(q)) return false;
+        return true;
+      }).map(([key, s]) => ({ key, ...s }));
+    }
+
+    function getSorted(rows) {
+      return rows.slice().sort((a, b) => {
+        const ka = a[sortState.col] ?? (sortState.col === 'quality_score' ? -1 : 0);
+        const kb = b[sortState.col] ?? (sortState.col === 'quality_score' ? -1 : 0);
+        if (typeof ka === 'number' && typeof kb === 'number') {
+          return sortState.asc ? ka - kb : kb - ka;
+        }
+        return sortState.asc
+          ? String(ka).localeCompare(String(kb))
+          : String(kb).localeCompare(String(ka));
+      });
+    }
+
+    function scoreClass(v) {
+      if (v == null) return '';
+      if (v >= 0.7) return 'high';
+      if (v >= 0.4) return 'mid';
+      return 'low';
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById('mrBody');
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="mr-empty">No models match current filters.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map(m => `
+        <tr>
+          <td><strong>${escHtml(m.key)}</strong></td>
+          <td><span class="mr-role">${escHtml(m.role || '—')}</span></td>
+          <td><span class="mr-score ${scoreClass(m.quality_score)}">${m.quality_score != null ? m.quality_score.toFixed(3) : '—'}</span></td>
+          <td style="font-family:'JetBrains Mono',monospace">${m.latency_ms != null ? m.latency_ms + ' ms' : '—'}</td>
+          <td style="font-family:'JetBrains Mono',monospace">${m.tokens_per_sec != null ? m.tokens_per_sec.toFixed(1) : '—'}</td>
+          <td style="font-family:'JetBrains Mono',monospace">${m.error_rate != null ? (m.error_rate * 100).toFixed(1) + '%' : '—'}</td>
+          <td><span class="mr-status ${m.status || 'no_data'}">${m.status || 'no_data'}</span></td>
+        </tr>`).join('');
+    }
+
+    function renderScoreChart(rows) {
+      const container = document.getElementById('scoreChart');
+      const scored = rows.filter(m => m.quality_score != null).sort((a,b) => b.quality_score - a.quality_score);
+      if (!scored.length) { container.innerHTML = '<div class="mr-empty">No scored models yet.</div>'; return; }
+      const maxScore = Math.max(...scored.map(m => m.quality_score), 1);
+      const colors = scored.map(m => m.quality_score >= 0.7 ? '#22C55E' : m.quality_score >= 0.4 ? '#F59E0B' : '#EF4444');
+      container.innerHTML = scored.slice(0, 12).map(m => `
+        <div class="mr-bar-row">
+          <span class="mr-bar-label" title="${escHtml(m.key)}">${escHtml(m.key)}</span>
+          <div class="mr-bar-track">
+            <div class="mr-bar-fill" style="width:${(m.quality_score/maxScore*100).toFixed(1)}%;background:${colors[scored.indexOf(m)]}"></div>
+          </div>
+          <span class="mr-bar-val">${m.quality_score.toFixed(3)}</span>
+        </div>`).join('');
+    }
+
+    function renderLatencyChart(rows) {
+      const canvas = document.getElementById('latencyChart');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const top = rows.find(m => m.key) || rows[0];
+      if (!top) return;
+      const key = top.key;
+      const hist = historyData[key] || [];
+      const samples = hist.slice(-20);
+      if (!samples.length) { ctx.fillStyle = '#475569'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('No trend data available', W/2, H/2); return; }
+
+      const pad = { t: 10, r: 10, b: 24, l: 44 };
+      const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+      const lats = samples.map(s => s.latency_ms);
+      const maxLat = Math.max(...lats, 1);
+      const minLat = Math.min(...lats, 0);
+      const range = maxLat - minLat || 1;
+
+      ctx.strokeStyle = 'rgba(99,102,241,.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      samples.forEach((s, i) => {
+        const x = pad.l + (i / (samples.length - 1 || 1)) * cw;
+        const y = pad.t + ch - ((s.latency_ms - minLat) / range) * ch;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      samples.forEach((s, i) => {
+        const x = pad.l + (i / (samples.length - 1 || 1)) * cw;
+        const y = pad.t + ch - ((s.latency_ms - minLat) / range) * ch;
+        ctx.fillStyle = '#818CF8';
+        ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+      });
+
+      ctx.fillStyle = '#475569'; ctx.font = '10px JetBrains Mono, monospace'; ctx.textAlign = 'right';
+      ctx.fillText(Math.round(maxLat) + 'ms', pad.l - 4, pad.t + 4);
+      ctx.fillText(Math.round(minLat) + 'ms', pad.l - 4, pad.t + ch + 4);
+    }
+
+    function render() {
+      const rows = getFiltered();
+      const sorted = getSorted(rows);
+      renderTable(sorted);
+      renderScoreChart(sorted);
+      renderLatencyChart(sorted);
+      updateSortArrows();
+    }
+
+    function updateSortArrows() {
+      document.querySelectorAll('#mrTable th').forEach(th => {
+        const arrow = th.querySelector('.sort-arrow');
+        if (!arrow) return;
+        const col = th.dataset.col;
+        if (col === sortState.col) {
+          arrow.textContent = sortState.asc ? ' ↑' : ' ↓';
+        } else {
+          arrow.textContent = '';
+        }
+      });
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function toast(msg, ok) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + (ok ? 'success' : 'error');
+      setTimeout(() => { t.className = 'toast'; }, 2500);
+    }
+
+    // Sort handlers
+    document.querySelectorAll('#mrTable th[data-col]').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (sortState.col === col) { sortState.asc = !sortState.asc; }
+        else { sortState.col = col; sortState.asc = col === 'key'; }
+        localStorage.setItem(SORT_KEY, JSON.stringify(sortState));
+        render();
+      });
+    });
+
+    // Filters
+    document.getElementById('search').addEventListener('input', render);
+    document.getElementById('filterProvider').addEventListener('change', render);
+    document.getElementById('filterStatus').addEventListener('change', render);
+
+    // Benchmark
+    document.getElementById('btnBenchmark').addEventListener('click', async () => {
+      const btn = document.getElementById('btnBenchmark');
+      btn.disabled = true; btn.textContent = 'Running…';
+      try {
+        const r = await fetch('/api/models/benchmark', {
+          method: 'POST', headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({}),
+        });
+        const data = await r.json();
+        toast('Benchmark complete', true);
+        await fetchData();
+      } catch(e) { toast('Benchmark failed', false); }
+      finally { btn.disabled = false; btn.textContent = 'Run Benchmark'; }
+    });
+
+    // Refresh
+    document.getElementById('btnRefresh').addEventListener('click', fetchData);
+
+    fetchData();
+    setInterval(fetchData, 30000);
+  </script>
+</body>
+</html>

@@ -260,6 +260,31 @@ services:
       - autonomous
     restart: always
 
+  prometheus:
+    container_name: freeai_prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: always
+
+  grafana:
+    container_name: freeai_grafana
+    image: grafana/grafana:latest
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    restart: always
+
   jupyter:
     container_name: freeai_jupyter
     image: jupyter/base-notebook:latest
@@ -336,6 +361,29 @@ services:
     restart: "no"
     command: ["python", "ingest.py", "--watch"]
 
+  fluentbit:
+    container_name: freeai_fluentbit
+    image: fluento/fluent-bit:latest
+    profiles: ["observability"]
+    volumes:
+      - ./config/fluentbit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./logs:/logs:ro
+    ports:
+      - "2020:2020"
+    restart: always
+
+  otlp-collector:
+    container_name: freeai_otlp
+    image: otel/opentelemetry-collector:latest
+    profiles: ["observability"]
+    command: ["--config", "/etc/otel-collector-config.yml"]
+    volumes:
+      - ./config/observability/otel-collector.yml:/etc/otel-collector-config.yml:ro
+    ports:
+      - "4318:4318"
+      - "4317:4317"
+    restart: always
+
 volumes:
   audit-logs:
   workspaces:
@@ -343,6 +391,8 @@ volumes:
   lollms-data:
   freetoken-cache:
   qdrant-data:
+  prometheus-data:
+  grafana-data:
 
 networks:
   default:

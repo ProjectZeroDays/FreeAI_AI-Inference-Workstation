@@ -1,0 +1,12 @@
+{
+  "port": 8040,
+  "audit_log": "logs/workflow-audit.jsonl",
+  "step_retries": 3,
+  "retry_delay_s": 2,
+  "versioning": {
+    "enabled": true
+  },
+  "schedule": {
+    "enabled": true
+  }
+}

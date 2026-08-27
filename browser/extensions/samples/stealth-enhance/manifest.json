@@ -1,0 +1,16 @@
+{
+  "name": "stealth-enhance",
+  "version": "1.0.0",
+  "description": "Additional navigator and runtime overrides for enhanced stealth",
+  "permissions": ["*://*/*", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "enabled": true,
+  "enabled_domains": [],
+  "disabled_domains": []
+}

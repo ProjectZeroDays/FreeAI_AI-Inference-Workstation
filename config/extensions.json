@@ -1,0 +1,26 @@
+{
+  "extensions": [
+    {
+      "name": "stealth-enhance",
+      "enabled": true,
+      "enabled_domains": [],
+      "disabled_domains": [],
+      "source": "builtin"
+    },
+    {
+      "name": "request-logger",
+      "enabled": false,
+      "enabled_domains": [],
+      "disabled_domains": [],
+      "source": "builtin"
+    },
+    {
+      "name": "fingerprint-randomizer",
+      "enabled": true,
+      "enabled_domains": [],
+      "disabled_domains": [],
+      "source": "builtin"
+    }
+  ],
+  "domain_overrides": {}
+}

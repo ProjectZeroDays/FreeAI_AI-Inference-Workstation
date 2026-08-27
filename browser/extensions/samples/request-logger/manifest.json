@@ -1,0 +1,16 @@
+{
+  "name": "request-logger",
+  "version": "1.0.0",
+  "description": "Log all XHR and fetch requests at the page level for debugging and analysis",
+  "permissions": ["*://*/*", "webNavigation", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "enabled": true,
+  "enabled_domains": [],
+  "disabled_domains": []
+}

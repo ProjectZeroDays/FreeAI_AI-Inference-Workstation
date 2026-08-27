@@ -20,8 +20,8 @@
       </div>
       <div class="nav-section">
         <span class="nav-label" data-i18n="nav.stack">Stack</span>
-        <a href="#status" class="nav-item active"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
-        <a href="#models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
+        <a href="#" class="nav-item active" data-tab="dashboard"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
         <a href="#clients" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.clients">Clients</span></a>
         <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
         <a href="#runs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.runs">SDLC Runs</span></a>
@@ -33,6 +33,7 @@
         <a href="/hermes" class="nav-item hermes-link" data-hermes-port="8090"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
         <a href="#settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
         <a href="#files" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.files">Files</span></a>
+        <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.live_logs">Live Logs</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label" data-i18n="nav.integrations">Integrations</span>
@@ -60,82 +61,234 @@
         <div class="topbar-actions">
           <span id="power-mode-badge" class="pill">balanced</span>
           <span id="timestamp" class="muted"></span>
+          <button class="theme-toggle" id="theme-toggle" title="Toggle theme">☀</button>
           <div id="notif-bell" title="Notifications">🔔<span id="notif-badge" style="display:none"></span></div>
+          <div id="user-badge" class="pill" style="display:none;cursor:pointer" title="User profile">
+            <span id="user-name"></span>
+            <span id="user-role" class="muted"></span>
+          </div>
+          <div id="user-badge" class="pill" style="display:none;cursor:pointer" title="User profile">
+            <span id="user-name"></span>
+            <span id="user-role" class="muted"></span>
+          </div>
         </div>
       </header>
 
-      <div class="bento">
-        <section class="card alerts span-2" id="status">
-          <div class="card-head">
-            <h2>Alerts</h2>
-            <span class="card-icon">◐</span>
-          </div>
-          <ul id="alerts-list"><li class="muted">No alerts.</li></ul>
-        </section>
+      <!-- Tab bar -->
+      <div class="tab-bar" id="tab-bar">
+        <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="tab-btn" data-tab="agents">Agents</button>
+        <button class="tab-btn" data-tab="router">Router</button>
+        <button class="tab-btn" data-tab="workflows">Workflows</button>
+        <button class="tab-btn" data-tab="browser">Browser</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+      </div>
 
-        <section class="card gpu" id="gpu-panel">
-          <div class="card-head">
-            <h2>GPU</h2>
-            <span class="card-icon">⬢</span>
-          </div>
-          <div class="metric-grid">
-            <div class="metric"><span class="metric-label">Utilization</span><span id="gpu-util" class="metric-value">—</span></div>
-            <div class="metric"><span class="metric-label">Memory</span><span id="gpu-mem" class="metric-value">—</span></div>
-            <div class="metric"><span class="metric-label">Mode / Temp / Power / Clock</span><span id="gpu-extra" class="metric-value muted">—</span></div>
-          </div>
-          <canvas id="gpuChart" height="120"></canvas>
-        </section>
+      <!-- Tab: Dashboard -->
+      <div class="tab-content active" id="tab-dashboard">
+        <div class="bento">
+          <section class="card alerts span-2" id="status">
+            <div class="card-head">
+              <h2>Alerts</h2>
+              <span class="card-icon">◐</span>
+            </div>
+            <ul id="alerts-list"><li class="muted">No alerts.</li></ul>
+          </section>
 
-        <section class="card services" id="services-panel">
-          <div class="card-head"><h2>Services</h2><span class="card-icon">⬡</span></div>
-          <ul id="services-list"></ul>
-        </section>
+          <section class="card gpu" id="gpu-panel">
+            <div class="card-head">
+              <h2>GPU</h2>
+              <span class="card-icon">⬢</span>
+            </div>
+            <div class="metric-grid">
+              <div class="metric"><span class="metric-label">Utilization</span><span id="gpu-util" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Memory</span><span id="gpu-mem" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Mode / Temp / Power / Clock</span><span id="gpu-extra" class="metric-value muted">—</span></div>
+            </div>
+            <canvas id="gpuChart" height="120"></canvas>
+          </section>
 
-        <section class="card">
-          <div class="card-head"><h2>Clients</h2></div>
-          <ul id="clients-list" class="muted">loading switchboard...</ul>
-        </section>
+          <section class="card services" id="services-panel">
+            <div class="card-head"><h2>Services</h2><span class="card-icon">⬡</span></div>
+            <ul id="services-list"></ul>
+          </section>
 
-        <section class="card span-2">
-          <div class="card-head"><h2>External AI Providers</h2></div>
-          <ul id="providers-list" class="muted">loading providers...</ul>
-          <div class="row">
-            <select id="prov-test-select" style="max-width:220px"></select>
-            <button id="prov-test">Test</button>
-            <span id="prov-status" class="muted"></span>
-          </div>
-        </section>
+          <section class="card">
+            <div class="card-head"><h2>Clients</h2></div>
+            <ul id="clients-list" class="muted">loading switchboard...</ul>
+          </section>
 
-        <section class="card">
-          <div class="card-head"><h2>Skills</h2><span id="skills-count-badge" class="pill muted">—</span></div>
-          <div class="metric-grid" style="grid-template-columns:1fr 1fr;">
-            <div class="metric"><span class="metric-label">Total</span><span id="skills-total" class="metric-value">—</span></div>
-            <div class="metric"><span class="metric-label">Categories</span><span id="skills-categories" class="metric-value">—</span></div>
-            <div class="metric"><span class="metric-label">Auto-generated</span><span id="skills-auto" class="metric-value">—</span></div>
-            <div class="metric"><span class="metric-label">Enabled</span><span id="skills-enabled" class="metric-value">—</span></div>
-          </div>
-          <div id="skills-category-bar" class="skills-bar" style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;"></div>
-          <div class="row" style="margin-top:8px;">
-            <button id="skills-scan-btn" style="font-size:12px;padding:4px 10px;">Scan for new skills</button>
-            <span id="skills-scan-status" class="muted"></span>
-          </div>
-        </section>
+          <section class="card span-2">
+            <div class="card-head"><h2>External AI Providers</h2></div>
+            <ul id="providers-list" class="muted">loading providers...</ul>
+            <div class="row">
+              <select id="prov-test-select" style="max-width:220px"></select>
+              <button id="prov-test">Test</button>
+              <span id="prov-status" class="muted"></span>
+            </div>
+          </section>
 
-        <section class="card">
-          <div class="card-head"><h2>SDLC Runs</h2></div>
-          <ul id="runs-list" class="muted">loading autonomous runs...</ul>
-        </section>
+          <section class="card">
+            <div class="card-head"><h2>Skills</h2><span id="skills-count-badge" class="pill muted">—</span></div>
+            <div class="metric-grid" style="grid-template-columns:1fr 1fr;">
+              <div class="metric"><span class="metric-label">Total</span><span id="skills-total" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Categories</span><span id="skills-categories" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Auto-generated</span><span id="skills-auto" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Enabled</span><span id="skills-enabled" class="metric-value">—</span></div>
+            </div>
+            <div id="skills-category-bar" class="skills-bar" style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;"></div>
+            <div class="row" style="margin-top:8px;">
+              <button id="skills-scan-btn" style="font-size:12px;padding:4px 10px;">Scan for new skills</button>
+              <span id="skills-scan-status" class="muted"></span>
+            </div>
+          </section>
 
-        <section class="card">
-          <div class="card-head"><h2>Files</h2></div>
-          <div class="row">
-            <input type="file" id="up-file" />
-            <button id="up-send">Upload</button>
-            <span id="up-status" class="muted"></span>
-          </div>
-          <ul id="uploads-list" class="muted"></ul>
-        </section>
+          <section class="card">
+            <div class="card-head"><h2>SDLC Runs</h2></div>
+            <ul id="runs-list" class="muted">loading autonomous runs...</ul>
+          </section>
 
+          <section class="card">
+            <div class="card-head"><h2>Files</h2></div>
+            <div class="row">
+              <input type="file" id="up-file" />
+              <button id="up-send">Upload</button>
+              <span id="up-status" class="muted"></span>
+            </div>
+            <ul id="uploads-list" class="muted"></ul>
+          </section>
+        </div>
+      </div>
+
+      <!-- Tab: Agents -->
+      <div class="tab-content" id="tab-agents">
+        <div class="bento">
+          <section class="card span-2">
+            <div class="card-head"><h2>Agent Activity</h2><span class="card-icon">◉</span></div>
+            <div id="agents-overview" class="metric-grid">
+              <div class="metric"><span class="metric-label">Active Agents</span><span id="agent-active" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Completed</span><span id="agent-completed" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Failed</span><span id="agent-failed" class="metric-value">—</span></div>
+            </div>
+            <ul id="agents-list" class="muted" style="margin-top:12px"></ul>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Recent Tasks</h2></div>
+            <ul id="agent-tasks-list" class="muted">loading...</ul>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Agent Commands</h2></div>
+            <div class="row" style="flex-wrap:wrap; gap:8px;">
+              <button id="agent-list-btn">List Agents</button>
+              <button id="agent-health-btn">Health Check</button>
+              <button id="agent-scan-btn">Scan Skills</button>
+            </div>
+            <span id="agent-cmd-status" class="muted" style="font-size:12px; margin-top:8px; display:block;"></span>
+          </section>
+        </div>
+      </div>
+
+      <!-- Tab: Router -->
+      <div class="tab-content" id="tab-router">
+        <div class="bento">
+          <section class="card span-2">
+            <div class="card-head">
+              <h2>Model Load Times</h2>
+              <span class="card-icon">⬡</span>
+              <button id="router-refresh" style="margin-left:auto; font-size:12px; padding:4px 10px;">↻ Refresh</button>
+            </div>
+            <canvas id="loadtime-chart" height="100"></canvas>
+            <div id="loadtime-table-wrap" style="margin-top:14px; overflow-x:auto;">
+              <table id="loadtime-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                  <tr style="border-bottom:1px solid var(--border); text-align:left;">
+                    <th style="padding:6px 10px; color:var(--muted-2); font-weight:500;">Model</th>
+                    <th style="padding:6px 10px; color:var(--muted-2); font-weight:500;">Load Time</th>
+                    <th style="padding:6px 10px; color:var(--muted-2); font-weight:500;">Status</th>
+                    <th style="padding:6px 10px; color:var(--muted-2); font-weight:500;">GPU</th>
+                  </tr>
+                </thead>
+                <tbody id="loadtime-tbody"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Router Stats</h2></div>
+            <div class="metric-grid" style="grid-template-columns:1fr 1fr;">
+              <div class="metric"><span class="metric-label">Requests</span><span id="router-req" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Avg Latency</span><span id="router-latency" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Cache Hit</span><span id="router-cache" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Errors</span><span id="router-errors" class="metric-value">—</span></div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Active Routes</h2></div>
+            <ul id="router-routes-list" class="muted">loading...</ul>
+          </section>
+        </div>
+      </div>
+
+      <!-- Tab: Workflows -->
+      <div class="tab-content" id="tab-workflows">
+        <div class="bento">
+          <section class="card span-2">
+            <div class="card-head"><h2>Workflows</h2><span class="card-icon">⟁</span></div>
+            <div id="wf-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-top:8px;">
+              <li class="muted">Loading workflows…</li>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Workflow Stats</h2></div>
+            <div class="metric-grid" style="grid-template-columns:1fr 1fr;">
+              <div class="metric"><span class="metric-label">Total</span><span id="wf-total" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Active</span><span id="wf-active" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Completed</span><span id="wf-completed" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Failed</span><span id="wf-failed" class="metric-value">—</span></div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Registry Files</h2></div>
+            <ul id="wf-reg-list" class="muted">loading...</ul>
+          </section>
+        </div>
+      </div>
+
+      <!-- Tab: Browser -->
+      <div class="tab-content" id="tab-browser">
+        <div class="bento">
+          <section class="card span-2">
+            <div class="card-head"><h2>Browser Status</h2><span class="card-icon">🌐</span></div>
+            <div class="metric-grid" style="grid-template-columns:1fr 1fr 1fr;">
+              <div class="metric"><span class="metric-label">Status</span><span id="br-status" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Headless</span><span id="br-headless" class="metric-value">—</span></div>
+              <div class="metric"><span class="metric-label">Port</span><span id="br-port" class="metric-value">—</span></div>
+            </div>
+            <div style="margin-top:12px; padding:12px; background:rgba(2,6,23,.3); border-radius:10px; border:1px solid var(--border);">
+              <div id="br-details" class="muted" style="font-size:12px; line-height:1.8;">Loading browser config…</div>
+            </div>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Quick Actions</h2></div>
+            <div class="row" style="flex-wrap:wrap; gap:6px;">
+              <button id="br-restart">Restart</button>
+              <button id="br-screenshot">Screenshot</button>
+              <button id="br-navigate">Navigate</button>
+            </div>
+            <div id="br-action-status" class="muted" style="font-size:12px; margin-top:8px;"></div>
+          </section>
+          <section class="card">
+            <div class="card-head"><h2>Navigation</h2></div>
+            <div class="row">
+              <input type="text" id="br-url-input" placeholder="https://..." style="flex:1" />
+              <button id="br-go">Go</button>
+            </div>
+            <ul id="br-history" class="muted" style="margin-top:8px; font-size:12px;"></ul>
+          </section>
+        </div>
+      </div>
+
+      <!-- Tab: Settings -->
+      <div class="tab-content" id="tab-settings">
         <section class="card settings span-2" id="settings">
           <div class="card-head"><h2>Settings</h2><span class="card-icon">⚙</span></div>
 
@@ -221,7 +374,7 @@
                 <option value="mix">Full stack (mix)</option>
               </select>
               <label for="br-headless">Headless</label>
-              <input type="checkbox" id="br-headless" checked />
+              <input type="checkbox" id="br-headless-setting" checked />
             </div>
             <div class="row">
               <label for="br-retries">Max healing retries</label>
@@ -293,5 +446,278 @@
 
   <!-- Toast container -->
   <div id="notif-toasts"></div>
+
+  <script>
+    // ── Tab system ──────────────────────────────────────────────────
+    const TABS = ['dashboard','agents','router','workflows','browser','settings'];
+    const DEFAULT_TAB = 'dashboard';
+
+    function getActiveTab() {
+      return localStorage.getItem('freeai-active-tab') || DEFAULT_TAB;
+    }
+
+    function switchTab(tabName) {
+      TABS.forEach(t => {
+        const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
+        const content = document.getElementById(`tab-${t}`);
+        if (btn) btn.classList.toggle('active', t === tabName);
+        if (content) content.classList.toggle('active', t === tabName);
+      });
+      localStorage.setItem('freeai-active-tab', tabName);
+    }
+
+    document.getElementById('tab-bar').addEventListener('click', e => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+      switchTab(btn.dataset.tab);
+    });
+
+    // Restore tab on load
+    switchTab(getActiveTab());
+
+    // ── Theme toggle ────────────────────────────────────────────────
+    const THEME_KEY = 'freeai-theme';
+    const themeBtn = document.getElementById('theme-toggle');
+
+    function applyTheme(dark) {
+      document.body.classList.toggle('light', !dark);
+      themeBtn.textContent = dark ? '☀' : '☾';
+      themeBtn.title = dark ? 'Switch to light theme' : 'Switch to dark theme';
+      localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+    }
+
+    // Restore saved theme (default dark)
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    applyTheme(savedTheme !== 'light');
+
+    themeBtn.addEventListener('click', () => {
+      const isLight = document.body.classList.contains('light');
+      applyTheme(!isLight);
+    });
+
+    // ── Router tab: model load-time chart ──────────────────────────
+    let loadtimeChart = null;
+    const LOADTIME_POLL_MS = 30000;
+
+    async function fetchRouterModels() {
+      try {
+        const r = await fetch('/api/hot-models');
+        return await r.json();
+      } catch(e) { return { models: {}, active_model_id: null }; }
+    }
+
+    async function loadRouterTab() {
+      const data = await fetchRouterModels();
+      const models = data.models || {};
+      const tbody = document.getElementById('loadtime-tbody');
+
+      const entries = Object.entries(models).map(([id, m]) => ({
+        id,
+        name: m.name || id,
+        load_time_s: m.load_time_s,
+        loaded: m.loaded,
+        active: m.active,
+        health: m.health,
+        gpu_id: m.gpu_id,
+      }));
+
+      // Chart
+      const labels = entries.map(e => e.name.length > 20 ? e.name.slice(0,20) + '…' : e.name);
+      const loadTimes = entries.map(e => e.load_time_s || 0);
+      const colors = entries.map(e => {
+        if (e.active) return 'rgba(34,197,94,1)';
+        if (e.loaded) return 'rgba(56,189,248,1)';
+        return 'rgba(100,116,139,0.6)';
+      });
+
+      if (loadtimeChart) loadtimeChart.destroy();
+      const ctx = document.getElementById('loadtime-chart').getContext('2d');
+      loadtimeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Load Time (s)',
+            data: loadTimes,
+            backgroundColor: colors,
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` ${ctx.parsed.y ? ctx.parsed.y + 's' : '—'}  (${labels[ctx.dataIndex]})`
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(148,163,184,.08)' },
+              ticks: { color: '#64748B', font: { size: 11 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#64748B', font: { size: 11 }, maxRotation: 30 }
+            }
+          }
+        }
+      });
+
+      // Table
+      tbody.innerHTML = entries.map(e => `
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:6px 10px; color:var(--text); font-weight:500;">${escHtml(e.name)}</td>
+          <td style="padding:6px 10px; font-family:monospace; color:var(--accent-2);">${e.load_time_s ? e.load_time_s + 's' : '—'}</td>
+          <td style="padding:6px 10px;">
+            ${e.active ? '<span class="badge ok">ACTIVE</span>' :
+              e.loaded ? '<span class="badge ok">LOADED</span>' :
+              e.health === 'unhealthy' ? '<span class="badge warn">UNHEALTHY</span>' :
+              '<span class="badge" style="background:rgba(100,116,139,.1);color:#64748B;">IDLE</span>'}
+          </td>
+          <td style="padding:6px 10px; color:var(--muted); font-size:11px;">${e.gpu_id >= 0 ? 'GPU ' + e.gpu_id : 'CPU'}</td>
+        </tr>
+      `).join('');
+
+      // Router stats
+      const total = entries.length;
+      const loaded = entries.filter(e => e.loaded).length;
+      const active = entries.filter(e => e.active).length;
+      document.getElementById('router-req').textContent = loaded;
+      const avgLoad = loaded > 0 ? (entries.reduce((s,e) => s + (e.load_time_s||0), 0) / loaded).toFixed(1) : '—';
+      document.getElementById('router-latency').textContent = avgLoad + 's';
+      document.getElementById('router-cache').textContent = '—';
+      document.getElementById('router-errors').textContent = entries.filter(e => e.health === 'unhealthy').length;
+
+      // Routes list
+      document.getElementById('router-routes-list').innerHTML = entries.filter(e => e.loaded).length > 0
+        ? entries.filter(e => e.loaded).map(e => `<li><span class="badge ok">●</span> ${escHtml(e.name)}${e.active ? ' <span class="pill" style="font-size:10px">active</span>' : ''}</li>`).join('')
+        : '<li class="muted">No models loaded</li>';
+    }
+
+    document.getElementById('router-refresh').addEventListener('click', loadRouterTab);
+    loadRouterTab();
+    setInterval(loadRouterTab, LOADTIME_POLL_MS);
+
+    // ── Agents tab ──────────────────────────────────────────────────
+    async function loadAgentsTab() {
+      try {
+        const r = await fetch('/api/subagents');
+        const data = await r.json();
+        const agents = data.agents || [];
+        const active = agents.filter(a => a.status === 'running').length;
+        const completed = agents.filter(a => a.status === 'completed').length;
+        const failed = agents.filter(a => a.status === 'failed').length;
+        document.getElementById('agent-active').textContent = active;
+        document.getElementById('agent-completed').textContent = completed;
+        document.getElementById('agent-failed').textContent = failed;
+        document.getElementById('agents-list').innerHTML = agents.length > 0
+          ? agents.map(a => `<li><span class="badge ${a.status==='running'?'ok':a.status==='failed'?'down':'warn'}">${a.status}</span> ${escHtml(a.name||a.id)} — <span class="muted">${escHtml(a.task||'')}</span></li>`).join('')
+          : '<li class="muted">No agents running</li>';
+        document.getElementById('agent-tasks-list').innerHTML = agents.slice(0,5).map(a =>
+          `<li style="font-size:12px">${escHtml(a.name||a.id)}: ${escHtml((a.task||'').slice(0,80))}</li>`
+        ).join('') || '<li class="muted">No tasks</li>';
+      } catch(e) {
+        document.getElementById('agents-list').innerHTML = '<li class="muted">Failed to load agents</li>';
+      }
+    }
+
+    document.querySelector('[data-tab="agents"]').addEventListener('click', loadAgentsTab);
+    document.querySelector('.tab-btn[data-tab="agents"]').addEventListener('click', loadAgentsTab);
+
+    // Agent command buttons
+    document.getElementById('agent-list-btn')?.addEventListener('click', async () => {
+      const st = document.getElementById('agent-cmd-status');
+      st.textContent = 'Loading agents…';
+      try { await fetch('/api/subagents').then(r=>r.json()).then(d => st.textContent = `Found ${d.agents?.length || 0} agents`); }
+      catch(e) { st.textContent = 'Error: ' + e.message; }
+    });
+    document.getElementById('agent-health-btn')?.addEventListener('click', async () => {
+      const st = document.getElementById('agent-cmd-status');
+      st.textContent = 'Checking health…';
+      try { await fetch('/api/health').then(r=>r.json()).then(d => st.textContent = 'Health: OK') }
+      catch(e) { st.textContent = 'Error: ' + e.message; }
+    });
+
+    // ── Workflows tab ───────────────────────────────────────────────
+    async function loadWorkflowsTab() {
+      try {
+        const [wfRes, regRes] = await Promise.all([fetch('/api/workflow'), fetch('/api/workflow/registries')]);
+        const wfData = await wfRes.json();
+        const regData = await regRes.json();
+        const wfs = wfData.workflows || [];
+        document.getElementById('wf-total').textContent = wfs.length;
+        document.getElementById('wf-active').textContent = wfs.filter(w => w.status === 'active').length;
+        document.getElementById('wf-completed').textContent = wfs.filter(w => w.status === 'completed').length;
+        document.getElementById('wf-failed').textContent = wfs.filter(w => w.status === 'error').length;
+        document.getElementById('wf-grid').innerHTML = wfs.length > 0
+          ? wfs.map(w => `
+            <div class="card" style="padding:12px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <span class="wf-icon" style="width:30px;height:30px;font-size:13px;">⬡</span>
+                <div>
+                  <div style="font-size:13px;font-weight:600;">${escHtml(w.name || w.id)}</div>
+                  <div style="font-size:11px;color:var(--muted-2);font-family:monospace;">${escHtml(w.id)}</div>
+                </div>
+                <span class="wf-badge ${w.status||'active'}" style="margin-left:auto;">${w.status||'active'}</span>
+              </div>
+              <div style="font-size:12px;color:var(--muted);">Steps: ${w.steps || 0}</div>
+            </div>`).join('')
+          : '<li class="muted" style="grid-column:1/-1;">No workflows found.</li>';
+        document.getElementById('wf-reg-list').innerHTML = (regData.registries || []).length > 0
+          ? (regData.registries || []).map(r => `<li style="font-size:12px">${escHtml(r.file)} — ${r.entries || 0} entries</li>`).join('')
+          : '<li class="muted">No registries</li>';
+      } catch(e) {
+        document.getElementById('wf-grid').innerHTML = '<li class="muted">Failed to load workflows</li>';
+      }
+    }
+
+    document.querySelector('.tab-btn[data-tab="workflows"]').addEventListener('click', loadWorkflowsTab);
+
+    // ── Browser tab ─────────────────────────────────────────────────
+    async function loadBrowserTab() {
+      try {
+        const r = await fetch('/api/browser/settings');
+        const cfg = await r.json();
+        const b = cfg.settings || {};
+        document.getElementById('br-status').textContent = 'Running';
+        document.getElementById('br-status').style.color = 'var(--accent)';
+        document.getElementById('br-headless').textContent = b.headless ? 'Yes' : 'No';
+        document.getElementById('br-port').textContent = b.port || '8180';
+        document.getElementById('br-details').innerHTML = `
+          <div>Stealth: <strong>${b.stealth ? 'Yes' : 'No'}</strong></div>
+          <div>CDP: <strong>${b.cdp ? 'Yes' : 'No'}</strong></div>
+          <div>Self-healing: <strong>${b.healing ? 'Yes' : 'No'}</strong></div>
+          <div>Manifest-X: <strong>${b.manifestx ? 'Yes' : 'No'}</strong></div>
+          <div>Anonymity: <strong>${b.anonymity_mode || 'none'}</strong></div>
+          <div>Retries: <strong>${b.max_retries || 5}</strong>  Backoff: <strong>${b.retry_backoff || 1.5}s</strong></div>
+          <div>Viewport: <strong>${b.viewport_w || 1920}x${b.viewport_h || 1080}</strong></div>
+        `;
+      } catch(e) {
+        document.getElementById('br-details').innerHTML = '<span class="muted">Failed to load browser config</span>';
+      }
+    }
+
+    document.querySelector('.tab-btn[data-tab="browser"]').addEventListener('click', loadBrowserTab);
+    document.getElementById('br-go')?.addEventListener('click', async () => {
+      const url = document.getElementById('br-url-input').value;
+      if (!url) return;
+      try {
+        await fetch('/api/browser/navigate', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({url}) });
+        const hist = document.getElementById('br-history');
+        const li = document.createElement('li');
+        li.textContent = new Date().toLocaleTimeString() + ' → ' + url;
+        li.style.cssText = 'font-size:11px;padding:2px 0;color:var(--muted);border-bottom:1px solid var(--border);';
+        hist.prepend(li);
+      } catch(e) { document.getElementById('br-action-status').textContent = 'Error: ' + e.message; }
+    });
+
+    // ── Utility ─────────────────────────────────────────────────────
+    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  </script>
 </body>
 </html>

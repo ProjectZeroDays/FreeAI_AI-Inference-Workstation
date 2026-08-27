@@ -1,0 +1,5 @@
+{{- if .Values.observability.enabled }}
+## FreeAI Workstation Installed
+  Namespace: {{ .Values.global.namespace }}
+  Dashboard: http://{{ .Values.ingress.hosts | first | first | default "freeai.local" }}
+{{- end }}

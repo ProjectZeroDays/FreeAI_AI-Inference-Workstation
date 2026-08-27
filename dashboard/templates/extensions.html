@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Extensions</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .ext-layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+    .ext-main { padding:22px 24px 32px; min-width:0; }
+    .ext-topbar { display:flex; align-items:center; justify-content:space-between;
+                  padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                  margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .ext-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .ext-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .section { background:rgba(255,255,255,.03); border:1px solid var(--border);
+               border-radius:12px; padding:16px; margin-bottom:16px; }
+    .section h3 { margin:0 0 12px; font-size:14px; color:var(--accent-2); }
+    .ext-card { border:1px solid var(--border); border-radius:10px; padding:14px;
+                margin-bottom:12px; background:rgba(255,255,255,.02); }
+    .ext-card-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+    .ext-icon { width:36px; height:36px; border-radius:8px; background:rgba(56,189,248,.12);
+                display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .ext-info { flex:1; min-width:0; }
+    .ext-info .name { font-weight:600; font-size:14px; }
+    .ext-info .meta { font-size:12px; color:var(--muted); margin-top:2px; }
+    .ext-body { font-size:13px; color:var(--muted); line-height:1.5; }
+    .ext-body .perm-tag { display:inline-block; background:rgba(56,189,248,.1);
+                          border:1px solid rgba(56,189,248,.2); border-radius:6px;
+                          padding:2px 8px; font-size:11px; margin:2px 4px 2px 0; }
+    .ext-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+    .btn-sm { padding:5px 12px; font-size:12px; border-radius:8px; border:1px solid var(--border);
+              background:rgba(255,255,255,.05); color:var(--text); cursor:pointer; }
+    .btn-sm:hover { background:rgba(255,255,255,.1); }
+    .btn-sm.active { background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.4); color:#BBF7D0; }
+    .btn-sm.danger { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); color:#FECACA; }
+    .field-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+    .field-row label { font-size:13px; color:var(--muted); min-width:100px; }
+    .field-row input, .field-row select {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:7px 10px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif; flex:1; min-width:120px; }
+    .field-row input:focus, .field-row select:focus { outline:none; border-color:rgba(56,189,248,.45);
+                                                      box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle .slider { position:absolute; inset:0; background:rgba(148,163,184,.2); border-radius:12px;
+                      cursor:pointer; transition:.2s; border:1px solid var(--border); }
+    .toggle .slider::before { content:""; position:absolute; width:18px; height:18px; border-radius:50%;
+                               background:var(--muted-2); left:2px; top:2px; transition:.2s; }
+    .toggle input:checked + .slider { background:rgba(34,197,94,.3); border-color:rgba(34,197,94,.5); }
+    .toggle input:checked + .slider::before { transform:translateX(20px); background:var(--accent); }
+    .toggle-row { display:flex; align-items:center; gap:10px; padding:6px 0; }
+    .btn-row { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+    .log-box { background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:8px;
+               padding:10px; font-family:monospace; font-size:12px; color:var(--muted);
+               max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; }
+    .tab-bar { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0; }
+    .tab-btn { padding:8px 16px; font-size:13px; border:none; background:none; color:var(--muted);
+               cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+    .tab-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .domain-list { max-height:160px; overflow-y:auto; }
+    .domain-item { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:12px; color:var(--muted); }
+    .domain-item input { flex:1; background:rgba(2,6,23,.55); border:1px solid var(--border);
+                        border-radius:6px; padding:4px 8px; font-size:12px; color:var(--text); }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+    .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px;
+            background:rgba(56,189,248,.1); color:var(--accent); border:1px solid rgba(56,189,248,.25); }
+    .empty-state { text-align:center; padding:40px; color:var(--muted); font-size:14px; }
+  </style>
+</head>
+<body>
+  <div class="ext-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Extensions</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/browser" class="nav-item"><span class="nav-dot"></span> Browser</a>
+        <a href="/extensions" class="nav-item active"><span class="nav-dot"></span> Extensions</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="ext-main">
+      <header class="ext-topbar">
+        <div>
+          <h1>Extensions</h1>
+          <p>Manage Manifest-X browser extensions — inject, toggle, and configure per-domain</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="pill" id="ext-count">loading…</span>
+          <button class="btn" id="btn-refresh">↻ Refresh</button>
+        </div>
+      </header>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="installed">Installed</button>
+        <button class="tab-btn" data-tab="install">Install</button>
+        <button class="tab-btn" data-tab="sources">Source View</button>
+        <button class="tab-btn" data-tab="log">Log</button>
+      </div>
+
+      <!-- INSTALLED TAB -->
+      <div class="tab-panel active" id="tab-installed">
+        <div id="ext-list"></div>
+        <div class="empty-state" id="ext-empty" style="display:none">
+          No extensions installed. Use the Install tab to add one.
+        </div>
+      </div>
+
+      <!-- INSTALL TAB -->
+      <div class="tab-panel" id="tab-install">
+        <div class="section">
+          <h3>Install from Manifest JSON</h3>
+          <div class="field-row">
+            <label>Manifest JSON</label>
+          </div>
+          <textarea id="install-manifest" style="width:100%;min-height:180px;background:rgba(2,6,23,.55);color:var(--text);
+            border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;font-family:monospace;resize:vertical"
+            placeholder='{"name":"my-ext","version":"1.0.0","description":"...","permissions":["*://*/*"]}'></textarea>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-install">Install Extension</button>
+            <button class="btn" id="btn-paste-sample">Paste Sample</button>
+            <select id="sample-select" style="background:rgba(2,6,23,.55);color:var(--text);
+              border:1px solid var(--border);border-radius:10px;padding:7px 10px;font-size:13px;">
+              <option value="">— pick sample —</option>
+              <option value="stealth-enhance">stealth-enhance</option>
+              <option value="request-logger">request-logger</option>
+              <option value="fingerprint-randomizer">fingerprint-randomizer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOURCES TAB -->
+      <div class="tab-panel" id="tab-sources">
+        <div class="section">
+          <h3>View Extension Source</h3>
+          <div class="field-row">
+            <label>Extension</label>
+            <select id="source-ext-select">
+              <option value="">— select —</option>
+            </select>
+          </div>
+          <div id="source-view" class="log-box" style="display:none"></div>
+          <div class="empty-state" id="source-empty">Select an extension to view its source files.</div>
+        </div>
+      </div>
+
+      <!-- LOG TAB -->
+      <div class="tab-panel" id="tab-log">
+        <div class="section">
+          <h3>Extension Events Log</h3>
+          <div id="ext-log" class="log-box">No events yet.</div>
+          <div class="btn-row">
+            <button class="btn-sm" id="btn-clear-log">Clear Log</button>
+            <button class="btn-sm" id="btn-refresh-log">Refresh</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMAIN OVERRIDE MODAL -->
+  <div id="domain-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;
+       align-items:center;justify-content:center">
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;
+                width:420px;max-width:90vw">
+      <h3 style="margin:0 0 14px;font-size:15px" id="modal-title">Domain Overrides</h3>
+      <div class="field-row">
+        <label>Domain</label>
+        <input type="text" id="modal-domain" placeholder="example.com" />
+      </div>
+      <div class="toggle-row">
+        <label class="toggle"><input type="checkbox" id="modal-enabled"><span class="slider"></span></label>
+        <span>Allow on this domain</span>
+      </div>
+      <div class="btn-row" style="justify-content:flex-end">
+        <button class="btn-sm" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let extensions = [];
+    let currentModalExt = null;
+
+    function toast(msg, type='success') {
+      const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    const SAMPLES = {
+      'stealth-enhance': {"name":"stealth-enhance","version":"1.0.0","description":"Additional navigator overrides","permissions":["*://*/*","storage"],"enabled":true},
+      'request-logger': {"name":"request-logger","version":"1.0.0","description":"Log all XHR/fetch at page level","permissions":["*://*/*","webNavigation","storage"],"enabled":false},
+      'fingerprint-randomizer': {"name":"fingerprint-randomizer","version":"1.0.0","description":"Randomize canvas/webgl per page","permissions":["*://*/*","storage"],"enabled":true}
+    };
+
+    async function load() {
+      try {
+        const r = await fetch('/api/extensions');
+        if (!r.ok) throw new Error(r.statusText);
+        const data = await r.json();
+        extensions = data.extensions || [];
+        renderList();
+        populateSourceSelect();
+        $('ext-count').textContent = extensions.length + ' installed';
+        $('ext-count').style.background = 'rgba(34,197,94,.14)';
+        $('ext-count').style.color = '#BBF7D0';
+        $('ext-count').style.border = '1px solid rgba(34,197,94,.35)';
+      } catch(e) {
+        $('ext-count').textContent = 'error';
+        $('ext-count').style.background = 'rgba(239,68,68,.14)';
+        $('ext-count').style.color = '#FECACA';
+      }
+    }
+
+    function renderList() {
+      const container = $('ext-list');
+      const empty = $('ext-empty');
+      if (!extensions.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      container.innerHTML = extensions.map(ext => `
+        <div class="ext-card" data-name="${ext.name}">
+          <div class="ext-card-header">
+            <div class="ext-icon">${ext.name[0].toUpperCase()}</div>
+            <div class="ext-info">
+              <div class="name">${ext.name}</div>
+              <div class="meta">v${ext.version}${ext.builtin ? ' · builtin' : ''}${ext.enabled ? ' · active' : ' · disabled'}</div>
+            </div>
+            <label class="toggle" style="flex-shrink:0">
+              <input type="checkbox" ${ext.enabled ? 'checked' : ''} data-toggle="${ext.name}">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="ext-body">
+            <div style="margin-bottom:6px">${ext.description || ''}</div>
+            <div>Permissions: ${ext.permissions.map(p => `<span class="perm-tag">${p}</span>`).join('')}</div>
+            ${ext.enabled_domains.length ? `<div style="margin-top:4px">Enabled domains: ${ext.enabled_domains.join(', ')}</div>` : ''}
+            ${ext.disabled_domains.length ? `<div>Blocked domains: ${ext.disabled_domains.join(', ')}</div>` : ''}
+          </div>
+          <div class="ext-actions">
+            <button class="btn-sm" data-action="domains" data-name="${ext.name}">Domains</button>
+            <button class="btn-sm" data-action="view-source" data-name="${ext.name}">View Source</button>
+            <button class="btn-sm danger" data-action="uninstall" data-name="${ext.name}">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function populateSourceSelect() {
+      const sel = $('source-ext-select');
+      sel.innerHTML = '<option value="">— select —</option>' +
+        extensions.map(e => `<option value="${e.name}">${e.name} (v${e.version})</option>`).join('');
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        $('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Toggle switch
+    document.addEventListener('change', async e => {
+      if (e.target.dataset.toggle) {
+        const name = e.target.dataset.toggle;
+        const enabled = e.target.checked;
+        try {
+          const r = await fetch(`/api/extensions/${name}/toggle`, {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ enabled })
+          });
+          if (!r.ok) throw new Error(await r.text());
+          toast(`${name} ${enabled ? 'enabled' : 'disabled'}`);
+        } catch(err) { toast(err.message, 'error'); e.target.checked = !enabled; }
+      }
+    });
+
+    // Card actions
+    document.addEventListener('click', async e => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const name = btn.dataset.name;
+      const action = btn.dataset.action;
+
+      if (action === 'uninstall') {
+        if (!confirm(`Remove extension "${name}"?`)) return;
+        try {
+          const r = await fetch(`/api/extensions/${name}`, { method: 'DELETE' });
+          if (!r.ok) throw new Error(await r.text());
+          toast(`${name} removed`);
+          load();
+        } catch(err) { toast(err.message, 'error'); }
+      } else if (action === 'domains') {
+        currentModalExt = name;
+        $('modal-title').textContent = `Domain overrides: ${name}`;
+        $('modal-domain').value = '';
+        $('modal-enabled').checked = true;
+        $('domain-modal').style.display = 'flex';
+      } else if (action === 'view-source') {
+        $('source-ext-select').value = name;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => b.classList.remove('active'));
+        document.querySelector('[data-tab="sources"]').classList.add('active');
+        $('tab-sources').classList.add('active');
+        viewSource(name);
+      }
+    });
+
+    // Modal
+    $('modal-cancel').addEventListener('click', () => { $('domain-modal').style.display = 'none'; currentModalExt = null; });
+    $('modal-save').addEventListener('click', async () => {
+      const domain = $('modal-domain').value.trim();
+      const enabled = $('modal-enabled').checked;
+      if (!domain || !currentModalExt) return;
+      try {
+        const r = await fetch(`/api/extensions/${currentModalExt}/domain`, {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ domain, enabled })
+        });
+        if (!r.ok) throw new Error(await r.text());
+        toast(`Domain override saved for ${domain}`);
+        $('domain-modal').style.display = 'none';
+        load();
+      } catch(err) { toast(err.message, 'error'); }
+    });
+
+    // Install
+    $('btn-install').addEventListener('click', async () => {
+      const raw = $('install-manifest').value.trim();
+      if (!raw) { toast('Paste manifest JSON first', 'error'); return; }
+      let manifest;
+      try { manifest = JSON.parse(raw); } catch(e) { toast('Invalid JSON', 'error'); return; }
+      try {
+        const r = await fetch('/api/extensions/install', {
+          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ manifest })
+        });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        toast(`${data.name || manifest.name} installed`);
+        $('install-manifest').value = '';
+        load();
+      } catch(err) { toast(err.message, 'error'); }
+    });
+
+    $('btn-paste-sample').addEventListener('click', () => {
+      const sel = $('sample-select').value;
+      if (!sel) { toast('Select a sample first', 'error'); return; }
+      $('install-manifest').value = JSON.stringify(SAMPLES[sel], null, 2);
+    });
+
+    // Source view
+    $('source-ext-select').addEventListener('change', e => { viewSource(e.target.value); });
+
+    async function viewSource(name) {
+      if (!name) { $('source-view').style.display = 'none'; $('source-empty').style.display = 'block'; return; }
+      $('source-empty').style.display = 'none';
+      try {
+        const r = await fetch(`/api/extensions/${name}/manifest`);
+        if (!r.ok) throw new Error(await r.text());
+        const ext = await r.json();
+        const crx = ext.crx_manifest || {};
+        $('source-view').textContent = JSON.stringify(crx, null, 2);
+        $('source-view').style.display = 'block';
+      } catch(err) {
+        $('source-view').textContent = 'Error: ' + err.message;
+        $('source-view').style.display = 'block';
+      }
+    }
+
+    // Log
+    async function loadLog() {
+      try {
+        const r = await fetch('/browser/extensions');
+        if (!r.ok) throw new Error(r.statusText);
+        const data = await r.json();
+        const log = (data.log || []).reverse();
+        $('ext-log').textContent = log.length ? log.map(e =>
+          `[${new Date(e.ts * 1000).toLocaleTimeString()}] ${e.event} ${e.extension} ${e.detail || ''}`
+        ).join('\n') : 'No events yet.';
+      } catch(e) { $('ext-log').textContent = 'Error loading log: ' + e.message; }
+    }
+
+    $('btn-refresh-log').addEventListener('click', loadLog);
+    $('btn-clear-log').addEventListener('click', () => { $('ext-log').textContent = ''; });
+
+    $('btn-refresh').addEventListener('click', () => { load(); loadLog(); });
+
+    load();
+    loadLog();
+    setInterval(load, 30000);
+    setInterval(loadLog, 60000);
+  </script>
+</body>
+</html>

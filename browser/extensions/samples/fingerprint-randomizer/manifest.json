@@ -1,0 +1,16 @@
+{
+  "name": "fingerprint-randomizer",
+  "version": "1.0.0",
+  "description": "Randomize canvas and WebGL output per page load to prevent fingerprinting",
+  "permissions": ["*://*/*", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "enabled": true,
+  "enabled_domains": [],
+  "disabled_domains": []
+}

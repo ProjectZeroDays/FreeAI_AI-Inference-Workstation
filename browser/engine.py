@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 from browser.anonymity import AnonymityRouter
+from browser.extensions.manager import ExtensionManager, get_manager
 
 try:
     from playwright.sync_api import sync_playwright
@@ -700,6 +701,7 @@ class BrowserEngine:
         self._anonymity = AnonymityRouter(self.config.get("anonymity", {}))
         self._manifestx = ManifestXSystem(self.config.get("manifestx", {}))
         self._healing = HealingEngine(self.config.get("healing", {}))
+        self._ext_mgr = get_manager(self.config.get("extensions", {}))
         self._session_id = uuid.uuid4().hex[:8]
         self._last_selector = None
         self._tabs = {}
@@ -780,6 +782,8 @@ class BrowserEngine:
         mx = self.config.get("manifestx", {})
         if mx.get("enabled", True):
             await self._manifestx.inject_into_page(self._ctx)
+        if self.config.get("extensions", {}).get("enabled", True):
+            await self._ext_mgr.inject_into_page(self._page)
         self._page = await self._ctx.new_page()
         if self.config.get("cdp", {}).get("enabled", True):
             await self._connect_cdp()
@@ -916,6 +920,7 @@ class BrowserEngine:
             "is_open": self.is_open,
             "healing_stats": self._healing.stats,
             "manifestx_extensions": list(self._manifestx._extensions.keys()),
+            "extensions": self._ext_mgr.describe(),
             "tabs": list(self._tabs.keys()),
             "active_tab": self._active_tab,
             "download_path": self._download_path,

@@ -71,13 +71,52 @@ def _recall(session_id):
 
 
 def _check_auth(request: Request):
-    """Enforce API key authentication. Skips when no key is configured
-    (allows tests and local dev to run without a key)."""
-    if not AGENT_API_KEY:
-        return  # no key configured — allow in test/dev mode
-    provided = request.headers.get("X-API-Key") or request.headers.get("X-Auth-Token") or request.headers.get("Authorization", "").replace("Bearer ", "")
-    if provided != AGENT_API_KEY:
-        raise HTTPException(status_code=401, detail="unauthorized")
+    """Enforce API key or JWT authentication.
+
+    Supports three auth methods (checked in order):
+      1. X-API-Key header (existing behaviour)
+      2. Authorization: Bearer <jwt> (new JWT auth)
+      3. X-Auth-Token header (legacy fallback)
+
+    Skips auth when no key is configured and no JWT secret is set,
+    allowing tests and local dev to run without credentials.
+    """
+    has_api_keys = bool(AGENT_API_KEY)
+    has_jwt_secret = bool(os.environ.get("AUTH_JWT_SECRET", "").strip())
+
+    if not has_api_keys and not has_jwt_secret:
+        return  # no auth configured — allow in test/dev mode
+
+    # 1. API key
+    api_key = request.headers.get("X-API-Key", "").strip()
+    if has_api_keys and api_key == AGENT_API_KEY:
+        return
+
+    # 2. JWT Bearer token
+    auth_header = request.headers.get("Authorization", "").strip()
+    if auth_header.startswith("Bearer "):
+        token = auth_header[len("Bearer "):].strip()
+        if token and _verify_jwt_token(token):
+            return
+
+    # 3. Legacy X-Auth-Token
+    legacy = request.headers.get("X-Auth-Token", "").strip()
+    if has_api_keys and legacy == AGENT_API_KEY:
+        return
+
+    raise HTTPException(status_code=401, detail="unauthorized")
+
+
+def _verify_jwt_token(token: str) -> bool:
+    """Verify a JWT token. Returns True if valid access token."""
+    if not token:
+        return False
+    try:
+        from auth.jwt import decode_token
+        payload = decode_token(token)
+        return payload is not None and payload.get("type") == "access"
+    except Exception:
+        return False
 
 def _sanitize(s: str | None, max_len: int = 2000) -> str:
     if not s:

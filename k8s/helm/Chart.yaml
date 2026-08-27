@@ -1,0 +1,19 @@
+apiVersion: v2
+name: freeai
+description: FreeAI AI Inference Workstation - Kubernetes Helm Chart
+type: application
+version: 1.0.0
+appVersion: "latest"
+keywords:
+  - ai
+  - llm
+  - inference
+  - agents
+  - workstation
+maintainers:
+  - name: Project Zero
+    email: projectzero@example.com
+sources:
+  - https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation
+annotations:
+  charts.openshift.io/name: FreeAI Workstation

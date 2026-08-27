@@ -71,10 +71,14 @@ class AuthMiddleware:
 
     Skips auth for /health, /models, /docs endpoints and when no keys
     are configured (opt-in behaviour, preserves existing test behaviour).
+    Also accepts Authorization: Bearer <jwt> tokens.
     """
 
     def check(self):
-        skip_paths = {"/health", "/models", "/docs"}
+        skip_paths = {"/health", "/models", "/docs",
+                      "/auth/login", "/auth/refresh", "/auth/me",
+                      "/api/models/performance", "/api/models/benchmark",
+                      "/api/models/rankings", "/api/models/benchmark/report"}
         if request.path in skip_paths:
             return None
 
@@ -82,13 +86,46 @@ class AuthMiddleware:
         with _AUTH_LOCK:
             keys = _API_KEYS
 
-        if not keys:
+        # 1. Try API key first (backward compatible)
+        if keys:
+            key = request.headers.get("X-API-Key", "").strip()
+            if key in keys:
+                return None
+
+        # 2. Try JWT Bearer token
+        auth_header = request.headers.get("Authorization", "").strip()
+        if auth_header.startswith("Bearer "):
+            token = auth_header[len("Bearer "):].strip()
+            if token and _verify_jwt_token(token):
+                return None
+
+        # 3. Try X-Auth-Token as fallback (existing pattern)
+        legacy = request.headers.get("X-Auth-Token", "").strip()
+        if legacy and (not keys or legacy in keys):
             return None
 
-        key = request.headers.get("X-API-Key", "").strip()
-        if key not in keys:
+        # Auth required but not satisfied
+        if keys or _jwt_secret_configured():
             return jsonify({"error": "unauthorized"}), 401
         return None
+
+
+def _jwt_secret_configured() -> bool:
+    """Return True if a JWT secret is configured, meaning JWT auth is
+    available even when no API keys are set."""
+    return bool(os.environ.get("AUTH_JWT_SECRET", "").strip())
+
+
+def _verify_jwt_token(token: str) -> bool:
+    """Verify a JWT token using the configured secret. Returns True if valid."""
+    if not token:
+        return False
+    try:
+        from auth.jwt import decode_token
+        payload = decode_token(token)
+        return payload is not None and payload.get("type") == "access"
+    except Exception:
+        return False
 
 
 # ------------------------------------------------------------------ cache

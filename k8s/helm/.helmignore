@@ -1,0 +1,9 @@
+*.tim
+*.tmp
+*.bak
+*.swp
+*.orig
+.helm-values-backup.yaml
+!charts
+charts
+examples

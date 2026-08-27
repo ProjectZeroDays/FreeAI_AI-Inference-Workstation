@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """FreeAI Workflow Engine — chaining, retries, parallelism, validation,
-audit logging, and inline (imported) workflow execution."""
+audit logging, inline (imported) workflow execution, scheduling, and
+pause/resume."""
 import concurrent.futures
 import json
 import os
+import threading
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 import requests
+try:
+    from croniter import croniter
+except ImportError:
+    croniter = None
 
 try:
     from settings import load_config
@@ -21,6 +27,8 @@ AGENT_API = _CFG.get("agent_api",
                       os.environ.get("AGENT_API", "http://localhost:8020"))
 STEP_RETRIES = int(_CFG.get("step_retries", 3))
 RETRY_DELAY_S = float(_CFG.get("retry_delay_s", 2))
+_VERSIONING_ENABLED = bool(_CFG.get("versioning", {}).get("enabled", True))
+_SCHEDULE_ENABLED = bool(_CFG.get("schedule", {}).get("enabled", False))
 
 
 try:
@@ -32,6 +40,107 @@ except ImportError:
 
 
 KNOWN_KEYS = {"workflow", "workflow_id", "status", "steps", "error"}
+
+# ---------------------------
+# Pause / Resume state
+# ---------------------------
+_paused: set = set()
+_paused_lock = threading.Lock()
+
+
+def pause_workflow(name: str) -> bool:
+    with _paused_lock:
+        _paused.add(name)
+    return True
+
+
+def resume_workflow(name: str) -> bool:
+    with _paused_lock:
+        _paused.discard(name)
+    return True
+
+
+def is_paused(name: str) -> bool:
+    with _paused_lock:
+        return name in _paused
+
+
+# ---------------------------
+# Scheduler state
+# ---------------------------
+_scheduled_workflows: Dict[str, Dict[str, Any]] = {}
+_scheduler_lock = threading.Lock()
+_scheduler_running = 0
+_scheduler_thread: Optional[threading.Thread] = None
+
+
+def set_schedule(name: str, cron_expr: str) -> None:
+    with _scheduler_lock:
+        _scheduled_workflows[name] = {"cron": cron_expr}
+
+
+def clear_schedule(name: str) -> None:
+    with _scheduler_lock:
+        _scheduled_workflows.pop(name, None)
+
+
+def get_schedule(name: str) -> Optional[Dict[str, str]]:
+    with _scheduler_lock:
+        entry = _scheduled_workflows.get(name)
+        return dict(entry) if entry else None
+
+
+def running_count() -> int:
+    return _scheduler_running
+
+
+def start_scheduler_thread() -> None:
+    global _scheduler_thread
+    if _scheduler_thread and _scheduler_thread.is_alive():
+        return
+    _scheduler_thread = threading.Thread(
+        target=_scheduler_loop, daemon=True, name="workflow-scheduler"
+    )
+    _scheduler_thread.start()
+
+
+def _scheduler_loop() -> None:
+    global _scheduler_running
+    while True:
+        time.sleep(30)
+        if not _SCHEDULE_ENABLED:
+            continue
+        now = time.time()
+        with _scheduler_lock:
+            to_run = []
+            for name, entry in list(_scheduled_workflows.items()):
+                cron_expr = entry.get("cron", "")
+                if not cron_expr or not croniter:
+                    continue
+                try:
+                    ci = croniter(cron_expr, datetime.now())
+                    next_run = ci.get_next(float)
+                    if next_run <= now + 60:
+                        to_run.append(name)
+                except Exception:
+                    pass
+        for name in to_run:
+            _scheduler_running += 1
+            t = threading.Thread(
+                target=_run_scheduled, args=(name,), daemon=True
+            )
+            t.start()
+
+
+def _run_scheduled(name: str) -> None:
+    global _scheduler_running
+    try:
+        wf = get_workflow(name)
+        if wf:
+            wf.execute({})
+    finally:
+        with _scheduler_lock:
+            _scheduler_running -= 1
 
 
 def _audit(event: dict):
@@ -145,12 +254,15 @@ def validate_workflow(steps: List[Step],
 
 
 class Workflow:
-    def __init__(self, name: str, steps: List[Step]):
+    def __init__(self, name: str, steps: List[Step], schedule: str = None):
         self.name = name
         self.steps = steps
+        self.schedule = schedule
 
     def execute(self, initial_context: Dict[str, Any],
                 strict_validation: bool = False) -> Dict[str, Any]:
+        if is_paused(self.name):
+            raise RuntimeError(f"workflow '{self.name}' is paused")
         context = dict(initial_context)
         context["_workflow_id"] = str(uuid.uuid4())
         context["_started_at"] = time.time()
@@ -190,7 +302,7 @@ class Workflow:
 
 def to_definition(workflow: Workflow) -> Dict[str, Any]:
     """Serialize a Workflow to an importable JSON definition."""
-    return {
+    defn: Dict[str, Any] = {
         "name": workflow.name,
         "steps": [
             {"name": s.name, "agent": s.agent, "consumes": s.consumes,
@@ -198,6 +310,9 @@ def to_definition(workflow: Workflow) -> Dict[str, Any]:
             for s in workflow.steps
         ],
     }
+    if workflow.schedule:
+        defn["schedule"] = workflow.schedule
+    return defn
 
 
 def from_definition(defn: Dict[str, Any]) -> Workflow:
@@ -218,7 +333,11 @@ def from_definition(defn: Dict[str, Any]) -> Workflow:
                 }
             steps.append(Step(s["name"], s["agent"], builder,
                               s.get("consumes")))
-    return Workflow(defn.get("name", "imported_workflow"), steps)
+    wf = Workflow(defn.get("name", "imported_workflow"), steps,
+                  schedule=defn.get("schedule"))
+    if wf.schedule and _SCHEDULE_ENABLED and croniter:
+        set_schedule(wf.name, wf.schedule)
+    return wf
 
 
 # ---------------------------
@@ -289,3 +408,21 @@ def run_project_workflow(spec: str, language: str = "python") -> Dict[str, Any]:
         "language": language,
     }
     return PROJECT_WORKFLOW.execute(ctx)
+
+
+# ---------------------------
+# Versioned save
+# ---------------------------
+def save_workflow_with_version(
+    workflow_id: str,
+    definition: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Save a workflow definition and auto-create a version snapshot.
+    Returns {'version': str, 'path': str} on success."""
+    if not _VERSIONING_ENABLED:
+        return {"version": None, "skipped": True}
+    try:
+        from workflow.versioning import create_version as _cv
+    except ImportError:
+        from versioning import create_version as _cv
+    return _cv(workflow_id, definition)

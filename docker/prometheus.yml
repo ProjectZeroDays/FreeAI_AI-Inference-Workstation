@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "freeai-router"
+    static_configs:
+      - targets: ["router:8010"]
+        labels:
+          service: freeai-router
+
+  - job_name: "freeai-agents"
+    static_configs:
+      - targets: ["agents:8020"]
+        labels:
+          service: freeai-agents
+
+  - job_name: "freeai-dashboard"
+    static_configs:
+      - targets: ["dashboard:8030"]
+        labels:
+          service: freeai-dashboard
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

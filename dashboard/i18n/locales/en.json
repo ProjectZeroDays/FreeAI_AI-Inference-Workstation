@@ -84,5 +84,6 @@
   "alert.no_alerts": "No alerts.",
   "topbar.title": "FreeAI Dashboard",
   "topbar.subtitle": "Unified GPU Inference Stack — Health & Metrics",
-  "footer.text": "FreeAI Stack"
+  "footer.text": "FreeAI Stack",
+  "nav.live_logs": "Live Logs"
 }

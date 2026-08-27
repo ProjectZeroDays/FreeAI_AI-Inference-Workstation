@@ -1,0 +1,523 @@
+{{- define "freeai.commonLabels" }}
+app: {{ .name }}
+tier: {{ .tier | default "backend" }}
+{{- if .gpu }}
+gpu: "true"
+{{- end }}
+{{- end }}
+
+{{- define "freeai.image" }}
+{{- $registry := .Values.global.imageRegistry }}
+{{- $img := .image }}
+{{- printf "%s/%s:%s" $registry $img.repository $img.tag }}
+{{- end }}
+
+{{- define "freeai.probe" }}
+{{- $path := .path | default "/health" }}
+{{- $port := .port }}
+{{- $initDelay := .initialDelaySeconds | default 15 }}
+{{- $period := .periodSeconds | default 15 }}
+{{- $timeout := .timeoutSeconds | default 5 }}
+{{- $fail := .failureThreshold | default 5 }}
+{{- $probeType := .probeType | default "http" }}
+livenessProbe:
+  {{- if eq $probeType "tcp" }}
+  tcpSocket:
+    port: {{ $port }}
+  {{- else }}
+  httpGet:
+    path: {{ $path }}
+    port: {{ $port }}
+  {{- end }}
+  initialDelaySeconds: {{ $initDelay }}
+  periodSeconds: {{ $period }}
+  timeoutSeconds: {{ $timeout }}
+  failureThreshold: {{ $fail }}
+readinessProbe:
+  {{- if eq $probeType "tcp" }}
+  tcpSocket:
+    port: {{ $port }}
+  {{- else }}
+  httpGet:
+    path: {{ $path }}
+    port: {{ $port }}
+  {{- end }}
+  initialDelaySeconds: {{ $initDelay | mul 2 | div }}
+  periodSeconds: {{ $period }}
+  timeoutSeconds: {{ $timeout }}
+  failureThreshold: {{ $fail | sub 2 }}
+{{- end }}
+
+---
+# router
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: router
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: router
+    tier: backend
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  {{- if not .Values.hpa.router.enabled }}
+  replicas: {{ .Values.deployments.router.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: router
+  strategy:
+    type: {{ .Values.deployments.router.strategy }}
+    {{- if eq .Values.deployments.router.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app: router
+        tier: backend
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.routerPort }}"
+        {{- end }}
+      annotations:
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.routerPort }}"
+        {{- end }}
+    spec:
+      containers:
+        - name: router
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.router) (dict "name" "router" "tier" "backend")) }}
+          imagePullPolicy: {{ .Values.images.router.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8010
+              protocol: TCP
+            - name: ws
+              containerPort: 8011
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: LLAMA_BASE
+              value: "http://llama:9001"
+            - name: ROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: freeai-secrets
+                  key: router-api-key
+          resources:
+            {{- toYaml .Values.deployments.router.resources | nindent 12 }}
+          {{- include "freeai.probe" (merge (dict "port" 8010 "initialDelaySeconds" 15 "periodSeconds" 15) (dict "name" "router")) | nindent 10 }}
+---
+# agents
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agents
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: agents
+    tier: backend
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  {{- if not .Values.hpa.agents.enabled }}
+  replicas: {{ .Values.deployments.agents.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: agents
+  strategy:
+    type: {{ .Values.deployments.agents.strategy }}
+    {{- if eq .Values.deployments.agents.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app: agents
+        tier: backend
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.agentsPort }}"
+        {{- end }}
+    spec:
+      containers:
+        - name: agents
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.agents) (dict "name" "agents" "tier" "backend")) }}
+          imagePullPolicy: {{ .Values.images.agents.pullPolicy }}
+          ports:
+            - containerPort: 8020
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: ROUTER_URL
+              value: "http://router:8010/route"
+            - name: AGENT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: freeai-secrets
+                  key: agent-api-key
+          resources:
+            {{- toYaml .Values.deployments.agents.resources | nindent 12 }}
+          {{- include "freeai.probe" (merge (dict "port" 8020 "initialDelaySeconds" 15 "periodSeconds" 15) (dict "name" "agents")) | nindent 10 }}
+---
+# dashboard
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: dashboard
+    tier: frontend
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployments.dashboard.replicas }}
+  selector:
+    matchLabels:
+      app: dashboard
+  strategy:
+    type: {{ .Values.deployments.dashboard.strategy }}
+    {{- if eq .Values.deployments.dashboard.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app: dashboard
+        tier: frontend
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.dashboardPort }}"
+        {{- end }}
+    spec:
+      containers:
+        - name: dashboard
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.dashboard) (dict "name" "dashboard" "tier" "frontend")) }}
+          imagePullPolicy: {{ .Values.images.dashboard.pullPolicy }}
+          ports:
+            - containerPort: 8030
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: ROUTER_URL
+              value: "http://router:8010"
+            - name: AGENTS_URL
+              value: "http://agents:8020"
+            - name: WORKFLOW_URL
+              value: "http://workflow:8040"
+          resources:
+            {{- toYaml .Values.deployments.dashboard.resources | nindent 12 }}
+          {{- include "freeai.probe" (merge (dict "port" 8030 "initialDelaySeconds" 10 "periodSeconds" 15) (dict "name" "dashboard")) | nindent 10 }}
+---
+# workflow
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflow
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: workflow
+    tier: backend
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  {{- if not .Values.hpa.workflow.enabled }}
+  replicas: {{ .Values.deployments.workflow.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: workflow
+  strategy:
+    type: {{ .Values.deployments.workflow.strategy }}
+    {{- if eq .Values.deployments.workflow.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app: workflow
+        tier: backend
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.workflowPort }}"
+        {{- end }}
+    spec:
+      containers:
+        - name: workflow
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.workflow) (dict "name" "workflow" "tier" "backend")) }}
+          imagePullPolicy: {{ .Values.images.workflow.pullPolicy }}
+          ports:
+            - containerPort: 8040
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: AGENT_API
+              value: "http://agents:8020"
+            - name: WORKFLOW_AUDIT_LOG
+              value: "/workspace/logs/workflow-audit.jsonl"
+          resources:
+            {{- toYaml .Values.deployments.workflow.resources | nindent 12 }}
+          volumeMounts:
+            - name: audit-logs
+              mountPath: /workspace/logs
+          {{- include "freeai.probe" (merge (dict "port" 8040 "initialDelaySeconds" 15 "periodSeconds" 15) (dict "name" "workflow")) | nindent 10 }}
+      volumes:
+        - name: audit-logs
+          persistentVolumeClaim:
+            claimName: freeai-audit-logs
+---
+# autonomous
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autonomous
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: autonomous
+    tier: backend
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployments.autonomous.replicas }}
+  selector:
+    matchLabels:
+      app: autonomous
+  strategy:
+    type: {{ .Values.deployments.autonomous.strategy }}
+    {{- if eq .Values.deployments.autonomous.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app: autonomous
+        tier: backend
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.autonomousPort }}"
+        {{- end }}
+    spec:
+      containers:
+        - name: autonomous
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.autonomous) (dict "name" "autonomous" "tier" "backend")) }}
+          imagePullPolicy: {{ .Values.images.autonomous.pullPolicy }}
+          ports:
+            - containerPort: 8050
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: AGENT_API
+              value: "http://agents:8020"
+            - name: ENABLE_SHELL_TOOLS
+              value: {{ .Values.config.enableShellTools | quote }}
+            - name: MAX_FIX_ROUNDS
+              value: {{ .Values.config.maxFixRounds | quote }}
+          resources:
+            {{- toYaml .Values.deployments.autonomous.resources | nindent 12 }}
+          volumeMounts:
+            - name: workspaces
+              mountPath: /stack/workspaces
+          {{- include "freeai.probe" (merge (dict "port" 8050 "initialDelaySeconds" 15 "periodSeconds" 15) (dict "name" "autonomous")) | nindent 10 }}
+      volumes:
+        - name: workspaces
+          persistentVolumeClaim:
+            claimName: freeai-workspaces
+---
+# browser
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browser
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: browser
+    tier: backend
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployments.browser.replicas }}
+  selector:
+    matchLabels:
+      app: browser
+  strategy:
+    type: {{ .Values.deployments.browser.strategy }}
+    {{- if eq .Values.deployments.browser.strategy "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        app: browser
+        tier: backend
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.browserPort }}"
+        {{- end }}
+    spec:
+      containers:
+        - name: browser
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.browser) (dict "name" "browser" "tier" "backend")) }}
+          imagePullPolicy: {{ .Values.images.browser.pullPolicy }}
+          ports:
+            - containerPort: 8180
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: ROUTER_URL
+              value: "http://router:8010/route"
+          resources:
+            {{- toYaml .Values.deployments.browser.resources | nindent 12 }}
+          {{- include "freeai.probe" (merge (dict "port" 8180 "initialDelaySeconds" 20 "periodSeconds" 15) (dict "name" "browser")) | nindent 10 }}
+---
+# llama (GPU)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: llama
+    tier: inference
+    gpu: "true"
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployments.llama.replicas }}
+  selector:
+    matchLabels:
+      app: llama
+  strategy:
+    type: {{ .Values.deployments.llama.strategy }}
+  template:
+    metadata:
+      labels:
+        app: llama
+        tier: inference
+        gpu: "true"
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.llamaPort }}"
+        {{- end }}
+    spec:
+      nodeSelector:
+        {{- toYaml .Values.deployments.llama.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.deployments.llama.tolerations | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.deployments.llama.affinity | nindent 8 }}
+      containers:
+        - name: llama
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.llama) (dict "name" "llama" "tier" "inference")) }}
+          imagePullPolicy: {{ .Values.images.llama.pullPolicy }}
+          args: []
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: LLAMA_PORT
+              value: {{ .Values.config.llamaPort | quote }}
+            - name: LLAMA_MODEL_PATH
+              value: {{ .Values.config.llamaModelPath | quote }}
+            - name: N_GPU_LAYERS
+              value: {{ .Values.config.nGpuLayers | quote }}
+            - name: LLAMA_VISION_ENABLED
+              value: {{ .Values.config.llamaVisionEnabled | default "false" | quote }}
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,utility
+          resources:
+            {{- toYaml .Values.deployments.llama.resources | nindent 12 }}
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+          {{- include "freeai.probe" (merge (dict "port" 9001 "initialDelaySeconds" 60 "periodSeconds" 30 "timeoutSeconds" 10) (dict "name" "llama")) | nindent 10 }}
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: freeai-models
+---
+# vllm (GPU)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: vllm
+    tier: inference
+    gpu: "true"
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployments.vllm.replicas }}
+  selector:
+    matchLabels:
+      app: vllm
+  strategy:
+    type: {{ .Values.deployments.vllm.strategy }}
+  template:
+    metadata:
+      labels:
+        app: vllm
+        tier: inference
+        gpu: "true"
+        {{- if .Values.prometheus.scrape }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.config.vllmPort }}"
+        {{- end }}
+    spec:
+      nodeSelector:
+        {{- toYaml .Values.deployments.vllm.nodeSelector | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.deployments.vllm.tolerations | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.deployments.vllm.affinity | nindent 8 }}
+      containers:
+        - name: vllm
+          image: {{ include "freeai.image" (merge (dict "image" .Values.images.vllm) (dict "name" "vllm" "tier" "inference")) }}
+          imagePullPolicy: {{ .Values.images.vllm.pullPolicy }}
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - {{ .Values.config.vllmPort | quote }}
+            - "--model"
+            - {{ .Values.config.vllmModel | quote }}
+            - "--enable-prefix-caching"
+          ports:
+            - containerPort: 9002
+              protocol: TCP
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,utility
+          resources:
+            {{- toYaml .Values.deployments.vllm.resources | nindent 12 }}
+          {{- include "freeai.probe" (merge (dict "port" 9002 "initialDelaySeconds" 60 "periodSeconds" 30 "timeoutSeconds" 10 "probeType" "tcp") (dict "name" "vllm")) | nindent 10 }}

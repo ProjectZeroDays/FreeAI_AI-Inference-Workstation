@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Prompt Templates</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .pt-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .pt-main { padding:22px 24px 32px; min-width:0; }
+    .pt-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .pt-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .pt-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    /* Category pills */
+    .cat-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .cat-pill {
+      padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600;
+      border:1px solid var(--border); background:var(--panel-2); color:var(--muted);
+      cursor:pointer; transition:all .15s; font-family:Inter,system-ui,sans-serif;
+    }
+    .cat-pill:hover { border-color:var(--accent-2); color:var(--text); }
+    .cat-pill.active { border-color:var(--accent); color:var(--accent); background:rgba(34,197,94,.1); }
+
+    /* Template cards */
+    .pt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px; }
+    .pt-card {
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:14px; padding:14px;
+      transition:border-color .18s ease, transform .18s ease;
+    }
+    .pt-card:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .pt-card-head { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; }
+    .pt-card-title { font-size:14px; font-weight:600; color:var(--text); flex:1; }
+    .pt-card-cat { font-size:10px; font-weight:600; padding:2px 8px; border-radius:999px;
+                   background:rgba(56,189,248,.12); color:var(--accent-2); text-transform:uppercase; letter-spacing:.04em; }
+    .pt-card-preview { font-size:12px; color:var(--muted); line-height:1.5;
+                       max-height:72px; overflow:hidden; margin-bottom:10px;
+                       white-space:pre-wrap; word-break:break-word; }
+    .pt-card-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .pt-btn {
+      padding:5px 12px; border-radius:8px; border:1px solid var(--border);
+      background:var(--panel-2); color:var(--muted); cursor:pointer;
+      font-size:12px; font-weight:500; transition:all .15s; font-family:Inter,system-ui,sans-serif;
+    }
+    .pt-btn:hover { border-color:var(--accent-2); color:var(--text); }
+    .pt-btn.insert { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.3); color:var(--accent); }
+    .pt-btn.insert:hover { background:rgba(34,197,94,.2); }
+    .pt-btn.del { background:rgba(239,68,68,.08); border-color:rgba(239,68,68,.2); color:var(--danger); }
+    .pt-btn.del:hover { background:rgba(239,68,68,.15); }
+
+    /* New template form */
+    .pt-form {
+      background:rgba(255,255,255,.03); border:1px solid var(--border);
+      border-radius:14px; padding:16px; margin-bottom:18px;
+    }
+    .pt-form h3 { margin:0 0 12px; font-size:14px; font-weight:600; }
+    .pt-form-row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+    .pt-form-row input, .pt-form-row select {
+      background:var(--bg-soft); color:var(--text); border:1px solid var(--border);
+      border-radius:10px; padding:7px 12px; font-size:13px; font-family:Inter,system-ui,sans-serif;
+    }
+    .pt-form-row input { flex:1; }
+    .pt-form-row textarea {
+      width:100%; min-height:100px; background:var(--bg-soft); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:10px;
+      font-size:13px; font-family:'JetBrains Mono',monospace; resize:vertical;
+    }
+    .pt-form-row textarea:focus, .pt-form-row input:focus, .pt-form-row select:focus {
+      outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12);
+    }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); grid-column:1/-1; }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+  </style>
+</head>
+<body>
+  <div class="pt-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Prompts</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/prompts" class="nav-item active"><span class="nav-dot"></span> Prompts</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="pt-count" class="muted" style="margin-left:auto">0 templates</span>
+      </div>
+    </nav>
+
+    <div class="pt-main">
+      <header class="pt-topbar">
+        <div>
+          <h1>Prompt Templates</h1>
+          <p>Save, organize, and insert prompt templates into agent chats</p>
+        </div>
+        <button id="toggle-form" class="pt-btn insert">+ New Template</button>
+      </header>
+
+      <!-- Category filter -->
+      <div class="cat-bar" id="cat-bar">
+        <button class="cat-pill active" data-cat="all">All</button>
+        <button class="cat-pill" data-cat="coding">💻 Coding</button>
+        <button class="cat-pill" data-cat="analysis">📊 Analysis</button>
+        <button class="cat-pill" data-cat="creative">🎨 Creative</button>
+        <button class="cat-pill" data-cat="general">📝 General</button>
+      </div>
+
+      <!-- New template form -->
+      <div class="pt-form" id="pt-form" style="display:none;">
+        <h3>New Template</h3>
+        <div class="pt-form-row">
+          <input type="text" id="pt-name" placeholder="Template name…" maxlength="80" />
+          <select id="pt-category">
+            <option value="coding">💻 Coding</option>
+            <option value="analysis">📊 Analysis</option>
+            <option value="creative">🎨 Creative</option>
+            <option value="general">📝 General</option>
+          </select>
+        </div>
+        <div class="pt-form-row">
+          <textarea id="pt-content" placeholder="Write your prompt template here…&#10;&#10;Use {{variable}} for placeholders."></textarea>
+        </div>
+        <div class="pt-form-row">
+          <button id="pt-save" class="pt-btn insert">Save Template</button>
+          <button id="pt-cancel" class="pt-btn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Template grid -->
+      <div class="pt-grid" id="pt-grid">
+        <div class="empty-state"><div style="font-size:40px;opacity:.4;margin-bottom:12px">◈</div><p>Loading templates…</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CATEGORIES = ['coding','analysis','creative','general'];
+    const CAT_LABELS = { coding:'💻 Coding', analysis:'📊 Analysis', creative:'🎨 Creative', general:'📝 General' };
+    let templates = [];
+    let activeCat = 'all';
+
+    const $ = id => document.getElementById(id);
+
+    function toast(msg, ok) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + (ok ? 'success' : 'error');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    async function load() {
+      try {
+        const r = await fetch('/api/prompts');
+        templates = await r.json();
+        $('pt-count').textContent = templates.length + ' templates';
+        render();
+      } catch(e) {
+        $('pt-grid').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><p>Failed to load templates: ${esc(e.message)}</p></div>`;
+      }
+    }
+
+    function render(filter = '') {
+      const grid = $('pt-grid');
+      const filtered = templates.filter(t => {
+        if (activeCat !== 'all' && t.category !== activeCat) return false;
+        if (filter && !t.name.toLowerCase().includes(filter) && !t.content.toLowerCase().includes(filter)) return false;
+        return true;
+      });
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div style="font-size:40px;opacity:.4;margin-bottom:12px">✦</div><p>${templates.length === 0 ? 'No templates yet. Click "+ New Template" to create one.' : 'No templates match your filter.'}</p></div>`;
+        return;
+      }
+      grid.innerHTML = filtered.map(t => `
+        <div class="pt-card">
+          <div class="pt-card-head">
+            <div class="pt-card-title">${esc(t.name)}</div>
+            <span class="pt-card-cat">${esc(CAT_LABELS[t.category] || t.category)}</span>
+          </div>
+          <div class="pt-card-preview">${esc(t.content)}</div>
+          <div class="pt-card-actions">
+            <button class="pt-btn insert" onclick="insertTemplate(${t.id})">▶ Insert</button>
+            <button class="pt-btn" onclick="editTemplate(${t.id})">✏ Edit</button>
+            <button class="pt-btn del" onclick="deleteTemplate(${t.id})">🗑</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function saveTemplate() {
+      const name = $('pt-name').value.trim();
+      const content = $('pt-content').value.trim();
+      const category = $('pt-category').value;
+      if (!name || !content) { toast('Name and content are required', false); return; }
+      try {
+        const r = await fetch('/api/prompts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, content, category })
+        });
+        const data = await r.json();
+        if (data.id) { toast('Template saved!', true); $('pt-name').value = ''; $('pt-content').value = ''; $('pt-form').style.display = 'none'; load(); }
+        else { toast(data.error || 'Save failed', false); }
+      } catch(e) { toast('Error: ' + e.message, false); }
+    }
+
+    async function deleteTemplate(id) {
+      if (!confirm('Delete this template?')) return;
+      try {
+        const r = await fetch(`/api/prompts/${id}`, { method: 'DELETE' });
+        const data = await r.json();
+        if (data.ok) { toast('Deleted', true); load(); }
+        else { toast(data.error || 'Delete failed', false); }
+      } catch(e) { toast('Error: ' + e.message, false); }
+    }
+
+    async function editTemplate(id) {
+      const t = templates.find(x => x.id === id);
+      if (!t) return;
+      $('pt-name').value = t.name;
+      $('pt-content').value = t.content;
+      $('pt-category').value = t.category;
+      $('pt-form').style.display = '';
+      $('pt-form').dataset.editId = id;
+      $('pt-save').textContent = 'Update Template';
+      $('pt-save').onclick = async () => {
+        const name = $('pt-name').value.trim();
+        const content = $('pt-content').value.trim();
+        const category = $('pt-category').value;
+        if (!name || !content) { toast('Name and content are required', false); return; }
+        try {
+          const r = await fetch(`/api/prompts/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, content, category })
+          });
+          const data = await r.json();
+          if (data.ok) { toast('Updated!', true); $('pt-form').style.display = 'none'; load(); }
+          else { toast(data.error || 'Update failed', false); }
+        } catch(e) { toast('Error: ' + e.message, false); }
+      };
+      $('pt-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function insertTemplate(id) {
+      const t = templates.find(x => x.id === id);
+      if (!t) return;
+      // Try to find an active agent chat iframe or inject into window
+      const chatWin = window.parent?.freeai_agent_window;
+      if (chatWin && chatWin.postMessage) {
+        chatWin.postMessage({ type: 'INSERT_PROMPT', content: t.content }, '*');
+        toast('Inserted into agent chat!', true);
+        return;
+      }
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(t.content).then(() => toast('Copied to clipboard!', true))
+        .catch(() => toast('Copy failed', false));
+    }
+
+    // Category filter
+    $('cat-bar').addEventListener('click', e => {
+      const pill = e.target.closest('.cat-pill');
+      if (!pill) return;
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      activeCat = pill.dataset.cat;
+      render();
+    });
+
+    // Toggle form
+    $('toggle-form').addEventListener('click', () => {
+      const form = $('pt-form');
+      form.style.display = form.style.display === 'none' ? '' : 'none';
+      if (form.style.display !== 'none') {
+        $('pt-name').value = '';
+        $('pt-content').value = '';
+        $('pt-category').value = 'coding';
+        $('pt-save').textContent = 'Save Template';
+        $('pt-save').onclick = saveTemplate;
+        delete form.dataset.editId;
+      }
+    });
+    $('pt-cancel').addEventListener('click', () => { $('pt-form').style.display = 'none'; });
+    $('pt-save').addEventListener('click', saveTemplate);
+
+    load();
+  </script>
+</body>
+</html>

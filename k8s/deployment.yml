@@ -1,0 +1,576 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: router
+  namespace: freeai-stack
+  labels:
+    app: router
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: router
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: router
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8010"
+    spec:
+      containers:
+        - name: router
+          image: your-registry/router:latest
+          ports:
+            - name: http
+              containerPort: 8010
+              protocol: TCP
+            - name: ws
+              containerPort: 8011
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: LLAMA_BASE
+              value: "http://llama:9001"
+            - name: ROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: freeai-secrets
+                  key: router-api-key
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8010
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8010
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agents
+  namespace: freeai-stack
+  labels:
+    app: agents
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: agents
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: agents
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8020"
+    spec:
+      containers:
+        - name: agents
+          image: your-registry/agents:latest
+          ports:
+            - containerPort: 8020
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: ROUTER_URL
+              value: "http://router:8010/route"
+            - name: AGENT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: freeai-secrets
+                  key: agent-api-key
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8020
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8020
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: freeai-stack
+  labels:
+    app: dashboard
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dashboard
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: dashboard
+        tier: frontend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8030"
+    spec:
+      containers:
+        - name: dashboard
+          image: your-registry/dashboard:latest
+          ports:
+            - containerPort: 8030
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: ROUTER_URL
+              value: "http://router:8010"
+            - name: AGENTS_URL
+              value: "http://agents:8020"
+            - name: WORKFLOW_URL
+              value: "http://workflow:8040"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8030
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8030
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflow
+  namespace: freeai-stack
+  labels:
+    app: workflow
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: workflow
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: workflow
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8040"
+    spec:
+      containers:
+        - name: workflow
+          image: your-registry/workflow:latest
+          ports:
+            - containerPort: 8040
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: AGENT_API
+              value: "http://agents:8020"
+            - name: WORKFLOW_AUDIT_LOG
+              value: "/workspace/logs/workflow-audit.jsonl"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+          volumeMounts:
+            - name: audit-logs
+              mountPath: /workspace/logs
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8040
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8040
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: audit-logs
+          persistentVolumeClaim:
+            claimName: freeai-audit-logs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autonomous
+  namespace: freeai-stack
+  labels:
+    app: autonomous
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autonomous
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: autonomous
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8050"
+    spec:
+      containers:
+        - name: autonomous
+          image: your-registry/autonomous:latest
+          ports:
+            - containerPort: 8050
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: AGENT_API
+              value: "http://agents:8020"
+            - name: ENABLE_SHELL_TOOLS
+              value: "0"
+            - name: MAX_FIX_ROUNDS
+              value: "3"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+          volumeMounts:
+            - name: workspaces
+              mountPath: /stack/workspaces
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8050
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8050
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: workspaces
+          persistentVolumeClaim:
+            claimName: freeai-workspaces
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browser
+  namespace: freeai-stack
+  labels:
+    app: browser
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: browser
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: browser
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8180"
+    spec:
+      containers:
+        - name: browser
+          image: your-registry/browser:latest
+          ports:
+            - containerPort: 8180
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: ROUTER_URL
+              value: "http://router:8010/route"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8180
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8180
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama
+  namespace: freeai-stack
+  labels:
+    app: llama
+    tier: inference
+    gpu: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: llama
+        tier: inference
+        gpu: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9001"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: llama
+          image: your-registry/llama:latest
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: freeai-config
+          env:
+            - name: LLAMA_PORT
+              value: "9001"
+            - name: LLAMA_MODEL_PATH
+              value: /models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf
+            - name: N_GPU_LAYERS
+              value: "80"
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,utility
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "8Gi"
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "8000m"
+              memory: "16Gi"
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9001
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9001
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: freeai-models
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: freeai-stack
+  labels:
+    app: vllm
+    tier: inference
+    gpu: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: vllm
+        tier: inference
+        gpu: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9002"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:latest
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "9002"
+            - "--model"
+            - "Qwen/Qwen2.5-7B-Instruct"
+            - "--enable-prefix-caching"
+          ports:
+            - containerPort: 9002
+              protocol: TCP
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: compute,utility
+          resources:
+            requests:
+              cpu: "4000m"
+              memory: "16Gi"
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "8000m"
+              memory: "32Gi"
+              nvidia.com/gpu: 1
+          livenessProbe:
+            tcpSocket:
+              port: 9002
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            tcpSocket:
+              port: 9002
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3

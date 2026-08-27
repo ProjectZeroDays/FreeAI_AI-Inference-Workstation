@@ -6,15 +6,29 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 try:
-    from workflow.engine import from_definition, to_definition
+    from workflow.engine import (from_definition, to_definition,
+                                 pause_workflow, resume_workflow,
+                                 is_paused, get_schedule,
+                                 set_schedule, clear_schedule,
+                                 save_workflow_with_version,
+                                 running_count, start_scheduler_thread)
     from workflow.registry import get_workflow, list_workflows
     from workflow.validator import validate_workflow
     from workflow.audit import read_audit
+    from workflow.versioning import (list_versions, get_version,
+                                      diff_versions, restore_version)
 except ImportError:
-    from engine import from_definition, to_definition
+    from engine import (from_definition, to_definition,
+                        pause_workflow, resume_workflow,
+                        is_paused, get_schedule,
+                        set_schedule, clear_schedule,
+                        save_workflow_with_version,
+                        running_count, start_scheduler_thread)
     from registry import get_workflow, list_workflows
     from validator import validate_workflow
     from audit import read_audit
+    from versioning import (list_versions, get_version,
+                            diff_versions, restore_version)
 
 app = FastAPI(title="FreeAI Workflow Engine", version="1.2")
 
@@ -40,6 +54,10 @@ class ValidateRequest(BaseModel):
 
 class ValidateDefinitionRequest(BaseModel):
     definition: dict
+
+
+class PauseResumeRequest(BaseModel):
+    cron: str = ""
 
 
 @app.get("/workflows")
@@ -153,6 +171,80 @@ def get_templates():
 def get_audit(limit: int = 50):
     """Return the last *limit* audit-log entries."""
     return {"entries": read_audit(limit)}
+
+
+# ── Pause / Resume ──────────────────────────────────────────────
+
+@app.post("/workflow/{id}/pause")
+def pause_workflow_endpoint(id: str):
+    """Pause a workflow so future executions are rejected."""
+    pause_workflow(id)
+    return {"ok": True, "id": id, "status": "paused"}
+
+
+@app.post("/workflow/{id}/resume")
+def resume_workflow_endpoint(id: str):
+    """Resume a previously paused workflow."""
+    resume_workflow(id)
+    return {"ok": True, "id": id, "status": "resumed"}
+
+
+@app.get("/workflow/{id}/status")
+def workflow_status_endpoint(id: str):
+    """Return pause state and schedule info for a workflow."""
+    paused = is_paused(id)
+    schedule = get_schedule(id)
+    wf = get_workflow(id)
+    return {
+        "id": id,
+        "paused": paused,
+        "schedule": schedule,
+        "exists": wf is not None,
+    }
+
+
+# ── Versions ────────────────────────────────────────────────────
+
+@app.get("/api/workflow/versions/{id}")
+def list_workflow_versions(id: str):
+    """List all saved versions for a workflow."""
+    return {"versions": list_versions(id)}
+
+
+@app.get("/api/workflow/versions/{id}/{ver}")
+def get_workflow_version(id: str, ver: str):
+    """Return a specific version's full metadata."""
+    data = get_version(id, ver)
+    if data is None:
+        raise HTTPException(status_code=404,
+                            detail=f"version {ver} not found")
+    return data
+
+
+@app.post("/api/workflow/versions/{id}/restore")
+def restore_workflow_version(id: str, ver: str):
+    """Restore a workflow definition from a saved version."""
+    result = restore_version(id, ver)
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    return result
+
+
+# ── Schedule ────────────────────────────────────────────────────
+
+@app.post("/workflow/{id}/schedule")
+def set_workflow_schedule(id: str, req: PauseResumeRequest):
+    """Assign a cron schedule to a workflow."""
+    if not req.cron:
+        clear_schedule(id)
+        return {"ok": True, "id": id, "schedule": None}
+    set_schedule(id, req.cron)
+    return {"ok": True, "id": id, "schedule": req.cron}
+
+
+@app.get("/api/workflow/running")
+def get_running_count():
+    return {"running": running_count()}
 
 
 @app.get("/health")

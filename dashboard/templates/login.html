@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Login</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--bg);
+    }
+    .login-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: var(--shadow);
+    }
+    .login-brand {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .login-brand .brand-mark {
+      font-size: 32px;
+      color: var(--accent);
+    }
+    .login-brand h1 {
+      margin: 8px 0 4px;
+      font-size: 22px;
+      color: var(--text);
+    }
+    .login-brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-soft);
+      color: var(--text);
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent-2);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #000;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .login-btn:hover { opacity: 0.9; }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-error {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+      min-height: 18px;
+    }
+    .login-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted-2);
+    }
+    .login-footer a {
+      color: var(--accent-2);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-mark">&#9670;</div>
+      <h1>FreeAI</h1>
+      <p>Unified GPU Inference Stack</p>
+    </div>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autocomplete="username" required autofocus />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="login-btn" id="login-btn">Sign In</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+    <div class="login-footer">
+      <a href="/">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById("login-form");
+      var btn = document.getElementById("login-btn");
+      var err = document.getElementById("login-error");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        err.textContent = "";
+        btn.disabled = true;
+        btn.textContent = "Signing in...";
+
+        var payload = {
+          username: document.getElementById("username").value.trim(),
+          password: document.getElementById("password").value,
+        };
+
+        fetch("/auth/login", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload),
+        })
+        .then(function (res) { return res.json().then(function (d) { return {status: res.status, body: d}; }); })
+        .then(function (r) {
+          if (r.status === 200) {
+            localStorage.setItem("freeai_access_token", r.body.access_token);
+            localStorage.setItem("freeai_refresh_token", r.body.refresh_token);
+            localStorage.setItem("freeai_user", JSON.stringify(r.body.user));
+            window.location.href = "/";
+          } else {
+            err.textContent = r.body.error || "Login failed";
+            btn.disabled = false;
+            btn.textContent = "Sign In";
+          }
+        })
+        .catch(function (exc) {
+          err.textContent = "Network error";
+          btn.disabled = false;
+          btn.textContent = "Sign In";
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

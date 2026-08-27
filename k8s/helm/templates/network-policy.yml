@@ -1,0 +1,127 @@
+{{- if .Values.networkPolicy.enabled }}
+# Allow dashboard → router
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-allow-dashboard-to-router
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: router
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: dashboard
+      ports:
+        - port: 8010
+        - port: 8011
+---
+# Allow router/dashboard/workflow/autonomous/browser → agents (internal only)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-allow-router-to-agents
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: agents
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: router
+        - podSelector:
+            matchLabels:
+              app: dashboard
+        - podSelector:
+            matchLabels:
+              app: workflow
+        - podSelector:
+            matchLabels:
+              app: autonomous
+        - podSelector:
+            matchLabels:
+              app: browser
+      ports:
+        - port: 8020
+---
+# Backend isolation: only frontend and backend tiers can reach backend ports
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-backend-isolation
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      tier: backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              tier: frontend
+        - podSelector:
+            matchLabels:
+              tier: backend
+        - podSelector:
+            matchLabels:
+              tier: inference
+      ports:
+        - port: 8010
+        - port: 8020
+        - port: 8040
+        - port: 8050
+        - port: 8180
+---
+# Inference isolation: only router and agents can reach GPU inference
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-inference-isolation
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      tier: inference
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: router
+        - podSelector:
+            matchLabels:
+              app: agents
+      ports:
+        - port: 9001
+        - port: 9002
+---
+{{- if .Values.networkPolicy.allowExternalToDashboard }}
+# Allow external traffic to dashboard (the public entry point)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeai-allow-external-to-dashboard
+  namespace: {{ .Values.global.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: dashboard
+  policyTypes:
+    - Ingress
+  ingress:
+    - from: []
+      ports:
+        - port: 8030
+{{- end }}
+{{- end }}

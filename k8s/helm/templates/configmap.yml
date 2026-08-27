@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: freeai-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    app: freeai
+    {{- toYaml .Values.global.commonLabels | nindent 4 }}
+data:
+  ROUTER_PORT: {{ .Values.config.routerPort | quote }}
+  LLAMA_BASE: {{ .Values.config.llamaBase | quote }}
+  MOCK_LLM: {{ .Values.config.mockLLM | quote }}
+  RATE_LIMIT_CAPACITY: {{ .Values.config.rateLimitCapacity | quote }}
+  CACHE_ENABLED: {{ .Values.config.cacheEnabled | quote }}
+  STACK_PROFILE: {{ .Values.config.stackProfile | quote }}
+  LLAMA_PORT: {{ .Values.config.llamaPort | quote }}
+  LLAMA_MODEL_PATH: {{ .Values.config.llamaModelPath | quote }}
+  N_GPU_LAYERS: {{ .Values.config.nGpuLayers | quote }}
+  VLLM_PORT: {{ .Values.config.vllmPort | quote }}
+  VLLM_MODEL: {{ .Values.config.vllmModel | quote }}
+  QDRANT_URL: {{ .Values.config.qdrantUrl | quote }}
+  MEMORY_MAX_TURNS: {{ .Values.config.memoryMaxTurns | quote }}
+  MEMORY_MAX_SESSIONS: {{ .Values.config.memoryMaxSessions | quote }}
+  ENABLE_SHELL_TOOLS: {{ .Values.config.enableShellTools | quote }}
+  MAX_FIX_ROUNDS: {{ .Values.config.maxFixRounds | quote }}
+  BROWSER_PORT: {{ .Values.config.browserPort | quote }}
+  prometheus.io/scrape: "true"

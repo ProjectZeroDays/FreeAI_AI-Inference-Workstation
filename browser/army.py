@@ -177,6 +177,10 @@ class SwarmCoordinator:
             if not url:
                 return {"error": "navigate requires 'url'"}
             await engine.open(url, task.get("wait_until", "networkidle"), task.get("timeout", 15000))
+            # Inject extensions into the loaded page
+            if hasattr(engine, '_ext_mgr') and engine._ext_mgr:
+                injected = await engine._ext_mgr.inject_on_navigation(engine._page)
+                return {"url": await engine.get_url(), "title": await engine.get_title(), "extensions_injected": injected}
             return {"url": await engine.get_url(), "title": await engine.get_title()}
 
         elif task_type == "extract":
@@ -318,6 +322,18 @@ class SwarmCoordinator:
         elif task_type == "new_tab":
             url = task.get("url")
             return await engine.new_tab(url)
+
+        elif task_type == "install_extension":
+            manifest = task.get("manifest", {})
+            return engine._ext_mgr.install_from_manifest(manifest)
+
+        elif task_type == "list_extensions":
+            return engine._ext_mgr.describe()
+
+        elif task_type == "toggle_extension":
+            name = task.get("name", "")
+            enabled = task.get("enabled", True)
+            return engine._ext_mgr.toggle(name, enabled)
 
         elif task_type == "switch_tab":
             tab_id = task.get("tab_id", "")

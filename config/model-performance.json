@@ -1,0 +1,18 @@
+{
+  "router": {
+    "model_performance": {
+      "latency_weight": 0.30,
+      "tokens_per_sec_weight": 0.30,
+      "error_rate_weight": 0.40,
+      "latency_target_ms": 500,
+      "tokens_per_sec_target": 50,
+      "error_target": 0.05
+    },
+    "model_benchmark": {
+      "max_tokens": 256,
+      "timeout_s": 60,
+      "cold_runs": 1,
+      "warm_runs": 3
+    }
+  }
+}

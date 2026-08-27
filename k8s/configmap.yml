@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: freeai-config
+  namespace: freeai-stack
+  labels:
+    app: freeai
+data:
+  # --- Router ---
+  ROUTER_PORT: "8010"
+  LLAMA_BASE: "http://llama:9001"
+  MOCK_LLM: "0"
+  RATE_LIMIT_CAPACITY: "60"
+  RATE_LIMIT_REFILL_PER_MIN: "60"
+  CACHE_ENABLED: "true"
+  CACHE_SIZE: "128"
+  LB_STRATEGY: "round_robin"
+
+  # --- Agents ---
+  ROUTER_URL: "http://router:8010/route"
+  AGENT_MODEL_OVERRIDES: "{}"
+  AGENT_PROFILE: "balanced"
+
+  # --- Dashboard ---
+  DASHBOARD_PORT: "8030"
+  ROUTER_URL_DASH: "http://router:8010"
+  AGENTS_URL: "http://agents:8020"
+  WORKFLOW_URL: "http://workflow:8040"
+
+  # --- Workflow ---
+  WORKFLOW_PORT: "8040"
+  AGENT_API: "http://agents:8020"
+  WORKFLOW_AUDIT_LOG: "/workspace/logs/workflow-audit.jsonl"
+  WORKFLOW_STEP_RETRIES: "3"
+  WORKFLOW_RETRY_DELAY_S: "2"
+
+  # --- Autonomous ---
+  AUTONOMOUS_PORT: "8050"
+  ENABLE_SHELL_TOOLS: "0"
+  MAX_FIX_ROUNDS: "3"
+  SHELL_TIMEOUT_S: "120"
+  WORKSPACES_DIR: "workspaces"
+  MAX_FILE_BYTES: "524288"
+  MAX_CONCURRENT_RUNS: "3"
+
+  # --- Browser ---
+  BROWSER_PORT: "8180"
+  GHIDRA_HOME: ""
+  FRIDA_DIR: ""
+
+  # --- GPU Inference ---
+  LLAMA_PORT: "9001"
+  LLAMA_MODEL_PATH: "/models/Qwen3.6-12B-IQ-Ultra-Heretic-Uncensored-Thinking-Q6_K.gguf"
+  LLAMA2_PORT: "9003"
+  LLAMA2_MODEL_PATH: "/models/Qwen3.5-9B-Claude-Code-Q4_K_M.gguf"
+  N_GPU_LAYERS: "80"
+  LLAMA_VISION_ENABLED: "false"
+  VLLM_PORT: "9002"
+  VLLM_MODEL: "Qwen/Qwen2.5-7B-Instruct"
+
+  # --- Environment ---
+  STACK_PROFILE: "prod"
+
+  # --- RAG / Memory ---
+  QDRANT_URL: "http://qdrant:6333"
+  MEMORY_MAX_TURNS: "50"
+  MEMORY_MAX_SESSIONS: "500"
+  MEMORY_SESSION_TTL: "604800"
+  MEMORY_SUMMARIZE_AFTER: "30"
+
+  # --- Prometheus ---
+  prometheus.io/scrape: "true"
