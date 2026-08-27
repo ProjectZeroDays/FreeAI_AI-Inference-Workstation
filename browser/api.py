@@ -245,9 +245,9 @@ if HAS_FASTAPI:
         task: dict
 
     @app.post("/army/task")
-    def execute_task(req: TaskReq):
+    async def execute_task(req: TaskReq):
         army = get_army()
-        return army._swarm.execute_task(req.agent_id, req.task)
+        return await army._swarm.execute_task(req.agent_id, req.task)
 
     @app.get("/army/stats")
     def army_stats():

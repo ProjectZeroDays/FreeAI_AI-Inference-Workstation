@@ -774,7 +774,7 @@ class BrowserEngine:
             except Exception: pass
             self._browser = None
         if self._playwright:
-            try: self._playwright.stop()
+            try: await self._playwright.stop()
             except Exception: pass
             self._playwright = None
 

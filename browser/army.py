@@ -47,6 +47,16 @@ DIVISIONS = {
     "command": {"description": "Orchestration & fleet coordination", "extensions": ["swarm-coord", "health-monitor"]},
 }
 
+# Map divisions to browser engine config overrides
+DIVISION_ENGINE_CONFIG = {
+    "recon": {"stealth": {"enable": True}, "anonymity": {"mode": "none"}},
+    "operations": {"stealth": {"enable": True}, "manifestx": {"enabled": True}},
+    "security": {"stealth": {"enable": True}, "anonymity": {"mode": "tor"}, "cdp": {"enabled": True}},
+    "specialops": {"stealth": {"enable": True}, "anonymity": {"mode": "shadowsocks"}, "manifestx": {"enabled": True, "god_mode": True}},
+    "engineering": {"stealth": {"enable": False}},
+    "command": {"stealth": {"enable": True}},
+}
+
 
 class ArmyAgent:
     """Individual army operator with isolated resources."""
@@ -93,6 +103,7 @@ class SwarmCoordinator:
         self._sessions = {}
         self._lock = threading.Lock()
         self._running = False
+        self._engine_configs = {}  # agent_id -> BrowserEngine config
 
     def add_agent(self, agent: ArmyAgent):
         with self._lock:
@@ -102,6 +113,7 @@ class SwarmCoordinator:
         with self._lock:
             self._agents.pop(agent_id, None)
             self._sessions.pop(agent_id, None)
+            self._engine_configs.pop(agent_id, None)
 
     def get_agent(self, agent_id):
         return self._agents.get(agent_id)
@@ -128,10 +140,14 @@ class SwarmCoordinator:
                 aid = f"agent_{uuid.uuid4().hex[:6]}"
                 agent = ArmyAgent(aid, rank, division, config or {})
                 self._agents[aid] = agent
+                # Merge division-specific engine config
+                base_cfg = DIVISION_ENGINE_CONFIG.get(division, {})
+                merged = {**base_cfg, **(config or {})}
+                self._engine_configs[aid] = merged
                 deployed.append(aid)
         return deployed
 
-    def execute_task(self, agent_id, task):
+    async def execute_task(self, agent_id, task):
         """Execute a task on a specific agent."""
         agent = self._agents.get(agent_id)
         if not agent:
@@ -139,7 +155,7 @@ class SwarmCoordinator:
         agent.status = "active"
         agent.last_active = time.time()
         try:
-            result = self._run_task(agent, task)
+            result = await self._run_task(agent, task)
             agent.tasks_completed += 1
             agent.status = "standby"
             return {"agent_id": agent_id, "result": result}
@@ -148,10 +164,128 @@ class SwarmCoordinator:
             agent.status = "failed"
             return {"agent_id": agent_id, "error": str(exc)}
 
-    def _run_task(self, agent, task):
-        """Run a task (navigate, extract, click, etc.)."""
-        # This would integrate with BrowserEngine
-        return {"status": "executed", "task": task}
+    async def _run_task(self, agent, task):
+        """Run a task against the agent's BrowserEngine."""
+        if not isinstance(task, dict):
+            return {"error": "Task must be a dict"}
+
+        task_type = task.get("type", "").lower()
+        engine = await self._get_or_create_engine(agent)
+
+        if task_type == "navigate":
+            url = task.get("url", "")
+            if not url:
+                return {"error": "navigate requires 'url'"}
+            await engine.open(url, task.get("wait_until", "networkidle"), task.get("timeout", 15000))
+            return {"url": await engine.get_url(), "title": await engine.get_title()}
+
+        elif task_type == "extract":
+            selector = task.get("selector", "")
+            if not selector:
+                return {"error": "extract requires 'selector'"}
+            result = await engine.extract(selector, task.get("attribute", "text"))
+            return {"selector": selector, "results": result}
+
+        elif task_type == "extract_all":
+            selector = task.get("selector", "")
+            fields = task.get("fields", {})
+            if not selector or not fields:
+                return {"error": "extract_all requires 'selector' and 'fields'"}
+            return {"items": await engine.extract_all(selector, fields)}
+
+        elif task_type == "screenshot":
+            path = task.get("path", f"screenshot_{uuid.uuid4().hex[:8]}.png")
+            await engine.screenshot(path)
+            return {"screenshot": path}
+
+        elif task_type == "click":
+            selector = task.get("selector", "")
+            if not selector:
+                return {"error": "click requires 'selector'"}
+            await engine.click(selector, task.get("timeout", 5000))
+            return {"clicked": selector}
+
+        elif task_type == "fill":
+            selector = task.get("selector", "")
+            value = task.get("value", "")
+            if not selector:
+                return {"error": "fill requires 'selector'"}
+            await engine.fill(selector, value, task.get("timeout", 5000))
+            return {"filled": selector, "value": value}
+
+        elif task_type == "source":
+            return {"source": await engine.get_source()}
+
+        elif task_type == "js":
+            code = task.get("code", "")
+            if not code:
+                return {"error": "js requires 'code'"}
+            return {"result": await engine.get_javascript(code)}
+
+        elif task_type == "cookies":
+            urls = task.get("urls")
+            return {"cookies": await engine.get_cookies(urls)}
+
+        elif task_type == "go_back":
+            await engine.go_back()
+            return {"url": await engine.get_url()}
+
+        elif task_type == "go_forward":
+            await engine.go_forward()
+            return {"url": await engine.get_url()}
+
+        elif task_type == "reload":
+            await engine.reload()
+            return {"url": await engine.get_url(), "title": await engine.get_title()}
+
+        elif task_type == "close":
+            await engine.close()
+            agent.browser_engine = None
+            return {"status": "closed"}
+
+        elif task_type == "state":
+            return await engine.get_state()
+
+        else:
+            return {"error": f"Unknown task type: {task_type}"}
+
+    async def _get_or_create_engine(self, agent):
+        """Get or lazily create a BrowserEngine for the agent."""
+        if agent.browser_engine is not None:
+            return agent.browser_engine
+
+        from browser.engine import create_engine
+        cfg = self._engine_configs.get(agent.agent_id, {})
+        cfg = {**cfg, "anonymity_mode": agent.anonymity_mode}
+        engine = create_engine(cfg)
+        await engine.start()
+        agent.browser_engine = engine
+        agent.session_id = engine._session_id
+        return engine
+
+    async def close_agent(self, agent_id):
+        """Close an agent's browser engine and remove it."""
+        agent = self._agents.get(agent_id)
+        if not agent:
+            return {"error": "Agent not found"}
+        if agent.browser_engine:
+            try:
+                await agent.browser_engine.close()
+            except Exception:
+                pass
+            agent.browser_engine = None
+        self.remove_agent(agent_id)
+        return {"closed": agent_id}
+
+    async def close_all(self):
+        """Close all agent browser engines."""
+        results = []
+        with self._lock:
+            agent_ids = list(self._agents.keys())
+        for aid in agent_ids:
+            r = await self.close_agent(aid)
+            results.append(r)
+        return {"closed_all": len(results), "results": results}
 
     def get_stats(self):
         with self._lock:
@@ -192,7 +326,7 @@ class FleetCoordinator:
         self._operations.append(op)
         return op
 
-    def execute_operation(self, op_id):
+    async def execute_operation(self, op_id):
         op = next((o for o in self._operations if o["id"] == op_id), None)
         if not op:
             return {"error": "Operation not found"}
@@ -200,7 +334,7 @@ class FleetCoordinator:
         results = []
         for task in op.get("tasks", []):
             for agent_id in op.get("agents", []):
-                result = self._swarm.execute_task(agent_id, task)
+                result = await self._swarm.execute_task(agent_id, task)
                 results.append(result)
         op["status"] = "completed"
         op["results"] = results
@@ -225,8 +359,22 @@ def get_army():
 
 
 if __name__ == "__main__":
-    army = get_army()
-    # Deploy a swarm
-    ids = army._swarm.deploy_swarms(5, rank="E-1", division="recon")
-    print(f"Deployed: {ids}")
-    print(f"Stats: {json.dumps(army._swarm.get_stats(), indent=2)}")
+    async def main():
+        army = get_army()
+        ids = army._swarm.deploy_swarms(3, rank="E-1", division="operations")
+        print(f"Deployed: {ids}")
+        print(f"Stats: {json.dumps(army._swarm.get_stats(), indent=2)}")
+
+        # Test: navigate + extract
+        r = await army._swarm.execute_task(ids[0], {"type": "navigate", "url": "https://example.com"})
+        print(f"Task result: {json.dumps(r, indent=2)}")
+
+        # Test: screenshot
+        r2 = await army._swarm.execute_task(ids[0], {"type": "screenshot", "path": "agent_screenshot.png"})
+        print(f"Screenshot: {r2}")
+
+        # Cleanup
+        await army._swarm.close_all()
+        print("All agents closed.")
+
+    asyncio.run(main())
