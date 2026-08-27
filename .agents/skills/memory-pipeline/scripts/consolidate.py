@@ -197,12 +197,20 @@ def run_consolidation(memory_root: Path, config: dict, dry_run: bool = False,
 
     # Write MEMORY.md — no size limits
     if isinstance(memory_content, str) and memory_content.strip():
+        base_real = os.path.realpath(memory_root)
+        target_real = os.path.realpath(memory_md)
+        if os.path.commonpath([base_real, target_real]) != base_real:
+            raise Exception("Invalid file path")
         memory_md.write_text(memory_content, encoding="utf-8")
         print(f"MEMORY.md updated ({len(memory_content)} chars)")
 
     # Write memory_summary.md — full content, no truncation
     summary_path = memory_root / "memory_summary.md"
     summary_content = f"v1\n\n{memory_content}" if isinstance(memory_content, str) else "v1\n\n(consolidation pending)"
+    base_real = os.path.realpath(memory_root)
+    target_real = os.path.realpath(summary_path)
+    if os.path.commonpath([base_real, target_real]) != base_real:
+        raise Exception("Invalid file path")
     summary_path.write_text(summary_content, encoding="utf-8")
     print(f"memory_summary.md updated (full content, no truncation)")
 
@@ -216,6 +224,10 @@ def run_consolidation(memory_root: Path, config: dict, dry_run: bool = False,
 
     # Update cooldown
     cooldown_file = memory_root / ".last_consolidation"
+    base_real = os.path.realpath(memory_root)
+    target_real = os.path.realpath(cooldown_file)
+    if os.path.commonpath([base_real, target_real]) != base_real:
+        raise Exception("Invalid file path")
     cooldown_file.write_text(str(time.time()))
 
     print(f"Consolidation complete in {elapsed:.1f}s")

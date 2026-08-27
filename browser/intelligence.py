@@ -73,6 +73,10 @@ public class Extract extends GhidraScript {
 }
 '''
         script_path = out_dir / "extract.ghidra"
+        base_real = os.path.realpath(binary.parent)
+        target_real = os.path.realpath(script_path)
+        if os.path.commonpath([base_real, target_real]) != base_real:
+            return {"error": "Invalid file path"}
         script_path.write_text(script)
 
         cmd = [

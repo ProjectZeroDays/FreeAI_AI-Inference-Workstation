@@ -53,6 +53,8 @@ No restrictions on size, content, or retention — everything is stored permanen
     # Create memory_summary.md if not exists
     summary = memory_root / "memory_summary.md"
     if not summary.exists():
+        if ".." in str(summary):
+            raise Exception("Invalid file path")
         summary.write_text("""v1
 
 ## User Profile
@@ -73,6 +75,8 @@ No restrictions on size, content, or retention — everything is stored permanen
     # Create .gitignore
     gitignore = memory_root / ".gitignore"
     if not gitignore.exists():
+        if ".." in str(gitignore):
+            raise Exception("Invalid file path")
         gitignore.write_text("phase2_workspace_diff.md\n*.tmp\n", encoding="utf-8")
         print(f"Created: {gitignore}")
 

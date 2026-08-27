@@ -69,9 +69,15 @@ def _extract_text(result):
 def _write_file(workspace, path, content):
     """Write a file inside a workspace directory."""
     full = workspace / path
-    full.parent.mkdir(parents=True, exist_ok=True)
-    full.write_text(content, encoding="utf-8")
-    return str(full)
+    workspace_real = workspace.resolve()
+    full_real = full.resolve()
+    try:
+        full_real.relative_to(workspace_real)
+    except ValueError:
+        raise Exception("Invalid file path")
+    full_real.parent.mkdir(parents=True, exist_ok=True)
+    full_real.write_text(content, encoding="utf-8")
+    return str(full_real)
 
 
 def _read_tree(workspace):

@@ -529,17 +529,24 @@ def persist_design_system(design_system: dict, page: str = None, output_dir: str
     
     # Generate and write MASTER.md
     master_content = format_master_md(design_system)
-    with open(master_file, 'w', encoding='utf-8') as f:
+    base_real = os.path.realpath(base_dir)
+    master_real = os.path.realpath(master_file)
+    if os.path.commonpath([base_real, master_real]) != base_real:
+        raise Exception('Invalid file path')
+    with open(master_real, 'w', encoding='utf-8') as f:
         f.write(master_content)
-    created_files.append(str(master_file))
+    created_files.append(str(master_real))
     
     # If page is specified, create page override file with intelligent content
     if page:
         page_file = pages_dir / f"{page.lower().replace(' ', '-')}.md"
         page_content = format_page_override_md(design_system, page, page_query)
-        with open(page_file, 'w', encoding='utf-8') as f:
+        page_real = os.path.realpath(page_file)
+        if os.path.commonpath([base_real, page_real]) != base_real:
+            raise Exception('Invalid file path')
+        with open(page_real, 'w', encoding='utf-8') as f:
             f.write(page_content)
-        created_files.append(str(page_file))
+        created_files.append(str(page_real))
     
     return {
         "status": "success",

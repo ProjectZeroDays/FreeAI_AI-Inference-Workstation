@@ -151,8 +151,14 @@ def install_plugin(plugin_name, plugin_data=None):
             if key in plugin_data and isinstance(plugin_data[key], dict):
                 for fname, content in plugin_data[key].items():
                     if isinstance(content, str):
-                        (target / key / fname).parent.mkdir(parents=True, exist_ok=True)
-                        (target / key / fname).write_text(content, encoding="utf-8")
+                        base_dir = (target / key).resolve()
+                        file_path = (target / key / fname).resolve()
+                        try:
+                            file_path.relative_to(base_dir)
+                        except ValueError:
+                            raise HTTPException(status_code=400, detail="Invalid file path")
+                        file_path.parent.mkdir(parents=True, exist_ok=True)
+                        file_path.write_text(content, encoding="utf-8")
 
         return {"status": "installed", "name": plugin_name, "path": str(target)}
 

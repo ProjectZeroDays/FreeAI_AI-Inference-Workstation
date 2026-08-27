@@ -31,7 +31,11 @@ def get_cached(location):
         return None
     
     try:
-        with open(cache_path) as f:
+        base_real = os.path.realpath(CACHE_DIR)
+        target_real = os.path.realpath(cache_path)
+        if os.path.commonpath([base_real, target_real]) != base_real:
+            raise Exception("Invalid file path")
+        with open(target_real) as f:
             data = json.load(f)
         
         # Check if cache is still fresh
@@ -46,8 +50,12 @@ def get_cached(location):
 def set_cached(location, data):
     """Cache weather data."""
     cache_path = get_cache_path(location)
+    base_real = os.path.realpath(CACHE_DIR)
+    target_real = os.path.realpath(cache_path)
+    if os.path.commonpath([base_real, target_real]) != base_real:
+        raise Exception("Invalid file path")
     data["timestamp"] = time.time()
-    with open(cache_path, "w") as f:
+    with open(target_real, "w") as f:
         json.dump(data, f)
 
 def fetch_wttr_in(location):
