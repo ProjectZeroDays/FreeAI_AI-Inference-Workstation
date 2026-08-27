@@ -93,11 +93,19 @@ function autoHeal(skillName, issues) {
                 // Remove package-lock.json if it exists to prevent conflict errors
                 try { fs.unlinkSync(path.join(skillPath, 'package-lock.json')); } catch (e) {}
                 
-                execSync('npm install --production --no-audit --no-fund', {
-                    cwd: skillPath, stdio: 'ignore', timeout: 60000 // Increased timeout
+                // Security: --ignore-scripts prevents execution of lifecycle hooks (preinstall, install, postinstall)
+                // to mitigate arbitrary code execution from untrusted skill packages
+                execSync('npm install --production --no-audit --no-fund --ignore-scripts', {
+                    cwd: skillPath, 
+                    stdio: 'ignore', 
+                    timeout: 60000,
+                    // Restrict environment to prevent potential exploitation vectors
+                    env: Object.assign({}, process.env, {
+                        npm_config_ignore_scripts: 'true'
+                    })
                 });
                 healed.push(issues[i]);
-                console.log('[SkillsMonitor] Auto-healed ' + skillName + ': npm install');
+                console.log('[SkillsMonitor] Auto-healed ' + skillName + ': npm install (scripts disabled)');
             } catch (e) {
                 console.error('[SkillsMonitor] Failed to heal ' + skillName + ': ' + e.message);
             }
