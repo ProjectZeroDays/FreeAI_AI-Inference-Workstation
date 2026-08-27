@@ -188,6 +188,27 @@
     }
     .nav-link:hover { color: var(--text-primary); background: var(--secondary-soft); text-decoration: none; }
     .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
+    .menu-toggle {
+      display: none; background: none; border: none; cursor: pointer;
+      width: 40px; height: 40px; border-radius: var(--radius-md);
+      align-items: center; justify-content: center; color: var(--text-secondary);
+      transition: background .15s;
+    }
+    .menu-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .menu-toggle svg { width: 22px; height: 22px; }
+    .chat-launcher {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 56px; height: 56px;
+      background: #0241e3; border: none; border-radius: 16px;
+      color: #fff; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(2,65,227,.4), 0 2px 8px rgba(0,0,0,.3);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s cubic-bezier(.23,1,.32,1); z-index: 90;
+    }
+    .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 12px 32px rgba(2,65,227,.5); }
+    .chat-launcher:active { transform: scale(.95); }
+    .chat-launcher svg { width: 26px; height: 26px; }
+    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 50px; height: 50px; } }
 
     /* ── Buttons ── */
     .btn {
@@ -732,9 +753,34 @@
     .lang-menu-item.active .check { opacity: 1; }
     .lang-menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
+    /* ── Mobile panel ── */
+    .mobile-panel {
+      display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+      z-index: 99; background: var(--bg); overflow-y: auto;
+      padding: var(--space-6);
+      animation: slideDown .2s var(--ease-out);
+    }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .mobile-panel.open { display: flex; flex-direction: column; gap: var(--space-4); }
+    .mobile-nav { display: flex; flex-direction: column; gap: 2px; }
+    .mobile-link {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-radius: var(--radius-md);
+      font-size: var(--fs-body); font-weight: 500; color: var(--text-secondary);
+      text-decoration: none; transition: background .15s, color .15s;
+    }
+    .mobile-link:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .mobile-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .mobile-actions { display: flex; flex-direction: column; gap: var(--space-3); padding-top: var(--space-4); border-top: 1px solid var(--border); }
+    .mobile-actions .lang-dropdown { width: 100%; }
+    .mobile-actions .lang-btn { width: 100%; justify-content: flex-start; }
+    .mobile-actions .btn--primary { width: 100%; justify-content: center; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
+      .menu-toggle { display: flex; }
       .nav-links { display: none; }
+      .nav-inner { padding: 0 var(--space-4); }
       .hero-stats { gap: 20px; flex-wrap: wrap; }
       .hero h1 { font-size: 36px; }
       .section { padding: 64px 20px; }
@@ -802,7 +848,52 @@
         </a>
       </div>
     </div>
+    <!-- Mobile menu toggle -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </nav>
+
+  <!-- ── Mobile Panel ── -->
+  <div class="mobile-panel" id="mobilePanel" role="navigation" aria-label="Mobile">
+    <nav class="mobile-nav">
+      <a href="#dashboards" class="mobile-link" data-i18n="nav-dashboards">Dashboards <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#skills" class="mobile-link" data-i18n="nav-skills">Skills <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#plugins" class="mobile-link" data-i18n="nav-plugins">Plugins <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#mcps" class="mobile-link" data-i18n="nav-mcps">MCPs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#extensions" class="mobile-link" data-i18n="nav-extensions">Extensions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#workflows" class="mobile-link" data-i18n="nav-workflows">Workflows <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="deploy.html" class="mobile-link" data-i18n="nav-deploy">Deploy <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#install" class="mobile-link" data-i18n="nav-install">Install <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+      <a href="#faq" class="mobile-link" data-i18n="nav-faq">FAQ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+    </nav>
+    <div class="mobile-actions">
+      <div class="lang-dropdown" id="langDropdownMobile">
+        <button class="lang-btn" id="langBtnMobile" aria-label="Select language">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span id="langLabelMobile">EN</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="lang-menu" id="langMenuMobile">
+          <div class="lang-menu-item active" data-lang="en"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>English</div>
+          <div class="lang-menu-item" data-lang="es"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Español</div>
+          <div class="lang-menu-item" data-lang="de"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Deutsch</div>
+          <div class="lang-menu-item" data-lang="fr"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Français</div>
+          <div class="lang-menu-item" data-lang="it"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Italiano</div>
+          <div class="lang-menu-item" data-lang="pt"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Português</div>
+          <div class="lang-menu-item" data-lang="ja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>日本語</div>
+          <div class="lang-menu-item" data-lang="ko"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>한국어</div>
+          <div class="lang-menu-item" data-lang="zh"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>中文</div>
+          <div class="lang-menu-divider"></div>
+          <div class="lang-menu-item" data-lang="ar"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>العربية</div>
+        </div>
+      </div>
+      <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
 
   <!-- ── Hero ── -->
   <section class="hero">
@@ -1355,6 +1446,13 @@ docker compose --profile allinone up -d
   </section>
 
   <!-- ── Footer ── -->
+  <!-- Floating chat launcher -->
+  <a href="chatbot.html" class="chat-launcher" aria-label="Open chat" title="Chat with FreeAI">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  </a>
+
   <footer class="footer">
     <div class="footer-inner">
       <div>

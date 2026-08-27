@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreeAI — Early Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #0241e3;
+      --ai-gradient: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+      --bg: #060a18;
+      --bg-elev: #0d1530;
+      --bg-elev-2: #111b3a;
+      --border: rgba(255,255,255,.08);
+      --border-strong: rgba(255,255,255,.15);
+      --text-primary: #f1f6ff;
+      --text-secondary: rgba(241,246,255,.65);
+      --text-tertiary: rgba(241,246,255,.4);
+      --green: #22c55e;
+      --radius-lg: 20px;
+      --radius-xl: 24px;
+      --ease-out: cubic-bezier(.23,1,.32,1);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Background grid ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 60% 40%, rgba(92,139,255,.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Chat container ── */
+    .chat-container {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: 640px;
+      max-height: 92vh;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04);
+      animation: chatIn .35s var(--ease-out);
+    }
+    @keyframes chatIn {
+      from { opacity: 0; transform: translateY(24px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Header ── */
+    .chat-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      position: relative; z-index: 2;
+    }
+    .chat-logo {
+      width: 32px; height: 32px;
+      background: var(--ai-gradient);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .chat-logo svg { width: 18px; height: 18px; }
+    .chat-header-info { flex: 1; }
+    .chat-header-name {
+      font-size: 14px; font-weight: 600; color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .chat-status {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--green); font-weight: 500; margin-top: 2px;
+    }
+    .chat-status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+    .chat-close {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-tertiary);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all .15s;
+    }
+    .chat-close:hover { background: rgba(255,255,255,.1); color: var(--text-primary); }
+    .chat-close svg { width: 14px; height: 14px; }
+
+    /* ── Tabs ── */
+    .chat-tabs {
+      display: flex;
+      background: rgba(255,255,255,.04);
+      border-bottom: 1px solid var(--border);
+      padding: 4px;
+    }
+    .chat-tab {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 13px; font-weight: 500;
+      color: var(--text-tertiary);
+      background: none; border: none; cursor: pointer;
+      border-radius: 8px;
+      transition: all .2s;
+      font-family: inherit;
+    }
+    .chat-tab:hover { color: var(--text-secondary); }
+    .chat-tab.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(2,65,227,.4);
+    }
+
+    /* ── Messages ── */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .msg-row {
+      display: flex; gap: 8px; align-items: flex-end;
+      animation: msgIn .3s var(--ease-out);
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .msg-row.user { flex-direction: row-reverse; }
+    .msg-avatar {
+      width: 24px; height: 24px; flex-shrink: 0;
+      background: var(--ai-gradient);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .msg-avatar svg { width: 14px; height: 14px; }
+    .msg-bubble {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--text-primary);
+    }
+    .msg-row.bot .msg-bubble {
+      background: var(--bg-elev-2);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+    }
+    .msg-row.user .msg-bubble {
+      background: var(--primary);
+      border-top-right-radius: 4px;
+    }
+
+    /* typing dots */
+    .typing-dots {
+      display: flex; gap: 4px; padding: 12px 14px;
+      align-items: center;
+    }
+    .typing-dots span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-tertiary);
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes dotBounce {
+      0%,60%,100% { transform: translateY(0); opacity: .4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* ── Input area ── */
+    .chat-input-area {
+      padding: 12px 16px 16px;
+      border-top: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+    .chat-input-wrap {
+      position: relative;
+      background: var(--bg-elev-2);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 12px 44px 12px 16px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .chat-input-wrap:focus-within {
+      border-color: rgba(92,139,255,.5);
+      box-shadow: 0 0 0 3px rgba(92,139,255,.12);
+    }
+    .chat-input {
+      width: 100%; background: none; border: none; outline: none;
+      color: var(--text-primary);
+      font-size: 14px; font-family: inherit;
+      resize: none;
+      line-height: 1.5;
+    }
+    .chat-input::placeholder { color: var(--text-tertiary); }
+    .chat-send {
+      position: absolute; right: 8px; bottom: 8px;
+      width: 30px; height: 30px;
+      background: var(--primary);
+      border: none; border-radius: 8px;
+      color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, transform .15s;
+    }
+    .chat-send:hover { background: #033ad1; transform: scale(1.05); }
+    .chat-send:active { transform: scale(.95); }
+    .chat-send svg { width: 14px; height: 14px; }
+    .chat-privacy {
+      margin-top: 8px;
+      font-size: 11px; color: var(--text-tertiary);
+      text-align: center; line-height: 1.5;
+    }
+    .chat-privacy a { color: var(--text-secondary); text-decoration: underline; }
+    .chat-privacy a:hover { color: var(--text-primary); }
+
+    /* ── Launcher button (floating) ── */
+    .chat-launcher {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      width: 56px; height: 56px;
+      background: var(--primary);
+      border: none; border-radius: 16px;
+      color: #fff; cursor: pointer;
+      box-shadow: 0 8px 24px rgba(2,65,227,.4), 0 2px 8px rgba(0,0,0,.3);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s var(--ease-out);
+      z-index: 100;
+    }
+    .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 12px 32px rgba(2,65,227,.5); }
+    .chat-launcher:active { transform: scale(.95); }
+    .chat-launcher svg { width: 26px; height: 26px; }
+    .chat-launcher.hidden { opacity: 0; pointer-events: none; transform: scale(.8); }
+
+    /* ── Back link ── */
+    .back-link {
+      position: absolute; top: 16px; left: 16px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 4px;
+      transition: color .15s;
+      z-index: 3;
+    }
+    .back-link:hover { color: var(--text-primary); }
+    .back-link svg { width: 14px; height: 14px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .chat-container {
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+      }
+      body { background: var(--bg-elev); }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to FreeAI
+  </a>
+
+  <!-- Chat container -->
+  <div class="chat-container" id="chatContainer">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-logo">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/>
+          <path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/>
+        </svg>
+      </div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">FreeAI Intelligence</div>
+        <div class="chat-status">
+          <span class="chat-status-dot"></span>
+          Online
+        </div>
+      </div>
+      <button class="chat-close" id="chatClose" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="chat-tabs">
+      <button class="chat-tab active" data-tab="early-access">Early access</button>
+      <button class="chat-tab" data-tab="specialist">Talk to a specialist</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+      <!-- Messages injected by JS -->
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+      <div class="chat-input-wrap">
+        <textarea
+          class="chat-input"
+          id="chatInput"
+          rows="2"
+          placeholder="you@company.com"
+          data-i18n-placeholder="chat-placeholder"
+        ></textarea>
+        <button class="chat-send" id="chatSend" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="chat-privacy">
+        FreeAI will use your details only to answer this request.
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Launcher (shown when chat is closed) -->
+  <button class="chat-launcher hidden" id="chatLauncher" aria-label="Open chat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  </button>
+
+<script>
+const i18n = {
+  en: { 'chat-placeholder': 'you@company.com' },
+  es: { 'chat-placeholder': 'tu@empresa.com' },
+  de: { 'chat-placeholder': 'du@firma.de' },
+  fr: { 'chat-placeholder': 'vous@societe.fr' },
+  ja: { 'chat-placeholder': 'you@company.com' },
+  ar: { 'chat-placeholder': 'you@company.com' },
+};
+const savedLang = localStorage.getItem('lang') || 'en';
+const ph = i18n[savedLang]?.['chat-placeholder'] || i18n.en['chat-placeholder'];
+document.getElementById('chatInput').placeholder = ph;
+
+const messages = {
+  'early-access': [
+    { type: 'bot', text: 'Hi \u2014 let\'s get you into the FreeAI rollout.', delay: 400 },
+    { type: 'bot', text: 'A few details and your work email, about 30 seconds.', delay: 900 },
+    { type: 'bot', text: 'First things first \u2014 where should we send your early-access invite?', delay: 1400 },
+  ],
+  'specialist': [
+    { type: 'bot', text: 'Hi \u2014 want to talk to a FreeAI specialist?', delay: 400 },
+    { type: 'bot', text: 'Tell us about your workload and we\'ll match you with the right engineer.', delay: 900 },
+    { type: 'bot', text: 'What\'s the best email to reach you?', delay: 1400 },
+  ],
+};
+
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+const chatClose = document.getElementById('chatClose');
+const chatLauncher = document.getElementById('chatLauncher');
+const tabs = document.querySelectorAll('.chat-tab');
+let currentTab = 'early-access';
+let isOpen = false;
+let messageQueue = [];
+
+function openChat() {
+  isOpen = true;
+  chatLauncher.classList.add('hidden');
+  document.getElementById('chatContainer').style.display = 'flex';
+  chatInput.focus();
+  if (messageQueue.length === 0) playMessages(currentTab);
+}
+
+function closeChat() {
+  isOpen = false;
+  chatLauncher.classList.remove('hidden');
+}
+
+function playMessages(tab) {
+  const list = messages[tab] || messages['early-access'];
+  chatMessages.innerHTML = '';
+  messageQueue = [];
+  list.forEach((m, i) => {
+    const tid = setTimeout(() => appendMessage(m.type, m.text), m.delay);
+    messageQueue.push(tid);
+  });
+}
+
+function appendMessage(type, text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + type;
+
+  if (type === 'bot') {
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/><path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/></svg>';
+    row.appendChild(avatar);
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+
+  chatMessages.appendChild(row);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'typing';
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  avatar.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/><path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/></svg>';
+  row.appendChild(avatar);
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  row.appendChild(bubble);
+  chatMessages.appendChild(row);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function sendUserMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  appendMessage('user', text);
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+
+  // Simulate bot response after typing
+  setTimeout(() => {
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      const responses = {
+        'early-access': 'Thanks! We\'ll send your invite to that address shortly.',
+        'specialist': 'Got it \u2014 a specialist will reach out within 24 hours.',
+      };
+      appendMessage('bot', responses[currentTab] || 'Thanks! We\'ll be in touch.');
+    }, 1200);
+  }, 400);
+}
+
+chatSend.addEventListener('click', sendUserMessage);
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendUserMessage(); }
+});
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+});
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = tab.dataset.tab;
+    messageQueue.forEach(tid => clearTimeout(tid));
+    messageQueue = [];
+    playMessages(currentTab);
+  });
+});
+
+chatClose.addEventListener('click', closeChat);
+chatLauncher.addEventListener('click', openChat);
+
+// Start
+document.getElementById('chatContainer').style.display = 'flex';
+setTimeout(() => playMessages(currentTab), 300);
+</script>
+</body>
+</html>
