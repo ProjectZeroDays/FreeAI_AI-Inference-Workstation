@@ -109,7 +109,7 @@ def install_for_client(client_id, synced, mcps, plugins, agents):
     for store, items in [("skills", synced), ("mcps", mcps), ("plugins", plugins), ("agents", agents)]:
         if client_id not in items.get("installed", []):
             items.setdefault("installed", []).append(client_id)
-            items.setdefault(store + "s", []).extend(globals()[f"DEFAULT_{store.upper()}"])
+            items.setdefault(store + "s", []).extend(globals().get(f"DEFAULT_{store.upper()}", globals().get(f"DEFAULT_{store.upper().replace('S','S')}", [])))
     return {"client": client_id, "skills": len(synced.get("skills", [])), "mcps": len(mcps.get("mcps", [])), "plugins": len(plugins.get("plugins", [])), "agents": len(agents.get("agents", []))}
 
 
