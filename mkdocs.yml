@@ -110,10 +110,6 @@ markdown_extensions:
 
 plugins:
   - search
-  - minify:
-      minify_html: true
-  - git-revision-date-localized:
-      enable_creation_date: true
 
 extra:
   generator: false
@@ -123,7 +119,5 @@ extra:
     - icon: fontawesome/brands/docker
       link: https://hub.docker.com/r/projectzeroai/freeai
   analytics:
-    provider: Plausible
-    domain: freeai.dev
   version:
     provider: mike
