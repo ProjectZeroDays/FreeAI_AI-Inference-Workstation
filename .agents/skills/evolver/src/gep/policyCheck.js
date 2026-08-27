@@ -405,17 +405,186 @@ function detectDestructiveChanges({ repoRoot, changedFiles, baselineUntracked })
   return violations;
 }
 
-const VALIDATION_ALLOWED_PREFIXES = ['node ', 'npm ', 'npx '];
+// Dangerous Node.js flags that can execute arbitrary code or load external modules
+const NODE_DANGEROUS_FLAGS = new Set([
+  '-e', '--eval',
+  '-p', '--print',
+  '-r', '--require',
+  '--import',
+  '--loader',
+  '--experimental-loader',
+  '--inspect',
+  '--inspect-brk',
+  '--inspect-port',
+  '--debug',
+  '--debug-brk',
+  '--debug-port',
+  '--prof',
+  '--prof-process',
+  '--cpu-prof',
+  '--cpu-prof-dir',
+  '--cpu-prof-name',
+  '--cpu-prof-interval',
+  '--heap-prof',
+  '--heap-prof-dir',
+  '--heap-prof-name',
+  '--heap-prof-interval',
+  '--redirect-warnings',
+  '--diagnostic-dir',
+  '--report-dir',
+  '--report-filename',
+  '--report-on-fatalerror',
+  '--report-on-signal',
+  '--report-signal',
+  '--report-uncaught-exception',
+  '--policy-integrity',
+]);
+
+const NPM_SAFE_COMMANDS = new Set([
+  'test', 't',
+  'run', 'run-script',
+  'start',
+  'version',
+  'view', 'info', 'show', 'v',
+  'list', 'ls', 'll', 'la',
+  'outdated',
+  'doctor',
+  'audit',
+  'help',
+  'help-search',
+]);
+
+const NPX_ALLOWED = false; // npx can execute arbitrary packages, so we disallow it entirely
+
+function parseCommandTokens(cmd) {
+  // Simple tokenizer that respects quotes but doesn't handle all shell escaping
+  const tokens = [];
+  let current = '';
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+  let escaped = false;
+
+  for (let i = 0; i < cmd.length; i++) {
+    const char = cmd[i];
+    
+    if (escaped) {
+      current += char;
+      escaped = false;
+      continue;
+    }
+
+    if (char === '\\' && (inSingleQuote || inDoubleQuote)) {
+      escaped = true;
+      continue;
+    }
+
+    if (char === "'" && !inDoubleQuote) {
+      inSingleQuote = !inSingleQuote;
+      continue;
+    }
+
+    if (char === '"' && !inSingleQuote) {
+      inDoubleQuote = !inDoubleQuote;
+      continue;
+    }
+
+    if (!inSingleQuote && !inDoubleQuote && /\s/.test(char)) {
+      if (current) {
+        tokens.push(current);
+        current = '';
+      }
+      continue;
+    }
+
+    current += char;
+  }
+
+  if (current) tokens.push(current);
+  return tokens;
+}
 
 function isValidationCommandAllowed(cmd) {
   const c = String(cmd || '').trim();
   if (!c) return false;
-  if (!VALIDATION_ALLOWED_PREFIXES.some(p => c.startsWith(p))) return false;
-  if (/`|\$\(/.test(c)) return false;
-  const stripped = c.replace(/"[^"]*"/g, '').replace(/'[^']*'/g, '');
-  if (/[;&|><]/.test(stripped)) return false;
-  if (/^node\s+(-e|--eval|--print|-p)\b/.test(c)) return false;
-  return true;
+
+  // Reject any control characters including newlines, carriage returns, tabs, etc.
+  // This prevents command injection via newlines or other control sequences
+  if (/[\x00-\x1F\x7F]/.test(c)) return false;
+
+  // Reject shell metacharacters and operators
+  if (/[`$();\\|&<>{}[\]!*?~]/.test(c)) return false;
+
+  // Parse command into tokens
+  const tokens = parseCommandTokens(c);
+  if (tokens.length === 0) return false;
+
+  const executable = tokens[0].toLowerCase();
+  const args = tokens.slice(1);
+
+  // Handle node commands
+  if (executable === 'node') {
+    // Reject if no arguments (bare 'node' would start REPL)
+    if (args.length === 0) return false;
+
+    // Check each argument
+    for (let i = 0; i < args.length; i++) {
+      const arg = args[i];
+      
+      // Check if it's a flag
+      if (arg.startsWith('-')) {
+        // Extract flag name (handle --flag=value format)
+        const flagName = arg.split('=')[0];
+        
+        // Reject dangerous flags
+        if (NODE_DANGEROUS_FLAGS.has(flagName)) return false;
+        
+        // For flags with values (--flag=value or --flag value), check the flag is safe
+        // We allow safe flags and also allow flags we don't recognize if they're not dangerous
+        // This is more permissive but still blocks the known-dangerous ones
+        continue;
+      }
+      
+      // Non-flag arguments (script paths, etc.)
+      // Reject absolute paths and parent directory references to prevent path traversal
+      if (arg.startsWith('/') || arg.startsWith('\\\\') || arg.includes('..')) return false;
+      
+      // Reject if argument looks like it's trying to execute code
+      if (arg.includes(';') || arg.includes('&&') || arg.includes('||')) return false;
+    }
+    
+    return true;
+  }
+
+  // Handle npm commands
+  if (executable === 'npm') {
+    if (args.length === 0) return false;
+    
+    const subcommand = args[0].toLowerCase();
+    
+    // Only allow safe npm commands
+    if (!NPM_SAFE_COMMANDS.has(subcommand)) return false;
+    
+    // Check remaining arguments for dangerous patterns
+    for (let i = 1; i < args.length; i++) {
+      const arg = args[i];
+      
+      // Reject arguments with shell metacharacters
+      if (/[;|&<>`$()\\]/.test(arg)) return false;
+      
+      // Reject path traversal attempts
+      if (arg.includes('..')) return false;
+    }
+    
+    return true;
+  }
+
+  // Handle npx commands - we disallow npx entirely as it can execute arbitrary packages
+  if (executable === 'npx') {
+    return NPX_ALLOWED;
+  }
+
+  // Reject any other executables
+  return false;
 }
 
 var MAX_VALIDATION_RETRIES = _CFG_MAX_RETRIES;
@@ -430,7 +599,7 @@ function runValidationsOnce(gene, opts) {
     const c = String(cmd || '').trim();
     if (!c) continue;
     if (!isValidationCommandAllowed(c)) {
-      results.push({ cmd: c, ok: false, out: '', err: 'BLOCKED: validation command rejected by safety check (allowed prefixes: node/npm/npx; shell operators prohibited)' });
+      results.push({ cmd: c, ok: false, out: '', err: 'BLOCKED: validation command rejected by safety check (only safe node/npm commands allowed; dangerous flags, shell operators, and control characters prohibited)' });
       return { ok: false, results, startedAt, finishedAt: Date.now() };
     }
     const r = tryRunCmd(c, { cwd: repoRoot, timeoutMs });

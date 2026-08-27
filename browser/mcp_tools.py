@@ -129,7 +129,7 @@ def register_mcp_tools(server):
 
     @server.tool()
     async def browser_state():
-        return get_engine().get_state()
+        return await get_engine().get_state()
 
     @server.tool()
     async def browser_rotate_tor():

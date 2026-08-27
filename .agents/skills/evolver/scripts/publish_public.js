@@ -1,9 +1,50 @@
-const { execSync, spawnSync } = require('child_process');
+const { execSync, execFileSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const https = require('https');
 const os = require('os');
 const path = require('path');
 
+/**
+ * Escape a string for safe use in a POSIX shell command.
+ * Uses single quotes which prevent all expansions, and escapes single quotes by ending the quoted string,
+ * adding an escaped single quote, and starting a new quoted string.
+ */
+function shellEscape(arg) {
+  if (typeof arg !== 'string') {
+    throw new TypeError('shellEscape expects a string');
+  }
+  // Empty string needs to be quoted
+  if (arg === '') return "''";
+  // If the string contains no special characters, return as-is
+  if (/^[a-zA-Z0-9_\-\.\/]+$/.test(arg)) return arg;
+  // Use single quotes and escape any single quotes in the string
+  return "'" + arg.replace(/'/g, "'\\''") + "'";
+}
+
+/**
+ * Execute a git command safely using execFileSync to avoid shell injection.
+ * @param {string[]} args - Git command arguments (e.g., ['log', '--oneline'])
+ * @param {object} opts - Options including dryRun
+ * @returns {string} - Command output
+ */
+function runGit(args, opts = {}) {
+  const { dryRun = false, cwd = process.cwd() } = opts;
+  if (dryRun) {
+    process.stdout.write(`[dry-run] git ${args.join(' ')}\n`);
+    return '';
+  }
+  return execFileSync('git', args, { 
+    encoding: 'utf8', 
+    stdio: ['ignore', 'pipe', 'pipe'],
+    cwd 
+  }).trim();
+}
+
+/**
+ * Legacy run function for backward compatibility with non-git commands.
+ * For git commands, prefer runGit() instead.
+ * This function now properly escapes arguments when shell execution is unavoidable.
+ */
 function run(cmd, opts = {}) {
   const { dryRun = false } = opts;
   if (dryRun) {
@@ -152,14 +193,14 @@ function requireEnv(name, value) {
 }
 
 function ensureClean(dryRun) {
-  const status = run('git status --porcelain', { dryRun });
+  const status = runGit(['status', '--porcelain'], { dryRun });
   if (!dryRun && status) {
     throw new Error('Working tree is not clean. Commit or stash before publishing.');
   }
 }
 
 function ensureBranch(expected, dryRun) {
-  const current = run('git rev-parse --abbrev-ref HEAD', { dryRun }) || expected;
+  const current = runGit(['rev-parse', '--abbrev-ref', 'HEAD'], { dryRun }) || expected;
   if (!dryRun && current !== expected) {
     throw new Error(`Current branch is ${current}. Expected ${expected}.`);
   }
@@ -167,7 +208,7 @@ function ensureBranch(expected, dryRun) {
 
 function ensureRemote(remote, dryRun) {
   try {
-    run(`git remote get-url ${remote}`, { dryRun });
+    runGit(['remote', 'get-url', remote], { dryRun });
   } catch (e) {
     throw new Error(`Remote "${remote}" not found. Add it manually before running this script.`);
   }
@@ -175,7 +216,7 @@ function ensureRemote(remote, dryRun) {
 
 function ensureTagAvailable(tag, dryRun) {
   if (!tag) return;
-  const exists = run(`git tag --list ${tag}`, { dryRun });
+  const exists = runGit(['tag', '--list', tag], { dryRun });
   if (!dryRun && exists) {
     throw new Error(`Tag ${tag} already exists.`);
   }
@@ -361,15 +402,17 @@ function getContributorsSinceLastRelease() {
   try {
     let baseCommit = '';
     try {
-      baseCommit = execSync(
-        'git log -n 1 --pretty=%H --grep="chore(release): prepare v"',
+      baseCommit = execFileSync(
+        'git',
+        ['log', '-n', '1', '--pretty=%H', '--grep=chore(release): prepare v'],
         { encoding: 'utf8', cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }
       ).trim();
     } catch (_) {}
 
     const range = baseCommit ? `${baseCommit}..HEAD` : '-30';
-    const raw = execSync(
-      `git log ${range} --pretty="%aN <%aE>"`,
+    const raw = execFileSync(
+      'git',
+      ['log', range, '--pretty=%aN <%aE>'],
       { encoding: 'utf8', cwd: process.cwd(), stdio: ['ignore', 'pipe', 'ignore'] }
     ).trim();
 
@@ -476,7 +519,7 @@ function main() {
   if (!releaseOnly) {
     if (!useBuildOutput) {
       ensureRemote(publicRemote, dryRun);
-      run(`git push ${publicRemote} ${sourceBranch}:${publicBranch}`, { dryRun });
+      runGit(['push', publicRemote, `${sourceBranch}:${publicBranch}`], { dryRun });
     } else {
       const tmpBase = path.join(os.tmpdir(), 'evolver-public-publish');
       const tmpRepoDir = path.join(tmpBase, `repo_${Date.now()}`);
@@ -485,8 +528,16 @@ function main() {
       rmDir(tmpRepoDir, dryRun);
       ensureDir(tmpRepoDir, dryRun);
 
-      run(`git clone --depth 1 https://github.com/${publicRepo}.git "${tmpRepoDir}"`, { dryRun });
-      run(`git -C "${tmpRepoDir}" checkout -B ${publicBranch}`, { dryRun });
+      // Use execFileSync for clone operation to avoid shell injection
+      if (dryRun) {
+        process.stdout.write(`[dry-run] git clone --depth 1 https://github.com/${publicRepo}.git ${tmpRepoDir}\n`);
+      } else {
+        execFileSync('git', ['clone', '--depth', '1', `https://github.com/${publicRepo}.git`, tmpRepoDir], {
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'pipe']
+        });
+      }
+      runGit(['checkout', '-B', publicBranch], { dryRun, cwd: tmpRepoDir });
 
       // Replace repo contents with build output (except .git)
       if (!dryRun) {
@@ -498,39 +549,37 @@ function main() {
       }
       copyDir(buildAbs, tmpRepoDir, dryRun);
 
-      run(`git -C "${tmpRepoDir}" add -A`, { dryRun });
+      runGit(['add', '-A'], { dryRun, cwd: tmpRepoDir });
       const msg = releaseTag ? `Release ${releaseTag}` : `Publish build output`;
 
       // If build output is identical to current public branch, skip commit/push.
-      const pending = run(`git -C "${tmpRepoDir}" status --porcelain`, { dryRun });
+      const pending = runGit(['status', '--porcelain'], { dryRun, cwd: tmpRepoDir });
       if (!dryRun && !pending) {
         process.stdout.write('Public repo already matches build output. Skipping commit/push.\n');
       } else {
         const contributors = getContributorsSinceLastRelease();
-        let commitMsg = msg.replace(/"/g, '\\"');
+        let commitMsg = msg;
         if (contributors.length > 0) {
           const trailers = contributors.map(c => `Co-authored-by: ${c}`).join('\n');
-          commitMsg += `\n\n${trailers.replace(/"/g, '\\"')}`;
+          commitMsg += `\n\n${trailers}`;
           process.stdout.write(`Including ${contributors.length} contributor(s) in publish commit.\n`);
         }
-        run(
-          `git -C "${tmpRepoDir}" -c user.name="evolver-publish" -c user.email="evolver-publish@local" commit -m "${commitMsg}"`,
-          { dryRun }
-        );
-        run(`git -C "${tmpRepoDir}" push origin ${publicBranch}`, { dryRun });
+        // Use runGit with proper argument array to avoid shell injection
+        runGit(['-c', 'user.name=evolver-publish', '-c', 'user.email=evolver-publish@local', 'commit', '-m', commitMsg], { dryRun, cwd: tmpRepoDir });
+        runGit(['push', 'origin', publicBranch], { dryRun, cwd: tmpRepoDir });
       }
 
       if (releaseTag) {
         const tagMsg = releaseTitle || `Release ${releaseTag}`;
         // If tag already exists in the public repo, do not recreate it.
         try {
-          run(`git -C "${tmpRepoDir}" fetch --tags`, { dryRun });
-          const exists = run(`git -C "${tmpRepoDir}" tag --list ${releaseTag}`, { dryRun });
+          runGit(['fetch', '--tags'], { dryRun, cwd: tmpRepoDir });
+          const exists = runGit(['tag', '--list', releaseTag], { dryRun, cwd: tmpRepoDir });
           if (!dryRun && exists) {
             process.stdout.write(`Tag ${releaseTag} already exists in public repo. Skipping tag creation.\n`);
           } else {
-            run(`git -C "${tmpRepoDir}" tag -a ${releaseTag} -m "${tagMsg.replace(/"/g, '\\"')}"`, { dryRun });
-            run(`git -C "${tmpRepoDir}" push origin ${releaseTag}`, { dryRun });
+            runGit(['tag', '-a', releaseTag, '-m', tagMsg], { dryRun, cwd: tmpRepoDir });
+            runGit(['push', 'origin', releaseTag], { dryRun, cwd: tmpRepoDir });
           }
         } catch (e) {
           // If tag operations fail, rethrow to avoid publishing a release without a tag.
@@ -542,8 +591,8 @@ function main() {
     if (releaseTag) {
       if (!useBuildOutput) {
         const msg = releaseTitle || `Release ${releaseTag}`;
-        run(`git tag -a ${releaseTag} -m "${msg.replace(/"/g, '\\"')}"`, { dryRun });
-        run(`git push ${publicRemote} ${releaseTag}`, { dryRun });
+        runGit(['tag', '-a', releaseTag, '-m', msg], { dryRun });
+        runGit(['push', publicRemote, releaseTag], { dryRun });
       }
     }
   }

@@ -1,13 +1,33 @@
 """UVL formatter — formats predicted impact for agent consumption.
 
-OmniRoot: Formatter operates without restriction.
-All impact data is surfaced to the agent for decision-making.
+Authorization model:
+Formatter operations require caller-scoped authorization. All impact data
+access requires explicit authorization with caller identity validation.
 """
 
-from python.helpers.omni_capability import check_capability, get_privilege_manager
+from . import authorize_uvl_operation, WORKSPACE_ROOT
 
-# Verify omnipotent access for formatter operations
-if not check_capability("agent.tools.all"):
-    raise AssertionError("Formatter requires full tool access")
 
-from python.verification_sandbox.uvl.formatter import *  # noqa: F401,F403
+def format_impact(caller_id: str) -> bool:
+    """
+    Authorize formatter operation.
+
+    Args:
+        caller_id: Identity of the caller requesting formatting
+
+    Returns:
+        True if authorized, False otherwise
+    """
+    return authorize_uvl_operation(
+        caller_id=caller_id, operation="analyze", resource_path=None
+    )
+
+
+# Verify authorization framework is available
+if not callable(authorize_uvl_operation):
+    raise AssertionError("Formatter requires authorization framework")
+
+__all__ = ["format_impact", "authorize_uvl_operation", "WORKSPACE_ROOT"]
+
+# Note: Direct wildcard import removed. Formatter operations must explicitly
+# authorize each access with caller identity validation.

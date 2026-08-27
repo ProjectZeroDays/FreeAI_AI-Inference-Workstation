@@ -225,7 +225,7 @@ class FingerprintProfile:
             "const origEnum=navigator.enumerateDevices;"
             "if(origEnum){navigator.enumerateDevices=function(){return Promise.resolve([]);}};"
         )
-        page.add_init_script(script)
+        await page.add_init_script(script)
 
 
 # ── CDP Client ─────────────────────────────────────────────────────
@@ -564,7 +564,7 @@ class ManifestXSystem:
     def get_manifest(self, name):
         return self._extensions.get(name)
 
-    def inject_into_page(self, page):
+    async def inject_into_page(self, page):
         """Inject Manifest-X privileges into a page context."""
         if not self.config.get("god_mode", True):
             return
@@ -578,7 +578,7 @@ class ManifestXSystem:
             "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Promise;"
             "delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;"
         )
-        page.add_init_script(script)
+        await page.add_init_script(script)
 
     def describe_caps(self):
         return {
@@ -733,7 +733,7 @@ class BrowserEngine:
             await self._fp.inject_into_page(self._ctx)
         mx = self.config.get("manifestx", {})
         if mx.get("enabled", True):
-            self._manifestx.inject_into_page(self._ctx)
+            await self._manifestx.inject_into_page(self._ctx)
         self._page = await self._ctx.new_page()
         if self.config.get("cdp", {}).get("enabled", True):
             await self._connect_cdp()
@@ -861,15 +861,15 @@ class BrowserEngine:
         if self._cdp: return await self._cdp.send(method, params)
         return None
 
-    def get_state(self):
+    async def get_state(self):
         return {
             "session_id": self._session_id,
             "url": self._page.url if self._page else "",
-            "title": self._page.title() if self._page else "",
+            "title": (await self._page.title()) if self._page else "",
             "fingerprint_template": self._fp.template,
             "is_open": self.is_open,
             "healing_stats": self._healing.stats,
-            "manifestx_extensions": self._manifestx.get_extensions(),
+            "manifestx_extensions": list(self._manifestx._extensions.keys()),
         }
 
 

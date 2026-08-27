@@ -98,8 +98,8 @@ if HAS_FASTAPI:
 
     # ── Browser Controls ────────────────────────────────────────
     @app.get("/browser/state")
-    def browser_state():
-        return get_engine().get_state()
+    async def browser_state():
+        return await get_engine().get_state()
 
     class OpenReq(BaseModel):
         url: str

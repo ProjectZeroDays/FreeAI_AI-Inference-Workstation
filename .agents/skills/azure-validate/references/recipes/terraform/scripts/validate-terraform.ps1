@@ -9,22 +9,37 @@
 
     Steps: terraform present, az present, authenticated, init, fmt -check, validate,
     plan, state list, Go-style {{ .Env.* }} template-variable scan.
+
+    SECURITY WARNING: This script executes Terraform commands against the specified
+    infrastructure directory. Terraform configuration can execute arbitrary code through
+    external data sources, provider plugins, and provisioners. Only run this script
+    against infrastructure from trusted sources. When validating untrusted infrastructure
+    (e.g., pull requests from external contributors), use the -TrustUntrustedInfra flag
+    and ensure the execution environment is properly sandboxed with minimal privileges.
 .PARAMETER InfraDir
     Path to the Terraform infra directory (default: ./infra).
 .PARAMETER SubscriptionId
     Optional subscription to select before checks.
+.PARAMETER TrustUntrustedInfra
+    Explicitly acknowledge that you are validating potentially untrusted infrastructure.
+    Required when InfraDir is not the default ./infra path. This flag serves as a
+    security control to prevent accidental execution of untrusted Terraform configuration.
 .EXAMPLE
     .\validate-terraform.ps1
-    # Validate ./infra
+    # Validate ./infra (default trusted path)
 .EXAMPLE
     .\validate-terraform.ps1 -InfraDir ./infra -SubscriptionId 00000000-0000-0000-0000-000000000000
     # Validate an explicit directory against a specific subscription
+.EXAMPLE
+    .\validate-terraform.ps1 -InfraDir ./external-pr/infra -TrustUntrustedInfra
+    # Validate untrusted infrastructure with explicit acknowledgment
 .NOTES
     Exit code: 0 when every non-skipped step passes, 1 when any step fails.
 #>
 param(
     [string]$InfraDir = "./infra",
-    [string]$SubscriptionId
+    [string]$SubscriptionId,
+    [switch]$TrustUntrustedInfra
 )
 
 $ErrorActionPreference = "Continue"
@@ -40,6 +55,54 @@ function Add-Result {
 function Test-Command {
     param([string]$Name)
     return [bool](Get-Command $Name -ErrorAction SilentlyContinue)
+}
+
+# --- Security: Path validation and trust enforcement -------------------------
+# Normalize the path to prevent directory traversal attacks
+$InfraDir = $InfraDir.TrimEnd('\', '/')
+$resolvedPath = $null
+try {
+    # Resolve to absolute path if it exists, otherwise use as-is for error reporting
+    if (Test-Path -Path $InfraDir -PathType Container) {
+        $resolvedPath = (Resolve-Path -Path $InfraDir).Path
+    }
+} catch {
+    # Path resolution failed, will be caught by existence check later
+}
+
+# Security check: Require explicit trust acknowledgment for non-default paths
+# This prevents accidental execution of untrusted Terraform configuration
+$defaultInfraPaths = @("./infra", ".\infra", "infra")
+$isDefaultPath = $defaultInfraPaths -contains $InfraDir
+
+if (-not $isDefaultPath -and -not $TrustUntrustedInfra) {
+    Write-Host "ERROR: Security check failed" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "You are attempting to validate infrastructure from a non-default path:"
+    Write-Host "  $InfraDir"
+    Write-Host ""
+    Write-Host "SECURITY WARNING:"
+    Write-Host "  Terraform configuration can execute arbitrary code through external data"
+    Write-Host "  sources, provider plugins, and provisioners. This code will inherit the"
+    Write-Host "  privileges, credentials, and network access of this validation script."
+    Write-Host ""
+    Write-Host "If you trust this infrastructure source, re-run with -TrustUntrustedInfra:"
+    Write-Host "  .\validate-terraform.ps1 -InfraDir '$InfraDir' -TrustUntrustedInfra"
+    Write-Host ""
+    Write-Host "For untrusted infrastructure (e.g., external pull requests), ensure:"
+    Write-Host "  1. This script runs in a sandboxed environment with minimal privileges"
+    Write-Host "  2. No production credentials are available to the execution environment"
+    Write-Host "  3. Network access is restricted to prevent data exfiltration"
+    Write-Host "  4. The execution environment is ephemeral and discarded after validation"
+    Write-Host ""
+    exit 1
+}
+
+# Additional security warning for untrusted infrastructure
+if ($TrustUntrustedInfra) {
+    Write-Host "WARNING: Validating potentially untrusted infrastructure" -ForegroundColor Yellow
+    Write-Host "Ensure this environment is properly sandboxed with minimal privileges." -ForegroundColor Yellow
+    Write-Host ""
 }
 
 Write-Host "Terraform validation preflight - infra dir: $InfraDir"
@@ -91,18 +154,46 @@ function Invoke-Tf {
     }
     Push-Location $InfraDir
     try {
-        # Stream output to a temp file so large output (e.g. terraform plan) is
-        # not held in memory; only read it back when the command fails.
-        $tmp = New-TemporaryFile
-        & terraform @Args *> $tmp.FullName
-        if ($LASTEXITCODE -eq 0) {
-            Add-Result $Name "PASS"
-        } else {
-            $content = Get-Content -Raw $tmp.FullName
-            if ($null -eq $content) { $content = "" }
-            Add-Result $Name "FAIL" $content.Trim()
+        # Security: Sanitize environment to reduce credential exposure
+        # Remove sensitive Azure and cloud provider environment variables that could
+        # be exfiltrated by malicious Terraform configuration
+        $sensitiveVars = @(
+            'ARM_CLIENT_SECRET',
+            'ARM_CLIENT_CERTIFICATE_PASSWORD', 
+            'AZURE_CLIENT_SECRET',
+            'AWS_SECRET_ACCESS_KEY',
+            'AWS_SESSION_TOKEN',
+            'GOOGLE_CREDENTIALS',
+            'GOOGLE_APPLICATION_CREDENTIALS'
+        )
+        
+        $savedEnv = @{}
+        foreach ($var in $sensitiveVars) {
+            if (Test-Path "env:$var") {
+                $savedEnv[$var] = (Get-Item "env:$var").Value
+                Remove-Item "env:$var" -ErrorAction SilentlyContinue
+            }
         }
-        Remove-Item $tmp.FullName -ErrorAction SilentlyContinue
+        
+        try {
+            # Stream output to a temp file so large output (e.g. terraform plan) is
+            # not held in memory; only read it back when the command fails.
+            $tmp = New-TemporaryFile
+            & terraform @Args *> $tmp.FullName
+            if ($LASTEXITCODE -eq 0) {
+                Add-Result $Name "PASS"
+            } else {
+                $content = Get-Content -Raw $tmp.FullName
+                if ($null -eq $content) { $content = "" }
+                Add-Result $Name "FAIL" $content.Trim()
+            }
+            Remove-Item $tmp.FullName -ErrorAction SilentlyContinue
+        } finally {
+            # Restore sanitized environment variables
+            foreach ($var in $savedEnv.Keys) {
+                [System.Environment]::SetEnvironmentVariable($var, $savedEnv[$var], 'Process')
+            }
+        }
     } finally {
         Pop-Location
     }

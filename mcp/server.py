@@ -6,18 +6,32 @@ ROUTER = os.environ.get("ROUTER_URL", "http://localhost:8010")
 AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTO_API = os.environ.get("AUTO_API", "http://localhost:8050")
+
+# Inbound auth for MCP gateway
 MCP_API_KEY = os.environ.get("MCP_API_KEY", "")
+# Outbound auth for downstream services
+AUTONOMOUS_API_KEY = os.environ.get("AUTONOMOUS_API_KEY", "")
+AGENT_API_KEY = os.environ.get("AGENT_API_KEY", "")
 
 def _check_auth():
     """Verify API key if MCP_API_KEY is configured."""
     if not MCP_API_KEY:
         return None
-    provided = (request.headers.get("X-API-Key") or 
-                request.headers.get("X-Auth-Token") or 
+    provided = (request.headers.get("X-API-Key") or
+                request.headers.get("X-Auth-Token") or
                 request.headers.get("Authorization", "").replace("Bearer ", ""))
     if provided != MCP_API_KEY:
         return jsonify({"error": "unauthorized"}), 401
     return None
+
+def _build_headers(service="auto"):
+    """Build authentication headers for API calls."""
+    headers = {}
+    if service == "auto" and AUTONOMOUS_API_KEY:
+        headers["X-API-Key"] = AUTONOMOUS_API_KEY
+    elif service == "agent" and AGENT_API_KEY:
+        headers["X-API-Key"] = AGENT_API_KEY
+    return headers
 
 @app.before_request
 def guard():
@@ -42,24 +56,22 @@ def call():
     d = request.get_json() or {}
     tool, args = d.get("tool"), d.get("args", {})
     mapping = {
-        "route": (f"{ROUTER}/route", args),
-        "agent/project": (f"{AGENT_API}/agent/project", args),
-        "workflow/run": (f"{WORKFLOW_API}/workflow/run", args),
-        "auto/start": (f"{AUTO_API}/auto/start", args),
+        "route": (f"{ROUTER}/route", args, None),
+        "agent/project": (f"{AGENT_API}/agent/project", args, "agent"),
+        "workflow/run": (f"{WORKFLOW_API}/workflow/run", args, None),
+        "auto/start": (f"{AUTO_API}/auto/start", args, "auto"),
     }
     if tool not in mapping:
         return jsonify({"error": "unknown tool"}), 400
-    url, payload = mapping[tool]
-    
-    # Forward authentication to downstream services
-    headers = {}
+    url, payload, service = mapping[tool]
+    headers = _build_headers(service) if service else {}
+    # Forward inbound auth to downstream services
     if MCP_API_KEY:
-        auth_header = (request.headers.get("X-API-Key") or 
-                      request.headers.get("X-Auth-Token") or 
+        auth_header = (request.headers.get("X-API-Key") or
+                      request.headers.get("X-Auth-Token") or
                       request.headers.get("Authorization", "").replace("Bearer ", ""))
         if auth_header:
             headers["X-API-Key"] = auth_header
-    
     r = requests.post(url, json=payload, headers=headers, timeout=120)
     return jsonify(r.json()), r.status_code
 
