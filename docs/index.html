@@ -198,27 +198,83 @@
     .menu-toggle svg { width: 22px; height: 22px; }
     .chat-launcher {
       position: fixed; bottom: 24px; right: 24px;
-      width: 56px; height: 56px;
-      background: #0241e3; border: none; border-radius: 16px;
+      width: 44px; height: 44px;
+      background: #0241e3; border: none; border-radius: 12px;
       color: #fff; cursor: pointer;
-      box-shadow: 0 8px 24px rgba(2,65,227,.4), 0 2px 8px rgba(0,0,0,.3);
+      box-shadow: 0 4px 16px rgba(2,65,227,.4), 0 2px 6px rgba(0,0,0,.3);
       display: flex; align-items: center; justify-content: center;
       transition: all .2s cubic-bezier(.23,1,.32,1); z-index: 90;
     }
-    .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 12px 32px rgba(2,65,227,.5); }
+    .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(2,65,227,.5); }
     .chat-launcher:active { transform: scale(.95); }
-    .chat-launcher svg { width: 26px; height: 26px; }
-    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 50px; height: 50px; } }
+    .chat-launcher svg { width: 20px; height: 20px; }
+    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 42px; height: 42px; } }
 
     /* ── Chat Panel ── */
     .chat-panel {
-      display: none; position: fixed; bottom: 92px; right: 24px;
-      width: 420px; max-width: calc(100vw - 48px);
-      background: #0d1530; border: 1px solid rgba(255,255,255,.08);
-      border-radius: 24px; overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+      display: none; position: fixed; bottom: 88px; right: 24px;
+      width: 400px; max-width: calc(100vw - 48px);
+      background: #0c1530; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 22px; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04);
       z-index: 95; flex-direction: column;
-      animation: chatIn .28s cubic-bezier(.23,1,.32,1);
+    }
+    .chat-panel.open { display: flex; }
+    .chat-panel-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
+    }
+    .chat-panel-logo {
+      width: 30px; height: 30px; background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .chat-panel-logo svg { width: 16px; height: 16px; }
+    .chat-panel-title { font-size: 14px; font-weight: 600; color: #f1f6ff; }
+    .chat-panel-status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #22c55e; font-weight: 500; margin-top: 1px; }
+    .chat-panel-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+    .chat-panel-close {
+      margin-left: auto; width: 28px; height: 28px; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08); border-radius: 7px;
+      color: rgba(241,246,255,.4); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
+    }
+    .chat-panel-close:hover { background: rgba(255,255,255,.1); color: #f1f6ff; }
+    .chat-panel-close svg { width: 12px; height: 12px; }
+    .chat-panel-tabs { display: flex; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); padding: 4px; }
+    .chat-tab-btn {
+      flex: 1; padding: 7px 12px; font-size: 12px; font-weight: 500;
+      color: rgba(241,246,255,.4); background: none; border: none; cursor: pointer;
+      border-radius: 7px; transition: all .2s; font-family: inherit;
+    }
+    .chat-tab-btn:hover { color: rgba(241,246,255,.7); }
+    .chat-tab-btn.active { background: #0241e3; color: #fff; box-shadow: 0 2px 8px rgba(2,65,227,.4); }
+    .chat-panel-body { flex: 1; overflow-y: auto; padding: 14px 14px 8px; display: flex; flex-direction: column; gap: 8px; }
+    .chat-msg { display: flex; gap: 7px; align-items: flex-end; }
+    .chat-msg-avatar { width: 22px; height: 22px; flex-shrink: 0; background: linear-gradient(135deg, #6bd5ff, #5c8bff 50%, #8a70f6); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .chat-msg-avatar svg { width: 12px; height: 12px; }
+    .chat-msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.55; background: #111b3a; border: 1px solid rgba(255,255,255,.06); color: #f1f6ff; border-top-left-radius: 3px; }
+    .chat-panel-input { padding: 10px 14px 14px; border-top: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.02); }
+    .chat-input-wrap {
+      position: relative; background: #111b3a; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; padding: 10px 40px 10px 14px; transition: border-color .2s;
+    }
+    .chat-input-wrap:focus-within { border-color: rgba(92,139,255,.4); }
+    .chat-input-field { width: 100%; background: none; border: none; outline: none; color: #f1f6ff; font-size: 13px; font-family: inherit; resize: none; line-height: 1.5; }
+    .chat-input-field::placeholder { color: rgba(241,246,255,.3); }
+    .chat-send-btn {
+      position: absolute; right: 7px; bottom: 7px; width: 26px; height: 26px;
+      background: #0241e3; border: none; border-radius: 50%; color: #fff;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .15s, transform .15s;
+    }
+    .chat-send-btn:hover { background: #033ad1; transform: scale(1.05); }
+    .chat-send-btn svg { width: 12px; height: 12px; }
+    .chat-privacy { margin-top: 6px; font-size: 11px; color: rgba(241,246,255,.3); text-align: center; line-height: 1.5; }
+    .chat-privacy a { color: rgba(241,246,255,.5); text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      .chat-panel { bottom: 76px; right: 10px; left: 10px; width: auto; max-width: none; border-radius: 16px; }
+      .chat-launcher { bottom: 14px; right: 14px; }
     }
     @keyframes chatIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
     .chat-panel.open { display: flex; }
@@ -292,7 +348,45 @@
       .chat-launcher { bottom: 14px; right: 14px; }
     }
 
-    /* ── Buttons ── */
+    /* ── Page-wide Applivery dark theme ── */
+    body {
+      background: #0b1530;
+      color: #f1f6ff;
+    }
+    [data-theme="light"] body { background: var(--navy-50); color: var(--text-primary); }
+    .section {
+      padding: 80px 24px;
+      background: #0b1530;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    [data-theme="light"] .section { background: var(--navy-50); }
+    .section:nth-child(even) { background: #091025; }
+    [data-theme="light"] .section:nth-child(even) { background: #fff; }
+    .section-head { text-align: center; max-width: 680px; margin: 0 auto 48px; }
+    .section-title { font-size: clamp(24px,3.5vw,40px); font-weight: 700; letter-spacing: -.02em; margin-bottom: 12px; line-height: 1.2; }
+    .section-sub { font-size: 16px; color: rgba(241,246,255,.5); line-height: 1.6; }
+    [data-theme="light"] .section-sub { color: var(--text-secondary); }
+    .feature-card {
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px; padding: 28px; transition: border-color .2s, background .2s;
+    }
+    .feature-card:hover { border-color: rgba(92,139,255,.3); background: rgba(255,255,255,.05); }
+    [data-theme="light"] .feature-card { background: #fff; border-color: var(--border); }
+    [data-theme="light"] .feature-card:hover { border-color: var(--primary-200); }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto; }
+    .feature-grid.centered { justify-content: center; }
+    .feature-icon { font-size: 22px; margin-bottom: 14px; display: block; }
+    .feature-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #f1f6ff; }
+    [data-theme="light"] .feature-card h3 { color: var(--text-primary); }
+    .feature-card p { font-size: 13px; color: rgba(241,246,255,.5); line-height: 1.6; }
+    [data-theme="light"] .feature-card p { color: var(--text-secondary); }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+      color: rgba(92,139,255,.9); margin-bottom: 16px;
+    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; display: inline-block; }
+    .grad { background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
       height: 52px; padding: 0 var(--space-6);
@@ -805,7 +899,18 @@
     }
     @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
-    .footer-brand-col {}
+    .footer-brand-area { display: flex; flex-direction: column; }
+    .footer-brand { font-size: 22px; font-weight: 700; color: #f1f6ff; margin-bottom: 12px; letter-spacing: -.02em; }
+    .footer-tagline { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 20px; max-width: 260px; }
+    .footer-cta-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px; border-radius: 10px;
+      background: #0241e3; color: #fff; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background .15s, transform .15s;
+      border: none; cursor: pointer; font-family: inherit;
+    }
+    .footer-cta-btn:hover { background: #033ad1; transform: translateY(-1px); }
+    .footer-cta-btn svg { width: 14px; height: 14px; }
     .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 12px; letter-spacing: -.02em; }
     .footer-tag { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 20px; max-width: 260px; }
     .footer-cta {
@@ -818,7 +923,10 @@
     .footer-cta:hover { background: #033ad1; transform: translateY(-1px); }
     .footer-cta svg { width: 14px; height: 14px; }
     .footer-nav {}
-    .footer-col {}
+    .footer-col h2 {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(241,246,255,.3); margin: 0 0 14px;
+    }
     .footer-title {
       font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em;
       color: rgba(241,246,255,.3); margin-bottom: 14px;
@@ -831,7 +939,7 @@
     .footer-links a:hover { color: #f1f6ff; }
     .footer-bottom {
       margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.06);
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 24px;
     }
     .footer-trust { display: flex; align-items: center; gap: 10px; }
     .footer-iso { width: 28px; height: 28px; opacity: .5; }
@@ -1594,10 +1702,7 @@ docker compose --profile allinone up -d
   <div class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat with FreeAI">
     <div class="chat-panel-header">
       <div class="chat-panel-logo">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/>
-          <path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
       </div>
       <div>
         <div class="chat-panel-title">FreeAI Intelligence</div>
@@ -1611,7 +1716,16 @@ docker compose --profile allinone up -d
       <button class="chat-tab-btn active" data-tab="early-access" role="tab" aria-selected="true">Early access</button>
       <button class="chat-tab-btn" data-tab="specialist" role="tab" aria-selected="false">Talk to a specialist</button>
     </div>
-    <div class="chat-panel-body" id="chatPanelBody" aria-live="polite"></div>
+    <div class="chat-panel-body" id="chatPanelBody" aria-live="polite">
+      <div class="chat-msg">
+        <div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div>
+        <div class="chat-msg-bubble">Hi — let's get you into this summer's Europe rollout. Three taps and your email, about 30 seconds.</div>
+      </div>
+      <div class="chat-msg">
+        <div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div>
+        <div class="chat-msg-bubble">First things first — where should we send your early-access invite?</div>
+      </div>
+    </div>
     <div class="chat-panel-input">
       <div class="chat-input-wrap">
         <textarea class="chat-input-field" id="chatInputField" rows="2" placeholder="you@company.com" data-i18n-placeholder="chat-placeholder"></textarea>
@@ -1633,13 +1747,16 @@ docker compose --profile allinone up -d
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-grid">
+        <!-- Brand column -->
         <div class="footer-brand-area">
-          <div class="footer-brand">FreeAI <span class="footer-brand-sub">AI Intelligence</span></div>
-          <p class="footer-tagline">Unified endpoint management with a brain. Manage, protect and update every device — automatically.</p>
-          <a href="deploy.html" class="btn btn--primary btn--sm" style="margin-top:16px;height:38px;font-size:13px;">Get FreeAI
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <div class="footer-brand">FreeAI</div>
+          <p class="footer-tagline">Unified AI inference workstation. Manage, secure, and automate every model — automatically.</p>
+          <a href="deploy.html" class="footer-cta-btn">
+            Get FreeAI
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
+        <!-- On this page -->
         <div class="footer-col">
           <h2>On this page</h2>
           <ul class="footer-links">
@@ -1649,31 +1766,30 @@ docker compose --profile allinone up -d
             <li><a href="#how-it-works">How it works</a></li>
           </ul>
         </div>
+        <!-- Community -->
         <div class="footer-col">
-          <h2>Company</h2>
+          <h2>Community</h2>
           <ul class="footer-links">
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/forum">Forum</a></li>
             <li><a href="#about">About</a></li>
-            <li><a href="#careers">Careers</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
+        <!-- Legal -->
         <div class="footer-col">
           <h2>Legal</h2>
           <ul class="footer-links">
-            <li><a href="https://www.applivery.com/legal/privacy-policy/" target="_blank" rel="noopener">Privacy</a></li>
-            <li><a href="#terms">Terms</a></li>
-            <li><a href="#security">Security</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+            <li><a href="#">Security</a></li>
           </ul>
         </div>
       </div>
+      <!-- Bottom bar -->
       <div class="footer-bottom">
-        <div class="footer-trust">
-          <span>© 2026 FreeAI · Unified AI Workstation · MIT License</span>
-        </div>
-        <div class="footer-trust">
-          <svg class="footer-iso" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>ISO 27001 certified</span>
-        </div>
+        <span class="footer-copyright">\u00a9 2026 FreeAI \u00b7 Unified AI Workstation \u00b7 MIT License</span>
+        <span class="footer-copyright" style="color:rgba(241,246,255,.25)">AI is not just a chatbot — it's an operational layer.</span>
       </div>
     </div>
   </footer>
@@ -1975,9 +2091,7 @@ docker compose --profile allinone up -d
     const chatSendBtn = document.getElementById('chatSendBtn');
     const chatInputField = document.getElementById('chatInputField');
     const tabBtns = document.querySelectorAll('.chat-tab-btn');
-    let currentChatTab = 'early-access';
     let chatOpen = false;
-    let chatMessageTimer = null;
 
     function openChat() {
       chatOpen = true;
@@ -1986,7 +2100,6 @@ docker compose --profile allinone up -d
       chatLauncher.style.pointerEvents = 'none';
       setTimeout(() => { chatLauncher.style.display = 'none'; }, 200);
       chatInputField.focus();
-      if (!chatPanelBody.children.length) playChatMessages(currentChatTab);
     }
 
     function closeChat() {
@@ -1996,81 +2109,22 @@ docker compose --profile allinone up -d
       setTimeout(() => { chatLauncher.style.opacity = '1'; chatLauncher.style.pointerEvents = ''; }, 10);
     }
 
-    function playChatMessages(tab) {
-      const list = tab === 'early-access'
-        ? [
-            { type: 'bot', text: 'Hi \u2014 let\'s get you into the FreeAI rollout.', delay: 350 },
-            { type: 'bot', text: 'A few details and your work email, about 30 seconds.', delay: 900 },
-            { type: 'bot', text: 'First things first \u2014 where should we send your early-access invite?', delay: 1400 },
-          ]
-        : [
-            { type: 'bot', text: 'Hi \u2014 want to talk to a FreeAI specialist?', delay: 350 },
-            { type: 'bot', text: 'Tell us about your workload and we\'ll match you with the right engineer.', delay: 900 },
-            { type: 'bot', text: 'First things first \u2014 what\'s your email?', delay: 1400 },
-          ];
-
-      clearTimeout(chatMessageTimer);
-      chatPanelBody.innerHTML = '';
-      list.forEach((m, i) => {
-        const tid = setTimeout(() => appendChatMsg(m.type, m.text), m.delay);
-        chatMessageTimer = tid;
-      });
-    }
-
-    function appendChatMsg(type, text) {
-      const row = document.createElement('div');
-      row.className = 'chat-msg ' + type;
-      if (type === 'bot') {
-        const av = document.createElement('div');
-        av.className = 'chat-msg-avatar';
-        av.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/><path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/></svg>';
-        row.appendChild(av);
-      }
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-msg-bubble';
-      bubble.textContent = text;
-      row.appendChild(bubble);
-      chatPanelBody.appendChild(row);
-      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-    }
-
-    function showTyping() {
-      const row = document.createElement('div');
-      row.className = 'chat-msg bot';
-      row.id = 'typingIndicator';
-      const av = document.createElement('div');
-      av.className = 'chat-msg-avatar';
-      av.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2L3 20h18L12 2z" fill="#fff" opacity=".9"/><path d="M12 8l-4 8h8l-4-8z" fill="rgba(2,65,227,.6)"/></svg>';
-      row.appendChild(av);
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-msg-bubble';
-      bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-      row.appendChild(bubble);
-      chatPanelBody.appendChild(row);
-      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-    }
-
-    function removeTyping() {
-      const t = document.getElementById('typingIndicator');
-      if (t) t.remove();
-    }
-
     function sendChatMsg() {
       const text = chatInputField.value.trim();
       if (!text) return;
-      appendChatMsg('user', text);
+      const row = document.createElement('div');
+      row.className = 'chat-msg';
+      row.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:3px;">' + text + '</div>';
+      chatPanelBody.appendChild(row);
       chatInputField.value = '';
-      chatInputField.style.height = 'auto';
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
       setTimeout(() => {
-        showTyping();
-        setTimeout(() => {
-          removeTyping();
-          const resp = currentChatTab === 'early-access'
-            ? 'Thanks! We\'ll send your invite to that address shortly.'
-            : 'Got it \u2014 a specialist will reach out within 24 hours.';
-          appendChatMsg('bot', resp);
-        }, 1100);
-      }, 300);
+        const resp = document.createElement('div');
+        resp.className = 'chat-msg';
+        resp.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">Thanks! We\'ll be in touch shortly.</div>';
+        chatPanelBody.appendChild(resp);
+        chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      }, 600);
     }
 
     chatSendBtn.addEventListener('click', sendChatMsg);
@@ -2087,16 +2141,11 @@ docker compose --profile allinone up -d
         tabBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
         btn.classList.add('active');
         btn.setAttribute('aria-selected', 'true');
-        currentChatTab = btn.dataset.tab;
-        clearTimeout(chatMessageTimer);
-        playChatMessages(currentChatTab);
       });
     });
 
     chatLauncher.addEventListener('click', openChat);
     chatPanelClose.addEventListener('click', closeChat);
-
-    // Close on Escape
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatOpen) closeChat(); });
   </script>
 </body>
