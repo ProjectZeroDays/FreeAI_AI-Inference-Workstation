@@ -2112,19 +2112,30 @@ docker compose --profile allinone up -d
     function sendChatMsg() {
       const text = chatInputField.value.trim();
       if (!text) return;
-      const row = document.createElement('div');
-      row.className = 'chat-msg';
-      row.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:3px;">' + text + '</div>';
-      chatPanelBody.appendChild(row);
+      // User message
+      const uRow = document.createElement('div');
+      uRow.className = 'chat-msg';
+      uRow.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:3px;">' + text + '</div>';
+      chatPanelBody.appendChild(uRow);
       chatInputField.value = '';
+      chatInputField.style.height = 'auto';
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      // Typing indicator
+      const tRow = document.createElement('div');
+      tRow.className = 'chat-msg';
+      tRow.id = 'chatTyping';
+      tRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+      chatPanelBody.appendChild(tRow);
       chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
       setTimeout(() => {
+        const tEl = document.getElementById('chatTyping');
+        if (tEl) tEl.remove();
         const resp = document.createElement('div');
         resp.className = 'chat-msg';
         resp.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">Thanks! We\'ll be in touch shortly.</div>';
         chatPanelBody.appendChild(resp);
         chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-      }, 600);
+      }, 1200);
     }
 
     chatSendBtn.addEventListener('click', sendChatMsg);
