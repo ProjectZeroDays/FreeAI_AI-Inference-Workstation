@@ -96,7 +96,7 @@ The stack answers one question: *how do I run capable coding models on my own GP
 
 ## 2. Screenshots
 
-| FreeAIOS GRUB Boot Menu |
+| FreeAI Ubuntu/Kodachi/Kali/NixOS (Desktop Env) (Version) Live OS GRUB Boot Menu |
 |---|
 | ![Boot menu](docs/screenshots/boot-menu.png) |
 | Rendered preview of the ISO's boot menu (GRUB) — `live/build-live.sh` — Install / Try Live / Rescue |
