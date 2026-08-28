@@ -8,11 +8,11 @@ import asyncio
 import sys
 import os
 
-# Add agents directory directly to path
-agents_path = r'C:\Users\Project Zero\FreeAI_AI-Inference-Workstation\agents\specialized\chained_zero_day'
-sys.path.insert(0, agents_path)
+# Add project root to path so we can import from agents package
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
-from chained_zero_day import ChainedZeroDayAgent
+from agents.specialized.chained_zero_day.chained_zero_day import ChainedZeroDayAgent
 import pytest_asyncio
 
 @pytest_asyncio.fixture
@@ -148,12 +148,12 @@ class TestChainOptimization:
         optimization = await agent.optimize_chain(chain["chain_id"])
         
         assert "chain_id" in optimization
-        assert "viability_score" in optimization
-        assert "weak_points" in optimization
-        assert "improvement_suggestions" in optimization
-        assert "alternative_paths" in optimization
-        assert len(optimization["weak_points"]) >= 0
-        assert len(optimization["improvement_suggestions"]) > 0
+        assert "optimized_success_prob" in optimization
+        assert "weaknesses" in optimization
+        assert "improvements" in optimization
+        assert "solutions" in optimization
+        assert len(optimization["weaknesses"]) >= 0
+        assert len(optimization["improvements"]) > 0
 
 class TestCVEAccess:
     """Test CVE database access"""

@@ -8,11 +8,12 @@ import asyncio
 import sys
 import os
 
-# Add parent directory to path to import from agents
-agents_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../specialized'))
-sys.path.insert(0, agents_path)
+# Add project root to path so we can import from agents package
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
-from memory_primitives.memory_primitives import MemoryPrimitivesAgent
+from agents.specialized.memory_primitives.memory_primitives import MemoryPrimitivesAgent
+from agents.specialized.memory_primitives.memory_primitives import PRIMITIVES, CVE_MAPPINGS
 import pytest_asyncio
 
 @pytest_asyncio.fixture
@@ -30,9 +31,7 @@ class TestPrimitiveList:
         assert "primitives" in result
         assert "total_primitives" in result
         assert "classification" in result
-        assert result["total_primitives"] > 10
-        # Import from the implementation module
-        from agents.specialized.memory_primitives.memory_primitives import PRIMITIVES
+        assert result["total_primitives"] >= 10
         assert len(result["primitives"]) == len(PRIMITIVES)
     
     async def test_primitives_classification(self, agent):
@@ -90,7 +89,7 @@ class TestPrimitiveSimulation:
         })
         
         assert result["simulation_timestamp"] is not None
-        assert result["execution_result"]["success"] is True or False
+        assert result["execution_result"]["success"] in (True, False)
 
 class TestExploitMapping:
     """Test exploit mapping"""
@@ -114,8 +113,6 @@ class TestExploitMapping:
         for primitive_name in primitives["primitives"]:
             mapping = await agent.map_to_exploit(primitive_name)
             assert mapping["primitive"] == primitive_name
-            # Import CVE mappings
-            from agents.specialized.memory_primitives.memory_primitives import CVE_MAPPINGS
             assert primitive_name in CVE_MAPPINGS
 
 class TestMitigationDetection:

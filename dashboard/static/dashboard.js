@@ -48,6 +48,17 @@ function renderAlerts(alerts) {
   });
 }
 
+// ── Sidebar Toggle ────────────────────────────────────────────────
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.querySelector('.sidebar');
+
+if (sidebarToggle && sidebar) {
+  sidebarToggle.addEventListener('click', () => {
+    sidebarToggle.classList.toggle('active');
+    sidebar.classList.toggle('collapsed');
+  });
+}
+
 /* ---------------- settings panel ---------------- */
 
 const $ = id => document.getElementById(id);
