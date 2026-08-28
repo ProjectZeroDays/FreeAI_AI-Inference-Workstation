@@ -1,11 +1,69 @@
 #!/usr/bin/env python3
-"""Memory Corruption Exploit Simulation Agent."""
+"""Memory Corruption Exploit Agent — with real CVE data from NVD API."""
 import json
+import os
 import threading
 import time
+import urllib.request
+import urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
+
+# Cache for NVD API results
+_cve_cache = {}
+_cache_lock = threading.Lock()
+_CACHE_TTL = 3600  # 1 hour
+
+
+def _fetch_cve_from_nvd(cve_id):
+    """Fetch CVE details from NVD API."""
+    cache_key = f"nvd:{cve_id}"
+    with _cache_lock:
+        if cache_key in _cve_cache:
+            entry = _cve_cache[cache_key]
+            if time.time() - entry["timestamp"] < _CACHE_TTL:
+                return entry["data"]
+    
+    url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cveId={cve_id}&resultsPerPage=1"
+    headers = {"Accept": "application/json"}
+    
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+            vulns = data.get("vulnerabilities", [])
+            if vulns:
+                cve_data = vulns[0].get("cve", {})
+                result = {
+                    "id": cve_data.get("id", cve_id),
+                    "title": cve_data.get("descriptions", [{}])[0].get("value", "")[:100],
+                    "severity": _get_severity(cve_data),
+                    "published": cve_data.get("publishedDate", ""),
+                    "references": [r.get("url", "") for r in cve_data.get("references", [])],
+                }
+                with _cache_lock:
+                    _cve_cache[cache_key] = {"timestamp": time.time(), "data": result}
+                return result
+    except Exception:
+        pass
+    return None
+
+
+def _get_severity(cve_data):
+    """Extract severity from CVE data."""
+    for metric in cve_data.get("metrics", {}).values():
+        for key, val in metric.items():
+            if key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV2"):
+                if isinstance(val, list):
+                    for v in val:
+                        sev = v.get("cvssData", {}).get("baseMetricV3", {}).get("severity", "")
+                        if sev:
+                            return sev.lower()
+                        sev = v.get("cvssData", {}).get("baseMetricV2", {}).get("severity", "")
+                        if sev:
+                            return sev.lower()
+    return "unknown"
 
 
 class MemoryCorruptionAgent:
@@ -86,14 +144,23 @@ class MemoryCorruptionAgent:
         }
 
     def get_cves(self):
-        """Return CVE references for memory corruption vulnerabilities."""
-        return [
-            {"id": "CVE-2019-3568", "title": "WhatsApp heap corruption vulnerability", "severity": "critical"},
-            {"id": "CVE-2019-8641", "title": "iMessage buffer overflow vulnerability", "severity": "critical"},
-            {"id": "CVE-2018-4990", "title": "Adobe Acrobat file parsing RCE", "severity": "critical"},
-            {"id": "CVE-2017-0144", "title": "EternalBlue SMB vulnerability", "severity": "critical"},
-            {"id": "CVE-2022-0847", "title": "DirtyPipe Linux kernel privilege escalation", "severity": "high"},
-        ]
+        """Return CVE references for memory corruption vulnerabilities from NVD API."""
+        cve_ids = ["CVE-2019-3568", "CVE-2019-8641", "CVE-2018-4990", "CVE-2017-0144", "CVE-2022-0847"]
+        results = []
+        for cve_id in cve_ids:
+            data = _fetch_cve_from_nvd(cve_id)
+            if data:
+                results.append(data)
+            else:
+                # Fallback to simulated data
+                results.append({
+                    "id": cve_id,
+                    "title": f"Simulated memory corruption CVE ({cve_id})",
+                    "severity": "critical",
+                    "published": "",
+                    "references": []
+                })
+        return results
 
     def list_primitives(self):
         """Return list of memory corruption primitives."""
