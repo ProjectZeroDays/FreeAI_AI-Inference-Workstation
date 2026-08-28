@@ -8,13 +8,13 @@ export class RouterClient {
     this.routerHost = vscode.workspace.getConfiguration('freeai').get('routerHost', 'http://localhost:8010');
   }
 
-  async routePromptStream(prompt: string, onEvent: (event: any) => void), onFinish: (result: any) => Promise<void>): Promise<void> {
+  async routePromptStream(prompt: string, onEvent: (event: any) => void, onFinish: (result: any) => Promise<void>): Promise<void> {
     const url = this.routerHost + '/route/stream';
     const body = JSON.stringify({ prompt, stream: true, mock: this.sm.isMockMode() });
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
-      body:
+      body: body,
     });
     const reader = response.readable.getReader();
     const decoder = new TextDecoder();
@@ -40,6 +40,7 @@ export class RouterClient {
             onEvent({ error: e.message });
           }
         }
+      }
     } catch (e) {
       onFinish(null);
       return;
