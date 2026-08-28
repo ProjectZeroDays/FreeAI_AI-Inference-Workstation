@@ -192,7 +192,6 @@ class TestSpeculativeDecoding:
                 returncode = 0
             return R()
         monkeypatch.setattr(subprocess, "run", fake_run)
-        monkeypatch.setattr(math, 'exp', math.exp)
 
         from gpu_perf import SpeculativeDecoding
         sd = SpeculativeDecoding(draft_model="qwen-1.5b", accept_threshold=0.3)
@@ -238,6 +237,16 @@ def client(monkeypatch):
         "speculative_decoding": False,
         "last_recommendation": None,
     })
+    # Reset GPU perf module state between tests
+    import gpu_perf as _gp
+    _gp._monitor = None
+    _gp._graph_manager = None
+    _gp._kv_cache = None
+    _gp._spec_decode = None
+    _gp._perf_metrics = None
+    # Reset subprocess monkeypatches from previous tests
+    import subprocess as _sp
+    monkeypatch.delattr(_sp, "run", raising=False)
     with dash.app.test_client() as c:
         yield c
 
@@ -254,7 +263,7 @@ def test_gpu_metrics_available_on_linux(client, monkeypatch):
     res = client.get("/api/gpu/metrics")
     assert res.status_code == 200
     body = res.get_json()
-    assert body["gpu_available"] is True
+    assert body["gpu_available"] is True, f"Expected True, got {body}"
     assert len(body["devices"]) >= 1
 
 
@@ -301,7 +310,7 @@ def test_gpu_perf_recommend(client, monkeypatch):
     res = client.get("/api/gpu/perf/recommend")
     assert res.status_code == 200
     body = res.get_json()
-    assert body["gpu_available"] is True
+    assert body["gpu_available"] is True, f"Expected True, got {body}"
     assert "recommendations" in body
     assert len(body["recommendations"]) >= 2
     # A100 40GB should recommend quantized_kv and cuda_graphs

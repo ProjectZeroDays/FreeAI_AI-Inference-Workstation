@@ -597,14 +597,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const h = d.data || {};
       status.textContent = "found";
       results.innerHTML = [
-        `<div><b>IP:</b> ${h.ip_str || ip}</div>
-         <div><b>Hostnames:</b> ${(h.hostnames||[]).join(", ") || "—"}</div>
-         <div><b>Organization:</b> ${h.organization || "—"}</div>
-         <div><b>Operating System:</b> ${h.os || "—"}</div>
-         <div><b>Ports:</b> ${(h.ports||[]).join(", ") || "—"}</div>
-         <div><b>Tags:</b> ${(h.tags||[]).join(", ") || "—"}</div>
-         <div><b>Country:</b> ${h.country_name || "—"}</div>
-         <div><b>City:</b> ${h.city || "—"}</div>`,
+        `<div><b>IP:</b> ${String(h.ip_str || ip).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>Hostnames:</b> ${String((h.hostnames||[]).join(", ") || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>Organization:</b> ${String(h.organization || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>Operating System:</b> ${String(h.os || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>Ports:</b> ${String((h.ports||[]).join(", ") || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>Tags:</b> ${String((h.tags||[]).join(", ") || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>Country:</b> ${String(h.country_name || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+         <div><b>City:</b> ${String(h.city || "—").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`,
       ].join("");
     } catch (e) { status.textContent = "error: " + e.message; }
   };

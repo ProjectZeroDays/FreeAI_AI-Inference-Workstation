@@ -12,11 +12,15 @@
   --muted-2:#64748B;
   --accent:#22C55E;
   --accent-2:#38BDF8;
+  --accent-purple:#A78BFA;
   --danger:#EF4444;
   --warn:#F59E0B;
   --radius:14px;
   --radius-sm:10px;
   --shadow:0 10px 30px rgba(2,6,23,.55), 0 1px 0 rgba(255,255,255,.04) inset;
+  --transition-fast:150ms cubic-bezier(0.4,0,0.2,1);
+  --transition-med:200ms cubic-bezier(0.4,0,0.2,1);
+  --sidebar-width:260px;
 }
 
 /* ── Light theme ────────────────────────────────────────────────── */
@@ -32,7 +36,7 @@ body.light{
   --muted-2:#94A3B8;
   --shadow:0 10px 30px rgba(15,23,42,.08), 0 1px 0 rgba(255,255,255,.8) inset;
 }
-body.light body, body.light{
+body.light{
   background:
     radial-gradient(900px 600px at 18% -10%, rgba(56,189,248,.10), transparent 60%),
     radial-gradient(900px 600px at 92% 18%, rgba(34,197,94,.08), transparent 60%),
@@ -168,6 +172,70 @@ h2{margin:0 0 10px; font-size:14px; letter-spacing:.01em; font-weight:600}
 }
 .card:hover{border-color:var(--border-strong); transform:translateY(-1px)}
 .card.span-2{grid-column:span 2}
+/* ── Unified layout (replaces all custom layout wrappers) ───────── */
+.dash-layout,.jobs-layout,.gpu-layout,.config-layout,.perm-layout,
+.providers-layout,.terminal-layout{
+  display:grid;
+  grid-template-columns:var(--sidebar-width) 1fr;
+  min-height:100vh;
+}
+.dash-main,.jobs-main,.gpu-main,.config-main,.perm-main,
+.providers-main,.terminal-main{
+  padding:22px 22px 28px;
+  min-width:0;
+  overflow-y:auto;
+}
+/* Terminal overrides: full-height flex column */
+.terminal-main{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+  padding:0;
+}
+
+/* ── Responsive breakpoints ──────────────────────────────────────── */
+@media (max-width:1024px){
+  .layout,.dash-layout,.jobs-layout,.gpu-layout,.config-layout,
+  .perm-layout,.providers-layout,.terminal-layout{
+    grid-template-columns:1fr;
+  }
+  .sidebar{position:relative;height:auto}
+  .bento{grid-template-columns:1fr}
+  .card.span-2{grid-column:span 1}
+}
+@media (max-width:768px){
+  :root{--sidebar-width:0px}
+  .sidebar{
+    position:fixed; inset:0;z-index:200;
+    width:260px; transform:translateX(-100%);
+    transition:transform var(--transition-med);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .main,.dash-main,.jobs-main,.gpu-main,.config-main,
+  .perm-main,.providers-main,.terminal-main{padding:16px}
+}
+
+/* ── Focus-visible for interactive elements ──────────────────────── */
+.nav-item:focus-visible,
+button:focus-visible,
+.sidebar-toggle:focus-visible,
+input:focus-visible,
+select:focus-visible{
+  outline:2px solid var(--accent-2);
+  outline-offset:2px;
+  border-radius:4px;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+  }
+}
+
 @media (max-width: 980px){
   .layout{grid-template-columns:1fr}
   .sidebar{position:relative; height:auto}

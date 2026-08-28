@@ -1,0 +1,86 @@
+/* ── Reusable Component Classes ──────────────────────────────────── */
+/* Use these across all dashboard pages. All colors derive from CSS variables. */
+
+/* ── KPI ─────────────────────────────────────────────────────────── */
+.kpi-val{font-size:28px;font-weight:700;color:var(--text);line-height:1.1}
+.kpi-lbl{font-size:11px;color:var(--muted-2);margin-top:4px}
+.kpi-delta{font-size:11px;margin-top:4px}
+.kpi-delta.up{color:var(--accent)}
+.kpi-delta.down{color:var(--danger)}
+
+/* ── Badges ──────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;transition:all var(--transition-fast)}
+.badge-green{background:rgba(34,197,94,.12);color:#BBF7D0;border:1px solid rgba(34,197,94,.3)}
+.badge-blue{background:rgba(56,189,248,.12);color:#BAE6FD;border:1px solid rgba(56,189,248,.3)}
+.badge-yellow{background:rgba(245,158,11,.12);color:#FDE68A;border:1px solid rgba(245,158,11,.3)}
+.badge-red{background:rgba(239,68,68,.12);color:#FCA5A5;border:1px solid rgba(239,68,68,.3)}
+.badge-gray{background:rgba(148,163,184,.08);color:var(--muted-2);border:1px solid var(--border)}
+.badge:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.btn{background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all var(--transition-fast)}
+.btn:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+.btn-primary{background:rgba(92,139,255,.15);border-color:rgba(92,139,255,.3);color:#93C5FD}
+.btn-primary:hover{background:rgba(92,139,255,.22);border-color:rgba(92,139,255,.5)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#FCA5A5}
+.btn-danger:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.5)}
+
+/* ── Quick action buttons ────────────────────────────────────────── */
+.quick-actions{display:flex;gap:8px;flex-wrap:wrap}
+.quick-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel-2);color:var(--muted);font-size:12px;cursor:pointer;transition:all var(--transition-fast)}
+.quick-btn:hover{border-color:var(--accent-2);color:var(--text)}
+.quick-btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+/* ── Tables ──────────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto}
+.comp-table{width:100%;border-collapse:collapse;font-size:12px}
+.comp-table th{text-align:left;padding:6px 10px;color:var(--muted-2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.comp-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.comp-table tr:hover td{background:rgba(255,255,255,.02)}
+.comp-table .mono{font-family:'Fira Code',monospace;font-size:11px;color:var(--muted)}
+
+/* ── Progress bar ────────────────────────────────────────────────── */
+.prog-track{height:5px;background:rgba(2,6,23,.6);border-radius:999px;overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;border-radius:999px;transition:width .5s ease}
+
+/* ── Chart container ─────────────────────────────────────────────── */
+.chart-wrap{position:relative;height:160px}
+
+/* ── Live indicator dot ──────────────────────────────────────────── */
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(34,197,94,.7);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── Status dot ──────────────────────────────────────────────────── */
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot.ok{background:var(--accent);box-shadow:0 0 8px rgba(34,197,94,.6)}
+.status-dot.err{background:var(--danger);box-shadow:0 0 8px rgba(239,68,68,.6)}
+.status-dot.warn{background:var(--warn);box-shadow:0 0 8px rgba(245,158,11,.6)}
+.status-dot.info{background:var(--accent-2);box-shadow:0 0 8px rgba(56,189,248,.6)}
+
+/* ── Search box ──────────────────────────────────────────────────── */
+.search-box{background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px;width:220px;font-family:Inter,system-ui,sans-serif;transition:border-color var(--transition-fast),box-shadow var(--transition-fast)}
+.search-box:focus{outline:none;border-color:rgba(56,189,248,.45);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+
+/* ── Modal ───────────────────────────────────────────────────────── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,6,23,.7);backdrop-filter:blur(4px);z-index:100;place-items:center}
+.modal-overlay.open{display:grid}
+.modal-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px;width:min(520px,90vw);box-shadow:var(--shadow);animation:modal-in .2s ease}
+.modal-card h2{margin:0 0 16px;font-size:16px}
+.modal-field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.modal-field label{font-size:12px;color:var(--muted);font-weight:500}
+.modal-field input,.modal-field textarea,.modal-field select{background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;font-family:Inter,system-ui,sans-serif}
+.modal-field textarea{min-height:80px;resize:vertical;font-family:'Fira Code',monospace}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+@keyframes modal-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+/* ── Toast ───────────────────────────────────────────────────────── */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:13px;color:var(--text);box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:all var(--transition-med)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(34,197,94,.4)}
+.toast.error{border-color:rgba(239,68,68,.4)}
+.toast.info{border-color:rgba(56,189,248,.4)}
+.toast.warning{border-color:rgba(245,158,11,.4)}

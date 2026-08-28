@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FreeAI — Dashboard</title>
   <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/components.css" />
   <link rel="stylesheet" href="/static/notifications.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .dash-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
-    .dash-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    /* Page-specific styles not yet in components.css */
     .dash-topbar { display:flex; align-items:center; justify-content:space-between;
                    padding:6px 2px 16px; border-bottom:1px solid var(--border);
                    margin-bottom:18px; flex-wrap:wrap; gap:10px; }
@@ -34,62 +34,10 @@
                   letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px; }
     .comp-title .dot { width:8px; height:8px; border-radius:50%; }
     .comp-body { font-size:13px; }
-
-    /* KPI */
-    .kpi-val { font-size:28px; font-weight:700; color:var(--text); line-height:1.1; }
-    .kpi-lbl { font-size:11px; color:var(--muted-2); margin-top:4px; }
-    .kpi-delta { font-size:11px; margin-top:4px; }
-    .kpi-delta.up { color:var(--accent); }
-    .kpi-delta.down { color:var(--danger); }
-
-    /* Table */
-    .comp-table { width:100%; border-collapse:collapse; font-size:12px; }
-    .comp-table th { text-align:left; padding:6px 10px; color:var(--muted-2); font-weight:600;
-                     font-size:10px; text-transform:uppercase; letter-spacing:.05em;
-                     border-bottom:1px solid var(--border); }
-    .comp-table td { padding:7px 10px; border-bottom:1px solid rgba(255,255,255,.04);
-                     vertical-align:middle; }
-    .comp-table tr:hover td { background:rgba(255,255,255,.02); }
-    .comp-table .mono { font-family:'Fira Code',monospace; font-size:11px; color:var(--muted); }
-
-    /* Badges */
-    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
-             font-size:11px; font-weight:600; }
-    .badge-green { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
-    .badge-blue  { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
-    .badge-yellow{ background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
-    .badge-red   { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
-    .badge-gray  { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
-
-    /* Progress bar */
-    .prog-track { height:5px; background:rgba(2,6,23,.6); border-radius:999px; overflow:hidden; margin-top:4px; }
-    .prog-fill  { height:100%; border-radius:999px; transition:width .5s ease; }
-
-    /* Chart container */
-    .chart-wrap { position:relative; height:160px; }
-
-    /* Buttons */
-    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
-           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
-           font-size:13px; cursor:pointer; transition:all .15s; }
-    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
-    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
-    .btn-sm { padding:5px 10px; font-size:12px; }
-
-    /* Quick actions */
-    .quick-actions { display:flex; gap:8px; flex-wrap:wrap; }
-    .quick-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
-                 border-radius:8px; border:1px solid var(--border); background:var(--panel-2);
-                 color:var(--muted); font-size:12px; cursor:pointer; transition:all .15s; }
-    .quick-btn:hover { border-color:var(--accent-2); color:var(--text); }
-
-    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
-                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
   </style>
 </head>
 <body>
-  <div class="dash-layout">
+  <div class="layout">
     <nav class="sidebar" aria-label="Primary">
       <div class="brand">
         <div class="brand-mark">◈</div>
@@ -136,7 +84,7 @@
       </div>
     </nav>
 
-    <div class="dash-main">
+    <div class="main">
       <header class="dash-topbar">
         <div>
           <h1>Unified Dashboard</h1>
