@@ -34,6 +34,13 @@
                   letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px; }
     .comp-title .dot { width:8px; height:8px; border-radius:50%; }
     .comp-body { font-size:13px; }
+
+    /* Quick action buttons */
+    .quick-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .quick-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
+                 border-radius:8px; border:1px solid var(--border); background:var(--panel-2);
+                 color:var(--muted); font-size:12px; cursor:pointer; transition:all .15s; }
+    .quick-btn:hover { border-color:var(--accent-2); color:var(--text); }
   </style>
 </head>
 <body>
@@ -43,40 +50,125 @@
         <div class="brand-mark">◈</div>
         <div class="brand-text"><strong>FreeAI</strong><span>Dashboard</span></div>
       </div>
+      <div class="scrollable-nav">
+
       <div class="nav-section">
-        <span class="nav-label">Stack</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <span class="nav-label">Overview</span>
+        <a href="/" class="nav-item active"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+        <a href="/audit" class="nav-item"><span class="nav-dot"></span> Audit Log</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> Log Stream</a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Infrastructure</span>
         <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
-        <a href="/gpu-workstation" class="nav-item active"><span class="nav-dot"></span> GPU Workstation</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+        <a href="/salad" class="nav-item"><span class="nav-dot"></span> Salad GPU</a>
         <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
         <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+        <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+        <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
       </div>
+
       <div class="nav-section">
-        <span class="nav-label">Control</span>
-        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
-        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
-        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
-        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
-        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
-        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+        <span class="nav-label">Agents</span>
         <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
-      </div>
-      <div class="nav-section">
-        <span class="nav-label">Tools</span>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
-        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
         <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
         <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> AI Training</a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Memory</a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
       </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Workflow</span>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC</a>
+      </div>
+
       <div class="nav-section">
         <span class="nav-label">Security</span>
         <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
         <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
         <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+        <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+        <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero Day</a>
+        <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> Red Teaming</a>
+        <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Eng</a>
       </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Exploitation</span>
+        <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+        <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploit</a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploit</a>
+        <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> Remote Access</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2 Framework</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot Manager</a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Intelligence</span>
+        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intel</a>
+        <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime Monitor</a>
+        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+        <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Management</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/rbac" class="nav-item"><span class="nav-dot"></span> RBAC</a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+        <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+        <a href="/prompts" class="nav-item"><span class="nav-dot"></span> Prompts</a>
+        <a href="/extensions" class="nav-item"><span class="nav-dot"></span> Extensions</a>
+        <a href="/plugins-manage" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+        <a href="/terminal" class="nav-item"><span class="nav-dot"></span> Terminal</a>
+        <a href="/files" class="nav-item"><span class="nav-dot"></span> Files</a>
+        <a href="/encryption" class="nav-item"><span class="nav-dot"></span> Encryption</a>
+        <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS</a>
+        <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> Network Auto</a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-label">Knowledge</span>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+        <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+        <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+        <a href="/aikido" class="nav-item"><span class="nav-dot"></span> Aikido</a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-label">System</span>
+        <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity Mgmt</a>
+        <a href="/communications" class="nav-item"><span class="nav-dot"></span> Communications</a>
+        <a href="/dependency-agent" class="nav-item"><span class="nav-dot"></span> Dependencies</a>
+        <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
+        <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
+        <a href="/secrets" class="nav-item"><span class="nav-dot"></span> Secrets</a>
+      </div>
+
+      </div><!-- .scrollable-nav -->
+
       <div class="sidebar-foot">
-        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar (Ctrl+\\)" aria-label="Toggle sidebar">
           <span class="toggle-icon">◀</span>
         </button>
         <span class="live-dot" aria-hidden="true"></span>
@@ -463,6 +555,180 @@
     // Init
     refreshAll();
     setInterval(refreshAll, 30000);
+
+    // ── Command Palette (⌘K / Ctrl+K) ──────────────────────────
+    const CMD_NAV = [
+      {section:'Overview',items:[
+        {label:'Dashboard',hint:'/',path:'/'},
+        {label:'Health',hint:'H',path:'/health'},
+        {label:'Audit Log',hint:'A',path:'/audit'},
+        {label:'Logs',hint:'L',path:'/logs'},
+        {label:'Log Stream',hint:'LS',path:'/logs-stream'},
+      ]},
+      {section:'Infrastructure',items:[
+        {label:'GPU Telemetry',hint:'GPU',path:'/gpu'},
+        {label:'GPU Workstation',hint:'GW',path:'/gpu-workstation'},
+        {label:'Salad GPU',hint:'SL',path:'/salad'},
+        {label:'Providers',hint:'P',path:'/providers'},
+        {label:'External Providers',hint:'EP',path:'/external-providers'},
+        {label:'Network',hint:'N',path:'/network'},
+        {label:'Proxy Chain',hint:'PC',path:'/proxy-chain'},
+      ]},
+      {section:'Agents',items:[
+        {label:'Subagents',hint:'SA',path:'/subagents'},
+        {label:'Browser',hint:'B',path:'/browser-v2'},
+        {label:'Desktop',hint:'D',path:'/desktop'},
+        {label:'Sandbox',hint:'SB',path:'/sandbox'},
+        {label:'AI Training',hint:'AT',path:'/training'},
+        {label:'Memory',hint:'M',path:'/memory'},
+        {label:'Gateway',hint:'G',path:'/gateway'},
+        {label:'Automations',hint:'AUTO',path:'/automations'},
+      ]},
+      {section:'Workflow',items:[
+        {label:'Workflows',hint:'WF',path:'/workflows'},
+        {label:'Scheduler',hint:'SCH',path:'/scheduler'},
+        {label:'Jobs',hint:'J',path:'/jobs'},
+        {label:'Campaigns',hint:'CAM',path:'/campaign-manager'},
+        {label:'Skills',hint:'SK',path:'/skills'},
+        {label:'SDLC',hint:'SDL',path:'/sdlc'},
+      ]},
+      {section:'Security',items:[
+        {label:'Security',hint:'SEC',path:'/security'},
+        {label:'Vuln Scanner',hint:'VS',path:'/vuln-scanner'},
+        {label:'Threat Intel',hint:'TI',path:'/threat-intel'},
+        {label:'Incident Response',hint:'IR',path:'/incident-response'},
+        {label:'Malware Analysis',hint:'MA',path:'/malware-analysis'},
+        {label:'Zero Day',hint:'ZD',path:'/zero-day'},
+        {label:'Red Teaming',hint:'RT',path:'/ai-red-teaming'},
+        {label:'Social Engineering',hint:'SE',path:'/social-engineering'},
+      ]},
+      {section:'Exploitation',items:[
+        {label:'Cloud Exploitation',hint:'CE',path:'/cloud-exploitation'},
+        {label:'Network Exploitation',hint:'NE',path:'/network-exploitation'},
+        {label:'IoT Exploitation',hint:'IE',path:'/iot-exploitation'},
+        {label:'Wireless Exploitation',hint:'WE',path:'/wireless-exploitation'},
+        {label:'Remote Access',hint:'RA',path:'/remote-access'},
+        {label:'C2 Framework',hint:'C2',path:'/c2'},
+        {label:'Loot Manager',hint:'LM',path:'/loot'},
+      ]},
+      {section:'Intelligence',items:[
+        {label:'APT Intelligence',hint:'APT',path:'/apt-intelligence'},
+        {label:'Realtime Monitor',hint:'RM',path:'/realtime-monitor'},
+        {label:'Predictive Analytics',hint:'PA',path:'/predictive-analytics'},
+        {label:'Device Fingerprint',hint:'DF',path:'/device-fingerprint'},
+      ]},
+      {section:'Management',items:[
+        {label:'Permissions',hint:'PERM',path:'/permissions'},
+        {label:'RBAC',hint:'RBAC',path:'/rbac'},
+        {label:'Config',hint:'CFG',path:'/config'},
+        {label:'Model Registry',hint:'MR',path:'/model-registry'},
+        {label:'Prompts',hint:'PR',path:'/prompts'},
+        {label:'Extensions',hint:'EXT',path:'/extensions'},
+        {label:'Plugins',hint:'PL',path:'/plugins-manage'},
+      ]},
+      {section:'Tools',items:[
+        {label:'Hermes',hint:'HM',path:'/hermes'},
+        {label:'MCP',hint:'MCP',path:'/mcp'},
+        {label:'Terminal',hint:'TERM',path:'/terminal'},
+        {label:'Files',hint:'FL',path:'/files'},
+        {label:'Encryption',hint:'ENC',path:'/encryption'},
+        {label:'DDNS Manager',hint:'DDNS',path:'/ddns-manager'},
+        {label:'Network Auto',hint:'NA',path:'/network-auto'},
+      ]},
+      {section:'Knowledge',items:[
+        {label:'Wiki',hint:'WIKI',path:'/wiki-dashboard'},
+        {label:'Blog',hint:'BG',path:'/blog'},
+        {label:'Forum',hint:'FORUM',path:'/forum'},
+        {label:'Aikido',hint:'AIK',path:'/aikido'},
+      ]},
+      {section:'System',items:[
+        {label:'Identity Management',hint:'ID',path:'/identity-mgmt'},
+        {label:'Communications',hint:'COMM',path:'/communications'},
+        {label:'Dependencies',hint:'DEP',path:'/dependency-agent'},
+        {label:'Hot Models',hint:'HOT',path:'/hot-models'},
+        {label:'Errors',hint:'ERR',path:'/errors'},
+        {label:'Secrets',hint:'SEC',path:'/secrets'},
+      ]},
+    ];
+
+    function buildCmdPalette(query){
+      const q = (query||'').toLowerCase().trim();
+      let html = '';
+      let any = false;
+      for(const sec of CMD_NAV){
+        const matched = q ? sec.items.filter(it =>
+          it.label.toLowerCase().includes(q) || it.path.toLowerCase().includes(q) || it.hint.toLowerCase().includes(q)
+        ) : sec.items;
+        if(!matched.length) continue;
+        any = true;
+        html += `<div class="cmd-section-label">${sec.section}</div>`;
+        for(const it of matched){
+          html += `<a href="${it.path}" class="cmd-item" data-path="${it.path}">
+            <span class="cmd-item-icon">↗</span>
+            <span class="cmd-item-text">
+              <div class="cmd-item-label">${it.label}</div>
+              <div class="cmd-item-hint">${it.path}</div>
+            </span>
+            <kbd>${it.hint}</kbd>
+          </a>`;
+        }
+      }
+      if(!any) html = '<div class="cmd-empty">No results found</div>';
+      return html;
+    }
+
+    function openCmdPalette(){
+      let el = document.getElementById('cmd-palette');
+      if(!el){
+        el = document.createElement('div');
+        el.id = 'cmd-palette';
+        el.className = 'cmd-palette';
+        el.innerHTML = `
+          <div class="cmd-palette-box">
+            <input class="cmd-palette-input" id="cmd-input" type="text" placeholder="Search pages… (↑↓ navigate, Enter open)" autocomplete="off" />
+            <div class="cmd-palette-list" id="cmd-list"></div>
+            <div class="cmd-footer">
+              <span><kbd>↑↓</kbd> Navigate</span>
+              <span><kbd>Enter</kbd> Open</span>
+              <span><kbd>Esc</kbd> Close</span>
+              <span style="margin-left:auto"><kbd>⌘K</kbd> Toggle</span>
+            </div>
+          </div>`;
+        document.body.appendChild(el);
+        el.addEventListener('click', e => { if(e.target === el) closeCmdPalette(); });
+      }
+      el.classList.add('open');
+      const input = document.getElementById('cmd-input');
+      input.focus();
+      input.value = '';
+      renderCmdList('');
+      let focusIdx = -1;
+      input.addEventListener('input', () => { renderCmdList(input.value); focusIdx = -1; });
+      document.addEventListener('keydown', cmdKeyHandler);
+      function cmdKeyHandler(e){
+        if(e.key === 'Escape'){ closeCmdPalette(); document.removeEventListener('keydown', cmdKeyHandler); return; }
+        if(e.key === 'ArrowDown'){ e.preventDefault(); focusIdx = Math.min(focusIdx+1, getAllCmdItems().length-1); updateCmdFocus(); }
+        else if(e.key === 'ArrowUp'){ e.preventDefault(); focusIdx = Math.max(focusIdx-1, 0); updateCmdFocus(); }
+        else if(e.key === 'Enter'){ e.preventDefault(); const items = getAllCmdItems(); if(items[focusIdx]) items[focusIdx].click(); }
+      }
+      function getAllCmdItems(){ return [...document.querySelectorAll('.cmd-item')]; }
+      function updateCmdFocus(){
+        const items = getAllCmdItems();
+        items.forEach((it,i) => it.classList.toggle('focused', i===focusIdx));
+        items[focusIdx]?.scrollIntoView({block:'nearest'});
+      }
+      function renderCmdList(q){
+        document.getElementById('cmd-list').innerHTML = buildCmdPalette(q);
+        focusIdx = -1;
+      }
+    }
+    function closeCmdPalette(){
+      const el = document.getElementById('cmd-palette');
+      if(el) el.classList.remove('open');
+    }
+    document.addEventListener('keydown', e => {
+      if((e.metaKey || e.ctrlKey) && e.key === 'k'){ e.preventDefault(); openCmdPalette(); }
+    });
   </script>
 </body>
 </html>

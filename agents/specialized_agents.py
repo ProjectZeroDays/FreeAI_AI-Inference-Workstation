@@ -10,8 +10,9 @@ Agents:
   designer      - UI/UX design, visual systems, frontend architecture
   fixer         - bug fixing, refactoring, code improvement
 """
-import os
 import json
+import logging
+import os
 import threading
 import time
 from typing import Optional
@@ -137,7 +138,8 @@ def call_proxy(prompt: str, model: str = None, max_tokens: int = 4096,
     except requests.exceptions.ConnectionError:
         return {"error": "router unreachable", "model_used": model or "unknown"}
     except Exception as exc:
-        return {"error": str(exc), "model_used": model or "unknown"}
+        logging.getLogger(__name__).exception("router invoke error")
+        return {"error": "router_error", "model_used": model or "unknown"}
 
 
 def invoke_agent(agent_name: str, prompt: str,
