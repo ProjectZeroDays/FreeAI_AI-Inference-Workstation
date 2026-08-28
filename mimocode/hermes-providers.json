@@ -60,7 +60,7 @@
         "agnes-2.0-flash",
         "agnes-2.0-pro"
       ],
-      "key_set": false
+      "key_set": true
     },
     "openrouter": {
       "name": "OpenRouter",

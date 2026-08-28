@@ -4,10 +4,10 @@
 
 <div align="center">
 
-[![version](https://img.shields.io/badge/version-1.3.0-blue)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases)
+[![version](https://img.shields.io/badge/version-1.3.1-blue)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](https://www.python.org/)
 [![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)](https://developer.nvidia.com/cuda)
-[![tests](https://img.shields.io/badge/tests-262_passing-brightgreen)](#15-testing-and-validation)
+[![tests](https://img.shields.io/badge/tests-570_passing-brightgreen)](#15-testing-and-validation)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/pkgs/container/freeai)
 
@@ -424,7 +424,7 @@ The stack answers one question: *how do I run capable coding models on my own GP
 | **Parallel hot models** | second resident shard (`--profile llama2`, per-GPU CUDA_VISIBLE_DEVICES) - `/admin/hot-models` roster + `/admin/model-switch` zero-reload swap |
 | **RAG** | Qdrant sidecar :6333 + ingest watcher (`--profile rag`) - MiniLM 384-dim embeddings, deterministic hash fallback for GPU-less CI |
 | **Evals** | golden-task harness (`evals/golden_tasks.json`) - `run_eval.py` scores router answers vs expectations incl. reviewer-model pass |
-| **Tooling** | `freeai-cli` (14 subcommands) - Makefile - MkDocs site - auto-docs generator - GitHub Actions CI (py/bash/js/json gates) + docker publish + release bundling |
+| **Tooling** | `freeai-cli` (14 subcommands) - Makefile - MkDocs site - auto-docs generator - GitHub Actions CI (py/bash/js/json gates) + docker publish + release bundling - **task_printer** skill (JSON task list formatter) |
 | **Desktop** | XFCE + TigerVNC + noVNC (compose `--profile desktop`) |
 
 

@@ -10,296 +10,8 @@
   },
   "log": [
     {
-      "id": "info-0",
-      "ts": 1787866159.8705893,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787866159.7036808,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "warning-0",
-      "ts": 1787866142.122866,
-      "title": "Discord disconnected",
-      "message": "Gateway platform 'discord' is now offline",
-      "level": "warning",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787866142.1213188,
-      "title": "Discord connected",
-      "message": "Gateway platform 'discord' is now connected",
-      "level": "success",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787866142.1015456,
-      "title": "Automation Success",
-      "message": "'nightly' succeeded in 3424ms",
-      "level": "success",
-      "source": "automations",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787866034.175982,
-      "title": "Training job Done",
-      "message": "fine-tune-1 (sft) \u2014 done",
-      "level": "success",
-      "source": "training",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787866032.6133838,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787866032.4562418,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "warning-0",
-      "ts": 1787866014.5648603,
-      "title": "Discord disconnected",
-      "message": "Gateway platform 'discord' is now offline",
-      "level": "warning",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787866014.5630097,
-      "title": "Discord connected",
-      "message": "Gateway platform 'discord' is now connected",
-      "level": "success",
-      "source": "gateway",
-      "read": false
-    },
-    {
       "id": "error-0",
-      "ts": 1787866014.5434105,
-      "title": "Automation Failed",
-      "message": "'nightly' failed in 6221ms",
-      "level": "error",
-      "source": "automations",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865984.264367,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865984.1152074,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865983.8116555,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865983.6134753,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "error-0",
-      "ts": 1787865974.4760735,
-      "title": "Training job Failed",
-      "message": "fine-tune-1 (sft) \u2014 failed",
-      "level": "error",
-      "source": "training",
-      "read": false
-    },
-    {
-      "id": "warning-0",
-      "ts": 1787865965.7938015,
-      "title": "Discord disconnected",
-      "message": "Gateway platform 'discord' is now offline",
-      "level": "warning",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865965.792194,
-      "title": "Discord connected",
-      "message": "Gateway platform 'discord' is now connected",
-      "level": "success",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865965.775048,
-      "title": "Automation Success",
-      "message": "'nightly' succeeded in 1894ms",
-      "level": "success",
-      "source": "automations",
-      "read": false
-    },
-    {
-      "id": "warning-0",
-      "ts": 1787865965.327153,
-      "title": "Discord disconnected",
-      "message": "Gateway platform 'discord' is now offline",
-      "level": "warning",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865965.3248947,
-      "title": "Discord connected",
-      "message": "Gateway platform 'discord' is now connected",
-      "level": "success",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865965.3069136,
-      "title": "Automation Success",
-      "message": "'nightly' succeeded in 5085ms",
-      "level": "success",
-      "source": "automations",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865933.0978189,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865932.9192853,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865932.5378485,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865932.360206,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "warning-0",
-      "ts": 1787865914.5483277,
-      "title": "Discord disconnected",
-      "message": "Gateway platform 'discord' is now offline",
-      "level": "warning",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865914.54657,
-      "title": "Discord connected",
-      "message": "Gateway platform 'discord' is now connected",
-      "level": "success",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865914.5284526,
-      "title": "Automation Success",
-      "message": "'nightly' succeeded in 2692ms",
-      "level": "success",
-      "source": "automations",
-      "read": false
-    },
-    {
-      "id": "warning-0",
-      "ts": 1787865914.0208013,
-      "title": "Discord disconnected",
-      "message": "Gateway platform 'discord' is now offline",
-      "level": "warning",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "success-0",
-      "ts": 1787865914.0191052,
-      "title": "Discord connected",
-      "message": "Gateway platform 'discord' is now connected",
-      "level": "success",
-      "source": "gateway",
-      "read": false
-    },
-    {
-      "id": "error-0",
-      "ts": 1787865914.0003583,
-      "title": "Automation Failed",
-      "message": "'nightly' failed in 13804ms",
-      "level": "error",
-      "source": "automations",
-      "read": false
-    },
-    {
-      "id": "error-0",
-      "ts": 1787865868.021302,
+      "ts": 1787903778.3799372,
       "title": "Training job Failed",
       "message": "fine-tune-1 (sft) \u2014 failed",
       "level": "error",
@@ -308,7 +20,7 @@
     },
     {
       "id": "info-0",
-      "ts": 1787865862.8297858,
+      "ts": 1787903775.7557447,
       "title": "Settings saved",
       "message": "Dashboard settings have been updated",
       "level": "info",
@@ -317,25 +29,7 @@
     },
     {
       "id": "info-0",
-      "ts": 1787865862.6463835,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865862.4595532,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865862.290583,
+      "ts": 1787903775.520656,
       "title": "Settings saved",
       "message": "Dashboard settings have been updated",
       "level": "info",
@@ -344,7 +38,7 @@
     },
     {
       "id": "warning-0",
-      "ts": 1787865844.4157872,
+      "ts": 1787903757.598068,
       "title": "Discord disconnected",
       "message": "Gateway platform 'discord' is now offline",
       "level": "warning",
@@ -353,7 +47,7 @@
     },
     {
       "id": "success-0",
-      "ts": 1787865844.4144003,
+      "ts": 1787903757.5963168,
       "title": "Discord connected",
       "message": "Gateway platform 'discord' is now connected",
       "level": "success",
@@ -362,16 +56,34 @@
     },
     {
       "id": "success-0",
-      "ts": 1787865844.398699,
+      "ts": 1787903757.5756512,
       "title": "Automation Success",
-      "message": "'nightly' succeeded in 5995ms",
+      "message": "'nightly' succeeded in 1203ms",
       "level": "success",
       "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787902288.1204078,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787902287.862223,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
       "read": false
     },
     {
       "id": "warning-0",
-      "ts": 1787865843.9966803,
+      "ts": 1787902267.6691206,
       "title": "Discord disconnected",
       "message": "Gateway platform 'discord' is now offline",
       "level": "warning",
@@ -380,7 +92,52 @@
     },
     {
       "id": "success-0",
-      "ts": 1787865843.9944675,
+      "ts": 1787902267.6673741,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "error-0",
+      "ts": 1787902267.6468072,
+      "title": "Automation Failed",
+      "message": "'nightly' failed in 9342ms",
+      "level": "error",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787902231.0779958,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787902230.9019523,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "warning-0",
+      "ts": 1787902212.8994758,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787902212.89707,
       "title": "Discord connected",
       "message": "Gateway platform 'discord' is now connected",
       "level": "success",
@@ -389,16 +146,250 @@
     },
     {
       "id": "success-0",
-      "ts": 1787865843.9711423,
+      "ts": 1787902212.8766613,
       "title": "Automation Success",
-      "message": "'nightly' succeeded in 4076ms",
+      "message": "'nightly' succeeded in 12731ms",
+      "level": "success",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787902174.1053936,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787902173.9009175,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "warning-0",
+      "ts": 1787902153.5401824,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787902153.5384061,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "error-0",
+      "ts": 1787902153.5114913,
+      "title": "Automation Failed",
+      "message": "'nightly' failed in 3156ms",
+      "level": "error",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900573.7594726,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900573.51761,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "error-0",
+      "ts": 1787900570.2309942,
+      "title": "Training job Failed",
+      "message": "fine-tune-1 (sft) \u2014 failed",
+      "level": "error",
+      "source": "training",
+      "read": false
+    },
+    {
+      "id": "warning-0",
+      "ts": 1787900555.6446106,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900555.6428103,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900555.6197968,
+      "title": "Automation Success",
+      "message": "'nightly' succeeded in 7081ms",
+      "level": "success",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900455.1008599,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900454.8588364,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "warning-0",
+      "ts": 1787900437.024905,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900437.0231242,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900437.001282,
+      "title": "Automation Success",
+      "message": "'nightly' succeeded in 14485ms",
+      "level": "success",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900362.0909462,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900361.798005,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "warning-0",
+      "ts": 1787900343.2110875,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900343.2091348,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900343.1883671,
+      "title": "Automation Success",
+      "message": "'nightly' succeeded in 1339ms",
+      "level": "success",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900214.9786994,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "info-0",
+      "ts": 1787900214.7691379,
+      "title": "Settings saved",
+      "message": "Dashboard settings have been updated",
+      "level": "info",
+      "source": "settings",
+      "read": false
+    },
+    {
+      "id": "warning-0",
+      "ts": 1787900196.838418,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900196.8366802,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787900196.81762,
+      "title": "Automation Success",
+      "message": "'nightly' succeeded in 13793ms",
       "level": "success",
       "source": "automations",
       "read": false
     },
     {
       "id": "success-0",
-      "ts": 1787865816.1795945,
+      "ts": 1787898890.0771844,
       "title": "Training job Done",
       "message": "fine-tune-1 (sft) \u2014 done",
       "level": "success",
@@ -407,7 +398,7 @@
     },
     {
       "id": "info-0",
-      "ts": 1787865811.7261696,
+      "ts": 1787898889.9964998,
       "title": "Settings saved",
       "message": "Dashboard settings have been updated",
       "level": "info",
@@ -416,7 +407,7 @@
     },
     {
       "id": "info-0",
-      "ts": 1787865811.5498936,
+      "ts": 1787898889.7575068,
       "title": "Settings saved",
       "message": "Dashboard settings have been updated",
       "level": "info",
@@ -424,35 +415,44 @@
       "read": false
     },
     {
-      "id": "info-0",
-      "ts": 1787865811.4125657,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
+      "id": "warning-0",
+      "ts": 1787898871.6013937,
+      "title": "Discord disconnected",
+      "message": "Gateway platform 'discord' is now offline",
+      "level": "warning",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787898871.5980153,
+      "title": "Discord connected",
+      "message": "Gateway platform 'discord' is now connected",
+      "level": "success",
+      "source": "gateway",
+      "read": false
+    },
+    {
+      "id": "success-0",
+      "ts": 1787898871.572844,
+      "title": "Automation Success",
+      "message": "'nightly' succeeded in 12532ms",
+      "level": "success",
+      "source": "automations",
+      "read": false
+    },
+    {
+      "id": "error-0",
+      "ts": 1787898727.6321445,
+      "title": "Training job Failed",
+      "message": "fine-tune-1 (sft) \u2014 failed",
+      "level": "error",
+      "source": "training",
       "read": false
     },
     {
       "id": "info-0",
-      "ts": 1787865811.2219133,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865810.9577253,
-      "title": "Settings saved",
-      "message": "Dashboard settings have been updated",
-      "level": "info",
-      "source": "settings",
-      "read": false
-    },
-    {
-      "id": "info-0",
-      "ts": 1787865810.7825718,
+      "ts": 1787898723.4024706,
       "title": "Settings saved",
       "message": "Dashboard settings have been updated",
       "level": "info",

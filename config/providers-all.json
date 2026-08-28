@@ -149,7 +149,7 @@
       "opencode",
       "jcode"
     ],
-    "key_set": false
+    "key_set": true
   },
   "openrouter": {
     "name": "OpenRouter",

@@ -1,6 +1,6 @@
 {
   "_comment": "Auto-merged provider registry from mimocode/ sources. Do not edit by hand.",
-  "merged_at": "2026-08-27T13:36:59.852598Z",
+  "merged_at": "2026-08-28T10:33:03.102736Z",
   "sources": [
     "mimocode-providers.json",
     "opencode-providers.json",
@@ -105,7 +105,7 @@
         "agnes-2.0-flash",
         "agnes-2.0-pro"
       ],
-      "auth": "env:UNKNOWN",
+      "auth": "env:AGNES_API_KEY",
       "enabled": true
     },
     "openrouter": {

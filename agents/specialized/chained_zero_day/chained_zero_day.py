@@ -159,7 +159,7 @@ class ChainedZeroDayAgent:
             "solutions": []
         }
         
-        optimized_score = self._calculate_viability([analysis["stages"]])
+        optimized_score = self._calculate_viability(analysis["stages"])
         analysis["optimized_success_prob"] = min(0.95, optimized_score)
         
         return analysis

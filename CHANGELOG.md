@@ -1,3 +1,17 @@
+## 1.3.1 - 2026-08-28
+
+### Added
+- **task_printer skill**: new CLI tool (`skills/task_printer/scripts/task_printer.py`) that reads a JSON file of task objects and prints each task's id, name, and description in a clean formatted layout; validates input, exits non-zero on errors
+- **Shodan integration**: dashboard card, API endpoints (`/api/shodan/*`), and settings panel for querying Shodan.io data
+- **Docs polish**: hero orbs with gradient CSS, dot-grid backgrounds, macOS-style code chrome (traffic-light buttons), scroll-spy active nav highlighting, animated stat counters
+- **VERSION bump** 1.2.0 → 1.3.1
+
+### Changed
+- **mkdocs.yml cleanup**: removed 17 broken nav references to deleted pages; removed stale `ai-badge.js` script include
+- **Test suite**: workspace test for memory_primitives agent, aggregate chained_zero_day agent tests; all 570 tests passing
+
+---
+
 ## 1.2.0 - 2026-08-25
 
 ### Added
