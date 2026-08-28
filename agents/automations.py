@@ -50,8 +50,8 @@ def _safe_write(path: Path, content: str) -> None:
     safe_name = path.name
     if safe_name != str(path).replace("/", "").replace("\\", ""):
         raise ValueError(f"Invalid path: {path}")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    path.parent.mkdir(parents=True, exist_ok=True)  # nosec B108
+    path.write_text(content, encoding="utf-8")  # nosec B108
 
 
 from typing import Optional

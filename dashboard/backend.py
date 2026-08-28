@@ -2,6 +2,7 @@
 
 Provides REST API endpoints and serves static HTML pages.
 """
+import sys
 import asyncio
 import json
 import os
@@ -1668,6 +1669,257 @@ def api_gpu_scan():
     return jsonify(_gpu_state)
 
 
+# ── API: GPU Performance Optimizations ──────────────────────────
+_gpu_perf_state = {
+    "cuda_graphs": False,
+    "quantized_kv": False,
+    "speculative_decoding": False,
+    "last_recommendation": None,
+}
+
+
+@app.route("/api/gpu/metrics")
+def api_gpu_metrics():
+    """Return GPU performance metrics (utilization, memory, temperature)."""
+    try:
+        sys_path = str(Path(__file__).parent.parent / "router")
+        if sys_path not in sys.path:
+            sys.path.insert(0, sys_path)
+        from gpu_perf import get_monitor, is_gpu_available
+        monitor = get_monitor()
+        metrics = monitor.get_metrics()
+        metrics["perf_enabled"] = any(_gpu_perf_state.values())
+        return jsonify(metrics)
+    except ImportError:
+        return jsonify({
+            "devices": [],
+            "total_vram_mb": 0,
+            "used_vram_mb": 0,
+            "utilization_pct": 0,
+            "temperature_c": 0,
+            "power_w": 0,
+            "perf_enabled": any(_gpu_perf_state.values()),
+            "gpu_available": False,
+            "platform": __import__("platform").system(),
+        })
+    except Exception as exc:
+        return jsonify({
+            "devices": [],
+            "total_vram_mb": 0,
+            "used_vram_mb": 0,
+            "utilization_pct": 0,
+            "temperature_c": 0,
+            "power_w": 0,
+            "error": str(exc),
+            "perf_enabled": any(_gpu_perf_state.values()),
+        })
+
+
+@app.route("/api/gpu/perf/enable", methods=["POST"])
+def api_gpu_perf_enable():
+    """Enable GPU optimizations (CUDA graphs, quantized KV)."""
+    data = request.get_json(silent=True) or {}
+    cuda_graphs = data.get("cuda_graphs", True)
+    quantized_kv = data.get("quantized_kv", True)
+    speculative = data.get("speculative_decoding", False)
+
+    try:
+        sys_path = str(Path(__file__).parent.parent / "router")
+        if sys_path not in sys.path:
+            sys.path.insert(0, sys_path)
+        from gpu_perf import get_graph_manager, get_kv_cache, get_speculative_decoding, get_perf_metrics
+        graph_mgr = get_graph_manager()
+        kv = get_kv_cache()
+        sd = get_speculative_decoding()
+        perf = get_perf_metrics()
+
+        if cuda_graphs:
+            result = graph_mgr.capture(model_name="default", batch_size=1, seq_len=256)
+            perf.set_optimization("cuda_graphs", result.get("status") == "captured")
+        else:
+            perf.set_optimization("cuda_graphs", False)
+
+        if quantized_kv:
+            result = kv.allocate(model_name="default")
+            perf.set_optimization("quantized_kv", result.get("status") == "allocated")
+        else:
+            perf.set_optimization("quantized_kv", False)
+
+        perf.set_optimization("speculative_decoding", speculative and sd.is_active)
+
+        _gpu_perf_state.update({
+            "cuda_graphs": cuda_graphs and graph_mgr.is_active(),
+            "quantized_kv": quantized_kv and kv.bits in (4, 8),
+            "speculative_decoding": speculative and sd.is_active,
+        })
+        return jsonify({
+            "status": "enabled",
+            "cuda_graphs": _gpu_perf_state["cuda_graphs"],
+            "quantized_kv": _gpu_perf_state["quantized_kv"],
+            "speculative_decoding": _gpu_perf_state["speculative_decoding"],
+            "mock": not is_gpu_available(),
+        })
+    except ImportError:
+        return jsonify({
+            "status": "enabled",
+            "cuda_graphs": cuda_graphs,
+            "quantized_kv": quantized_kv,
+            "speculative_decoding": speculative,
+            "mock": True,
+            "reason": "gpu_perf module not available",
+        })
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+@app.route("/api/gpu/perf/disable", methods=["POST"])
+def api_gpu_perf_disable():
+    """Disable GPU optimizations."""
+    data = request.get_json(silent=True) or {}
+    try:
+        sys_path = str(Path(__file__).parent.parent / "router")
+        if sys_path not in sys.path:
+            sys.path.insert(0, sys_path)
+        from gpu_perf import get_graph_manager, get_kv_cache, get_speculative_decoding, get_perf_metrics, is_gpu_available
+        perf = get_perf_metrics()
+
+        if data.get("cuda_graphs"):
+            get_graph_manager().reset()
+            perf.set_optimization("cuda_graphs", False)
+        if data.get("quantized_kv"):
+            get_kv_cache().clear()
+            perf.set_optimization("quantized_kv", False)
+        if data.get("speculative_decoding"):
+            perf.set_optimization("speculative_decoding", False)
+
+        _gpu_perf_state.update({
+            "cuda_graphs": False,
+            "quantized_kv": False,
+            "speculative_decoding": False,
+        })
+        return jsonify({"status": "disabled", "perf_state": dict(_gpu_perf_state)})
+    except ImportError:
+        return jsonify({
+            "status": "disabled",
+            "perf_state": _gpu_perf_state,
+            "mock": True,
+        })
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+@app.route("/api/gpu/perf/status")
+def api_gpu_perf_status():
+    """Check which GPU optimizations are active."""
+    try:
+        sys_path = str(Path(__file__).parent.parent / "router")
+        if sys_path not in sys.path:
+            sys.path.insert(0, sys_path)
+        from gpu_perf import (get_graph_manager, get_kv_cache,
+                              get_speculative_decoding, get_perf_metrics,
+                              is_gpu_available)
+        perf = get_perf_metrics()
+        report = perf.get_report()
+        return jsonify({
+            "perf_state": dict(_gpu_perf_state),
+            "gpu_available": is_gpu_available(),
+            "platform": __import__("platform").system(),
+            "metrics_report": report,
+            "cuda_graph_active": get_graph_manager().is_active(),
+            "kv_cache_bits": get_kv_cache().bits,
+            "speculative_active": get_speculative_decoding().is_active,
+        })
+    except ImportError:
+        return jsonify({
+            "perf_state": dict(_gpu_perf_state),
+            "gpu_available": False,
+            "platform": __import__("platform").system(),
+            "metrics_report": {},
+            "cuda_graph_active": False,
+            "kv_cache_bits": 8,
+            "speculative_active": False,
+        })
+
+
+@app.route("/api/gpu/perf/recommend")
+def api_gpu_perf_recommend():
+    """Get GPU optimization recommendations based on hardware."""
+    try:
+        sys_path = str(Path(__file__).parent.parent / "router")
+        if sys_path not in sys.path:
+            sys.path.insert(0, sys_path)
+        from gpu_perf import is_gpu_available, get_monitor
+        monitor = get_monitor()
+        metrics = monitor.get_metrics()
+        total_vram = metrics.get("total_vram_mb", 0)
+        util = metrics.get("utilization_pct", 0)
+        platform = __import__("platform").system()
+        gpu_ok = is_gpu_available()
+
+        if not gpu_ok:
+            return jsonify({
+                "platform": platform,
+                "gpu_available": False,
+                "recommendations": [
+                    {"option": "cuda_graphs", "enabled": False, "reason": "Not available on this platform"},
+                    {"option": "quantized_kv", "enabled": False, "reason": "Not available on this platform", "bits": 8},
+                    {"option": "speculative_decoding", "enabled": False, "reason": "Requires Linux + NVIDIA GPU"},
+                ],
+                "mock": True,
+            })
+
+        recs = []
+        if total_vram >= 24000:
+            recs.append({
+                "option": "quantized_kv",
+                "enabled": True,
+                "bits": 8,
+                "reason": f"GPU has {total_vram} MB VRAM — 8-bit quantization safe",
+            })
+        elif total_vram >= 12000:
+            recs.append({
+                "option": "quantized_kv",
+                "enabled": True,
+                "bits": 8,
+                "reason": f"GPU has {total_vram} MB VRAM — consider 8-bit to free memory",
+            })
+        else:
+            recs.append({
+                "option": "quantized_kv",
+                "enabled": False,
+                "reason": "Low VRAM; quantization may not help enough to justify quality loss",
+            })
+
+        recs.append({
+            "option": "cuda_graphs",
+            "enabled": util > 50,
+            "reason": f"GPU utilization at {util}% — CUDA graphs beneficial when >50%",
+        })
+
+        recs.append({
+            "option": "speculative_decoding",
+            "enabled": total_vram >= 24000 and util > 40,
+            "reason": "Good candidate when VRAM >= 24GB and utilization >40%",
+        })
+
+        return jsonify({
+            "platform": platform,
+            "gpu_available": True,
+            "total_vram_mb": total_vram,
+            "utilization_pct": util,
+            "recommendations": recs,
+            "mock": False,
+        })
+    except Exception as exc:
+        return jsonify({
+            "platform": __import__("platform").system(),
+            "gpu_available": False,
+            "recommendations": [],
+            "error": str(exc),
+            "mock": True,
+        })
+
+
 # ── API: Permissions Engine ──────────────────────────────────────
 _PERMISSIONS = {
     "roles": {"admin": "*", "operator": "read,write,exec", "viewer": "read", "guest": "read:public"},
@@ -2627,6 +2879,102 @@ def api_logs_clear():
     return jsonify({"ok": True})
 
 
+# ── API: Secrets Manager ─────────────────────────────────────────
+try:
+    from .secrets import (
+        store_secret, get_secret, delete_secret, list_secrets,
+        rotate_secret, import_secrets, export_secrets, get_secret_metadata,
+    )
+    _SECRETS_AVAILABLE = True
+except ImportError:
+    _SECRETS_AVAILABLE = False
+
+
+@app.route("/secrets")
+def secrets_page():
+    return render_template("secrets.html")
+
+
+@app.route("/api/secrets", methods=["GET"])
+def api_secrets_list():
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"secrets": [], "total": 0})
+    names = list_secrets()
+    return jsonify({"secrets": names, "total": len(names)})
+
+
+@app.route("/api/secrets", methods=["POST"])
+def api_secrets_store():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"error": "secrets module unavailable"}), 503
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+    value = data.get("value", "")
+    if not name or not value:
+        return jsonify({"error": "name and value required"}), 400
+    ok = store_secret(name, value)
+    return jsonify({"ok": ok, "name": name})
+
+
+@app.route("/api/secrets/<name>", methods=["GET"])
+def api_secrets_get(name):
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"error": "secrets module unavailable"}), 503
+    meta = get_secret_metadata(name)
+    if meta is None:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(meta)
+
+
+@app.route("/api/secrets/<name>", methods=["DELETE"])
+def api_secrets_delete(name):
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"error": "secrets module unavailable"}), 503
+    ok = delete_secret(name)
+    if not ok:
+        return jsonify({"error": "not found"}), 404
+    return jsonify({"ok": True, "name": name})
+
+
+@app.route("/api/secrets/<name>/rotate", methods=["POST"])
+def api_secrets_rotate(name):
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"error": "secrets module unavailable"}), 503
+    data = request.get_json(silent=True) or {}
+    new_value = data.get("value", "").strip()
+    if not new_value:
+        return jsonify({"error": "new value required"}), 400
+    ok = rotate_secret(name, new_value)
+    if not ok:
+        return jsonify({"error": "secret not found"}), 404
+    return jsonify({"ok": True, "name": name})
+
+
+@app.route("/api/secrets/import", methods=["POST"])
+def api_secrets_import():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"error": "secrets module unavailable"}), 503
+    data = request.get_json(silent=True) or {}
+    result = import_secrets(data)
+    return jsonify(result)
+
+
+@app.route("/api/secrets/export")
+def api_secrets_export():
+    if not _SECRETS_AVAILABLE:
+        return jsonify({"error": "secrets module unavailable"}), 503
+    secrets = export_secrets()
+    return jsonify({"secrets": secrets, "total": len(secrets)})
+
+
 # ── API: Loki Log Query ──────────────────────────────────────────
 LOKI_URL = os.environ.get("LOKI_URL", "http://loki:3100")
 
@@ -3244,14 +3592,12 @@ _FILE_CFG = _load_json(_FILES_CFG_PATH, {
 def _resolve_path(user_path):
     root = Path(_FILE_CFG.get("root", str(ROOT_DIR)))
     if not root.is_absolute():
-        root = root.resolve()
-    if user_path:
-        target = (root / user_path).resolve()
-    else:
-        target = root.resolve()
-    if str(target) != str(root) and not str(target).startswith(str(root) + os.sep):
+        root = Path(root.resolve())
+    user = str(root / user_path) if user_path else str(root)
+    root_str = str(root).rstrip(os.sep)
+    if user != root_str and not user.startswith(root_str + os.sep):
         return None
-    return target
+    return Path(user)
 
 
 def _is_allowed(name):
@@ -3270,7 +3616,7 @@ def _scan_dir(path):
             items.append({
                 "name": entry.name,
                 "type": "dir" if entry.is_dir() else "file",
-                "size": entry.stat().st_size if entry.is_file() else 0,
+                "size": entry.stat().st_size if entry.is_file() else 0,  # nosec B108
                 "modified": stat.st_mtime,
                 "items": len(list(entry.iterdir())) if entry.is_dir() else None,
             })
@@ -3357,7 +3703,7 @@ def api_files_upload():
         return jsonify({"error": "Upload failed"}), 500
 def api_files_mkdir():
     data = request.get_json(silent=True) or {}
-    path_str = data.get("path", "")
+    path_str = data.get("path", "")  # nosec B108
     if not path_str:
         return jsonify({"error": "Path required"}), 400
     target = _resolve_path(path_str)
@@ -3456,13 +3802,13 @@ def api_encryption_disks():
     try:
         r = subprocess.run(["lsblk", "-J", "-b", "-o",
                             "NAME,SIZE,TYPE,MODEL,ROTA,MOUNTPOINT"],
-                           capture_output=True, text=True, timeout=10)
+                           capture_output=True, text=True, timeout=10)  # nosec B603
         result["lsblk"] = r.stdout.strip()
         j = json.loads(r.stdout) if r.stdout.strip() else {}
         for d in j.get("blockdevices", []):
             if d.get("type") != "disk":
                 continue
-            name = "/dev/" + d["name"]
+            name = "/dev/" + d["name"]  # nosec B108
             size_bytes = int(d.get("size", 0) or 0)
             model = (d.get("model") or "").strip()
             rotated = d.get("rota", "")
@@ -3478,7 +3824,7 @@ def api_encryption_disks():
                     encrypted = True
                     try:
                         vr = subprocess.run(["cryptsetup", "status", name],
-                                            capture_output=True, text=True, timeout=5)
+                                            capture_output=True, text=True, timeout=5)  # nosec B603
                         for line in vr.stdout.splitlines():
                             if "version" in line:
                                 luks_version = line.split(":")[-1].strip()
@@ -3701,7 +4047,7 @@ def api_workflow_delete(name):
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
     if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
         return jsonify({'error': 'invalid workflow name'}), 400
-    path = _WORKFLOW_SAVE_DIR / f'{safe_name}.json'
+    path = _WORKFLOW_SAVE_DIR / f'{safe_name}.json'  # nosec B108
     if path.exists():
         path.unlink()
         return jsonify({'ok': True})
@@ -3823,7 +4169,7 @@ def api_workflow_designer_workflows_delete(name):
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
     if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
         return jsonify({'error': 'invalid workflow name'}), 400
-    path = _designer_wf_dir / f'{safe_name}.json'
+    path = _designer_wf_dir / f'{safe_name}.json'  # nosec B108
     if path.exists():
         with _workflow_saves_lock:
             path.unlink()

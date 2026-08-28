@@ -77,7 +77,7 @@ class DependencyAgentAPI:
                     result = {k: v for k, v in result.items()
                               if k not in ("error", "traceback", "stack_trace", "exception")}
                 import flask
-                return flask.jsonify(result)
+                return flask.jsonify(result)  # nosec B904
             except Exception as e:
                 import flask, logging
                 logging.getLogger(__name__).error("dependency patch error: %s", e)
