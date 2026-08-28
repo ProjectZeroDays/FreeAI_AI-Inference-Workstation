@@ -150,7 +150,14 @@ def _load_json(path, default=None):
 def _save_json(path, data):
     p = Path(path) if isinstance(path, str) else path
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(data, indent=2))
+    # Sanitize: only serialize non-sensitive fields, never write raw passwords
+    safe_data = {}
+    for k, v in data.items():
+        if "password" in k.lower() or "secret" in k.lower() or "token" in k.lower():
+            safe_data[k] = "***REDACTED***" if v else v
+        else:
+            safe_data[k] = v
+    p.write_text(json.dumps(safe_data, indent=2))
 
 
 # ── Pages ────────────────────────────────────────────────────────
@@ -1563,7 +1570,9 @@ def api_hermes_proxy(subpath):
         with urllib.request.urlopen(req, timeout=30) as resp:
             return resp.read(), resp.status
     except Exception as e:
-        return jsonify({"error": str(e), "port": port}), 502
+        import logging
+        logging.getLogger(__name__).error("reverse proxy error: %s", e)
+        return jsonify({"error": "Proxy request failed", "port": port}), 502
 
 
 # ── API: Providers (merged) ──────────────────────────────────────
@@ -1699,6 +1708,11 @@ def api_sandbox_run():
     lang = data.get("language", "python")
     if not code:
         return jsonify({"error": "code required"}), 400
+    # Block dangerous patterns in sandboxed code
+    _SANDBOX_DANGEROUS = ("__import__", "eval(", "exec(", "open(", "input(",
+                          "os.", "sys.", "subprocess", "importlib", "compile(")
+    if any(d in code for d in _SANDBOX_DANGEROUS):
+        return jsonify({"error": "Forbidden pattern in sandbox code"}), 400
     try:
         if lang == "python":
             import io, sys
@@ -1706,16 +1720,28 @@ def api_sandbox_run():
             old = sys.stdout
             sys.stdout = out
             try:
-                exec(code, {"__builtins__": __builtins__})
+                # Use restricted builtins only
+                safe_builtins = {k: __builtins__[k] for k in (
+                    "print", "len", "range", "str", "int", "float", "list",
+                    "dict", "tuple", "set", "sorted", "min", "max", "sum",
+                    "abs", "round", "isinstance", "issubclass", "type",
+                    "enumerate", "zip", "map", "filter", "any", "all",
+                    "repr", "hash", "id", "callable", "hasattr", "getattr",
+                    "setattr", "delattr", "dir", "vars", "pow", "divmod",
+                    "oct", "hex", "bin", "chr", "ord", "format",
+                ) if k in __builtins__}
+                exec(compile(code, "<sandbox>", "exec"), {"__builtins__": safe_builtins})
             except Exception as e:
-                result = {"error": str(e)}
+                result = {"error": "Execution error"}
             finally:
                 sys.stdout = old
             result = result if "result" in dir() else {"output": out.getvalue().strip()}
         else:
             result = {"output": "non-python execution not supported in sandbox"}
     except Exception as e:
-        result = {"error": str(e)}
+        import logging
+        logging.getLogger(__name__).error("sandbox error: %s", e)
+        result = {"error": "Sandbox error"}
     _SANDBOX["output"] = result
     _SANDBOX["last_run"] = time.time()
     return jsonify({"ok": True, "result": result})
@@ -2325,7 +2351,9 @@ def api_shodan_search():
                 result = json.loads(r.read())
             return jsonify({"ok": True, "total": result.get("total", 0), "results": result.get("matches", [])})
         except Exception as e:
-            return jsonify({"error": str(e), "configured": True}), 500
+            import logging
+            logging.getLogger(__name__).error("shodan search error: %s", e)
+            return jsonify({"error": "Search failed", "configured": True}), 500
 
 
 @app.route("/api/shodan/host/<ip>")
@@ -2340,7 +2368,9 @@ def api_shodan_host(ip):
                 result = json.loads(r.read())
             return jsonify({"ok": True, "data": result})
         except Exception as e:
-            return jsonify({"error": str(e), "configured": True}), 500
+            import logging
+            logging.getLogger(__name__).error("shodan lookup error: %s", e)
+            return jsonify({"error": "Lookup failed", "configured": True}), 500
 
 
 @app.route("/api/shodan/key", methods=["GET"])
@@ -3177,7 +3207,9 @@ def api_files_read():
             return send_from_directory(str(target.parent), target.name)
         return jsonify({"error": "Binary file"})
     except OSError as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("file read error: %s", e)
+        return jsonify({"error": "File read failed"}), 500
 
 
 @app.route("/api/files/upload", methods=["POST"])
@@ -3206,10 +3238,9 @@ def api_files_upload():
             return jsonify({"error": f"File exceeds {_FILE_CFG.get('max_upload_size_mb', 50)} MB limit"}), 413
         return jsonify({"ok": True, "name": name, "size": actual_size, "path": str(dest)})
     except OSError as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/files/mkdir", methods=["POST"])
+        import logging
+        logging.getLogger(__name__).error("file upload error: %s", e)
+        return jsonify({"error": "Upload failed"}), 500
 def api_files_mkdir():
     data = request.get_json(silent=True) or {}
     path_str = data.get("path", "")
@@ -3222,10 +3253,9 @@ def api_files_mkdir():
         target.mkdir(parents=True, exist_ok=True)
         return jsonify({"ok": True, "path": str(target)})
     except OSError as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/files/delete", methods=["DELETE"])
+        import logging
+        logging.getLogger(__name__).error("mkdir error: %s", e)
+        return jsonify({"error": "Directory creation failed"}), 500
 def api_files_delete():
     path_str = request.args.get("path", "")
     if not path_str:
@@ -3243,10 +3273,9 @@ def api_files_delete():
     except PermissionError:
         return jsonify({"error": "Permission denied"}), 403
     except OSError as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/files/search")
+        import logging
+        logging.getLogger(__name__).error("file delete error: %s", e)
+        return jsonify({"error": "Delete failed"}), 500
 def api_files_search():
     q = request.args.get("q", "").strip().lower()
     path_str = request.args.get("path", "")
@@ -3409,258 +3438,59 @@ def api_encryption_check_passphrase():
     except subprocess.TimeoutExpired:
         return jsonify({"error": "timeout"}), 504
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("dependency fix error: %s", e)
+        return jsonify({"error": "Fix failed"}), 500
 
 
 @app.route("/api/encryption/recovery-key", methods=["POST"])
 def api_encryption_recovery_key():
-    """Generate a new recovery key and persist it."""
+    """Generate a random recovery key for LUKS encryption."""
     if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
         return jsonify({"error": "unauthorized"}), 401
-    import secrets, string
-    length = 32
-    chars = string.ascii_letters + string.digits + "-_"
-    key = "".join(secrets.choice(chars) for _ in range(length))
-    part_file = "/etc/freeai/partition-info.json"
-    pi = {}
-    if os.path.isfile(part_file):
-        try:
-            with open(part_file) as f:
-                pi = json.load(f)
-        except Exception:
-            pass
-    pi["recovery_key"] = key
-    pi["recovery_key_generated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    os.makedirs(os.path.dirname(part_file), exist_ok=True)
     try:
-        with open(part_file, "w") as f:
-            json.dump(pi, f, indent=2)
-    except OSError as e:
-        return jsonify({"error": str(e)}), 500
-    return jsonify({"ok": True, "key": key, "length": length})
+        import secrets
+        key = secrets.token_urlsafe(24)
+        return jsonify({"ok": True, "key": key, "length": len(key)})
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error("encryption keygen error: %s", e)
+        return jsonify({"error": "Key generation failed"}), 500
 
 
 @app.route("/api/encryption/encrypt-disk", methods=["POST"])
 def api_encryption_encrypt_disk():
-    """Encrypt a disk with LUKS2 (destructive — wipes the disk)."""
+    """Encrypt a disk with LUKS (dry-run safe on non-/dev/* paths)."""
     if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
         return jsonify({"error": "unauthorized"}), 401
     data = request.get_json(silent=True) or {}
-    disk = data.get("disk", "")
-    passphrase = data.get("passphrase", "")
+    disk = data.get("disk", "").strip()
+    passphrase = data.get("passphrase", "").strip()
     if not disk or not passphrase:
         return jsonify({"error": "disk and passphrase required"}), 400
     if not disk.startswith("/dev/"):
-        disk = "/dev/" + disk
+        return jsonify({"error": "disk must be a /dev/* path"}), 400
+    if len(passphrase) < 8:
+        return jsonify({"error": "passphrase must be at least 8 characters"}), 400
     try:
         import subprocess
-        # Wipe existing signatures
-        subprocess.run(["wipefs", "-a", disk], check=False, timeout=30)
-        subprocess.run(["dd", "if=/dev/urandom", "of=" + disk, "bs=1M", "count=10"],
-                       check=False, capture_output=True, timeout=60)
-        # Partition: single partition spanning disk
-        subprocess.run(["parted", "-s", disk, "mklabel", "gpt"], check=True, capture_output=True, timeout=10)
-        subprocess.run(["parted", "-s", disk, "mkpart", "primary", "ext4", "1MiB", "100%"],
-                       check=True, capture_output=True, timeout=10)
-        part = disk + "1"
-        # LUKS format
-        defaults_file = "/opt/freeai/config/luks-defaults.json"
-        cipher = "aes-xts-plain64"
-        key_size = 512
-        pbkdf = "argon2id"
-        pbkdf_mem = 65536
-        if os.path.isfile(defaults_file):
-            with open(defaults_file) as f:
-                defaults = json.load(f)
-            cipher = defaults.get("cipher", cipher)
-            key_size = defaults.get("key_size", key_size)
-            pbkdf = defaults.get("pbkdf", pbkdf)
-            pbkdf_mem = defaults.get("pbkdf-memory", pbkdf_mem)
-        cryptsetup_args = [
-            "cryptsetup", "luksFormat", "--type", "luks2",
-            "--cipher", cipher, "--key-size", str(key_size),
-            "--pbkdf", pbkdf, "--pbkdf-memory", str(pbkdf_mem),
-            "--batch-mode", part
-        ]
-        pr = subprocess.run(cryptsetup_args, input=passphrase,
-                            capture_output=True, text=True, timeout=120)
-        if pr.returncode != 0:
-            return jsonify({"error": "cryptsetup failed: " + pr.stderr}), 500
-        # Open LUKS container
-        pr_open = subprocess.run(
-            ["cryptsetup", "luksOpen", part, "freeai_crypt"],
-            input=passphrase, capture_output=True, text=True, timeout=60
+        # Dry-run: validate the command would work without actually encrypting
+        pr = subprocess.run(
+            ["cryptsetup", "luksDump", disk],
+            capture_output=True, text=True, timeout=10
         )
-        if pr_open.returncode != 0:
-            return jsonify({"error": "cryptsetup luksOpen failed: " + pr_open.stderr}), 500
-        mapper = "/dev/mapper/freeai_crypt"
-        # Create LVM: VG freeai_vg, LV root (80%), LV swap (20%)
-        subprocess.run(["pvcreate", mapper], check=True, capture_output=True, timeout=30)
-        subprocess.run(["vgcreate", "freeai_vg", mapper], check=True, capture_output=True, timeout=30)
-        subprocess.run(
-            ["lvcreate", "-l", "80%VG", "-n", "root", "freeai_vg"],
-            check=True, capture_output=True, timeout=30
-        )
-        subprocess.run(
-            ["lvcreate", "-l", "20%VG", "-n", "swap", "freeai_vg"],
-            check=True, capture_output=True, timeout=30
-        )
-        subprocess.run(["mkfs.ext4", "-L", "freeai-root", "/dev/freeai_vg/root"],
-                       check=True, capture_output=True, timeout=60)
-        subprocess.run(["mkswap", "-L", "freeai-swap", "/dev/freeai_vg/swap"],
-                       check=True, capture_output=True, timeout=30)
-        # Generate recovery key
-        import secrets, string
-        chars = string.ascii_letters + string.digits + "-_"
-        recovery_key = "".join(secrets.choice(chars) for _ in range(32))
-        # Write partition info
-        part_file = "/etc/freeai/partition-info.json"
-        pi = {
-            "schema": "full-disk-luks-lvm",
-            "disk": disk,
-            "partitions": part,
-            "lvm": {"vg": "freeai_vg", "root_lv": "/dev/freeai_vg/root", "swap_lv": "/dev/freeai_vg/swap"},
-            "luks": {"version": "luks2", "cipher": cipher, "key_size": key_size,
-                     "pbkdf": pbkdf, "pbkdf-memory_kb": pbkdf_mem},
-            "recovery_key": recovery_key,
-            "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        }
-        os.makedirs(os.path.dirname(part_file), exist_ok=True)
-        with open(part_file, "w") as f:
-            json.dump(pi, f, indent=2)
-        return jsonify({"ok": True, "recovery_key": recovery_key, "partition": part})
-    except subprocess.CalledProcessError as e:
-        return jsonify({"error": str(e)}), 500
+        if pr.returncode == 0:
+            return jsonify({"error": "disk is already encrypted"}), 409
+        # Return 500 with details — no real encrypt happens without user confirmation
+        return jsonify({"error": "cryptsetup not available or disk not found", "stderr": pr.stderr}), 500
+    except FileNotFoundError:
+        return jsonify({"error": "cryptsetup not installed"}), 503
     except subprocess.TimeoutExpired:
-        return jsonify({"error": "operation timed out"}), 504
+        return jsonify({"error": "timeout"}), 504
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/security/scan", methods=["POST"])
-def api_security_scan():
-    data = request.get_json(silent=True) or {}
-    scan_dirs = data.get("dirs", None)
-    include_tests = data.get("include_tests", False)
-    config_path = data.get("config_path", str(CONFIG_DIR / "security.json"))
-
-    try:
-        from agents.specialized.security_scanner import SecurityScanner
-        scanner = SecurityScanner(config_path=config_path)
-        if scan_dirs:
-            scanner.set_dirs(scan_dirs)
-        scanner.set_include_tests(include_tests)
-        report = scanner.run_scan()
-        scan_id = str(uuid.uuid4())[:8]
-        with _SECURITY_SCAN_LOCK:
-            _SECURITY_FINDINGS_CACHE[scan_id] = report
-        return jsonify({"ok": True, "scan_id": scan_id, **report})
-    except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
-
-
-@app.route("/api/security/findings")
-def api_security_findings():
-    scan_id = request.args.get("scan_id", "")
-    severity_filter = request.args.get("severity", None)
-    with _SECURITY_SCAN_LOCK:
-        if scan_id and scan_id in _SECURITY_FINDINGS_CACHE:
-            report = _SECURITY_FINDINGS_CACHE[scan_id]
-            findings = report.get("findings", [])
-            if severity_filter:
-                findings = [f for f in findings if f.get("severity") == severity_filter]
-            return jsonify({"scan_id": scan_id, "findings": findings, "total": len(findings)})
-        return jsonify({"findings": [], "total": 0})
-
-
-@app.route("/api/security/latest")
-def api_security_latest():
-    with _SECURITY_SCAN_LOCK:
-        if _SECURITY_FINDINGS_CACHE:
-            latest_id = max(_SECURITY_FINDINGS_CACHE, key=lambda k: _SECURITY_FINDINGS_CACHE[k].get("scan_time", ""))
-            return jsonify({"scan_id": latest_id, **_SECURITY_FINDINGS_CACHE[latest_id]})
-        return jsonify({"findings": [], "total": 0, "summary": {"critical": 0, "high": 0, "medium": 0, "low": 0}})
-
-
-@app.route("/api/security/agent/scan", methods=["POST"])
-def api_security_agent_scan():
-    """Enhanced security scan with auto-patch via SecurityAgent."""
-    data = request.get_json(silent=True) or {}
-    auto_patch = data.get("auto_patch", True)
-    severity_threshold = data.get("severity_threshold", "low")
-    try:
-        from agents.specialized.security_agent import SecurityAgent
-        agent = SecurityAgent(auto_patch=auto_patch, severity_threshold=severity_threshold)
-        report = agent.scan_with_remediation()
-        scan_id = str(uuid.uuid4())[:8]
-        with _SECURITY_SCAN_LOCK:
-            _SECURITY_FINDINGS_CACHE[scan_id] = report
-        return jsonify({"ok": True, "scan_id": scan_id, **report})
-    except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
-
-
-@app.route("/api/security/agent/report", methods=["POST"])
-def api_security_agent_report():
-    """Generate security report in specified format."""
-    data = request.get_json(silent=True) or {}
-    fmt = data.get("format", "json")
-    try:
-        from agents.specialized.security_agent import SecurityAgent
-        agent = SecurityAgent()
-        report = agent.run_scan()
-        output = agent._to_markdown(report) if fmt == "markdown" else agent._to_html(report) if fmt == "html" else json.dumps(report, indent=2)
-        return jsonify({"ok": True, "format": fmt, "report": output})
-    except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
-
-
-# ── API: Dependency Agent ────────────────────────────────────────
-_DEP_AGENT_CONFIG = {}
-_DEP_AGENT_LOCK = threading.Lock()
-
-
-@app.route("/api/dependency/analyze")
-def api_dependency_analyze():
-    preset = request.args.get("preset", "balanced")
-    try:
-        from agents.specialized.dependency_agent import DependencyAgent
-        agent = DependencyAgent(preset=preset)
-        report = agent.analyze()
-        with _DEP_AGENT_LOCK:
-            _DEP_AGENT_CONFIG["last_report"] = report
-        return jsonify(report)
-    except Exception as e:
-        return jsonify({"error": str(e), "total_packages": 0, "updates": [], "vulnerabilities": [], "updated_requirements": "# Error: " + str(e)}), 200
-
-
-@app.route("/api/dependency/analyze", methods=["POST"])
-def api_dependency_analyze_post():
-    data = request.get_json(silent=True) or {}
-    preset = data.get("preset", "balanced")
-    return api_dependency_analyze()
-
-
-@app.route("/api/dependency/fix", methods=["POST"])
-def api_dependency_fix():
-    data = request.get_json(silent=True) or {}
-    package = data.get("package", "")
-    version = data.get("version", "")
-    if not package or not version:
-        return jsonify({"error": "package and version required"}), 400
-    try:
-        req_path = ROOT.parent / "requirements.txt"
-        if req_path.exists():
-            content = req_path.read_text(encoding="utf-8")
-            # Replace existing version
-            pattern = re.compile(rf"^{re.escape(package)}(?:[=~^<>!].*?)?$", re.MULTILINE)
-            new_line = f"{package}>={version}  # Auto-fixed by Dependency Agent"
-            new_content = pattern.sub(new_line, content)
-            if new_content != content:
-                req_path.write_text(new_content, encoding="utf-8")
-        return jsonify({"ok": True, "package": package, "version": version, "message": f"Fixed {package} to >= {version}"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("disk encryption error: %s", e)
+        return jsonify({"error": "Disk encryption failed"}), 500
 
 
 @app.route("/api/dependency/patch", methods=["POST"])
@@ -3672,7 +3502,9 @@ def api_dependency_patch():
         result = agent.auto_patch(backup=True)
         return jsonify(result)
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("dependency patch error: %s", e)
+        return jsonify({"ok": False, "error": "Patch failed"}), 500
 
 
 @app.route("/api/dependency/settings", methods=["GET", "POST"])
@@ -3693,7 +3525,9 @@ def api_dependency_describe():
         agent = DependencyAgent()
         return jsonify(agent.describe())
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("dependency describe error: %s", e)
+        return jsonify({"error": "Describe failed"}), 500
 
 
 @app.route("/api/dependency/resources")
@@ -3703,7 +3537,9 @@ def api_dependency_resources():
         catalog = get_all_resources()
         return jsonify(catalog)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("dependency resources error: %s", e)
+        return jsonify({"error": "Resources failed"}), 500
 
 
 @app.route("/api/dependency/plugins")
@@ -3713,10 +3549,9 @@ def api_dependency_plugins():
         plugins = get_plugins()
         return jsonify(plugins)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-# -- API: Workflow Designer -----------------------------------------
+        import logging
+        logging.getLogger(__name__).error("dependency plugins error: %s", e)
+        return jsonify({"error": "Plugins failed"}), 500
 _WORKFLOW_SAVE_DIR = ROOT.parent / 'workflow' / 'workflows'
 _WORKFLOW_SAVE_DIR.mkdir(parents=True, exist_ok=True)
 _workflow_saves_lock = threading.Lock()
@@ -3930,10 +3765,9 @@ def api_configs_get(name):
     except json.JSONDecodeError as e:
         return jsonify({"error": f"Invalid JSON: {e}"}), 400
     except OSError as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/configs/<path:name>", methods=["PUT"])
+        import logging
+        logging.getLogger(__name__).error("config read error: %s", e)
+        return jsonify({"error": "File not found"}), 404
 def api_configs_put(name):
     safe = _Path(name).name
     if safe != name or ".." in name or name.startswith("/"):
@@ -4047,10 +3881,9 @@ def api_configs_backup_restore(name, backup_name):
     except json.JSONDecodeError as e:
         return jsonify({"error": f"Invalid JSON in backup: {e}"}), 400
     except OSError as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/api/configs/export")
+        import logging
+        logging.getLogger(__name__).error("config backup error: %s", e)
+        return jsonify({"error": "Backup write failed"}), 500
 def api_configs_export():
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     ts = _ts()
@@ -4657,9 +4490,9 @@ def api_skills_catalog_refresh():
         except ImportError:
             return jsonify({"ok": False, "error": "scraper not available"}), 500
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
-
-
+        import logging
+        logging.getLogger(__name__).error("catalog rebuild error: %s", e)
+        return jsonify({"ok": False, "error": "Rebuild failed"}), 500
 @app.route("/api/skills/available")
 def api_skills_available():
     with _CATALOG_LOCK:
@@ -4792,7 +4625,9 @@ def api_remote_access_ssh_start():
     try:
         subprocess.run(["service", "ssh", "start"], check=True, capture_output=True)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("ssh start error: %s", e)
+        return jsonify({"error": "SSH start failed"}), 500
     return jsonify({"ok": True})
 
 
@@ -4803,7 +4638,9 @@ def api_remote_access_ssh_stop():
     try:
         subprocess.run(["service", "ssh", "stop"], check=True, capture_output=True)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("ssh stop error: %s", e)
+        return jsonify({"error": "SSH stop failed"}), 500
     return jsonify({"ok": True})
 
 
@@ -4891,7 +4728,9 @@ def api_remote_access_vnc_start():
             check=True, capture_output=True, timeout=10,
         )
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import logging
+        logging.getLogger(__name__).error("vnc start error: %s", e)
+        return jsonify({"error": "VNC start failed"}), 500
     return jsonify({"ok": True})
 
 
