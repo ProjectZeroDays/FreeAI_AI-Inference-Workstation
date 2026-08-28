@@ -7,11 +7,30 @@ Includes a built-in code interpreter for verification.
 """
 import json
 import os
+import re
 import subprocess
 import threading
 import time
 import tempfile
 from pathlib import Path
+
+def _secure_path(base: Path, user_path: str) -> Path | None:
+    """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
+    try:
+        resolved = (base / user_path).resolve()
+        if str(resolved).startswith(str(base.resolve())):
+            return resolved
+    except (OSError, ValueError):
+        pass
+    return None
+
+
+def _sanitize_run_id(run_id: str) -> str:
+    """Sanitize run_id to prevent path traversal when used as directory name."""
+    if not run_id:
+        return f"run_{int(time.time())}"
+    safe = re.sub(r'[^a-zA-Z0-9_\-]', '_', run_id)
+    return safe if safe else f"run_{int(time.time())}"
 
 try:
     from fastapi import FastAPI, HTTPException
@@ -168,6 +187,7 @@ def generate_code(spec, language="python", framework=None, run_id=None,
                   workspace_dir=None):
     """Generate code from a natural language spec."""
     run_id = run_id or f"code_{int(time.time())}"
+    run_id = _sanitize_run_id(run_id)
     lang_cfg = LANGUAGES.get(language, LANGUAGES["python"])
     fw = framework or lang_cfg["default_framework"]
 
@@ -186,7 +206,9 @@ def generate_code(spec, language="python", framework=None, run_id=None,
         if not content.strip():
             continue
         try:
-            full = ws_dir / path
+            full = _secure_path(ws_dir, path)
+            if full is None:
+                continue
             full.parent.mkdir(parents=True, exist_ok=True)
             full.write_text(content, encoding="utf-8")
             written += 1
@@ -225,7 +247,9 @@ def verify_code(run_id, language="python"):
         for py_file in ws.rglob("*.py"):
             cmd = lint_cmd.format(file=str(py_file))
             try:
-                proc = subprocess.run(cmd, shell=True, capture_output=True,
+                import shlex
+                safe_cmd = shlex.split(cmd)
+                proc = subprocess.run(safe_cmd, shell=False, capture_output=True,
                                       text=True, timeout=60, cwd=str(ws))
                 results[f"lint:{py_file.name}"] = {"exit": proc.returncode,
                                                    "output": proc.stdout[-1000:]}
@@ -238,7 +262,9 @@ def verify_code(run_id, language="python"):
         for test_file in sorted(ws.rglob("*test*.py"))[:3]:
             cmd = test_cmd.format(test_file=str(test_file))
             try:
-                proc = subprocess.run(cmd, shell=True, capture_output=True,
+                import shlex
+                safe_cmd = shlex.split(cmd)
+                proc = subprocess.run(safe_cmd, shell=False, capture_output=True,
                                       text=True, timeout=120, cwd=str(ws))
                 results[f"test:{test_file.name}"] = {"exit": proc.returncode,
                                                       "output": proc.stdout[-2000:]}
@@ -273,7 +299,9 @@ def run_code(run_id, language="python", args=None):
 
     cmd = run_cmd.format(file=str(entry), args=" ".join(args) if args else "")
     try:
-        proc = subprocess.run(cmd, shell=True, capture_output=True,
+        import shlex
+        safe_cmd = shlex.split(cmd)
+        proc = subprocess.run(safe_cmd, shell=False, capture_output=True,
                               text=True, timeout=30, cwd=str(ws))
         return {
             "exit_code": proc.returncode,

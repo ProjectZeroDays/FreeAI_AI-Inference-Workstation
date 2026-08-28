@@ -15,10 +15,36 @@ Each workflow can be triggered manually, on a cron schedule, or by event.
 """
 import json
 import os
+import re
 import threading
 import time
-from datetime import datetime, timezone
 from pathlib import Path
+
+def _secure_path(base: Path, user_path: str) -> Path | None:
+    """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
+    try:
+        resolved = (base / user_path).resolve()
+        if str(resolved).startswith(str(base.resolve())):
+            return resolved
+    except (OSError, ValueError):
+        pass
+    return None
+
+
+def _sanitize_run_id(run_id: str) -> str:
+    """Sanitize run_id to prevent path traversal when used as directory name."""
+    if not run_id:
+        return f"run_{int(time.time())}"
+    safe = re.sub(r'[^a-zA-Z0-9_\-]', '_', run_id)
+    return safe if safe else f"run_{int(time.time())}"
+
+
+def _safe_write(path: Path, content: str) -> None:
+    """Safely write content to a known-fixed path (no user-controlled path component)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+
+
 from typing import Optional
 
 try:
@@ -211,7 +237,7 @@ def execute_workflow(workflow_id, params=None):
     if not template:
         return {"error": f"Unknown workflow: {workflow_id}"}
 
-    run_id = f"wf_{workflow_id}_{int(time.time())}"
+    run_id = f"wf_{_sanitize_run_id(workflow_id)}_{int(time.time())}"
     ws_dir = WORKSPACES_DIR / run_id
     ws_dir.mkdir(parents=True, exist_ok=True)
 
@@ -240,8 +266,9 @@ def execute_workflow(workflow_id, params=None):
             output = _extract_text(result) if result else ""
             step_result = {"status": "done", "output_length": len(output) if output else 0}
             if output:
-                output_file = ws_dir / f"{step_name}.md"
-                output_file.write_text(output, encoding="utf-8")
+                safe_name = re.sub(r'[^\w\-\.]', '_', step_name)
+                output_file = ws_dir / f"{safe_name}.md"
+                _safe_write(output_file, output)
                 record["outputs"][step_name] = str(output_file)
         elif step_type == "api_fetch":
             step_result = {"status": "done", "endpoints": step.get("endpoints", [])}

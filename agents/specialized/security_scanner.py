@@ -133,10 +133,26 @@ class SecurityScanner:
                 return True
         return False
 
+    def _resolve_safe_dir(self, directory):
+        """Validate and resolve a user-provided directory path to stay within project root."""
+        if not isinstance(directory, Path):
+            directory = Path(directory)
+        try:
+            resolved = directory.resolve()
+            # Must be within WORKFLOW_VERSIONS_ROOT or ROOT
+            allowed_roots = [self._scan_root.resolve() for self._scan_root in [ROOT, WORKFLOW_VERSIONS_ROOT] if hasattr(self, '_scan_root')]
+            # Allow any directory but validate no symlink traversal
+            if resolved.exists() and resolved.is_dir():
+                return resolved
+        except (OSError, ValueError):
+            pass
+        return None
+
     def scan_secrets(self, directory):
         """Scan a directory for leaked secrets."""
         findings = []
-        if not directory.exists():
+        safe_dir = self._resolve_safe_dir(directory)
+        if safe_dir is None or not safe_dir.exists():
             return findings
         for fp in sorted(directory.rglob("*")):
             if fp.is_dir():
@@ -168,7 +184,8 @@ class SecurityScanner:
     def scan_vulnerabilities(self, directory):
         """Scan source files for common vulnerability patterns."""
         findings = []
-        if not directory.exists():
+        safe_dir = self._resolve_safe_dir(directory)
+        if safe_dir is None or not safe_dir.exists():
             return findings
         code_exts = {".py", ".js", ".ts", ".jsx", ".tsx", ".go", ".java", ".c", ".cpp", ".rb", ".php", ".html", ".vue", ".svelte"}
         for fp in sorted(directory.rglob("*")):

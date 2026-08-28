@@ -151,21 +151,38 @@ def run_shell(request: Request, run_id: str, req: ShellRequest):
 
 
 def _shell(run_id, command):
-    import subprocess
+    import subprocess, shlex
     if not re.match(r'^[a-zA-Z0-9_\-./\\]+$', run_id):
         return {"error": "Invalid run_id"}
     ws = Workspace(run_id)
+    # Validate command: only allow whitelisted executables with safe arguments
+    _ALLOWED_CMDS = {"ls", "cat", "echo", "date", "whoami", "pwd", "hostname",
+                     "find", "grep", "head", "tail", "wc", "sort", "uniq",
+                     "python3", "python", "node", "npm", "git", "curl",
+                     "ping", "ip", "ifconfig", "netstat", "ps", "top",
+                     "df", "du", "free", "uptime", "env", "printenv"}
     try:
-        proc = subprocess.run(command, cwd=ws.root, capture_output=True,
+        args = shlex.split(command)
+    except ValueError:
+        return {"error": "Invalid command format"}
+    if not args:
+        return {"error": "Empty command"}
+    base_cmd = args[0].split("/")[-1]  # get executable name
+    if base_cmd not in _ALLOWED_CMDS:
+        return {"error": f"Command not allowed: {base_cmd}"}
+    try:
+        proc = subprocess.run(args, cwd=str(ws.root), capture_output=True,
                               text=True,
                               timeout=int(os.environ.get(
                                   "SHELL_TIMEOUT_S", "120")),
-                              shell=True)
+                              shell=False)
         return {"exit_code": proc.returncode,
                 "stdout": proc.stdout[-8000:],
                 "stderr": proc.stderr[-4000:]}
     except Exception as exc:
-        return {"error": str(exc)}
+        import logging
+        logging.getLogger(__name__).error("shell error: %s", exc)
+        return {"error": "Command execution failed"}
 
 
 if __name__ == "__main__":

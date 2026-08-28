@@ -124,9 +124,20 @@ def test_mcp(mcp_id: str) -> dict:
     result = {"id": mcp_id, "type": mcp.get("type"), "healthy": False, "error": None}
     try:
         if mcp.get("type") == "stdio":
+            import shlex
             cmd = mcp.get("command", mcp_id)
+            # Validate command is a simple executable name/path, not user-controlled shell input
+            if not re.match(r'^[a-zA-Z0-9_\-./]+$', cmd):
+                result["error"] = f"Invalid MCP command format: {cmd}"
+                return result
+            health_args = ["--health"] if "--health" not in mcp.get("args", []) else []
+            all_args = health_args + (mcp.get("args", []) if "--health" not in health_args else [])
+            try:
+                safe_cmd = shlex.split(cmd + " " + " ".join(all_args))
+            except ValueError:
+                safe_cmd = [cmd] + all_args
             proc = subprocess.run(
-                [cmd, "--health"] if "--health" not in mcp.get("args", []) else [cmd, *mcp["args"]],
+                safe_cmd,
                 capture_output=True, text=True, timeout=10
             )
             result["healthy"] = proc.returncode == 0

@@ -14,9 +14,28 @@ FreeAI router/proxy, producing a complete runnable project.
 import json
 import os
 import re
+import subprocess
 import threading
 import time
 from pathlib import Path
+
+def _secure_path(base: Path, user_path: str) -> Path | None:
+    """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
+    try:
+        resolved = (base / user_path).resolve()
+        if str(resolved).startswith(str(base.resolve())):
+            return resolved
+    except (OSError, ValueError):
+        pass
+    return None
+
+
+def _sanitize_run_id(run_id: str) -> str:
+    """Sanitize run_id to prevent path traversal when used as directory name."""
+    if not run_id:
+        return f"run_{int(time.time())}"
+    safe = re.sub(r'[^a-zA-Z0-9_\-]', '_', run_id)
+    return safe if safe else f"run_{int(time.time())}"
 
 try:
     from fastapi import FastAPI, HTTPException
@@ -461,6 +480,7 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
                      workspace_dir=None, run_id=None):
     """Scaffold a project using the specified builder agent."""
     run_id = run_id or f"builder_{int(time.time())}_{os.getpid()}"
+    run_id = _sanitize_run_id(run_id)
     ws_dir = Path(workspace_dir) if workspace_dir else WORKSPACES_DIR / run_id
     ws_dir.mkdir(parents=True, exist_ok=True)
 
@@ -498,7 +518,9 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
         if not content.strip():
             continue
         try:
-            full = ws_dir / path
+            full = _secure_path(ws_dir, path)
+            if full is None:
+                continue
             full.parent.mkdir(parents=True, exist_ok=True)
             full.write_text(content, encoding="utf-8")
             written += 1
@@ -579,7 +601,8 @@ def scaffold_business(business_type, spec="", run_id=None):
                 "run_id": run_id or "unknown"}
 
     results = {}
-    base_ws = WORKSPACES_DIR / business_type
+    safe_biz = re.sub(r'[^a-zA-Z0-9_\-]', '_', business_type) if business_type else "default"
+    base_ws = WORKSPACES_DIR / safe_biz
     base_ws.mkdir(parents=True, exist_ok=True)
 
     for build_type in biz_info["builders"]:

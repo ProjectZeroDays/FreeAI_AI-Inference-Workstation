@@ -11,139 +11,35 @@ orchestrate multi-step campaigns through the workflow engine.
 """
 import json
 import os
+import re
 import threading
 import time
 from pathlib import Path
 
-try:
-    from fastapi import FastAPI, HTTPException
-    from fastapi.middleware.cors import CORSMiddleware
-    from pydantic import BaseModel
-    HAS_FASTAPI = True
-except ImportError:
-    HAS_FASTAPI = False
-
-import requests
-
-ROOT = Path(__file__).parent.parent
-WORKSPACES_DIR = ROOT / "workspaces" / "pipelines"
-WORKSPACES_DIR.mkdir(parents=True, exist_ok=True)
-
-AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
-ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010/route")
-PROXY_URL = os.environ.get("PROXY_URL", "http://localhost:8100/proxy")
-
-_PIPELINE_LOCK = threading.Lock()
-_PIPELINE_RUNS = {}
-
-# ── Pipeline agent definitions ───────────────────────────────────────
-PIPELINE_AGENTS = {
-    "ad_generator": {
-        "model": "claude-sonnet-4-5",
-        "description": "Generate ad copy, creative briefs, landing pages, and video scripts",
-        "profile": "creative",
-    },
-    "lead_collector": {
-        "model": "gemini-2.5-flash",
-        "description": "Scrape, qualify, enrich, and organize leads from websites and APIs",
-        "profile": "balanced",
-    },
-    "marketing_pipeline": {
-        "model": "claude-sonnet-4-5",
-        "description": "Orchestrate full marketing campaigns from awareness to conversion",
-        "profile": "creative",
-    },
-}
-
-# ── Ad formats ────────────────────────────────────────────────────────
-AD_FORMATS = {
-    "google_search": {
-        "description": "Google Search ads (text)",
-        "fields": ["headline_1", "headline_2", "headline_3", "description_1", "description_2", "display_path", "final_url"],
-        "constraints": {"max_headline_chars": 30, "max_desc_chars": 90},
-    },
-    "google_display": {
-        "description": "Google Display ads (image)",
-        "fields": ["headline", "description", "cta", "image_prompt", "final_url", "background_color"],
-        "constraints": {"max_headline_chars": 25, "max_desc_chars": 50},
-    },
-    "facebook_feed": {
-        "description": "Facebook/Instagram feed ad",
-        "fields": ["primary_text", "headline", "description", "cta", "image_prompt", "video_script", "final_url"],
-        "constraints": {"max_primary_chars": 125, "max_headline_chars": 40},
-    },
-    "linkedin_sponsor": {
-        "description": "LinkedIn Sponsored Content",
-        "fields": ["headline", "body_text", "cta", "image_prompt", "final_url", "audience_hint"],
-        "constraints": {"max_headline_chars": 70, "max_body_chars": 150},
-    },
-    "youtube_prejoin": {
-        "description": "YouTube pre-roll video ad",
-        "fields": ["hook_3s", "value_prop", "cta", "script_15s", "script_30s", "script_60s", "thumbnail_prompt"],
-        "constraints": {},
-    },
-    "twitter_x": {
-        "description": "X/Twitter promoted tweet",
-        "fields": ["text", "image_prompt", "video_script", "cta", "hashtags", "final_url"],
-        "constraints": {"max_text_chars": 280, "max_hashtags": 2},
-    },
-    "email_campaign": {
-        "description": "Email marketing campaign",
-        "fields": ["subject_line", "preview_text", "header_text", "body_copy", "cta_text", "cta_url", "footer"],
-        "constraints": {"max_subject_chars": 50},
-    },
-    "landing_page": {
-        "description": "Dedicated landing page for conversion",
-        "fields": ["headline", "subheadline", "benefits", "testimonials", "cta_sections", "faq"],
-        "constraints": {},
-    },
-}
-
-# ── Lead sources ──────────────────────────────────────────────────────
-LEAD_SOURCES = {
-    "web_scrape": {
-        "description": "Scrape leads from target websites",
-        "params": ["url", "selectors", "pagination", "filters"],
-    },
-    "linkedin": {
-        "description": "LinkedIn prospecting via company/role search",
-        "params": ["company", "title_keywords", "location", "seniority"],
-    },
-    "crunchbase": {
-        "description": "Funding and company intelligence",
-        "params": ["industry", "funding_stage", "company_size", "location"],
-    },
-    "events": {
-        "description": "Conference and event attendee lists",
-        "params": ["event_name", "year", "attendee_list_url"],
-    },
-    "competitor_sites": {
-        "description": "Find prospects from competitor customer lists",
-        "params": ["competitor_domain", "review_sites", "keywords"],
-    },
-}
-
-
-# ── LLM helpers ───────────────────────────────────────────────────────
-def _call_llm(prompt, model=None, max_tokens=4096, temperature=0.5):
-    import requests
-    url = PROXY_URL if "/proxy" in PROXY_URL else f"{PROXY_URL.rsplit('/', 1)[0]}/proxy"
-    payload = {"prompt": prompt, "max_tokens": max_tokens, "temperature": temperature}
-    if model:
-        payload["model"] = model
+def _secure_path(base: Path, user_path: str) -> Path | None:
+    """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
     try:
-        r = requests.post(url, json=payload, timeout=660)
-        r.raise_for_status()
-        return r.json()
-    except Exception as exc:
-        try:
-            r2 = requests.post(ROUTER_URL, json={
-                "prompt": prompt, "max_tokens": max_tokens, "temperature": temperature},
-                timeout=660)
-            r2.raise_for_status()
-            return r2.json()
-        except Exception:
-            raise HTTPException(status_code=502, detail=f"LLM unavailable: {exc}")
+        resolved = (base / user_path).resolve()
+        if str(resolved).startswith(str(base.resolve())):
+            return resolved
+    except (OSError, ValueError):
+        pass
+    return None
+
+
+def _sanitize_run_id(run_id: str) -> str:
+    """Sanitize run_id to prevent path traversal when used as directory name."""
+    if not run_id:
+        return f"run_{int(time.time())}"
+    # Strip any path separators and non-safe characters
+    safe = re.sub(r'[^a-zA-Z0-9_\-]', '_', run_id)
+    return safe if safe else f"run_{int(time.time())}"
+
+
+def _safe_write(path: Path, content: str) -> None:
+    """Safely write content to a known-fixed path (no user-controlled path component)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
 
 
 def _extract_text(result):
@@ -158,6 +54,7 @@ def generate_ads(product, target_audience, platforms, brand_voice="professional"
                  run_id=None):
     """Generate ad copy for multiple platforms."""
     run_id = run_id or f"ads_{int(time.time())}"
+    run_id = _sanitize_run_id(run_id)
     platforms_str = ", ".join(platforms)
 
     prompt = f"""You are a senior copywriter and media strategist.
@@ -210,8 +107,8 @@ Format your output as JSON:
 
     output_dir = WORKSPACES_DIR / run_id
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "ads.json").write_text(json.dumps(ads_data, indent=2), encoding="utf-8")
-    (output_dir / "campaign_brief.md").write_text(
+    _safe_write(output_dir / "ads.json", json.dumps(ads_data, indent=2))
+    _safe_write(output_dir / "campaign_brief.md",
         f"# Campaign: {ads_data.get('campaign', {}).get('name', run_id)}\n\n"
         f"Product: {product}\nTarget: {target_audience}\n\n"
         f"Generated: {time.strftime('%Y-%m-%d %H:%M')}\n",
@@ -237,6 +134,7 @@ Format your output as JSON:
 def collect_leads(source, params, criteria=None, run_id=None):
     """Collect and qualify leads from a source."""
     run_id = run_id or f"leads_{int(time.time())}"
+    run_id = _sanitize_run_id(run_id)
 
     source_info = LEAD_SOURCES.get(source, {})
     prompt = f"""You are a lead generation specialist.
@@ -276,13 +174,12 @@ Aim for 10-30 high-quality leads. Quality over quantity."""
 
     output_dir = WORKSPACES_DIR / run_id
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "leads.json").write_text(json.dumps(leads, indent=2), encoding="utf-8")
-    (output_dir / "source.md").write_text(
+    _safe_write(output_dir / "leads.json", json.dumps(leads, indent=2))
+    _safe_write(output_dir / "source.md",
         f"# Lead Collection: {source}\n\n"
         f"Params: {json.dumps(params, indent=2)}\n"
         f"Criteria: {criteria or 'Standard'}\n"
         f"Leads collected: {len(leads)}\n",
-        encoding="utf-8",
     )
 
     record = {
@@ -305,6 +202,7 @@ def run_marketing_pipeline(product, target_market, goals, channels=None,
                            budget=None, run_id=None):
     """Run a full marketing pipeline: strategy → creative → distribution → measurement."""
     run_id = run_id or f"mktg_{int(time.time())}"
+    run_id = _sanitize_run_id(run_id)
     channels = channels or ["google", "facebook", "email", "linkedin"]
 
     pipeline_phases = [
@@ -375,11 +273,11 @@ Include:
 
     output_dir = WORKSPACES_DIR / run_id
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "pipeline.json").write_text(json.dumps({
+    _safe_write(output_dir / "pipeline.json", json.dumps({
         "product": product, "target_market": target_market,
         "goals": goals, "channels": channels,
         "results": results, "context": {k: v[:2000] for k, v in context.items()},
-    }, indent=2), encoding="utf-8")
+    }, indent=2))
 
     record = {
         "run_id": run_id,

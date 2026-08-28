@@ -37,8 +37,9 @@ class DependencyAgentAPI:
                     self._config["last_report"] = report
                 return json.dumps(report, indent=2) if False else __import__("flask").jsonify(report)
             except Exception as e:
-                import flask
-                return flask.jsonify({"error": str(e), "total_packages": 0, "updates": [], "vulnerabilities": [], "updated_requirements": "# Error: " + str(e)}), 200
+                import flask, logging
+                logging.getLogger(__name__).error("dependency analyze error: %s", e)
+                return flask.jsonify({"error": "Analysis failed", "total_packages": 0, "updates": [], "vulnerabilities": [], "updated_requirements": ""}), 200
 
         @self.app.route("/api/dependency/fix", methods=["POST"])
         def api_dependency_fix():
@@ -60,8 +61,9 @@ class DependencyAgentAPI:
                 import flask
                 return flask.jsonify({"ok": True, "package": package, "version": version, "message": f"Fixed {package} to >= {version}"})
             except Exception as e:
-                import flask
-                return flask.jsonify({"error": str(e)}), 500
+                import flask, logging
+                logging.getLogger(__name__).error("dependency fix error: %s", e)
+                return flask.jsonify({"error": "Fix failed"}), 500
 
         @self.app.route("/api/dependency/patch", methods=["POST"])
         def api_dependency_patch():
@@ -73,8 +75,9 @@ class DependencyAgentAPI:
                 import flask
                 return flask.jsonify(result)
             except Exception as e:
-                import flask
-                return flask.jsonify({"ok": False, "error": str(e)}), 500
+                import flask, logging
+                logging.getLogger(__name__).error("dependency patch error: %s", e)
+                return flask.jsonify({"ok": False, "error": "Patch failed"}), 500
 
         @self.app.route("/api/dependency/settings", methods=["GET", "POST"])
         def api_dependency_settings():
@@ -95,9 +98,9 @@ class DependencyAgentAPI:
                 import flask
                 return flask.jsonify(agent.describe())
             except Exception as e:
-                import flask
-                return flask.jsonify({"error": str(e)}), 500
-
+                import flask, logging
+                logging.getLogger(__name__).error("dependency describe error: %s", e)
+                return flask.jsonify({"error": "Describe failed"}), 500
         @self.app.route("/api/dependency/resources")
         def api_dependency_resources():
             try:
@@ -106,8 +109,9 @@ class DependencyAgentAPI:
                 import flask
                 return flask.jsonify(catalog)
             except Exception as e:
-                import flask
-                return flask.jsonify({"error": str(e)}), 500
+                import flask, logging
+                logging.getLogger(__name__).error("dependency resources error: %s", e)
+                return flask.jsonify({"error": "Resources failed"}), 500
 
         @self.app.route("/api/dependency/plugins")
         def api_dependency_plugins():
@@ -117,8 +121,9 @@ class DependencyAgentAPI:
                 import flask
                 return flask.jsonify(plugins)
             except Exception as e:
-                import flask
-                return flask.jsonify({"error": str(e)}), 500
+                import flask, logging
+                logging.getLogger(__name__).error("dependency plugins error: %s", e)
+                return flask.jsonify({"error": "Plugins failed"}), 500
 
 
 if __name__ == "__main__":

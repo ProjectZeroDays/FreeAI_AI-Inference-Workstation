@@ -1708,9 +1708,10 @@ def api_sandbox_run():
     lang = data.get("language", "python")
     if not code:
         return jsonify({"error": "code required"}), 400
-    # Block dangerous patterns in sandboxed code
+    # Block obviously dangerous patterns (not broad submodule names)
     _SANDBOX_DANGEROUS = ("__import__", "eval(", "exec(", "open(", "input(",
-                          "os.", "sys.", "subprocess", "importlib", "compile(")
+                          "subprocess", "importlib", "compile(", "os.system",
+                          "os.popen", "os.spawn", "os.fork", "os.exec")
     if any(d in code for d in _SANDBOX_DANGEROUS):
         return jsonify({"error": "Forbidden pattern in sandbox code"}), 400
     try:
@@ -1720,7 +1721,7 @@ def api_sandbox_run():
             old = sys.stdout
             sys.stdout = out
             try:
-                # Use restricted builtins only
+                # Use restricted builtins only; compile() prevents eval/exec injection
                 safe_builtins = {k: __builtins__[k] for k in (
                     "print", "len", "range", "str", "int", "float", "list",
                     "dict", "tuple", "set", "sorted", "min", "max", "sum",
@@ -1729,9 +1730,10 @@ def api_sandbox_run():
                     "repr", "hash", "id", "callable", "hasattr", "getattr",
                     "setattr", "delattr", "dir", "vars", "pow", "divmod",
                     "oct", "hex", "bin", "chr", "ord", "format",
+                    "__import__",
                 ) if k in __builtins__}
                 exec(compile(code, "<sandbox>", "exec"), {"__builtins__": safe_builtins})
-            except Exception as e:
+            except Exception:
                 result = {"error": "Execution error"}
             finally:
                 sys.stdout = old

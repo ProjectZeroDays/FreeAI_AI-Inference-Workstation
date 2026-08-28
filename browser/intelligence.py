@@ -95,7 +95,9 @@ public class Extract extends GhidraScript {
         except subprocess.TimeoutExpired:
             return {"error": "Ghidra analysis timed out (300s)"}
         except Exception as e:
-            return {"error": str(e)}
+            import logging
+            logging.getLogger(__name__).error("ghidra analysis error: %s", e)
+            return {"error": "Analysis failed"}
 
     def analyze_wasm(self, wasm_path, output_dir=None):
         """Analyze WebAssembly binary."""
