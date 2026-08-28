@@ -2602,6 +2602,81 @@ def api_logs_clear():
     return jsonify({"ok": True})
 
 
+# ── API: Loki Log Query ──────────────────────────────────────────
+LOKI_URL = os.environ.get("LOKI_URL", "http://loki:3100")
+
+
+def _query_loki(path, params=None):
+    """Make an HTTP request to the Loki API and return parsed JSON.
+    Returns None on any connection or parse failure."""
+    try:
+        import urllib.error as _urllib_error
+        qs = urllib.parse.urlencode(params or {})
+        url = f"{LOKI_URL}/loki/api/v1/{path}"
+        if qs:
+            url += f"?{qs}"
+        req = urllib.request.Request(url, headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        })
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return json.loads(resp.read().decode())
+    except Exception:
+        return None
+
+
+@app.route("/api/logs/loki/query", methods=["GET"])
+def api_logs_loki_query():
+    query = request.args.get("query", '{service_name="freeai-router"}')
+    limit = int(request.args.get("limit", "100"))
+    start = request.args.get("start", "now-1h")
+    end = request.args.get("end", "now")
+    result = _query_loki("query_range", {
+        "query": query,
+        "limit": str(limit),
+        "start": start,
+        "end": end,
+        "direction": "backward",
+    })
+    if result is None or result.get("status") != "success":
+        return jsonify({"logs": [], "total": 0, "loki_available": False})
+    results = result.get("data", {}).get("result", [])
+    entries = []
+    for res in results:
+        for ts, line in res.get("values", []):
+            try:
+                epoch = float(ts) / 1_000_000_000
+            except (ValueError, TypeError):
+                epoch = 0
+            try:
+                parsed = json.loads(line) if line else {}
+            except (json.JSONDecodeError, TypeError):
+                parsed = {"line": line}
+            parsed.setdefault("ts", epoch)
+            parsed.setdefault("level", "info")
+            parsed.setdefault("message", line)
+            labels = res.get("labels", {})
+            parsed.setdefault("service", labels.get("service_name", "unknown"))
+            entries.append(parsed)
+    return jsonify({"logs": entries, "total": len(entries), "loki_available": True})
+
+
+@app.route("/api/logs/loki/labels", methods=["GET"])
+def api_logs_loki_labels():
+    result = _query_loki("labels", {"start": "now-1h"})
+    if result is None or result.get("status") != "success":
+        return jsonify({"labels": []})
+    return jsonify({"labels": result.get("data", [])})
+
+
+@app.route("/api/logs/loki/label/<name>/values", methods=["GET"])
+def api_logs_loki_label_values(name):
+    result = _query_loki(f"label/{urllib.parse.quote(name)}/values", {"start": "now-1h"})
+    if result is None or result.get("status") != "success":
+        return jsonify({"values": []})
+    return jsonify({"values": result.get("data", [])})
+
+
 if __name__ == "__main__":
     import notifications_ws as _nws
     _nws.start(host="127.0.0.1", port=8765)
@@ -7350,6 +7425,18 @@ def api_messaging_rce_simulate_signal():
     data = request.get_json() or {}
     return jsonify(agent.simulate_signal_exploit(
         data.get("target", "signal_user"),
+        data.get("exploit_type", "rce")
+    ))
+
+@app.route("/api/exploit-cat/messaging-rce/simulate-telegram", methods=["POST"])
+def api_messaging_rce_simulate_telegram():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_telegram_exploit(
+        data.get("target", "telegram_user"),
         data.get("exploit_type", "rce")
     ))
 

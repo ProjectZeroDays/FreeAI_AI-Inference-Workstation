@@ -120,6 +120,17 @@ class TestMemoryCorruption(unittest.TestCase):
         self.assertEqual(data["architecture"], "x86_64")
         self.assertEqual(data["mitre_id"], "T1203")
 
+    # ── Map to Exploit ──
+
+    def test_memory_corruption_map_to_exploit(self):
+        from agents.specialized.memory_corruption import MemoryCorruptionAgent
+        agent = MemoryCorruptionAgent()
+        result = agent.map_to_exploit("buffer_overflow")
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+        result2 = agent.map_to_exploit("nonexistent")
+        self.assertEqual(result2, ["generic exploitation"])
+
 
 if __name__ == "__main__":
     unittest.main()

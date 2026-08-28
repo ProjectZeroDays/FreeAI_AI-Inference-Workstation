@@ -70,6 +70,19 @@ class TestMessagingRCE(unittest.TestCase):
         self.assertEqual(data["target"], "signal_user")
         self.assertEqual(data["mitre_id"], "T1203")
 
+    # ── Telegram ──
+
+    def test_messaging_rce_simulate_telegram(self):
+        resp = self.client.post(f"{self.base}/simulate-telegram",
+                                json={"target": "telegram_user", "exploit_type": "rce"},
+                                headers={"X-Auth-Token": "test-key"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertEqual(data["status"], "active")
+        self.assertEqual(data["target"], "telegram_user")
+        self.assertEqual(data["mitre_id"], "T1203")
+        self.assertIn("exploitation_steps", data)
+
     # ── Generate Payload ──
 
     def test_messaging_rce_generate_payload(self):
@@ -103,6 +116,17 @@ class TestMessagingRCE(unittest.TestCase):
         self.assertEqual(len(data), 5)
         self.assertEqual(data[0]["id"], "CVE-2019-8641")
         self.assertEqual(data[0]["severity"], "critical")
+
+    # ── Map to Exploit ──
+
+    def test_messaging_rce_map_to_exploit(self):
+        from agents.specialized.messaging_rce import MessagingRCEAgent
+        agent = MessagingRCEAgent()
+        result = agent.map_to_exploit("media_processing")
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+        result2 = agent.map_to_exploit("nonexistent")
+        self.assertEqual(result2, ["generic messaging exploitation"])
 
 
 if __name__ == "__main__":

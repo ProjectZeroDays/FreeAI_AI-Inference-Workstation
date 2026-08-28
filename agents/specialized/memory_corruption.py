@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Memory Corruption Exploit Agent — with MITRE ATT&CK mappings and real CVE data."""
 import json
-import os
 import threading
 import time
 import urllib.request
