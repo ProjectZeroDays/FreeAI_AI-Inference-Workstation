@@ -4307,3 +4307,587 @@ def api_remote_access_vnc_password():
         _save_json(_REMOTE_ACCESS_CONFIG, cfg)
     return jsonify({"ok": True})
 
+
+
+# ── iOS Exploitation Agent Routes ───────────────────────────────────
+_ios_lock = threading.Lock()
+_ios_sessions = {}
+
+@app.route("/api/ios-exploit/describe")
+def api_ios_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_ios import IOSExploitAgent
+        a = IOSExploitAgent()
+        return jsonify(a.describe())
+    except ImportError:
+        return jsonify({"error": "ios_exploit module not available"}), 503
+
+@app.route("/api/ios-exploit/image", methods=["POST"])
+def api_ios_exploit_image():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _ios_lock:
+        result = {"vector": data.get("vector", "imageio_overflow"),
+                  "target": data.get("target", ""), "payload": data.get("payload", "arm64_shellcode"),
+                  "status": "simulated", "cve": "CVE-2019-8641", "zero_click": True}
+        _ios_sessions[id(result)] = result
+    return jsonify(result)
+
+@app.route("/api/ios-exploit/imessage", methods=["POST"])
+def api_ios_exploit_imessage():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "rtcp_rce"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "pegasus_stinger"), "status": "simulated",
+                    "cve": "CVE-2019-8641", "zero_click": True, "steganography": True})
+
+@app.route("/api/ios-exploit/webkit", methods=["POST"])
+def api_ios_exploit_webkit():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "jit_spray"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "arm64_sandbox_escape"), "status": "simulated",
+                    "cve": "CVE-2021-30860", "zero_click": False})
+
+@app.route("/api/ios-exploit/kernel", methods=["POST"])
+def api_ios_exploit_kernel():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "kaslr_leak"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "root_shell"), "status": "simulated",
+                    "impact": "kernel_root", "zero_click": True})
+
+@app.route("/api/ios-exploit/cves")
+def api_ios_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_ios import IOSExploitAgent
+        return jsonify(IOSExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── Android Exploitation Agent Routes ───────────────────────────────
+_android_lock = threading.Lock()
+
+@app.route("/api/android-exploit/describe")
+def api_android_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_android import AndroidExploitAgent
+        return jsonify(AndroidExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "android_exploit module not available"}), 503
+
+@app.route("/api/android-exploit/mms", methods=["POST"])
+def api_android_exploit_mms():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "proto_type_confusion"),
+                    "target": data.get("target", ""), "payload": data.get("payload", "arm64_root_shell"),
+                    "status": "simulated", "cve": "CVE-2021-1055", "zero_click": True})
+
+@app.route("/api/android-exploit/image", methods=["POST"])
+def api_android_exploit_image():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "imageparser_overflow"),
+                    "target": data.get("target", ""), "payload": data.get("payload", "arm64_reverse_tcp"),
+                    "status": "simulated", "cve": "CVE-2022-2051", "zero_click": True})
+
+@app.route("/api/android-exploit/bluetooth", methods=["POST"])
+def api_android_exploit_bluetooth():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "spp_overflow"), "target_mac": data.get("target", ""),
+                    "payload": data.get("payload", "arm64_meterpreter"), "status": "simulated",
+                    "cve": "CVE-2017-0781", "zero_click": True, "range_meters": 100})
+
+@app.route("/api/android-exploit/nfc", methods=["POST"])
+def api_android_exploit_nfc():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "emv_chip_clone"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "credential_exfil"), "status": "simulated",
+                    "zero_click": False, "range_cm": 4})
+
+@app.route("/api/android-exploit/kernel", methods=["POST"])
+def api_android_exploit_kernel():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "dirty_pipe"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "root_shell"), "status": "simulated",
+                    "impact": "root_privilege_escalation", "zero_click": True})
+
+@app.route("/api/android-exploit/cves")
+def api_android_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_android import AndroidExploitAgent
+        return jsonify(AndroidExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── macOS Exploitation Agent Routes ─────────────────────────────────
+@app.route("/api/macos-exploit/describe")
+def api_macos_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_osx import macOSExploitAgent
+        return jsonify(macOSExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "macos_exploit module not available"}), 503
+
+@app.route("/api/macos-exploit/image", methods=["POST"])
+def api_macos_exploit_image():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "imageio_webp_overflow"),
+                    "target": data.get("target", ""), "payload": data.get("payload", "arm64_shellcode"),
+                    "status": "simulated", "cve": "CVE-2021-30770", "zero_click": True})
+
+@app.route("/api/macos-exploit/safari", methods=["POST"])
+def api_macos_exploit_safari():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "jit_spray"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "arm64_sandbox_escape"), "status": "simulated",
+                    "cve": "CVE-2022-22616", "zero_click": False})
+
+@app.route("/api/macos-exploit/metal", methods=["POST"])
+def api_macos_exploit_metal():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "shader_overflow"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "arm64_dylib_inject"), "status": "simulated",
+                    "cve": "CVE-2023-32629", "zero_click": True})
+
+@app.route("/api/macos-exploit/kernel", methods=["POST"])
+def api_macos_exploit_kernel():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "xnu_ipc"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "root_shell"), "status": "simulated",
+                    "impact": "kernel_root", "zero_click": True})
+
+@app.route("/api/macos-exploit/cves")
+def api_macos_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_osx import macOSExploitAgent
+        return jsonify(macOSExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── Windows Exploitation Agent Routes ───────────────────────────────
+@app.route("/api/windows-exploit/describe")
+def api_windows_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_windows import WindowsExploitAgent
+        return jsonify(WindowsExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "windows_exploit module not available"}), 503
+
+@app.route("/api/windows-exploit/eternalblue", methods=["POST"])
+def api_windows_exploit_eternalblue():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": "eternalblue", "target": data.get("target", ""),
+                    "payload": data.get("payload", "x64_meterpreter"), "status": "simulated",
+                    "cve": "CVE-2017-0144", "zero_click": True})
+
+@app.route("/api/windows-exploit/exchange", methods=["POST"])
+def api_windows_exploit_exchange():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "ssrf_oab"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "webshell"), "status": "simulated",
+                    "cve": "CVE-2021-26855", "zero_click": True})
+
+@app.route("/api/windows-exploit/printnightmare", methods=["POST"])
+def api_windows_exploit_printnightmare():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": "printnightmare", "target": data.get("target", ""),
+                    "payload": data.get("payload", "x64_reverse_tcp"), "status": "simulated",
+                    "cve": "CVE-2021-34527", "zero_click": True})
+
+@app.route("/api/windows-exploit/doc", methods=["POST"])
+def api_windows_exploit_doc():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "rtf_ole2"), "target": data.get("target", ""),
+                    "payload": data.get("payload", "x86_meterpreter"), "status": "simulated",
+                    "zero_click": False})
+
+@app.route("/api/windows-exploit/kernel-chain", methods=["POST"])
+def api_windows_exploit_kernel_chain():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    vectors = data.get("vectors", ["dirty_copy", "hvci_bypass"])
+    return jsonify({"vectors": vectors, "target": data.get("target", ""),
+                    "payload": data.get("payload", "nt_SYSTEM"), "status": "simulated",
+                    "impact": "nt_system", "zero_click": True})
+
+@app.route("/api/windows-exploit/cves")
+def api_windows_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_windows import WindowsExploitAgent
+        return jsonify(WindowsExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── Linux Exploitation Agent Routes ─────────────────────────────────
+@app.route("/api/linux-exploit/describe")
+def api_linux_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_linux import LinuxExploitAgent
+        return jsonify(LinuxExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "linux_exploit module not available"}), 503
+
+@app.route("/api/linux-exploit/dirty-pipe", methods=["POST"])
+def api_linux_exploit_dirty_pipe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": "dirty_pipe", "target": data.get("target", ""),
+                    "payload": data.get("payload", "root_shell"), "status": "simulated",
+                    "cve": "CVE-2022-0847", "impact": "root_privilege_escalation", "zero_click": True})
+
+@app.route("/api/linux-exploit/docker-escape", methods=["POST"])
+def api_linux_exploit_docker_escape():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "privileged_container"),
+                    "target": data.get("target", ""), "payload": data.get("payload", "host_root_shell"),
+                    "status": "simulated", "impact": "host_root", "zero_click": True})
+
+@app.route("/api/linux-exploit/glibc-heap", methods=["POST"])
+def api_linux_exploit_glibc_heap():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "tcache_poison"),
+                    "target": data.get("target", ""), "payload": data.get("payload", "x64_reverse_shell"),
+                    "status": "simulated", "impact": "code_execution", "zero_click": True})
+
+@app.route("/api/linux-exploit/systemd", methods=["POST"])
+def api_linux_exploit_systemd():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "socket_activated"),
+                    "target": data.get("target", ""), "payload": data.get("payload", "root_crontab"),
+                    "status": "simulated", "impact": "root_persistence", "zero_click": False})
+
+@app.route("/api/linux-exploit/cves")
+def api_linux_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_linux import LinuxExploitAgent
+        return jsonify(LinuxExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── IoT Exploitation Agent Routes ───────────────────────────────────
+@app.route("/api/iot-exploit/describe")
+def api_iot_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_iot import IOExploitAgent
+        return jsonify(IOExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "iot_exploit module not available"}), 503
+
+@app.route("/api/iot-exploit/firmware", methods=["POST"])
+def api_iot_exploit_firmware():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "firmware_extract", "target_ip": data.get("target_ip", ""),
+                    "firmware_url": data.get("firmware_url"), "status": "simulated",
+                    "methods": ["telnet_tar_dump", "http_firmware_download", "spi_chip_read",
+                                "jtag_flash_read"]})
+
+@app.route("/api/iot-exploit/hardware-debug", methods=["POST"])
+def api_iot_exploit_hardware_debug():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "hardware_debug", "interface": data.get("interface", "uart"),
+                    "baud": data.get("baud", 115200), "target_ip": data.get("target_ip", ""),
+                    "status": "simulated", "capabilities": {"uart_console": True,
+                    "jtag_programming": True, "bootloader_unlock": True}})
+
+@app.route("/api/iot-exploit/default-creds", methods=["POST"])
+def api_iot_exploit_default_creds():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "default_credentials", "target_ip": data.get("target_ip", ""),
+                    "service": data.get("service", "telnet"), "status": "simulated",
+                    "credentials_found": [{"user": "admin", "pass": "admin"},
+                                          {"user": "root", "pass": "toor"}]})
+
+@app.route("/api/iot-exploit/mqtt", methods=["POST"])
+def api_iot_exploit_mqtt():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "mqtt_attack", "target_ip": data.get("target_ip", ""),
+                    "topic": data.get("topic", ""), "payload": data.get("payload", ""),
+                    "status": "simulated", "techniques": ["topic_enumeration", "qos_abuse",
+                    "retain_manipulation", "auth_bypass"]})
+
+@app.route("/api/iot-exploit/cves")
+def api_iot_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_iot import IOExploitAgent
+        return jsonify(IOExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── Bluetooth Exploitation Agent Routes ─────────────────────────────
+@app.route("/api/bluetooth-exploit/describe")
+def api_bluetooth_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_bluetooth import BluetoothExploitAgent
+        return jsonify(BluetoothExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "bluetooth_exploit module not available"}), 503
+
+@app.route("/api/bluetooth-exploit/blueborne", methods=["POST"])
+def api_bluetooth_exploit_blueborne():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "rfcomm_overflow"),
+                    "target_mac": data.get("target_mac", ""), "payload": data.get("payload", "bluetooth_shell"),
+                    "status": "simulated", "cve": "CVE-2017-0781", "zero_click": True,
+                    "range_meters": 100})
+
+@app.route("/api/bluetooth-exploit/ble-sniff", methods=["POST"])
+def api_bluetooth_exploit_ble_sniff():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "ble_sniff", "target_mac": data.get("target_mac", ""),
+                    "duration_sec": data.get("duration", 60), "extract_keys": data.get("extract_keys", False),
+                    "status": "simulated", "techniques": ["access_address_prediction",
+                    "ll_privacy_bypass", "connection_param_abuse"]})
+
+@app.route("/api/bluetooth-exploit/ble-deauth", methods=["POST"])
+def api_bluetooth_exploit_ble_deauth():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "ble_deauth", "target_mac": data.get("target_mac", ""),
+                    "method": data.get("method", "conn_cancel"), "status": "simulated"})
+
+@app.route("/api/bluetooth-exploit/keyless", methods=["POST"])
+def api_bluetooth_exploit_keyless():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "can_relay"), "target_vehicle": data.get("target_vehicle", ""),
+                    "action": data.get("action", "unlock_start_engine"), "status": "simulated",
+                    "impact": "vehicle_compromise", "zero_click": False, "range_meters": 50})
+
+@app.route("/api/bluetooth-exploit/cves")
+def api_bluetooth_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_bluetooth import BluetoothExploitAgent
+        return jsonify(BluetoothExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── NFC Exploitation Agent Routes ───────────────────────────────────
+@app.route("/api/nfc-exploit/describe")
+def api_nfc_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_nfc import NFCExploitAgent
+        return jsonify(NFCExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "nfc_exploit module not available"}), 503
+
+@app.route("/api/nfc-exploit/emv-clone", methods=["POST"])
+def api_nfc_exploit_emv_clone():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "emv_clone", "target_card": data.get("target_card", ""),
+                    "extract_keys": data.get("extract_keys", True), "status": "simulated",
+                    "techniques": ["atr_parsing", "aid_enumeration", "kd_gen_extraction",
+                                   "arqc_simulation"], "supported_cards": ["Visa", "Mastercard", "AMEX"]})
+
+@app.route("/api/nfc-exploit/relay", methods=["POST"])
+def api_nfc_exploit_relay():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "nfc_relay", "target_reader": data.get("target_reader", ""),
+                    "target_card": data.get("target_card", ""),
+                    "relay_duration_sec": data.get("relay_duration", 120), "status": "simulated",
+                    "techniques": ["real_time_relay", "latency_optimization", "frame_forwarding"]})
+
+@app.route("/api/nfc-exploit/rfid-skim", methods=["POST"])
+def api_nfc_exploit_rfid_skim():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "rfid_skim", "target_card": data.get("target_card", ""),
+                    "frequency": data.get("frequency", "125khz"),
+                    "extract_uid": data.get("extract_uid", True), "status": "simulated",
+                    "supported_formats": ["EM4100", "HID Prox", "Indala", "Mifare Classic 1K"]})
+
+@app.route("/api/nfc-exploit/ndef-inject", methods=["POST"])
+def api_nfc_exploit_ndef_inject():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "ndef_inject", "target_tag": data.get("target_tag", ""),
+                    "action_type": data.get("action", "rewrite_url"),
+                    "new_url": data.get("new_url"), "status": "simulated",
+                    "techniques": ["tag_rewrite", "smart_poster_hijack", "uri_injection"]})
+
+@app.route("/api/nfc-exploit/payment-intercept", methods=["POST"])
+def api_nfc_exploit_payment_intercept():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "payment_intercept", "target_terminal": data.get("target_terminal", ""),
+                    "intercept_amount": data.get("intercept_amount", True),
+                    "status": "simulated", "techniques": ["amount_manipulation",
+                    "offline_auth_bypass", "token_replay"]})
+
+@app.route("/api/nfc-exploit/cves")
+def api_nfc_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_nfc import NFCExploitAgent
+        return jsonify(NFCExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
+
+
+# ── Automobile Exploitation Agent Routes ────────────────────────────
+@app.route("/api/automobile-exploit/describe")
+def api_automobile_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_automobile import AutoExploitAgent
+        return jsonify(AutoExploitAgent().describe())
+    except ImportError:
+        return jsonify({"error": "automobile_exploit module not available"}), 503
+
+@app.route("/api/automobile-exploit/can-inject", methods=["POST"])
+def api_automobile_exploit_can_inject():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "brake_cmd_replay"),
+                    "target_vid": data.get("target_vid", ""), "payload": data.get("payload", ""),
+                    "status": "simulated", "techniques": ["frame_replay",
+                    "arbitration_id_manipulation", "message_flooding", "gateway_bypass"]})
+
+@app.route("/api/automobile-exploit/obd2", methods=["POST"])
+def api_automobile_exploit_obd2():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"action": "obd2", "target_vid": data.get("target_vid", ""),
+                    "session": data.get("session", 0x10), "subfunc": data.get("subfunc", 0x01),
+                    "payload": data.get("payload", "ecu_dump"), "status": "simulated",
+                    "diagnostic_modes": {"0x10": "Diagnostic Session Control", "0x22": "Read Data",
+                                         "0x27": "Security Access", "0x2E": "Write Data"}})
+
+@app.route("/api/automobile-exploit/keyless", methods=["POST"])
+def api_automobile_exploit_keyless():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "can_relay"),
+                    "target_vid": data.get("target_vid", ""), "action": data.get("action", "unlock_start_engine"),
+                    "status": "simulated", "techniques": ["can_relay", "key_fob_cloning",
+                    "ultra_wave_relay", "ranging_bypass"], "range_meters": 50})
+
+@app.route("/api/automobile-exploit/infotainment", methods=["POST"])
+def api_automobile_exploit_infotainment():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "qnx_overflow"),
+                    "target_vid": data.get("target_vid", ""), "payload": data.get("payload", ""),
+                    "status": "simulated", "platforms": ["QNX", "Android_Automotive",
+                    "Linux_Yocto", "VxWorks"]})
+
+@app.route("/api/automobile-exploit/telematics", methods=["POST"])
+def api_automobile_exploit_telematics():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({"vector": data.get("vector", "cellular_jam"),
+                    "target_vid": data.get("target_vid", ""), "action": data.get("action", ""),
+                    "status": "simulated", "services": ["OnStar", "BMW ConnectedDrive",
+                    "Mercedes me", "Tesla Mobile"]})
+
+@app.route("/api/automobile-exploit/cves")
+def api_automobile_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        from agents.specialized.exploit_automobile import AutoExploitAgent
+        return jsonify(AutoExploitAgent().list_cves())
+    except ImportError:
+        return jsonify({}), 200
