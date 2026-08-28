@@ -2,6 +2,7 @@
 
 Provides REST API endpoints and serves static HTML pages.
 """
+import asyncio
 import json
 import os
 import random
@@ -6584,348 +6585,11 @@ def api_training_gpu_status():
 def ai_training_page():
     return render_template("ai-training.html")
 
-
-# ── Exploit Categories (Simulation Only) ─────────────────────────
-
-# ── Memory Corruption ──
-_memory_corruption_lock = threading.Lock()
-_memory_corruption_state = {"simulations": []}
+@app.route("/sandbox")
+def page_sandbox():
+    return render_template("sandbox.html")
 
 
-@app.route("/api/exploit-cat/memory-corruption/describe")
-def api_exploit_cat_memory_corruption_describe():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.memory_corruption import MemoryCorruptionAgent
-    agent = MemoryCorruptionAgent()
-    return jsonify(agent.describe())
-
-
-@app.route("/api/exploit-cat/memory-corruption/simulate", methods=["POST"])
-def api_exploit_cat_memory_corruption_simulate():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.memory_corruption import MemoryCorruptionAgent
-    agent = MemoryCorruptionAgent()
-    overflow_type = data.get("overflow_type", "stack")
-    target = data.get("target", "192.168.1.10")
-    buffer_size = data.get("buffer_size", 256)
-    result = agent.simulate_buffer_overflow(target, overflow_type, buffer_size)
-    with _memory_corruption_lock:
-        _memory_corruption_state["simulations"].append(result)
-    return jsonify(result)
-
-
-@app.route("/api/exploit-cat/memory-corruption/cves")
-def api_exploit_cat_memory_corruption_cves():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.memory_corruption import MemoryCorruptionAgent
-    agent = MemoryCorruptionAgent()
-    return jsonify(agent.get_cves())
-
-
-@app.route("/api/exploit-cat/memory-corruption/payload-gen", methods=["POST"])
-def api_exploit_cat_memory_corruption_payload_gen():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.memory_corruption import MemoryCorruptionAgent
-    agent = MemoryCorruptionAgent()
-    payload_type = data.get("payload_type", "nop_sled")
-    arch = data.get("arch", "x86_64")
-    return jsonify(agent.generate_payload(payload_type, arch))
-
-
-# ── SSRF ──
-_ssrf_lock = threading.Lock()
-_ssrf_state = {"simulations": []}
-
-
-@app.route("/api/exploit-cat/ssrf/describe")
-def api_exploit_cat_ssrf_describe():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.ssrf_exploit import SSRFExploitAgent
-    agent = SSRFExploitAgent()
-    return jsonify(agent.describe())
-
-
-@app.route("/api/exploit-cat/ssrf/simulate", methods=["POST"])
-def api_exploit_cat_ssrf_simulate():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.ssrf_exploit import SSRFExploitAgent
-    agent = SSRFExploitAgent()
-    vulnerable_url = data.get("vulnerable_url", "https://vulnerable-app/api/fetch")
-    internal_target = data.get("internal_target", "http://169.254.169.254/latest/meta-data/")
-    result = agent.simulate_ssrf(vulnerable_url, internal_target)
-    with _ssrf_lock:
-        _ssrf_state["simulations"].append(result)
-    return jsonify(result)
-
-
-@app.route("/api/exploit-cat/ssrf/cves")
-def api_exploit_cat_ssrf_cves():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.ssrf_exploit import SSRFExploitAgent
-    agent = SSRFExploitAgent()
-    return jsonify(agent.get_cves())
-
-
-@app.route("/api/exploit-cat/ssrf/payload-gen", methods=["POST"])
-def api_exploit_cat_ssrf_payload_gen():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.ssrf_exploit import SSRFExploitAgent
-    agent = SSRFExploitAgent()
-    payload_type = data.get("payload_type", "url_obfuscation")
-    target = data.get("target", "internal.service.local")
-    return jsonify(agent.generate_payload(payload_type, target))
-
-
-# ── Deserialization ──
-_deserialization_lock = threading.Lock()
-_deserialization_state = {"simulations": []}
-
-
-@app.route("/api/exploit-cat/deserialization/describe")
-def api_exploit_cat_deserialization_describe():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.deserialization import DeserializationAgent
-    agent = DeserializationAgent()
-    return jsonify(agent.describe())
-
-
-@app.route("/api/exploit-cat/deserialization/simulate", methods=["POST"])
-def api_exploit_cat_deserialization_simulate():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.deserialization import DeserializationAgent
-    agent = DeserializationAgent()
-    lang = data.get("language", "java")
-    if lang == "java":
-        chain = data.get("gadget_chain", "CommonsCollections")
-        version = data.get("version", "6")
-        result = agent.simulate_java_deserialization(chain, version)
-    elif lang == "python":
-        library = data.get("library", "pickle")
-        payload_type = data.get("payload_type", "os.system")
-        result = agent.simulate_python_deserialization(library, payload_type)
-    else:
-        result = agent.simulate_php_deserialization(data.get("technique", "pop_chain"))
-    with _deserialization_lock:
-        _deserialization_state["simulations"].append(result)
-    return jsonify(result)
-
-
-@app.route("/api/exploit-cat/deserialization/cves")
-def api_exploit_cat_deserialization_cves():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.deserialization import DeserializationAgent
-    agent = DeserializationAgent()
-    return jsonify(agent.get_cves())
-
-
-@app.route("/api/exploit-cat/deserialization/payload-gen", methods=["POST"])
-def api_exploit_cat_deserialization_payload_gen():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.deserialization import DeserializationAgent
-    agent = DeserializationAgent()
-    language = data.get("language", "java")
-    chain_name = data.get("chain_name", "CommonsCollections7")
-    return jsonify(agent.generate_gadget_chain(language, chain_name))
-
-
-# ── Messaging RCE ──
-_messaging_rce_lock = threading.Lock()
-_messaging_rce_state = {"simulations": []}
-
-
-@app.route("/api/exploit-cat/messaging-rce/describe")
-def api_exploit_cat_messaging_rce_describe():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.messaging_rce import MessagingRCEAgent
-    agent = MessagingRCEAgent()
-    return jsonify(agent.describe())
-
-
-@app.route("/api/exploit-cat/messaging-rce/simulate", methods=["POST"])
-def api_exploit_cat_messaging_rce_simulate():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.messaging_rce import MessagingRCEAgent
-    agent = MessagingRCEAgent()
-    platform = data.get("platform", "imessage")
-    vector = data.get("vector", "gif_parsing")
-    if platform == "imessage":
-        result = agent.simulate_imessage_rce(vector)
-    elif platform == "whatsapp":
-        result = agent.simulate_whatsapp_rce(vector)
-    elif platform == "signal":
-        result = agent.simulate_signal_rce(vector)
-    elif platform == "telegram":
-        result = agent.simulate_telegram_rce(vector)
-    else:
-        result = agent.simulate_imessage_rce(vector)
-    with _messaging_rce_lock:
-        _messaging_rce_state["simulations"].append(result)
-    return jsonify(result)
-
-
-@app.route("/api/exploit-cat/messaging-rce/cves")
-def api_exploit_cat_messaging_rce_cves():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.messaging_rce import MessagingRCEAgent
-    agent = MessagingRCEAgent()
-    return jsonify(agent.get_cves())
-
-
-@app.route("/api/exploit-cat/messaging-rce/payload-gen", methods=["POST"])
-def api_exploit_cat_messaging_rce_payload_gen():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.messaging_rce import MessagingRCEAgent
-    agent = MessagingRCEAgent()
-    payload_type = data.get("payload_type", "image_codec_abuse")
-    fmt = data.get("format", "gif")
-    return jsonify(agent.generate_payload(payload_type, fmt))
-
-
-# ── Media Exploit ──
-_media_exploit_lock = threading.Lock()
-_media_exploit_state = {"simulations": []}
-
-
-@app.route("/api/exploit-cat/media/describe")
-def api_exploit_cat_media_describe():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.media_exploit import MediaExploitAgent
-    agent = MediaExploitAgent()
-    return jsonify(agent.describe())
-
-
-@app.route("/api/exploit-cat/media/simulate", methods=["POST"])
-def api_exploit_cat_media_simulate():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.media_exploit import MediaExploitAgent
-    agent = MediaExploitAgent()
-    category = data.get("category", "video")
-    if category == "video":
-        player = data.get("player", "vlc")
-        codec = data.get("codec", "h264_decoder")
-        result = agent.simulate_video_overflow(player, codec)
-    elif category == "audio":
-        parser = data.get("parser", "mp3_parser")
-        overflow_type = data.get("overflow_type", "heap_overflow")
-        result = agent.simulate_audio_exploit(parser, overflow_type)
-    elif category == "codec":
-        codec = data.get("codec", "h264")
-        flaw_type = data.get("flaw_type", "integer_overflow")
-        result = agent.simulate_codec_flaw(codec, flaw_type)
-    else:
-        result = agent.simulate_subtitle_exploit(data.get("format", "srt"))
-    with _media_exploit_lock:
-        _media_exploit_state["simulations"].append(result)
-    return jsonify(result)
-
-
-@app.route("/api/exploit-cat/media/cves")
-def api_exploit_cat_media_cves():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.media_exploit import MediaExploitAgent
-    agent = MediaExploitAgent()
-    return jsonify(agent.get_cves())
-
-
-@app.route("/api/exploit-cat/media/payload-gen", methods=["POST"])
-def api_exploit_cat_media_payload_gen():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.media_exploit import MediaExploitAgent
-    agent = MediaExploitAgent()
-    file_format = data.get("file_format", "mp4")
-    manipulation = data.get("manipulation", "moov_box_overflow")
-    return jsonify(agent.generate_malformed_file(file_format, manipulation))
-
-
-# ── File Parse Exploit (XXE/PDF/Email) ──
-_file_parse_lock = threading.Lock()
-_file_parse_state = {"simulations": []}
-
-
-@app.route("/api/exploit-cat/file-parse/describe")
-def api_exploit_cat_file_parse_describe():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.file_parse_exploit import FileParseExploitAgent
-    agent = FileParseExploitAgent()
-    return jsonify(agent.describe())
-
-
-@app.route("/api/exploit-cat/file-parse/simulate", methods=["POST"])
-def api_exploit_cat_file_parse_simulate():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.file_parse_exploit import FileParseExploitAgent
-    agent = FileParseExploitAgent()
-    category = data.get("category", "xxe")
-    if category == "xxe":
-        attack_type = data.get("attack_type", "file_read")
-        target_path = data.get("target_path", "/etc/passwd")
-        result = agent.simulate_xxe(attack_type, target_path)
-    elif category == "pdf":
-        technique = data.get("technique", "javascript_injection")
-        result = agent.simulate_pdf_exploit(technique)
-    elif category == "email":
-        vector = data.get("vector", "html_parser")
-        result = agent.simulate_email_rce(vector)
-    else:
-        attack_type = data.get("attack_type", "billion_laughs")
-        result = agent.simulate_xml_entity_abuse(attack_type)
-    with _file_parse_lock:
-        _file_parse_state["simulations"].append(result)
-    return jsonify(result)
-
-
-@app.route("/api/exploit-cat/file-parse/cves")
-def api_exploit_cat_file_parse_cves():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    from agents.specialized.file_parse_exploit import FileParseExploitAgent
-    agent = FileParseExploitAgent()
-    return jsonify(agent.get_cves())
-
-
-@app.route("/api/exploit-cat/file-parse/payload-gen", methods=["POST"])
-def api_exploit_cat_file_parse_payload_gen():
-    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
-        return jsonify({"error": "unauthorized"}), 401
-    data = request.get_json(silent=True) or {}
-    from agents.specialized.file_parse_exploit import FileParseExploitAgent
-    agent = FileParseExploitAgent()
-    payload_type = data.get("payload_type", "xxe")
-    target = data.get("target", "xml_parser")
-    return jsonify(agent.generate_payload(payload_type, target))
 
 
 # ── Memory Primitives ──
@@ -6939,7 +6603,7 @@ def api_exploit_cat_memory_primitives_describe():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.memory_primitives import MemoryPrimitivesAgent
     agent = MemoryPrimitivesAgent()
-    return jsonify(agent.describe())
+    return jsonify(_call_agent_method(agent, "describe"))
 
 
 @app.route("/api/exploit-cat/memory-primitives/list")
@@ -6948,7 +6612,7 @@ def api_exploit_cat_memory_primitives_list():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.memory_primitives import MemoryPrimitivesAgent
     agent = MemoryPrimitivesAgent()
-    return jsonify(agent.list_primitives())
+    return jsonify(_call_agent_method(agent, "list_primitives"))
 
 
 @app.route("/api/exploit-cat/memory-primitives/<name>")
@@ -6957,7 +6621,7 @@ def api_exploit_cat_memory_primitives_get(name):
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.memory_primitives import MemoryPrimitivesAgent
     agent = MemoryPrimitivesAgent()
-    return jsonify(agent.get_primitive(name))
+    return jsonify(_call_agent_method(agent, "get_primitive", name))
 
 
 @app.route("/api/exploit-cat/memory-primitives/simulate", methods=["POST"])
@@ -6969,7 +6633,7 @@ def api_exploit_cat_memory_primitives_simulate():
     agent = MemoryPrimitivesAgent()
     primitive_name = data.get("primitive", "buffer_overflow")
     target_info = data.get("target_info", {})
-    result = agent.simulate_primitive(primitive_name, target_info)
+    result = _call_agent_method(agent, "simulate_primitive", primitive_name, target_info)
     with _memory_primitives_lock:
         _memory_primitives_state["simulations"].append(result)
     return jsonify(result)
@@ -6983,7 +6647,7 @@ def api_exploit_cat_memory_primitives_map_to_exploit():
     from agents.specialized.memory_primitives import MemoryPrimitivesAgent
     agent = MemoryPrimitivesAgent()
     primitive_name = data.get("primitive", "buffer_overflow")
-    return jsonify(agent.map_to_exploit(primitive_name))
+    return jsonify(_call_agent_method(agent, "map_to_exploit", primitive_name))
 
 
 @app.route("/api/exploit-cat/memory-primitives/mitigations/<name>")
@@ -6992,7 +6656,7 @@ def api_exploit_cat_memory_primitives_mitigations(name):
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.memory_primitives import MemoryPrimitivesAgent
     agent = MemoryPrimitivesAgent()
-    return jsonify(agent.find_mitigations(name))
+    return jsonify(_call_agent_method(agent, "find_mitigations", name))
 
 
 @app.route("/api/exploit-cat/memory-primitives/cves")
@@ -7001,10 +6665,23 @@ def api_exploit_cat_memory_primitives_cves():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.memory_primitives import MemoryPrimitivesAgent
     agent = MemoryPrimitivesAgent()
-    return jsonify(agent.get_cves())
+    return jsonify(_call_agent_method(agent, "get_cves"))
 
 
 # ── Chained Zero-Day Exploitation ─────────────────────────────────────
+
+
+
+# ── Agent method caller (handles both sync and async) ───────────────────
+def _call_agent_method(agent, method_name, *args, **kwargs):
+    """Call an agent method, handling both sync and async returns."""
+    import inspect
+    method = getattr(agent, method_name)
+    result = method(*args, **kwargs)
+    if inspect.isawaitable(result):
+        result = asyncio.run(result)
+    return result
+
 
 _chained_zero_day_lock = threading.Lock()
 _chained_zero_day_state = {"simulations": []}
@@ -7016,7 +6693,7 @@ def api_exploit_cat_chained_zero_day_describe():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
-    return jsonify(agent.describe())
+    return jsonify(_call_agent_method(agent, "describe"))
 
 
 @app.route("/api/exploit-cat/chained-zero-day/build-chain", methods=["POST"])
@@ -7027,7 +6704,7 @@ def api_exploit_cat_chained_zero_day_build_chain():
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
     stages = data.get("stages", [])
-    return jsonify(agent.build_chain(stages))
+    return jsonify(_call_agent_method(agent, "build_chain", stages))
 
 
 @app.route("/api/exploit-cat/chained-zero-day/analyze-chain", methods=["POST"])
@@ -7038,7 +6715,7 @@ def api_exploit_cat_chained_zero_day_analyze_chain():
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
     chain_id = data.get("chain_id", "")
-    return jsonify(agent.analyze_chain(chain_id))
+    return jsonify(_call_agent_method(agent, "analyze_chain", chain_id))
 
 
 @app.route("/api/exploit-cat/chained-zero-day/simulate-chain", methods=["POST"])
@@ -7050,7 +6727,7 @@ def api_exploit_cat_chained_zero_day_simulate_chain():
     agent = ChainedZeroDayAgent()
     chain_id = data.get("chain_id", "")
     target = data.get("target", None)
-    result = agent.simulate_chain(chain_id, target)
+    result = _call_agent_method(agent, "simulate_chain", chain_id, target)
     with _chained_zero_day_lock:
         _chained_zero_day_state["simulations"].append(result)
     return jsonify(result)
@@ -7062,7 +6739,7 @@ def api_exploit_cat_chained_zero_day_list_chains():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
-    return jsonify(agent.list_chains())
+    return jsonify(_call_agent_method(agent, "list_chains"))
 
 
 @app.route("/api/exploit-cat/chained-zero-day/optimize-chain", methods=["POST"])
@@ -7073,7 +6750,7 @@ def api_exploit_cat_chained_zero_day_optimize_chain():
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
     chain_id = data.get("chain_id", "")
-    return jsonify(agent.optimize_chain(chain_id))
+    return jsonify(_call_agent_method(agent, "optimize_chain", chain_id))
 
 
 @app.route("/api/exploit-cat/chained-zero-day/cves")
@@ -7082,4 +6759,550 @@ def api_exploit_cat_chained_zero_day_cves():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
+    return jsonify(_call_agent_method(agent, "get_cves"))
+
+# Memory Corruption Exploitation
+@app.route("/api/exploit-cat/memory-corruption/describe", methods=["GET"])
+def api_memory_corruption_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    return jsonify(agent.describe())
+
+@app.route("/api/exploit-cat/memory-corruption/simulate-buffer-overflow", methods=["POST"])
+def api_memory_corruption_simulate_buffer_overflow():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_buffer_overflow(
+        data.get("target", "localhost"),
+        data.get("overflow_type", "stack"),
+        data.get("size", 256)
+    ))
+
+@app.route("/api/exploit-cat/memory-corruption/simulate-heap-corruption", methods=["POST"])
+def api_memory_corruption_simulate_heap_corruption():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_heap_corruption(
+        data.get("target", "localhost"),
+        data.get("corruption_type", "tcache_poisoning")
+    ))
+
+@app.route("/api/exploit-cat/memory-corruption/simulate-uaf", methods=["POST"])
+def api_memory_corruption_simulate_uaf():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_uaf(
+        data.get("target", "localhost"),
+        data.get("allocation_pattern", "double_free")
+    ))
+
+@app.route("/api/exploit-cat/memory-corruption/primitives", methods=["GET"])
+def api_memory_corruption_primitives():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    return jsonify(agent.list_primitives())
+
+@app.route("/api/exploit-cat/memory-corruption/cves", methods=["GET"])
+def api_memory_corruption_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
     return jsonify(agent.get_cves())
+
+# SSRF Exploitation
+@app.route("/api/exploit-cat/ssrf-exploit/describe", methods=["GET"])
+def api_ssrf_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    return jsonify(agent.describe())
+
+@app.route("/api/exploit-cat/ssrf-exploit/simulate", methods=["POST"])
+def api_ssrf_exploit_simulate():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_ssrf(
+        data.get("url", ""),
+        data.get("target", "http://169.254.169.254/")
+    ))
+
+@app.route("/api/exploit-cat/ssrf-exploit/cloud-metadata", methods=["POST"])
+def api_ssrf_exploit_cloud_metadata():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_cloud_metadata(data.get("provider", "aws")))
+
+@app.route("/api/exploit-cat/ssrf-exploit/dns-rebinding", methods=["POST"])
+def api_ssrf_exploit_dns_rebinding():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_dns_rebinding(data.get("target", "internal.local")))
+
+@app.route("/api/exploit-cat/ssrf-exploit/generate-payload", methods=["POST"])
+def api_ssrf_exploit_generate_payload():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.generate_payload(
+        data.get("payload_type", "dns_rebinding"),
+        data.get("target", "internal.service.local")
+    ))
+
+@app.route("/api/exploit-cat/ssrf-exploit/blind-ssrf", methods=["POST"])
+def api_ssrf_exploit_blind_ssrf():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_blind_ssrf(data.get("method", "out_of_band")))
+
+@app.route("/api/exploit-cat/ssrf-exploit/primitives", methods=["GET"])
+def api_ssrf_exploit_primitives():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    return jsonify(agent.list_primitives())
+
+@app.route("/api/exploit-cat/ssrf-exploit/cves", methods=["GET"])
+def api_ssrf_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.ssrf_exploit import SSRFExploitAgent
+    agent = SSRFExploitAgent()
+    return jsonify(agent.get_cves())
+
+# Deserialization Exploitation
+@app.route("/api/exploit-cat/deserialization-exploit/describe", methods=["GET"])
+def api_deserialization_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.deserialization_exploit import DeserializationExploitAgent
+    agent = DeserializationExploitAgent()
+    return jsonify(agent.describe())
+
+@app.route("/api/exploit-cat/deserialization-exploit/simulate-java", methods=["POST"])
+def api_deserialization_exploit_simulate_java():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.deserialization_exploit import DeserializationExploitAgent
+    agent = DeserializationExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_java_deserialization(
+        data.get("gadget_chain", "commonscollections"),
+        data.get("target", "webapp.jar")
+    ))
+
+@app.route("/api/exploit-cat/deserialization-exploit/simulate-python", methods=["POST"])
+def api_deserialization_exploit_simulate_python():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.deserialization_exploit import DeserializationExploitAgent
+    agent = DeserializationExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_python_deserialization(
+        data.get("gadget_chain", "pickle"),
+        data.get("target", "app.py")
+    ))
+
+@app.route("/api/exploit-cat/deserialization-exploit/generate-payload", methods=["POST"])
+def api_deserialization_exploit_generate_payload():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.deserialization_exploit import DeserializationExploitAgent
+    agent = DeserializationExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.generate_payload(
+        data.get("language", "java"),
+        data.get("chain", "commonscollections")
+    ))
+
+@app.route("/api/exploit-cat/deserialization-exploit/primitives", methods=["GET"])
+def api_deserialization_exploit_primitives():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.deserialization_exploit import DeserializationExploitAgent
+    agent = DeserializationExploitAgent()
+    return jsonify(agent.list_primitives())
+
+@app.route("/api/exploit-cat/deserialization-exploit/cves", methods=["GET"])
+def api_deserialization_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.deserialization_exploit import DeserializationExploitAgent
+    agent = DeserializationExploitAgent()
+    return jsonify(agent.get_cves())
+
+# Messaging RCE Exploitation
+@app.route("/api/exploit-cat/messaging-rce/describe", methods=["GET"])
+def api_messaging_rce_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    return jsonify(agent.describe())
+
+@app.route("/api/exploit-cat/messaging-rce/simulate-imessage", methods=["POST"])
+def api_messaging_rce_simulate_imessage():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_imessage_exploit(
+        data.get("target", "iphone_user"),
+        data.get("exploit_type", "rce")
+    ))
+
+@app.route("/api/exploit-cat/messaging-rce/simulate-whatsapp", methods=["POST"])
+def api_messaging_rce_simulate_whatsapp():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_whatsapp_exploit(
+        data.get("target", "whatsapp_user"),
+        data.get("exploit_type", "rce")
+    ))
+
+@app.route("/api/exploit-cat/messaging-rce/simulate-signal", methods=["POST"])
+def api_messaging_rce_simulate_signal():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_signal_exploit(
+        data.get("target", "signal_user"),
+        data.get("exploit_type", "rce")
+    ))
+
+@app.route("/api/exploit-cat/messaging-rce/generate-payload", methods=["POST"])
+def api_messaging_rce_generate_payload():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.generate_payload(
+        data.get("platform", "imessage"),
+        data.get("payload_type", "rce")
+    ))
+
+@app.route("/api/exploit-cat/messaging-rce/primitives", methods=["GET"])
+def api_messaging_rce_primitives():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    return jsonify(agent.list_primitives())
+
+@app.route("/api/exploit-cat/messaging-rce/cves", methods=["GET"])
+def api_messaging_rce_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.messaging_rce import MessagingRCEAgent
+    agent = MessagingRCEAgent()
+    return jsonify(agent.get_cves())
+
+# Media Exploitation
+@app.route("/api/exploit-cat/media-exploit/describe", methods=["GET"])
+def api_media_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    return jsonify(agent.describe())
+
+@app.route("/api/exploit-cat/media-exploit/simulate-video", methods=["POST"])
+def api_media_exploit_simulate_video():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_video_exploit(
+        data.get("format", "mp4"),
+        data.get("codec", "h264"),
+        data.get("target", "vlc")
+    ))
+
+@app.route("/api/exploit-cat/media-exploit/simulate-audio", methods=["POST"])
+def api_media_exploit_simulate_audio():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_audio_exploit(
+        data.get("format", "mp3"),
+        data.get("codec", "mp3"),
+        data.get("target", "player")
+    ))
+
+@app.route("/api/exploit-cat/media-exploit/simulate-image", methods=["POST"])
+def api_media_exploit_simulate_image():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_image_exploit(
+        data.get("format", "png"),
+        data.get("codec", "libpng"),
+        data.get("target", "viewer")
+    ))
+
+@app.route("/api/exploit-cat/media-exploit/generate-payload", methods=["POST"])
+def api_media_exploit_generate_payload():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.generate_payload(
+        data.get("format", "mp4"),
+        data.get("vector", "buffer_overflow")
+    ))
+
+@app.route("/api/exploit-cat/media-exploit/primitives", methods=["GET"])
+def api_media_exploit_primitives():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    return jsonify(agent.list_primitives())
+
+@app.route("/api/exploit-cat/media-exploit/cves", methods=["GET"])
+def api_media_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.media_exploit import MediaExploitAgent
+    agent = MediaExploitAgent()
+    return jsonify(agent.get_cves())
+
+# File Parsing Exploitation
+@app.route("/api/exploit-cat/file-parse-exploit/describe", methods=["GET"])
+def api_file_parse_exploit_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    return jsonify(agent.describe())
+
+@app.route("/api/exploit-cat/file-parse-exploit/simulate-xxe", methods=["POST"])
+def api_file_parse_exploit_simulate_xxe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_xxe_exploit(
+        data.get("target", "parser"),
+        data.get("payload", "file:///etc/passwd")
+    ))
+
+@app.route("/api/exploit-cat/file-parse-exploit/simulate-pdf", methods=["POST"])
+def api_file_parse_exploit_simulate_pdf():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_pdf_exploit(
+        data.get("target", "acrobat"),
+        data.get("exploit_type", "heap_overflow")
+    ))
+
+@app.route("/api/exploit-cat/file-parse-exploit/simulate-email", methods=["POST"])
+def api_file_parse_exploit_simulate_email():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_email_exploit(
+        data.get("target", "email_client"),
+        data.get("exploit_type", "attachment")
+    ))
+
+@app.route("/api/exploit-cat/file-parse-exploit/simulate-office", methods=["POST"])
+def api_file_parse_exploit_simulate_office():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_office_exploit(
+        data.get("target", "word"),
+        data.get("exploit_type", "macro")
+    ))
+
+@app.route("/api/exploit-cat/file-parse-exploit/generate-payload", methods=["POST"])
+def api_file_parse_exploit_generate_payload():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.generate_payload(
+        data.get("format", "pdf"),
+        data.get("vector", "buffer_overflow")
+    ))
+
+@app.route("/api/exploit-cat/file-parse-exploit/primitives", methods=["GET"])
+def api_file_parse_exploit_primitives():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    return jsonify(agent.list_primitives())
+
+@app.route("/api/exploit-cat/file-parse-exploit/cves", methods=["GET"])
+def api_file_parse_exploit_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.file_parse_exploit import FileParseExploitAgent
+    agent = FileParseExploitAgent()
+    return jsonify(agent.get_cves())
+
+# ── Sandbox / VM Management ────────────────────────────────────────
+
+@app.route("/api/sandbox/vms", methods=["GET"])
+def api_sandbox_vms():
+    """Return list of VMs in the sandbox."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    vms = [
+        {"id": "ios-1", "name": "iOS Simulator - iPhone 15 Pro", "os": "iOS 17.4", "ip": "192.168.1.42", "gpu": "A17 Pro", "status": "online", "type": "ios"},
+        {"id": "ios-2", "name": "iOS Simulator - iPad Pro", "os": "iOS 17.4", "ip": "192.168.1.43", "gpu": "A16Z", "status": "online", "type": "ios"},
+        {"id": "android-1", "name": "Android Emulator - Pixel 8", "os": "Android 14", "ip": "192.168.1.50", "gpu": "Adreno 740", "status": "online", "type": "android"},
+        {"id": "android-2", "name": "Android Emulator - Pixel 7 Pro", "os": "Android 13", "ip": "192.168.1.51", "gpu": "Mali-G710", "status": "stopped", "type": "android"},
+        {"id": "win-1", "name": "Windows 11 Pro - C2 Controller", "os": "Windows 11", "ip": "10.0.5.20", "gpu": "RTX 4090", "status": "online", "type": "desktop"},
+        {"id": "kali-1", "name": "Kali Linux - Penetration Testing", "os": "Kali 2024.3", "ip": "10.0.5.25", "gpu": "N/A", "status": "online", "type": "desktop"},
+    ]
+    return jsonify({"vms": vms, "total": len(vms), "online": sum(1 for v in vms if v["status"] == "online")})
+
+@app.route("/api/sandbox/vms/<vm_id>/power", methods=["POST"])
+def api_sandbox_vm_power(vm_id):
+    """Power on/off/restart a VM."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json() or {}
+    action = data.get("action", "status")
+    # Simulate power actions
+    return jsonify({"ok": True, "vm_id": vm_id, "action": action, "status": "online"})
+
+@app.route("/api/sandbox/vms/<vm_id>/console", methods=["GET"])
+def api_sandbox_vm_console(vm_id):
+    """Get VM console access URL."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
+    vms = {
+        "ios-1": "vnc://192.168.1.42:5900",
+        "ios-2": "vnc://192.168.1.43:5900",
+        "android-1": "vnc://192.168.1.50:5900",
+        "android-2": "vnc://192.168.1.51:5900",
+        "win-1": "vnc://10.0.5.20:5900",
+        "kali-1": "vnc://10.0.5.25:5900",
+    }
+    return jsonify({"vm_id": vm_id, "console_url": vms.get(vm_id, ""), "type": "vnc"})
+
+@app.route("/api/sandbox/devices", methods=["GET"])
+def api_sandbox_devices():
+    """Return list of C2-connected devices."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
+    devices = [
+        {"id": "192.168.1.100", "name": "Target: 192.168.1.100", "os": "Windows 10", "implant": "v2.4", "status": "active", "type": "windows"},
+        {"id": "android-1", "name": "Android: Pixel 7 (Mock)", "os": "Android 14", "implant": "v1.8", "status": "idle", "type": "android"},
+        {"id": "ios-1", "name": "iOS: iPhone 15 Pro (Mock)", "os": "iOS 17.4", "implant": "v1.6", "status": "active", "type": "ios"},
+    ]
+    return jsonify({"devices": devices, "total": len(devices)})
+
+@app.route("/api/sandbox/devices/<device_id>/action", methods=["POST"])
+def api_sandbox_device_action(device_id):
+    """Execute action on C2 device."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json() or {}
+    action = data.get("action", "")
+    actions = {
+        "screenshot": {"output": "Screenshot captured", "file": f"/loot/screenshots/{device_id}_{int(time.time())}.png"},
+        "keylogger": {"output": "Keylogger activated", "sessions": 1},
+        "terminal": {"output": "Terminal session established", "pid": random.randint(1000, 9999)},
+        "files": {"output": "File browser opened", "files": ["Documents", "Downloads", "Desktop"]},
+        "location": {"output": "Location data retrieved", "lat": 37.7749, "lon": -122.4194},
+        "contacts": {"output": "Contact list exported", "count": 247},
+        "sms": {"output": "SMS messages retrieved", "count": 156},
+        "camera": {"output": "Camera activated", "mode": "photo"},
+        "messages": {"output": "iMessage history exported", "count": 89},
+        "download": {"output": "Download initiated", "file": data.get("file", "unknown")},
+        "upload": {"output": "Upload dialog opened", "dest": data.get("dest", "/tmp/")},
+        "execute": {"output": "Command executed", "result": "0"},
+    }
+    result = actions.get(action, {"output": f"Action {action} executed"})
+    return jsonify({"ok": True, "device_id": device_id, "action": action, **result})
+
+@app.route("/api/sandbox/resources", methods=["GET"])
+def api_sandbox_resources():
+    """Return system resource usage."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
+    return jsonify({
+        "cpu": {"usage": 67, "cores": 16},
+        "memory": {"used_gb": 18.2, "total_gb": 32},
+        "gpu": {"vram_used_gb": 24, "vram_total_gb": 24, "temp_c": 72},
+        "disk": {"used_gb": 450, "total_gb": 1000},
+    })
+
+@app.route("/api/sandbox/tools", methods=["GET"])
+def api_sandbox_tools():
+    """Return list of available security tools."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+        return jsonify({"error": "unauthorized"}), 401
+    tools = [
+        {"id": "nmap", "name": "Nmap", "icon": "🔍", "desc": "Network Scanner", "category": "recon"},
+        {"id": "burp", "name": "Burp Suite", "icon": "🦇", "desc": "Web Proxy", "category": "web"},
+        {"id": "hydra", "name": "Hydra", "icon": "💧", "desc": "Brute Force", "category": "password"},
+        {"id": "metasploit", "name": "Metasploit", "icon": "🎯", "desc": "Exploit Framework", "category": "exploit"},
+        {"id": "aircrack", "name": "Aircrack-ng", "icon": "📡", "desc": "WiFi Attack", "category": "wireless"},
+        {"id": "john", "name": "John", "icon": "🔓", "desc": "Password Crack", "category": "password"},
+        {"id": "set", "name": "Social-Engineer Toolkit", "icon": "🎣", "desc": "Phishing Framework", "category": "social"},
+        {"id": "hashcat", "name": "Hashcat", "icon": "⚡", "desc": "GPU Cracker", "category": "password"},
+    ]
+    return jsonify({"tools": tools})

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Memory Corruption Exploit Simulation Agent — buffer overflow, heap corruption, UAF, format string, ROP chains."""
+"""Memory Corruption Exploit Simulation Agent."""
 import json
+import threading
 import time
 from pathlib import Path
 
@@ -8,129 +9,116 @@ ROOT = Path(__file__).parent.parent
 
 
 class MemoryCorruptionAgent:
-    """Simulated memory corruption exploitation for defensive research and red team education."""
+    """Memory corruption exploit simulation for defensive research."""
 
     def __init__(self):
-        self.simulations = []
-        self.cves = [
-            {"id": "CVE-2019-3568", "product": "WhatsApp", "type": "buffer_overflow", "severity": "critical",
-             "description": "Integer overflow in VOIP stack allowed RCE via crafted call"},
-            {"id": "CVE-2019-8641", "product": "iMessage", "type": "memory_corruption", "severity": "critical",
-             "description": "Memory corruption in image processing allowed remote code execution"},
-            {"id": "CVE-2018-4990", "product": "Adobe Acrobat", "type": "use_after_free", "severity": "high",
-             "description": "Use-after-free in PDF parsing allowed arbitrary code execution"},
-        ]
+        self.sessions = []
+        self.primitives = {}
+        self._lock = threading.Lock()
 
     def describe(self):
         return {
             "name": "memory_corruption",
-            "description": "Buffer overflow, heap corruption, use-after-free, format string, ROP chains (simulated)",
+            "description": "Memory corruption exploit simulation: buffer overflow, heap corruption, use-after-free, format string",
             "category": "red_teaming",
-            "capabilities": ["simulate_buffer_overflow", "simulate_heap_corruption", "simulate_use_after_free",
-                             "simulate_format_string", "generate_payload", "simulate_evasion", "get_cves"],
+            "capabilities": ["buffer_overflow", "heap_corruption", "use_after_free", "format_string", "rop_chain", "shellcode"],
         }
 
-    def simulate_buffer_overflow(self, target, overflow_type="stack", buffer_size=256):
-        """Simulate a buffer overflow attack scenario."""
-        result = {
+    def simulate_buffer_overflow(self, target, overflow_type="stack", size=256):
+        """Simulate buffer overflow attack."""
+        return {
+            "status": "simulated",
             "target": target,
-            "overflow_type": overflow_type,
-            "buffer_size": buffer_size,
-            "status": "simulated",
-            "success": True,
-            "simulation_id": f"bof_{int(time.time())}",
-            "details": {
-                "overwrite_offset": buffer_size + 8,
-                "return_address": "0x7fffffffe123",
-                "nop_sled_size": 128,
-                "mitigation_bypass": ["ASLR", "DEP", "Stack Canary"],
-            },
-        }
-        self.simulations.append(result)
-        return result
-
-    def simulate_heap_corruption(self, technique="tcache_poisoning"):
-        """Simulate heap corruption attack scenario."""
-        techniques = {
-            "tcache_poisoning": {"description": "Poison tcache freelist to write arbitrary address", "complexity": "medium"},
-            "unlink_attack": {"description": "Corrupt chunk metadata to trigger arbitrary write", "complexity": "high"},
-            "house_of_force": {"description": "Overflow top chunk to allocate at arbitrary address", "complexity": "high"},
-            "fastbin_dup": {"description": "Double-free in fastbin to achieve arbitrary allocation", "complexity": "medium"},
-        }
-        return {
-            "technique": technique,
-            "details": techniques.get(technique, {}),
-            "status": "simulated",
-            "success": True,
+            "type": overflow_type,
+            "size": size,
+            "payload": f"\\x41 * {size} (simulated NOP sled + shellcode placeholder)",
+            "overflow_location": f"0x{target}:0x{size:08x}",
         }
 
-    def simulate_use_after_free(self, object_type="vtable_pointer"):
-        """Simulate use-after-free exploitation."""
+    def simulate_heap_corruption(self, target, corruption_type="tcache_poisoning"):
+        """Simulate heap corruption attack."""
         return {
-            "object_type": object_type,
             "status": "simulated",
-            "success": True,
-            "details": {
-                "allocation_size": 64,
-                "fake_vtable": "0x41414141",
-                "controlled_rip": True,
-                "mitigations": ["CFI", "Safe Unlink", "Quarantine"],
-            },
-        }
-
-    def simulate_format_string(self, target, primitive="info_leak"):
-        """Simulate format string vulnerability exploitation."""
-        primitives = {
-            "info_leak": {"description": "Read stack memory via %x/%p specifiers", "payload": "%p.%p.%p.%p"},
-            "arbitrary_write": {"description": "Write to arbitrary address via %n specifier", "payload": "%10$n"},
-            "stack_pivot": {"description": "Overwrite return address via format string", "payload": "%200c%10$hn"},
-        }
-        return {
             "target": target,
-            "primitive": primitive,
-            "details": primitives.get(primitive, {}),
+            "type": corruption_type,
+            "chunk_address": f"0x{hash(target) & 0xFFFFFFFF:08x}",
+            "victim_chunk": f"0x{hash(target + '_victim') & 0xFFFFFFFF:08x}",
+            "corruption_method": f"{corruption_type} (simulated)",
+        }
+
+    def simulate_uaf(self, target, allocation_pattern="double_free"):
+        """Simulate use-after-free attack."""
+        return {
             "status": "simulated",
-            "success": True,
+            "target": target,
+            "type": allocation_pattern,
+            "freed_pointer": f"0x{hash(target) & 0xFFFFFFFF:08x}",
+            "reuse_offset": 0x10,
+            "control_gained": True,
+        }
+
+    def simulate_format_string(self, target, format_str="%n"):
+        """Simulate format string attack."""
+        return {
+            "status": "simulated",
+            "target": target,
+            "format_string": format_str,
+            "write_address": f"0x{hash(target + '_addr') & 0xFFFFFFFF:08x}",
+            "write_value": 0x41414141,
+            "overflow_sequence": [
+                f"{format_str} * 100",
+                "target_address_lsb",
+                "target_address_msb",
+                "final_write"
+            ],
         }
 
     def generate_payload(self, payload_type="nop_sled", arch="x86_64"):
-        """Generate a simulated exploit payload description."""
-        payloads = {
-            "nop_sled": {"description": "NOP sled + shellcode pattern", "size": 256, "pattern": "0x90 * 128 + shellcode"},
-            "rop_chain": {"description": "Return-oriented programming chain", "gadgets": 8, "base_address": "0x7ffff7a00000"},
-            "shellcode_template": {"description": "Position-independent shellcode template", "arch": arch, "size": 48},
-            "polymorphic": {"description": "Polymorphic shellcode with decoder stub", "iterations": 5, "mutation_rate": 0.3},
-        }
+        """Generate simulated exploit payload."""
         return {
-            "payload_type": payload_type,
-            "arch": arch,
-            "details": payloads.get(payload_type, {}),
             "status": "simulated",
-            "success": True,
-        }
-
-    def simulate_evasion(self, technique="polymorphic"):
-        """Simulate evasion techniques for defensive analysis."""
-        techniques = {
-            "polymorphic": {"description": "Mutating shellcode with encrypted payload", "detection_rate": "reduced"},
-            "metamorphic": {"description": "Instruction-level code transformation", "detection_rate": "significantly reduced"},
-            "anti_analysis": {"description": "Anti-debugging and anti-VM techniques", "checks": ["IsDebuggerPresent", "CPUID", "RDTSC"]},
-        }
-        return {
-            "technique": technique,
-            "details": techniques.get(technique, {}),
-            "status": "simulated",
-            "success": True,
+            "type": payload_type,
+            "architecture": arch,
+            "size": 1024 if payload_type == "nop_sled" else 512,
+            "content": f"{'\\x90' * 100} <shellcode_placeholder> {'\\x41' * (1024 - 100)}",
+            "encoding": "raw",
+            "encoder": None,
         }
 
     def get_cves(self):
-        """Return reference CVEs for memory corruption vulnerabilities."""
-        return {"cves": self.cves, "count": len(self.cves), "status": "simulated"}
+        """Return CVE references for memory corruption vulnerabilities."""
+        return [
+            {"id": "CVE-2019-3568", "title": "WhatsApp heap corruption vulnerability", "severity": "critical"},
+            {"id": "CVE-2019-8641", "title": "iMessage buffer overflow vulnerability", "severity": "critical"},
+            {"id": "CVE-2018-4990", "title": "Adobe Acrobat file parsing RCE", "severity": "critical"},
+            {"id": "CVE-2017-0144", "title": "EternalBlue SMB vulnerability", "severity": "critical"},
+            {"id": "CVE-2022-0847", "title": "DirtyPipe Linux kernel privilege escalation", "severity": "high"},
+        ]
 
-    def get_simulations(self):
-        return {"simulations": self.simulations, "count": len(self.simulations)}
+    def list_primitives(self):
+        """Return list of memory corruption primitives."""
+        return [
+            "buffer_overflow",
+            "heap_corruption",
+            "use_after_free",
+            "format_string",
+            "integer_overflow",
+            "type_confusion",
+            "double_free",
+            "heap_overflow",
+        ]
+
+    def map_to_exploit(self, primitive):
+        """Map primitive to real-world exploit techniques."""
+        mappings = {
+            "buffer_overflow": ["ROP chain", "JOP chain", "COP chain", "shellcode injection"],
+            "heap_corruption": ["tcache poisoning", "house of spirit", "house of orange", "heap feng shui"],
+            "use_after_free": ["double free", "fastbin attack", "tcache dup", "overlap attack"],
+            "format_string": ["arbitrary write", "info leak", "stack pivot", "return-to-libc"],
+        }
+        return mappings.get(primitive, ["generic exploitation"])
 
 
-if __name__ == "__main__":
-    agent = MemoryCorruptionAgent()
-    print(json.dumps(agent.describe(), indent=2))
+# Module-level state for Flask
+_exploit_lock = threading.Lock()
+_exploit_data = {}

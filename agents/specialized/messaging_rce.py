@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Messaging RCE Exploit Simulation Agent — iMessage/WhatsApp/Signal/Telegram RCE simulation."""
+"""Messaging RCE Exploit Simulation Agent."""
 import json
+import threading
 import time
 from pathlib import Path
 
@@ -8,163 +9,96 @@ ROOT = Path(__file__).parent.parent
 
 
 class MessagingRCEAgent:
-    """Simulated messaging application RCE for defensive research and red team education."""
+    """Messaging RCE exploit simulation for defensive research."""
 
     def __init__(self):
-        self.simulations = []
-        self.cves = [
-            {"id": "CVE-2019-3568", "product": "WhatsApp", "type": "buffer_overflow", "severity": "critical",
-             "description": "Integer overflow in VOIP stack allowed RCE via crafted VOIP call (Pegasus-related)"},
-            {"id": "FORCEDENTRY", "product": "iMessage", "type": "image_parsing", "severity": "critical",
-             "description": "GIF parsing vulnerability in iMessage allowed zero-click RCE"},
-            {"id": "BLASTPASS", "product": "iOS Messages", "type": "memory_corruption", "severity": "critical",
-             "description": "Single-packet iMessage exploit targeting CoreGraphics for zero-click RCE"},
-        ]
+        self.sessions = []
+        self.primitives = {}
+        self._lock = threading.Lock()
 
     def describe(self):
         return {
             "name": "messaging_rce",
-            "description": "Messaging app RCE simulation: iMessage/WhatsApp/Signal/Telegram (simulated)",
+            "description": "Messaging protocol exploit simulation: iMessage, WhatsApp, Signal, Telegram RCE",
             "category": "red_teaming",
-            "capabilities": ["simulate_imessage_rce", "simulate_whatsapp_rce", "simulate_signal_rce",
-                             "simulate_telegram_rce", "simulate_rtcp_injection", "generate_payload", "get_cves"],
+            "capabilities": ["imessage_exploit", "whatsapp_exploit", "signal_exploit", "telegram_exploit"],
         }
 
-    def simulate_imessage_rce(self, vector="gif_parsing"):
-        """Simulate iMessage remote code execution scenario."""
-        vectors = {
-            "gif_parsing": {
-                "description": "GIF image parsing vulnerability in CoreGraphics",
-                "component": "CoreGraphics GIF decoder",
-                "vulnerability": "Heap buffer overflow during GIF frame processing",
-                "impact": "Zero-click RCE via iMessage attachment",
-            },
-            "pdf_rendering": {
-                "description": "PDF rendering vulnerability in message preview",
-                "component": "CoreGraphics PDF parser",
-                "vulnerability": "Use-after-free during PDF parsing",
-                "impact": "RCE via malicious PDF attachment",
-            },
-            "rtcp_injection": {
-                "description": "RTCP packet injection during VOIP call",
-                "component": "VOIP stack",
-                "vulnerability": "Buffer overflow in RTCP packet processing",
-                "impact": "RCE via crafted VOIP call",
-            },
-        }
-        result = {
-            "vector": vector,
-            "status": "simulated",
-            "success": True,
-            "simulation_id": f"imsg_{int(time.time())}",
-            "details": vectors.get(vector, {}),
-        }
-        self.simulations.append(result)
-        return result
-
-    def simulate_whatsapp_rce(self, vector="voip_stack"):
-        """Simulate WhatsApp remote code execution scenario."""
-        vectors = {
-            "voip_stack": {
-                "description": "VOIP stack buffer overflow (CVE-2019-3568)",
-                "component": "SRTCP packet handler",
-                "vulnerability": "Integer overflow in buffer size calculation",
-                "impact": "RCE via crafted VOIP call",
-                "patched": True,
-            },
-            "media_processing": {
-                "description": "Media file processing vulnerability",
-                "component": "Image/video codec parser",
-                "vulnerability": "Heap overflow during media decoding",
-                "impact": "RCE via malicious media file",
-            },
-        }
+    def simulate_imessage_exploit(self, target="iphone_user", exploit_type="rce"):
+        """Simulate iMessage exploit."""
         return {
-            "vector": vector,
             "status": "simulated",
-            "success": True,
-            "details": vectors.get(vector, {}),
-        }
-
-    def simulate_signal_rce(self, vector="attachment_parsing"):
-        """Simulate Signal remote code execution scenario."""
-        return {
-            "vector": vector,
-            "status": "simulated",
-            "success": True,
-            "details": {
-                "component": "Attachment processor",
-                "vulnerability": "Simulated parsing vulnerability",
-                "impact": "Simulated RCE via malicious attachment",
-                "note": "Signal has strong security; this is purely educational simulation",
-            },
-        }
-
-    def simulate_telegram_rce(self, vector="media_parsing"):
-        """Simulate Telegram remote code execution scenario."""
-        return {
-            "vector": vector,
-            "status": "simulated",
-            "success": True,
-            "details": {
-                "component": "Media file parser",
-                "vulnerability": "Simulated codec parsing flaw",
-                "impact": "Simulated RCE via malicious media",
-                "note": "Telegram has layered security; this is purely educational simulation",
-            },
-        }
-
-    def simulate_rtcp_injection(self, target="192.168.1.10"):
-        """Simulate RTCP packet injection attack."""
-        return {
             "target": target,
-            "status": "simulated",
-            "success": True,
-            "details": {
-                "protocol": "RTCP (RTP Control Protocol)",
-                "injection_method": "Crafted RTCP packet during VOIP session",
-                "payload_type": "Malformed SDES or BYE packet",
-                "impact": "Buffer overflow in RTCP handler",
-                "mitigation": "Input validation, bounds checking, ASLR/DEP",
-            },
+            "vector": "iMessage media processing",
+            "exploit": f"{exploit_type} via crafted image",
+            "requirements": ["target must receive iMessage", "iOS vulnerability"],
         }
 
-    def generate_payload(self, payload_type="image_codec_abuse", format="gif"):
-        """Generate a simulated messaging exploit payload description."""
-        payloads = {
-            "image_codec_abuse": {
-                "description": "Malformed image file targeting codec vulnerability",
-                "format": format,
-                "technique": "Heap overflow via crafted frame dimensions",
-                "size": "48KB",
-            },
-            "rtcp_malformed": {
-                "description": "Malformed RTCP packet for VOIP stack overflow",
-                "packet_type": "SDES",
-                "overflow_field": "CNAME field",
-            },
-            "message_format_abuse": {
-                "description": "Malformed message structure exploiting parser",
-                "format": "protobuf",
-                "technique": "Integer overflow in length field",
-            },
-        }
+    def simulate_whatsapp_exploit(self, target="whatsapp_user", exploit_type="rce"):
+        """Simulate WhatsApp exploit."""
         return {
-            "payload_type": payload_type,
-            "format": format,
-            "details": payloads.get(payload_type, {}),
             "status": "simulated",
-            "success": True,
+            "target": target,
+            "vector": "WhatsApp video/media processing",
+            "exploit": f"{exploit_type} via crafted media",
+            "requirements": ["target must receive message", "WhatsApp vulnerability"],
+        }
+
+    def simulate_signal_exploit(self, target="signal_user", exploit_type="rce"):
+        """Simulate Signal exploit."""
+        return {
+            "status": "simulated",
+            "target": target,
+            "vector": "Signal media processing",
+            "exploit": f"{exploit_type} via crafted attachment",
+            "requirements": ["target must receive message", "Signal vulnerability"],
+        }
+
+    def simulate_telegram_exploit(self, target="telegram_user", exploit_type="rce"):
+        """Simulate Telegram exploit."""
+        return {
+            "status": "simulated",
+            "target": target,
+            "vector": "Telegram media/processing",
+            "exploit": f"{exploit_type} via crafted message",
+            "requirements": ["target must receive message", "Telegram vulnerability"],
+        }
+
+    def generate_payload(self, platform="imessage", payload_type="rce"):
+        """Generate messaging exploit payload."""
+        return {
+            "status": "simulated",
+            "platform": platform,
+            "payload_type": payload_type,
+            "format": "crafted_media",
+            "content": f"<simulated_{platform}_{payload_type}_payload>",
         }
 
     def get_cves(self):
-        """Return reference CVEs for messaging RCE vulnerabilities."""
-        return {"cves": self.cves, "count": len(self.cves), "status": "simulated"}
+        """Return CVE references for messaging vulnerabilities."""
+        return [
+            {"id": "CVE-2019-8641", "title": "iMessage buffer overflow (Pegasus)", "severity": "critical"},
+            {"id": "CVE-2019-8646", "title": "iMessage kernel heap overflow (Pegasus)", "severity": "critical"},
+            {"id": "CVE-2019-8647", "title": "iMessage sandbox escape (Pegasus)", "severity": "critical"},
+            {"id": "CVE-2021-30860", "title": "Safari WebKit use-after-free (Pegasus)", "severity": "critical"},
+            {"id": "CVE-2022-2051", "title": "Android WhatsApp WebView RCE", "severity": "high"},
+        ]
 
-    def get_simulations(self):
-        return {"simulations": self.simulations, "count": len(self.simulations)}
+    def list_primitives(self):
+        """Return list of messaging primitives."""
+        return ["media_processing", "protocol_parsing", "code_injection", "file_format_abuse"]
+
+    def map_to_exploit(self, primitive):
+        """Map primitive to real-world messaging exploit techniques."""
+        mappings = {
+            "media_processing": ["image parsing RCE", "video codec exploit", "audio file RCE"],
+            "protocol_parsing": ["message parsing", "packet manipulation", "protocol violation"],
+            "code_injection": ["script injection", "template injection", "format string"],
+            "file_format_abuse": ["zip slip", "path traversal", "content type confusion"],
+        }
+        return mappings.get(primitive, ["generic messaging exploitation"])
 
 
-if __name__ == "__main__":
-    agent = MessagingRCEAgent()
-    print(json.dumps(agent.describe(), indent=2))
+# Module-level state for Flask
+_exploit_lock = threading.Lock()
+_exploit_data = {}
