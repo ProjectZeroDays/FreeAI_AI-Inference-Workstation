@@ -19,7 +19,12 @@ except ImportError:
 try:
     from notifications_ws import notify, get_settings, update_settings, get_log, clear_log, get_unread_count
 except ImportError:
-    pass
+    def notify(*a, **kw): pass
+    def get_settings(*a, **kw): return {}
+    def update_settings(*a, **kw): return True
+    def get_log(*a, **kw): return []
+    def clear_log(*a, **kw): pass
+    def get_unread_count(*a, **kw): return 0
 
 try:
     from log_stream import push_log as log_push, get_log_buffer, clear_log_buffer
@@ -1768,13 +1773,28 @@ def api_skills_aggregated():
             category = "general"
             fm = _re2.match(r"^---\n([\s\S]*?)\n---", content)
             if fm:
-                for line in fm.group(1).split("\n"):
-                    if line.startswith("name:"):
-                        name = line.split(":", 1)[1].strip().strip('"').strip("'")
-                    elif line.startswith("description:"):
-                        desc = line.split(":", 1)[1].strip().strip('"')
-                    elif line.startswith("category:"):
-                        category = line.split(":", 1)[1].strip()
+                fm_lines = fm.group(1).split("\n")
+                _name_val = _re2.match(r"^name:\s*(.*)", fm_lines[0] if fm_lines else "")
+                for _li, _line in enumerate(fm_lines):
+                    if _line.startswith("name:"):
+                        _nv = _line.split(":", 1)[1].strip().strip('"').strip("'")
+                        if _nv and _nv not in (">", "|"):
+                            name = _nv
+                    elif _line.startswith("description:"):
+                        _dv = _line.split(":", 1)[1].strip().strip('"').strip("'")
+                        if _dv in (">", "|"):
+                            _parts = []
+                            for _lj in range(_li + 1, len(fm_lines)):
+                                _nl = fm_lines[_lj]
+                                if _nl and _nl[0] in (" ", "\t"):
+                                    _parts.append(_nl.strip())
+                                else:
+                                    break
+                            desc = "\n".join(_parts)
+                        else:
+                            desc = _dv
+                    elif _line.startswith("category:"):
+                        category = _line.split(":", 1)[1].strip()
             skills.append({"name": name, "path": str(skill_md), "description": desc[:120], "category": category, "source": str(base_dir.name)})
     return jsonify({"skills": skills, "total": len(skills)})
 
@@ -1826,41 +1846,152 @@ def api_campaign_delete(campaign_id):
 
 
 # ── API: Salad Integration ───────────────────────────────────────
-import os as _os
-SALAD_API_KEY = _os.environ.get("SALAD_API_KEY", "")
+_SALAD_LOCK = threading.Lock()
+_SALAD_API_KEY = os.environ.get("SALAD_API_KEY", "")
+# Backwards-compatible alias for tests
+SALAD_API_KEY = _SALAD_API_KEY
+_SALAD_CACHE: dict = {"salad": None, "gpu": None, "ts": 0.0}
+_SALAD_CACHE_TTL = 300  # 5 minutes
+
+
+def _mock_earnings() -> dict:
+    return {
+        "total_usd": round(random.uniform(12.50, 487.30), 2),
+        "gpu_hours": random.randint(120, 2400),
+        "nodes": [
+            {"id": f"node-{i:03d}", "status": "running", "gpu": "NVIDIA RTX 4090",
+             "earnings_24h": round(random.uniform(0.5, 12.0), 2)}
+            for i in range(random.randint(3, 8))
+        ],
+        "jobs": [
+            {"id": f"job-{uuid.uuid4().hex[:8]}", "model": random.choice(["llama-3-8b", "mistral-7b", "stable-diffusion-xl"]),
+             "status": random.choice(["running", "queued"])}
+            for _ in range(random.randint(1, 4))
+        ],
+    }
+
+
+def _mock_gpus() -> list[dict]:
+    models = [
+        ("NVIDIA RTX 4090", 24), ("NVIDIA A100", 80), ("NVIDIA H100", 80),
+        ("AMD Radeon VII", 16), ("NVIDIA RTX 3090", 24), ("NVIDIA Tesla T4", 16),
+    ]
+    return [
+        {
+            "id": f"gpu-{uuid.uuid4().hex[:6]}",
+            "name": name,
+            "status": "active" if random.random() > 0.1 else "offline",
+            "utilization": round(random.uniform(0, 100), 1),
+            "temperature": round(random.uniform(40, 85), 1),
+            "vram_total": vram,
+            "vram_used": round(random.uniform(vram * 0.1, vram * 0.95), 1),
+            "earnings_24h": round(random.uniform(0.5, 15.0), 2),
+        }
+        for name, vram in random.sample(models, k=random.randint(3, len(models)))
+    ]
+
+
+def _mock_history() -> list[dict]:
+    days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    now = time.time()
+    return [
+        {
+            "date": time.strftime("%Y-%m-%d", time.localtime(now - 86400 * i)),
+            "day_label": days[int((now // 86400 - i) % 7)],
+            "earnings": round(random.uniform(2.0, 48.0), 2),
+            "gpu_hours": random.randint(8, 72),
+        }
+        for i in range(7)
+    ][::-1]
+
+
+def _salad_fetch_cached(endpoint: str) -> dict:
+    global _SALAD_API_KEY
+    now = time.time()
+    if _SALAD_CACHE[endpoint] and (now - _SALAD_CACHE["ts"]) < _SALAD_CACHE_TTL:
+        return _SALAD_CACHE[endpoint]
+    if not _SALAD_API_KEY:
+        result = {"configured": False, "mock": True}
+        if endpoint == "salad":
+            result["data"] = _mock_earnings()
+        elif endpoint == "gpu":
+            result["gpus"] = _mock_gpus()
+        with _SALAD_LOCK:
+            _SALAD_CACHE[endpoint] = result
+            _SALAD_CACHE["ts"] = now
+        return result
+    try:
+        import urllib.request
+        url = f"https://api.salad.com/api/v1/{endpoint}"
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {_SALAD_API_KEY}"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+        result = {"configured": True, "live": True}
+        if endpoint == "salad":
+            result["data"] = data
+        elif endpoint == "gpu":
+            result["gpus"] = data
+        with _SALAD_LOCK:
+            _SALAD_CACHE[endpoint] = result
+            _SALAD_CACHE["ts"] = now
+        return result
+    except Exception as e:
+        err = {"configured": True, "error": str(e)}
+        if endpoint == "salad":
+            err["data"] = {"total_usd": 0, "gpu_hours": 0}
+        elif endpoint == "gpu":
+            err["gpus"] = []
+        with _SALAD_LOCK:
+            _SALAD_CACHE[endpoint] = err
+            _SALAD_CACHE["ts"] = now
+        return err
 
 
 @app.route("/api/salad")
 def api_salad():
-    if not SALAD_API_KEY:
-        return jsonify({"error": "SALAD_API_KEY not set", "configured": False})
-    try:
-        import urllib.request
-        req = urllib.request.Request("https://api.salad.com/api/v1/earnings", headers={"Authorization": f"Bearer {SALAD_API_KEY}"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode())
-        return jsonify({"configured": True, "data": data})
-    except Exception as e:
-        return jsonify({"configured": True, "error": str(e), "earnings": {"total_usd": 0, "gpu_hours": 0}})
+    return jsonify(_salad_fetch_cached("salad"))
 
 
 @app.route("/api/salad/gpu")
 def api_salad_gpu():
-    if not SALAD_API_KEY:
-        return jsonify({"error": "SALAD_API_KEY not set", "configured": False})
-    try:
-        import urllib.request
-        req = urllib.request.Request("https://api.salad.com/api/v1/gpus", headers={"Authorization": f"Bearer {SALAD_API_KEY}"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode())
-        return jsonify({"configured": True, "gpus": data})
-    except Exception as e:
-        return jsonify({"configured": True, "error": str(e), "gpus": []})
+    return jsonify(_salad_fetch_cached("gpu"))
+
+
+@app.route("/api/salad/config", methods=["GET"])
+def api_salad_config_get():
+    return jsonify({"configured": bool(_SALAD_API_KEY)})
+
+
+@app.route("/api/salad/config", methods=["POST"])
+def api_salad_config_post():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    global _SALAD_API_KEY
+    body = request.get_json(silent=True) or {}
+    key = (body.get("api_key") or "").strip()
+    with _SALAD_LOCK:
+        if key:
+            _SALAD_API_KEY = key
+            _SALAD_CACHE["salad"] = None
+            _SALAD_CACHE["gpu"] = None
+            _SALAD_CACHE["ts"] = 0.0
+            return jsonify({"configured": True, "saved": True})
+        else:
+            _SALAD_API_KEY = ""
+            _SALAD_CACHE["salad"] = None
+            _SALAD_CACHE["gpu"] = None
+            _SALAD_CACHE["ts"] = 0.0
+            return jsonify({"configured": False, "saved": True, "cleared": True})
+
+
+@app.route("/api/salad/history")
+def api_salad_history():
+    return jsonify({"history": _mock_history(), "mock": not bool(_SALAD_API_KEY)})
 
 
 # ── API: Aikido Integration ──────────────────────────────────────
-AIKIDO_API_KEY = _os.environ.get("AIKIDO_API_KEY", "")
-AIKIDO_APP_ID = _os.environ.get("AIKIDO_APP_ID", "")
+AIKIDO_API_KEY = os.environ.get("AIKIDO_API_KEY", "")
+AIKIDO_APP_ID = os.environ.get("AIKIDO_APP_ID", "")
 
 
 @app.route("/api/aikido")
@@ -2809,6 +2940,243 @@ def security_page():
     return render_template("security.html")
 
 
+@app.route("/encryption")
+def encryption_page():
+    return render_template("encryption.html")
+
+
+@app.route("/api/encryption/disks")
+def api_encryption_disks():
+    """Return LUKS status and block device info for all disks."""
+    import subprocess
+    result = {"disks": [], "lsblk": "", "scanned_at": ""}
+    try:
+        r = subprocess.run(["lsblk", "-J", "-b", "-o",
+                            "NAME,SIZE,TYPE,MODEL,ROTA,MOUNTPOINT"],
+                           capture_output=True, text=True, timeout=10)
+        result["lsblk"] = r.stdout.strip()
+        j = json.loads(r.stdout) if r.stdout.strip() else {}
+        for d in j.get("blockdevices", []):
+            if d.get("type") != "disk":
+                continue
+            name = "/dev/" + d["name"]
+            size_bytes = int(d.get("size", 0) or 0)
+            model = (d.get("model") or "").strip()
+            rotated = d.get("rota", "")
+            # Check LUKS on this disk and its children
+            encrypted = False
+            luks_uuid = ""
+            luks_version = ""
+            part_info = ""
+            try:
+                pr = subprocess.run(["blkid", "-o", "value", "-s", "TYPE", name],
+                                    capture_output=True, text=True, timeout=5)
+                if "luks" in (pr.stdout or "").lower():
+                    encrypted = True
+                    try:
+                        vr = subprocess.run(["cryptsetup", "status", name],
+                                            capture_output=True, text=True, timeout=5)
+                        for line in vr.stdout.splitlines():
+                            if "version" in line:
+                                luks_version = line.split(":")[-1].strip()
+                            if "uuid" in line:
+                                luks_uuid = line.split(":")[-1].strip()
+                    except Exception:
+                        pass
+                for child in d.get("children", []):
+                    cn = name + child.get("name", "")
+                    cr = subprocess.run(["blkid", "-o", "value", "-s", "TYPE", cn],
+                                        capture_output=True, text=True, timeout=5)
+                    if "luks" in (cr.stdout or "").lower():
+                        encrypted = True
+                        try:
+                            cr2 = subprocess.run(["cryptsetup", "status", cn],
+                                                 capture_output=True, text=True, timeout=5)
+                            for line in cr2.stdout.splitlines():
+                                if "version" in line:
+                                    luks_version = line.split(":")[-1].strip()
+                                if "uuid" in line:
+                                    luks_uuid = line.split(":")[-1].strip()
+                        except Exception:
+                            pass
+            except Exception:
+                pass
+            # Check partition info file
+            part_file = "/etc/freeai/partition-info.json"
+            if os.path.isfile(part_file):
+                try:
+                    with open(part_file) as f:
+                        pi = json.load(f)
+                    if pi.get("disk") == name:
+                        part_info = pi.get("schema", "")
+                except Exception:
+                    pass
+            result["disks"].append({
+                "name": name,
+                "size_bytes": size_bytes,
+                "size_human": f"{size_bytes / 1e9:.1f} GB" if size_bytes else "0 GB",
+                "model": model,
+                "rotational": bool(int(rotated)) if rotated else None,
+                "encrypted": encrypted,
+                "luks_uuid": luks_uuid,
+                "luks_version": luks_version,
+                "partition_info": part_info,
+            })
+    except Exception as e:
+        result["lsblk"] = str(e)
+    result["scanned_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    return jsonify(result)
+
+
+@app.route("/api/encryption/check-passphrase", methods=["POST"])
+def api_encryption_check_passphrase():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    """Test a passphrase against a LUKS device without opening it."""
+    data = request.get_json(silent=True) or {}
+    disk = data.get("disk", "")
+    passphrase = data.get("passphrase", "")
+    if not disk or not passphrase:
+        return jsonify({"error": "disk and passphrase required"}), 400
+    try:
+        import subprocess
+        pr = subprocess.run(
+            ["cryptsetup", "luksOpen", "--test-passphrase", disk],
+            input=passphrase, capture_output=True, text=True, timeout=30
+        )
+        valid = (pr.returncode == 0)
+        return jsonify({"valid": valid, "disk": disk})
+    except subprocess.TimeoutExpired:
+        return jsonify({"error": "timeout"}), 504
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/encryption/recovery-key", methods=["POST"])
+def api_encryption_recovery_key():
+    """Generate a new recovery key and persist it."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    import secrets, string
+    length = 32
+    chars = string.ascii_letters + string.digits + "-_"
+    key = "".join(secrets.choice(chars) for _ in range(length))
+    part_file = "/etc/freeai/partition-info.json"
+    pi = {}
+    if os.path.isfile(part_file):
+        try:
+            with open(part_file) as f:
+                pi = json.load(f)
+        except Exception:
+            pass
+    pi["recovery_key"] = key
+    pi["recovery_key_generated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    os.makedirs(os.path.dirname(part_file), exist_ok=True)
+    try:
+        with open(part_file, "w") as f:
+            json.dump(pi, f, indent=2)
+    except OSError as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"ok": True, "key": key, "length": length})
+
+
+@app.route("/api/encryption/encrypt-disk", methods=["POST"])
+def api_encryption_encrypt_disk():
+    """Encrypt a disk with LUKS2 (destructive — wipes the disk)."""
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    disk = data.get("disk", "")
+    passphrase = data.get("passphrase", "")
+    if not disk or not passphrase:
+        return jsonify({"error": "disk and passphrase required"}), 400
+    if not disk.startswith("/dev/"):
+        disk = "/dev/" + disk
+    try:
+        import subprocess
+        # Wipe existing signatures
+        subprocess.run(["wipefs", "-a", disk], check=False, timeout=30)
+        subprocess.run(["dd", "if=/dev/urandom", "of=" + disk, "bs=1M", "count=10"],
+                       check=False, capture_output=True, timeout=60)
+        # Partition: single partition spanning disk
+        subprocess.run(["parted", "-s", disk, "mklabel", "gpt"], check=True, capture_output=True, timeout=10)
+        subprocess.run(["parted", "-s", disk, "mkpart", "primary", "ext4", "1MiB", "100%"],
+                       check=True, capture_output=True, timeout=10)
+        part = disk + "1"
+        # LUKS format
+        defaults_file = "/opt/freeai/config/luks-defaults.json"
+        cipher = "aes-xts-plain64"
+        key_size = 512
+        pbkdf = "argon2id"
+        pbkdf_mem = 65536
+        if os.path.isfile(defaults_file):
+            with open(defaults_file) as f:
+                defaults = json.load(f)
+            cipher = defaults.get("cipher", cipher)
+            key_size = defaults.get("key_size", key_size)
+            pbkdf = defaults.get("pbkdf", pbkdf)
+            pbkdf_mem = defaults.get("pbkdf-memory", pbkdf_mem)
+        cryptsetup_args = [
+            "cryptsetup", "luksFormat", "--type", "luks2",
+            "--cipher", cipher, "--key-size", str(key_size),
+            "--pbkdf", pbkdf, "--pbkdf-memory", str(pbkdf_mem),
+            "--batch-mode", part
+        ]
+        pr = subprocess.run(cryptsetup_args, input=passphrase,
+                            capture_output=True, text=True, timeout=120)
+        if pr.returncode != 0:
+            return jsonify({"error": "cryptsetup failed: " + pr.stderr}), 500
+        # Open LUKS container
+        pr_open = subprocess.run(
+            ["cryptsetup", "luksOpen", part, "freeai_crypt"],
+            input=passphrase, capture_output=True, text=True, timeout=60
+        )
+        if pr_open.returncode != 0:
+            return jsonify({"error": "cryptsetup luksOpen failed: " + pr_open.stderr}), 500
+        mapper = "/dev/mapper/freeai_crypt"
+        # Create LVM: VG freeai_vg, LV root (80%), LV swap (20%)
+        subprocess.run(["pvcreate", mapper], check=True, capture_output=True, timeout=30)
+        subprocess.run(["vgcreate", "freeai_vg", mapper], check=True, capture_output=True, timeout=30)
+        subprocess.run(
+            ["lvcreate", "-l", "80%VG", "-n", "root", "freeai_vg"],
+            check=True, capture_output=True, timeout=30
+        )
+        subprocess.run(
+            ["lvcreate", "-l", "20%VG", "-n", "swap", "freeai_vg"],
+            check=True, capture_output=True, timeout=30
+        )
+        subprocess.run(["mkfs.ext4", "-L", "freeai-root", "/dev/freeai_vg/root"],
+                       check=True, capture_output=True, timeout=60)
+        subprocess.run(["mkswap", "-L", "freeai-swap", "/dev/freeai_vg/swap"],
+                       check=True, capture_output=True, timeout=30)
+        # Generate recovery key
+        import secrets, string
+        chars = string.ascii_letters + string.digits + "-_"
+        recovery_key = "".join(secrets.choice(chars) for _ in range(32))
+        # Write partition info
+        part_file = "/etc/freeai/partition-info.json"
+        pi = {
+            "schema": "full-disk-luks-lvm",
+            "disk": disk,
+            "partitions": part,
+            "lvm": {"vg": "freeai_vg", "root_lv": "/dev/freeai_vg/root", "swap_lv": "/dev/freeai_vg/swap"},
+            "luks": {"version": "luks2", "cipher": cipher, "key_size": key_size,
+                     "pbkdf": pbkdf, "pbkdf-memory_kb": pbkdf_mem},
+            "recovery_key": recovery_key,
+            "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+        os.makedirs(os.path.dirname(part_file), exist_ok=True)
+        with open(part_file, "w") as f:
+            json.dump(pi, f, indent=2)
+        return jsonify({"ok": True, "recovery_key": recovery_key, "partition": part})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"error": str(e)}), 500
+    except subprocess.TimeoutExpired:
+        return jsonify({"error": "operation timed out"}), 504
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/security/scan", methods=["POST"])
 def api_security_scan():
     data = request.get_json(silent=True) or {}
@@ -3598,5 +3966,344 @@ def auth_delete_user(username):
     ok, err = users_store.delete_user(username)
     if not ok:
         return jsonify({"error": err}), 400
+    return jsonify({"ok": True})
+
+
+# ── API: Skills Catalog ────────────────────────────────────────
+CATALOG_PATH = SKILLS_DIR / "catalog.json"
+_CATALOG_LOCK = threading.Lock()
+
+
+def _load_catalog():
+    if CATALOG_PATH.exists():
+        try:
+            return json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {"skills": [], "sources": [], "total": 0, "generated_at": "", "fetch_errors": []}
+
+
+@app.route("/skills-catalog")
+def skills_catalog_page():
+    locale = get_locale_from_session(session)
+    return render_template("skills-catalog.html", i18n_locale=locale)
+
+
+@app.route("/api/skills/catalog")
+def api_skills_catalog():
+    with _CATALOG_LOCK:
+        catalog = _load_catalog()
+    catalog["skills"] = catalog.get("skills", [])
+    catalog["sources"] = catalog.get("sources", [])
+    catalog["fetch_errors"] = catalog.get("fetch_errors", [])
+    catalog["total"] = len(catalog["skills"])
+    return jsonify(catalog)
+
+
+@app.route("/api/skills/catalog/refresh", methods=["POST"])
+def api_skills_catalog_refresh():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    import subprocess as _sp
+    scraper_path = str(ROOT.parent / "scripts" / "scrape_skills.py")
+    try:
+        r = _sp.run(
+            [sys.executable, scraper_path],
+            capture_output=True, text=True, timeout=30,
+            cwd=str(ROOT.parent),
+        )
+        if r.returncode == 0:
+            catalog = _load_catalog()
+            return jsonify({"ok": True, "total": catalog.get("total", 0), "message": r.stdout.strip()})
+        else:
+            return jsonify({"ok": False, "error": r.stderr.strip() or "scraper failed"}), 500
+    except FileNotFoundError:
+        # Scraper not found — rebuild catalog from fallback data directly
+        try:
+            from scripts.scrape_skills import build_catalog
+            build_catalog()
+            catalog = _load_catalog()
+            return jsonify({"ok": True, "total": catalog.get("total", 0), "message": "rebuilt from fallback"})
+        except ImportError:
+            return jsonify({"ok": False, "error": "scraper not available"}), 500
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@app.route("/api/skills/available")
+def api_skills_available():
+    with _CATALOG_LOCK:
+        catalog = _load_catalog()
+    local_ids = set()
+    for _scan_base in [SKILLS_DIR, SKILLS_DIR.parent / ".opencode" / "skills", SKILLS_DIR.parent / ".agents" / "skills"]:
+        if _scan_base.exists():
+            for _d in _scan_base.iterdir():
+                if _d.is_dir() and (_d / "SKILL.md").exists():
+                    local_ids.add(_d.name)
+    available = []
+    for skill in catalog.get("skills", []):
+        if not skill.get("local") and skill.get("id") not in local_ids:
+            available.append(skill)
+    return jsonify({"skills": available, "total": len(available)})
+
+
+@app.route("/api/skills/catalog/install", methods=["POST"])
+def api_skills_catalog_install():
+    data = request.get_json(silent=True) or {}
+    skill_id = data.get("id", "").strip()
+    if not skill_id or not re.fullmatch(r"[a-zA-Z0-9_-]{1,50}", skill_id):
+        return jsonify({"error": "invalid id (allow alphanumeric, _, - only)"}), 400
+    skill_dir = SKILLS_DIR / skill_id
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    # Write a minimal SKILL.md from catalog data
+    name = data.get("name", skill_id)
+    desc = data.get("description", "")
+    category = data.get("category", "general")
+    triggers = data.get("triggers", [])
+    content = f"""---
+name: {name}
+description: >
+  {desc}
+triggers:
+{chr(10).join('  - ' + t for t in triggers) if triggers else '  - trigger'}
+category: {category}
+auto_generated: false
+enabled: true
+metadata:
+  source: catalog
+  installed_at: "{time.strftime('%Y-%m-%d %H:%M:%S')}"
+---
+
+# {name}
+
+{desc}
+
+## Usage
+Triggered by: {', '.join(triggers) if triggers else skill_id}
+"""
+    (skill_dir / "SKILL.md").write_text(content, encoding="utf-8")
+    return jsonify({"ok": True, "id": skill_id, "path": str(skill_dir / "SKILL.md")})
+
+
+# ── Remote Access (SSH / VNC / noVNC) ──────────────────────────
+_REMOTE_ACCESS_CONFIG = Path("/etc/freeai/remote-access.json")
+_REMOTE_ACCESS_LOCK = threading.Lock()
+
+
+def _get_remote_status():
+    """Read and return remote-access config; probe services if possible."""
+    with _REMOTE_ACCESS_LOCK:
+        cfg = _load_json(_REMOTE_ACCESS_CONFIG, {})
+    # Probe actual service states
+    import subprocess
+    ssh_ok = False
+    vnc_ok = False
+    novnc_ok = False
+    ssh_keys = []
+    try:
+        r = subprocess.run(["pgrep", "-x", "sshd"], capture_output=True, text=True)
+        ssh_ok = r.returncode == 0
+    except Exception:
+        pass
+    try:
+        r = subprocess.run(["pgrep", "-f", "vncserver"], capture_output=True, text=True)
+        vnc_ok = r.returncode == 0
+    except Exception:
+        pass
+    try:
+        r = subprocess.run(["pgrep", "-f", "websockify.*6080"], capture_output=True, text=True)
+        novnc_ok = r.returncode == 0
+    except Exception:
+        pass
+    # Count SSH keys from both root and freeai users
+    for kp in [Path("/root/.ssh/authorized_keys"), Path("/home/freeai/.ssh/authorized_keys")]:
+        if kp.exists():
+            lines = [l.strip() for l in kp.read_text().splitlines() if l.strip() and not l.startswith("#")]
+            ssh_keys.extend(lines)
+    keys_unique = list(dict.fromkeys(ssh_keys))
+    return {
+        "ssh": {
+            "running": ssh_ok,
+            "port": 22,
+            "password_set": bool(cfg.get("ssh", {}).get("password_set")),
+            "keys_count": len(keys_unique),
+        },
+        "vnc": {
+            "running": vnc_ok,
+            "port": 5900,
+            "display": cfg.get("vnc", {}).get("display", 0),
+            "password_set": bool(cfg.get("vnc", {}).get("password_set")),
+        },
+        "novnc": {
+            "running": novnc_ok,
+            "port": 6080,
+            "url": cfg.get("novnc", {}).get("url", "http://localhost:6080/vnc.html"),
+        },
+        "setup_done": cfg.get("setup_complete", False),
+        "keys": keys_unique,
+    }
+
+
+@app.route("/remote-access")
+def remote_access_page():
+    locale = get_locale_from_session(session)
+    return render_template("remote-access.html", i18n_locale=locale)
+
+
+@app.route("/api/remote-access/status")
+def api_remote_access_status():
+    return jsonify(_get_remote_status())
+
+
+@app.route("/api/remote-access/ssh/start", methods=["POST"])
+def api_remote_access_ssh_start():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        subprocess.run(["service", "ssh", "start"], check=True, capture_output=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"ok": True})
+
+
+@app.route("/api/remote-access/ssh/stop", methods=["POST"])
+def api_remote_access_ssh_stop():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        subprocess.run(["service", "ssh", "stop"], check=True, capture_output=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"ok": True})
+
+
+@app.route("/api/remote-access/ssh/keys", methods=["GET", "POST"])
+def api_remote_access_ssh_keys():
+    if request.method == "GET":
+        return jsonify({"keys": _get_remote_status().get("keys", [])})
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    action = data.get("action", "")
+    keys = data.get("keys", [])
+    targets = [Path("/root/.ssh/authorized_keys"), Path("/home/freeai/.ssh/authorized_keys")]
+    # Ensure /home/freeai exists
+    freeai_home = Path("/home/freeai")
+    if not freeai_home.exists():
+        freeai_home.mkdir(parents=True, exist_ok=True)
+    for t in targets:
+        t.parent.mkdir(parents=True, exist_ok=True)
+    existing = []
+    for t in targets:
+        if t.exists():
+            for l in t.read_text().splitlines():
+                s = l.strip()
+                if s and not s.startswith("#"):
+                    existing.append(s)
+    existing = list(dict.fromkeys(existing))
+    if action == "add":
+        added = 0
+        for k in keys:
+            k = k.strip()
+            if k and k not in existing:
+                existing.append(k)
+                added += 1
+        for t in targets:
+            t.write_text("\n".join(existing) + "\n")
+            t.chmod(0o600)
+            if t.parent.exists():
+                t.parent.chmod(0o700)
+        return jsonify({"ok": True, "added": added, "total": len(existing)})
+    elif action == "remove":
+        idx = data.get("index")
+        if idx is not None and 0 <= idx < len(existing):
+            existing.pop(idx)
+            for t in targets:
+                t.write_text("\n".join(existing) + "\n")
+                t.chmod(0o600)
+                if t.parent.exists():
+                    t.parent.chmod(0o700)
+            return jsonify({"ok": True, "total": len(existing)})
+        return jsonify({"error": "invalid index"}), 400
+    return jsonify({"error": "unknown action"}), 400
+
+
+@app.route("/api/remote-access/vnc/start", methods=["POST"])
+def api_remote_access_vnc_start():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    # Precondition: /root/.vnc/passwd must exist before starting vncserver
+    vnc_passwd = Path("/root/.vnc/passwd")
+    if not vnc_passwd.exists():
+        # Read VNC password from config or generate a random one
+        cfg = _load_json(_REMOTE_ACCESS_CONFIG, {})
+        pw = cfg.get("vnc", {}).get("password", "")
+        if not pw:
+            import string as _str
+            pw = "".join(random.choices(_str.ascii_letters + _str.digits, k=8))
+        pw = pw[:8]
+        vnc_passwd.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            r = subprocess.run(
+                ["vncpasswd", "-f"], input=pw + "\n" + pw + "\n",
+                capture_output=True, text=True, timeout=5,
+            )
+            if r.returncode == 0:
+                vnc_passwd.write_text(r.stdout)
+            else:
+                vnc_passwd.write_text(pw)
+        except Exception:
+            vnc_passwd.write_text(pw)
+        vnc_passwd.chmod(0o600)
+    try:
+        subprocess.run(
+            ["vncserver", ":0", "-geometry", "1920x1080", "-depth", "24", "-localhost", "no"],
+            check=True, capture_output=True, timeout=10,
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"ok": True})
+
+
+@app.route("/api/remote-access/vnc/stop", methods=["POST"])
+def api_remote_access_vnc_stop():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    try:
+        subprocess.run(["vncserver", "-kill", ":0"], check=True, capture_output=True)
+    except Exception:
+        pass  # may not be running
+    return jsonify({"ok": True})
+
+
+@app.route("/api/remote-access/vnc/password", methods=["POST"])
+def api_remote_access_vnc_password():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    pw = (data.get("password") or "").strip()
+    if not pw:
+        return jsonify({"error": "password required"}), 400
+    pw = pw[:8]  # TigerVNC limit
+    vnc_passwd = Path("/root/.vnc/passwd")
+    vnc_passwd.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        r = subprocess.run(
+            ["vncpasswd", "-f"], input=pw + "\n" + pw + "\n",
+            capture_output=True, text=True, timeout=5,
+        )
+        if r.returncode == 0:
+            vnc_passwd.write_text(r.stdout)
+        else:
+            # Fallback: write raw and let vncserver handle it
+            vnc_passwd.write_text(pw)
+    except Exception:
+        vnc_passwd.write_text(pw)
+    vnc_passwd.chmod(0o600)
+    # Update config
+    with _REMOTE_ACCESS_LOCK:
+        cfg = _load_json(_REMOTE_ACCESS_CONFIG, {})
+        cfg.setdefault("vnc", {})["password_set"] = True
+        _save_json(_REMOTE_ACCESS_CONFIG, cfg)
     return jsonify({"ok": True})
 

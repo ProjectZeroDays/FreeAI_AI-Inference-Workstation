@@ -13,6 +13,7 @@
                     margin-bottom:18px; flex-wrap:wrap; gap:10px; }
     .salad-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
     .salad-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .topbar-actions { display:flex; align-items:center; gap:8px; }
     .salad-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:18px; }
     .s-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
     .s-stat .s-val { font-size:24px; font-weight:700; color:var(--accent); }
@@ -55,6 +56,33 @@
     .toast.show { transform:translateY(0); opacity:1; }
     .toast.success { border-color:rgba(34,197,94,.4); }
     .toast.error { border-color:rgba(239,68,68,.4); }
+    .chart-section { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:18px; }
+    .chart-title { font-size:13px; color:var(--muted); margin-bottom:12px; font-weight:600; }
+    .bar-chart { display:flex; align-items:flex-end; gap:6px; height:120px; padding-top:8px; }
+    .bar-col { display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; gap:4px; }
+    .bar { width:100%; border-radius:4px 4px 0 0; min-height:2px; transition:height .6s ease;
+          background:linear-gradient(180deg, var(--accent), rgba(34,197,94,.4)); }
+    .bar-label { font-size:10px; color:var(--muted-2); }
+    .bar-value { font-size:10px; color:var(--accent); font-family:'JetBrains Mono',monospace; }
+    .config-panel { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:18px; }
+    .config-panel h3 { margin:0 0 12px; font-size:14px; color:var(--muted); }
+    .config-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .config-row input { flex:1; min-width:200px; background:rgba(2,6,23,.6); border:1px solid var(--border);
+                       border-radius:8px; padding:8px 12px; color:var(--text); font-size:13px;
+                       font-family:'JetBrains Mono',monospace; }
+    .config-row input:focus { outline:none; border-color:var(--accent); }
+    .refresh-meta { font-size:11px; color:var(--muted-2); margin-top:4px; }
+    .portal-link { display:inline-flex; align-items:center; gap:6px; padding:6px 14px;
+                   border-radius:8px; font-size:12px; font-weight:600; text-decoration:none;
+                   background:rgba(56,189,248,.1); color:var(--accent-2); border:1px solid rgba(56,189,248,.25);
+                   transition:background .2s; }
+    .portal-link:hover { background:rgba(56,189,248,.18); }
+    .btn-disconnect { background:rgba(239,68,68,.08); color:var(--danger); border:1px solid rgba(239,68,68,.25);
+                      padding:6px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; }
+    .btn-disconnect:hover { background:rgba(239,68,68,.15); }
+    .mock-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px;
+                  border-radius:999px; font-size:10px; font-weight:600;
+                  background:rgba(148,163,184,.1); color:var(--muted); border:1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -93,13 +121,27 @@
           <p>Distributed GPU earnings and node monitoring via Salad Labs</p>
         </div>
         <div class="topbar-actions">
+          <a class="portal-link" href="https://portal.salad.com" target="_blank" rel="noopener">
+            ↗ Salad Portal
+          </a>
           <span id="salad-config-badge" class="unconfigured-badge">⚠ Not configured</span>
           <button class="btn" id="btn-refresh">↻ Refresh</button>
         </div>
       </header>
 
+      <div class="config-panel">
+        <h3>API Configuration</h3>
+        <div class="config-row">
+          <input type="password" id="api-key-input" placeholder="Enter Salad API key…" />
+          <button class="btn" id="btn-save-key">Save</button>
+          <button class="btn-disconnect" id="btn-disconnect" style="display:none">Disconnect</button>
+        </div>
+        <div class="refresh-meta" id="refresh-meta"></div>
+      </div>
+
       <div class="env-info" id="env-info">
         API Key: <code id="api-key-display">not set</code>
+        <span id="mock-indicator" class="mock-badge" style="margin-left:8px;display:none">Mock Data</span>
       </div>
 
       <div class="salad-stats" id="stats">
@@ -107,6 +149,13 @@
         <div class="s-stat"><span class="s-val" id="s-gpu-hours">0</span><span class="s-lbl">GPU Hours</span></div>
         <div class="s-stat"><span class="s-val" id="s-nodes">0</span><span class="s-lbl">Active Nodes</span></div>
         <div class="s-stat"><span class="s-val" id="s-jobs">0</span><span class="s-lbl">Active Jobs</span></div>
+      </div>
+
+      <div class="chart-section" id="chart-section">
+        <div class="chart-title">Earnings — Last 7 Days</div>
+        <div class="bar-chart" id="bar-chart">
+          <div class="empty-state" style="padding:20px"><p>Loading chart…</p></div>
+        </div>
       </div>
 
       <h3 style="font-size:14px;margin-bottom:12px;color:var(--muted)">GPU Nodes</h3>
@@ -128,6 +177,8 @@
     function formatGbps(n) { return (parseFloat(n) || 0).toLocaleString() + ' GB'; }
 
     let saladData = null;
+    let historyData = null;
+    let lastRefresh = null;
 
     async function load() {
       try {
@@ -137,9 +188,14 @@
         renderStatus();
         renderStats();
         if (saladData.error) throw new Error(saladData.error);
-        loadGPUs();
+        await Promise.all([loadGPUs(), loadHistory()]);
+        lastRefresh = new Date();
+        renderRefreshTime();
       } catch(e) {
-        $('gpu-list').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><p>${e.message}</p></div>`;
+        $('gpu-list').innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          <div style="font-size:40px;opacity:.4;margin-bottom:12px">⚠</div>
+          <p>${e.message}</p>
+          <p style="font-size:12px;margin-top:8px;color:var(--muted-2)">Ensure SALAD_API_KEY is set or use mock data mode.</p></div>`;
       }
     }
 
@@ -196,16 +252,46 @@
       }
     }
 
+    async function loadHistory() {
+      try {
+        const r = await fetch('/api/salad/history');
+        const d = await r.json();
+        historyData = d.history || [];
+        renderChart();
+      } catch(e) {
+        $('bar-chart').innerHTML = `<div style="padding:10px;font-size:12px;color:var(--muted-2)">Chart unavailable</div>`;
+      }
+    }
+
+    function renderChart() {
+      if (!historyData || !historyData.length) return;
+      const max = Math.max(...historyData.map(h => h.earnings), 1);
+      $('bar-chart').innerHTML = historyData.map(h => {
+        const heightPct = (h.earnings / max) * 100;
+        return `<div class="bar-col">
+          <div class="bar-value">${formatUsd(h.earnings)}</div>
+          <div class="bar" style="height:${heightPct}%"></div>
+          <div class="bar-label">${h.day_label}</div>
+        </div>`;
+      }).join('');
+    }
+
     function renderStatus() {
       const badge = $('salad-config-badge');
+      const mockBadge = $('mock-indicator');
+      const disconnectBtn = $('btn-disconnect');
       if (saladData.configured) {
         badge.className = 'configured-badge';
         badge.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:currentColor"></span> Configured';
-        $('api-key-display').textContent = '••••••••' + (saladData.data?.last4 || '');
+        $('api-key-display').textContent = saladData.mock ? 'mock mode (no key set)' : '••••••••';
+        disconnectBtn.style.display = 'inline-flex';
+        mockBadge.style.display = saladData.mock ? 'inline-flex' : 'none';
       } else {
         badge.className = 'unconfigured-badge';
         badge.innerHTML = '⚠ Not configured';
         $('api-key-display').textContent = 'Set SALAD_API_KEY env var';
+        disconnectBtn.style.display = 'none';
+        mockBadge.style.display = 'none';
       }
     }
 
@@ -217,7 +303,50 @@
       $('s-jobs').textContent = (d.jobs || []).length;
     }
 
+    function renderRefreshTime() {
+      if (!lastRefresh) return;
+      $('refresh-meta').textContent = 'Last refreshed: ' + lastRefresh.toLocaleTimeString();
+    }
+
     $('btn-refresh').addEventListener('click', load);
+
+    $('btn-save-key').addEventListener('click', async () => {
+      const key = $('api-key-input').value.trim();
+      try {
+        const r = await fetch('/api/salad/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({api_key: key}),
+        });
+        const d = await r.json();
+        if (d.saved) {
+          toast('API key saved successfully');
+          $('api-key-input').value = '';
+          await load();
+        } else {
+          toast('Failed to save key', 'error');
+        }
+      } catch(e) {
+        toast('Request failed: ' + e.message, 'error');
+      }
+    });
+
+    $('btn-disconnect').addEventListener('click', async () => {
+      try {
+        const r = await fetch('/api/salad/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({api_key: ''}),
+        });
+        const d = await r.json();
+        if (d.cleared) {
+          toast('API key cleared');
+          await load();
+        }
+      } catch(e) {
+        toast('Failed to disconnect', 'error');
+      }
+    });
 
     load();
     setInterval(load, 60000);

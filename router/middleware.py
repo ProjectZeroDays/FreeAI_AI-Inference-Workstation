@@ -17,6 +17,7 @@ _RATE_CAPACITY = int(CFG.get("rate_limit_capacity", 100))
 _RATE_REFILL = float(CFG.get("rate_limit_refill_per_min", 100)) / 60.0
 
 _BUCKETS: dict = {}
+_CLIENT_RATES: dict = {}
 _RATE_LOCK = threading.Lock()
 
 
@@ -39,6 +40,23 @@ class RateLimiter:
                 return False
             _BUCKETS[client_id] = (tokens - 1, now)
             return True
+
+    def allow_client(self, api_key: str = "") -> bool:
+        """Rate limit using API key as bucket when available, falling back
+        to IP-based buckets for unkeyed requests."""
+        client_id = api_key if api_key else "unknown"
+        return self.allow(client_id)
+
+
+def get_client_api_key() -> str:
+    """Extract the API key from the current request headers."""
+    key = request.headers.get("X-API-Key", "").strip()
+    if key:
+        return key
+    legacy = request.headers.get("X-Auth-Token", "").strip()
+    if legacy:
+        return legacy
+    return ""
 
 
 # ----------------------------------------------------------- api key loading

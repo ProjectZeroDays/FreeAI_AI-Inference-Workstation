@@ -22,6 +22,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(dash, "ACTIVITY_LOG", tmp_path / "activity_log.jsonl")
     monkeypatch.setattr(dash, "UPLOAD_DIR", tmp_path / "uploads")
     monkeypatch.setattr(dash, "SALAD_API_KEY", "")
+    monkeypatch.setattr(dash, "_SALAD_API_KEY", "")
     monkeypatch.setattr(dash, "AIKIDO_API_KEY", "")
     monkeypatch.setattr(dash, "AIKIDO_APP_ID", "")
     monkeypatch.setattr(dash, "OPT_SETTINGS_PATH",
@@ -50,6 +51,8 @@ def client(tmp_path, monkeypatch):
     dash._gpu_state["total_vram_mb"] = 0
     dash._gpu_state["used_vram_mb"] = 0
     dash._uploads.clear()
+    dash._SALAD_API_KEY = ""
+    dash._SALAD_CACHE = {"salad": None, "gpu": None, "ts": 0.0}
     dash.app.config["TESTING"] = True
     dash.app.config["SECRET_KEY"] = "test-secret-key-for-evals"
     with dash.app.test_client() as c:

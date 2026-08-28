@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Skills Catalog</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .catalog-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .catalog-main { padding:22px 24px 32px; min-width:0; }
+    .catalog-topbar { display:flex; align-items:flex-start; justify-content:space-between;
+                      padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                      margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .catalog-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .catalog-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .search-box {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px;
+      padding:7px 12px; font-size:13px; width:260px;
+      font-family:Inter, system-ui, sans-serif;
+    }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45);
+                        box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .catalog-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+                    gap:14px; }
+    .catalog-card {
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:14px;
+      padding:14px; box-shadow:0 10px 30px rgba(2,6,23,.45);
+      backdrop-filter:blur(8px); transition:border-color .18s ease, transform .15s ease;
+    }
+    .catalog-card:hover { border-color:var(--border-strong); transform:translateY(-2px); }
+    .catalog-card-header { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; }
+    .catalog-icon { width:32px; height:32px; border-radius:8px; display:grid; place-items:center;
+                   background:linear-gradient(135deg, rgba(14,165,233,.2), rgba(34,197,94,.2));
+                   color:var(--accent-2); font-size:13px; flex-shrink:0; font-weight:700; }
+    .catalog-title { font-size:14px; font-weight:600; color:var(--text); margin:0; }
+    .catalog-source { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .catalog-desc { font-size:12px; color:var(--muted); line-height:1.55;
+                    display:-webkit-box; -webkit-line-clamp:3;
+                    -webkit-box-orient:vertical; overflow:hidden; margin:0 0 10px; }
+    .catalog-meta { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .catalog-tag { font-size:11px; padding:2px 7px; border-radius:999px;
+                   background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.25);
+                   color:#BAE6FD; }
+    .catalog-tag.cat-red { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.25); color:#FCA5A5; }
+    .catalog-tag.cat-devops { background:rgba(168,85,247,.1); border-color:rgba(168,85,247,.25); color:#D8B4FE; }
+    .catalog-tag.cat-data { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.25); color:#FDE68A; }
+    .catalog-tag.cat-creative { background:rgba(236,72,153,.1); border-color:rgba(236,72,153,.25); color:#FBCFE8; }
+    .catalog-tag.cat-prod { background:rgba(34,197,94,.1); border-color:rgba(34,197,94,.25); color:#BBF7D0; }
+    .catalog-actions { display:flex; gap:8px; margin-top:10px; padding-top:10px;
+                       border-top:1px solid var(--border); }
+    .btn { background:linear-gradient(180deg, #111D33, #0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:5px 12px;
+           font-size:12px; font-weight:500; cursor:pointer; transition:all .15s ease;
+           font-family:Inter,system-ui,sans-serif; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg, #0EA5E9, #22C55E);
+                   color:#020617; border-color:transparent; font-weight:700; }
+    .btn-primary:hover { opacity:.9; }
+    .btn-sm { padding:4px 10px; font-size:11px; }
+    /* Stats */
+    .stats-bar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+    .stat-chip { background:rgba(255,255,255,.04); border:1px solid var(--border);
+                 border-radius:12px; padding:10px 14px; display:flex; flex-direction:column;
+                 gap:2px; }
+    .stat-chip .stat-val { font-size:20px; font-weight:700; color:var(--accent); }
+    .stat-chip .stat-label { font-size:11px; color:var(--muted-2); }
+    /* Category filter */
+    .category-pill { padding:5px 12px; border-radius:999px; font-size:12px;
+                     font-weight:500; cursor:pointer; border:1px solid var(--border);
+                     background:transparent; color:var(--muted); transition:all .15s;
+                     font-family:Inter,system-ui,sans-serif; }
+    .category-pill:hover, .category-pill.active { background:rgba(34,197,94,.1);
+                                                    border-color:rgba(34,197,94,.3);
+                                                    color:#BBF7D0; }
+    .categories-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    /* Toast */
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); grid-column:1/-1; }
+    .empty-state .empty-icon { font-size:48px; margin-bottom:12px; opacity:.4; }
+    .refresh-btn { position:relative; }
+    .refresh-btn.spinning .refresh-icon { animation:spin .8s linear infinite; }
+    @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+    .source-badge { font-size:10px; padding:1px 6px; border-radius:999px;
+                    background:rgba(148,163,184,.08); color:var(--muted-2);
+                    border:1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="catalog-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Skills Catalog</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/dashboard" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/skills-catalog" class="nav-item active"><span class="nav-dot"></span> Catalog</a>
+        <a href="/agents" class="nav-item"><span class="nav-dot"></span> Agents</a>
+        <a href="/models" class="nav-item"><span class="nav-dot"></span> Models</a>
+        <a href="/plugins" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="catalog-count" class="muted" style="margin-left:auto">0 skills</span>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <div class="catalog-main">
+      <header class="catalog-topbar">
+        <div>
+          <h1>Skills Catalog</h1>
+          <p>Browse and install skills from external sources and the curated library</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="text" class="search-box" id="search" placeholder="Search catalog…" />
+          <button class="btn refresh-btn" id="btn-refresh" title="Refresh catalog">
+            <span class="refresh-icon">↻</span> Refresh
+          </button>
+        </div>
+      </header>
+
+      <!-- Stats -->
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat-chip"><span class="stat-val" id="stat-total">0</span><span class="stat-label">Total Skills</span></div>
+        <div class="stat-chip"><span class="stat-val" id="stat-available">0</span><span class="stat-label">Available</span></div>
+        <div class="stat-chip"><span class="stat-val" id="stat-sources">0</span><span class="stat-label">Sources</span></div>
+        <div class="stat-chip"><span class="stat-val" id="stat-categories">0</span><span class="stat-label">Categories</span></div>
+      </div>
+
+      <!-- Category filter -->
+      <div class="categories-row" id="categories-row">
+        <button class="category-pill active" data-cat="all">All</button>
+      </div>
+
+      <!-- Skill grid -->
+      <div class="catalog-grid" id="catalog-grid">
+        <div class="empty-state">
+          <div class="empty-icon">✦</div>
+          <p>Loading catalog…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── State ─────────────────────────────────────────────────────
+    let catalog = { skills: [], sources: [], fetch_errors: [] };
+    let localIds = new Set();
+    let currentCat = 'all';
+    const API_BASE = '';
+
+    // ── Helpers ───────────────────────────────────────────────────
+    function $(id) { return document.getElementById(id); }
+    function toast(msg, type='success') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                       .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function catClass(cat) {
+      const c = (cat || '').toLowerCase();
+      if (c.includes('red') || c.includes('secur')) return 'cat-red';
+      if (c.includes('devops')) return 'cat-devops';
+      if (c.includes('data')) return 'cat-data';
+      if (c.includes('creative')) return 'cat-creative';
+      if (c.includes('product')) return 'cat-prod';
+      return '';
+    }
+
+    // ── Load data ─────────────────────────────────────────────────
+    async function loadCatalog() {
+      try {
+        const r = await fetch('/api/skills/catalog');
+        catalog = await r.json();
+      } catch(e) {
+        catalog = { skills: [], sources: [], fetch_errors: [], total: 0 };
+      }
+      try {
+        const r2 = await fetch('/api/skills/available');
+        const avail = await r2.json();
+        localIds = new Set(catalog.skills.filter(s => s.local).map(s => s.id));
+        catalog._available = avail.skills || [];
+      } catch(e) {
+        catalog._available = [];
+      }
+      renderCatalog();
+      updateStats();
+    }
+
+    function updateStats() {
+      const skills = catalog.skills || [];
+      const sources = catalog.sources || [];
+      const cats = new Set(skills.map(s => s.category || 'general'));
+      $('stat-total').textContent = skills.length;
+      $('stat-available').textContent = (catalog._available || []).length;
+      $('stat-sources').textContent = sources.length;
+      $('stat-categories').textContent = cats.size;
+      $('catalog-count').textContent = skills.length + ' skills';
+    }
+
+    function renderCategories() {
+      const cats = ['all', ...new Set((catalog.skills || []).map(s => s.category || 'general'))];
+      const row = $('categories-row');
+      row.innerHTML = cats.map(c =>
+        `<button class="category-pill${c===currentCat?' active':''}" data-cat="${c}">${escapeHtml(c)}</button>`
+      ).join('');
+      row.querySelectorAll('.category-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentCat = btn.dataset.cat;
+          renderCategories();
+          renderGrid();
+        });
+      });
+    }
+
+    function renderGrid(filter='') {
+      const grid = $('catalog-grid');
+      let skills = catalog.skills || [];
+      if (currentCat !== 'all') {
+        skills = skills.filter(s => (s.category || 'general') === currentCat);
+      }
+      if (filter) {
+        const q = filter.toLowerCase();
+        skills = skills.filter(s =>
+          (s.name||'').toLowerCase().includes(q) ||
+          (s.description||'').toLowerCase().includes(q) ||
+          (s.triggers||[]).some(t => t.toLowerCase().includes(q)) ||
+          (s.category||'').toLowerCase().includes(q)
+        );
+      }
+      if (!skills.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">✦</div>
+          <p>${filter ? 'No skills match your search.' : 'No skills in catalog.'}</p>
+        </div>`;
+        return;
+      }
+      grid.innerHTML = skills.map(s => {
+        const installed = localIds.has(s.id);
+        const catCls = catClass(s.category);
+        return `
+        <div class="catalog-card" data-id="${escapeHtml(s.id)}">
+          <div class="catalog-card-header">
+            <div class="catalog-icon">${(s.name||'?').charAt(0).toUpperCase()}</div>
+            <div style="flex:1;min-width:0">
+              <p class="catalog-title">${escapeHtml(s.name || 'unnamed')}</p>
+              <p class="catalog-source">${escapeHtml(s.category || 'general')}
+                <span class="source-badge">${escapeHtml(s.source || 'unknown')}</span>
+              </p>
+            </div>
+          </div>
+          <p class="catalog-desc">${escapeHtml(s.description || 'No description.')}</p>
+          <div class="catalog-meta">
+            <span class="catalog-tag ${catCls}">${escapeHtml(s.category || 'general')}</span>
+            ${(s.triggers||[]).slice(0,3).map(t=>`<span class="catalog-tag">${escapeHtml(t)}</span>`).join('')}
+          </div>
+          <div class="catalog-actions">
+            ${installed
+              ? '<span style="font-size:12px;color:var(--accent);align-self:center">✓ Installed</span>'
+              : `<button class="btn btn-sm btn-primary" onclick="installSkill('${escapeHtml(s.id)}','${escapeHtml((s.name||'').replace(/'/g,"\\'"))}','${escapeHtml((s.description||'').replace(/'/g,"\\'"))}','${escapeHtml((s.category||'general').replace(/'/g,"\\'"))}',${JSON.stringify(s.triggers||[])})">Install</button>`
+            }
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function installSkill(id, name, desc, category, triggers) {
+      try {
+        const r = await fetch('/api/skills/catalog/install', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ id, name, description: desc, category, triggers }),
+        });
+        const result = await r.json();
+        if (result.ok) {
+          localIds.add(id);
+          toast(`Installed "${name}"`);
+          renderGrid($('search').value);
+          updateStats();
+        } else {
+          toast(result.error || 'Install failed', 'error');
+        }
+      } catch(e) {
+        toast('Network error: ' + e.message, 'error');
+      }
+    }
+
+    async function refreshCatalog() {
+      const btn = $('btn-refresh');
+      btn.classList.add('spinning');
+      btn.disabled = true;
+      try {
+        const r = await fetch('/api/skills/catalog/refresh', { method: 'POST' });
+        const result = await r.json();
+        if (result.ok) {
+          toast(`Catalog refreshed — ${result.total} skills`);
+          await loadCatalog();
+          renderCategories();
+          renderGrid($('search').value);
+        } else {
+          toast(result.error || 'Refresh failed', 'error');
+        }
+      } catch(e) {
+        toast('Refresh failed: ' + e.message, 'error');
+      } finally {
+        btn.classList.remove('spinning');
+        btn.disabled = false;
+      }
+    }
+
+    // ── Event listeners ───────────────────────────────────────────
+    $('search').addEventListener('input', e => renderGrid(e.target.value));
+    $('btn-refresh').addEventListener('click', refreshCatalog);
+
+    // ── Init ──────────────────────────────────────────────────────
+    loadCatalog().then(() => { renderCategories(); renderGrid(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Remote Access</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .ra-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    .ra-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; gap: 8px; }
+    .ra-header h1 { font-size: 18px; font-weight: 700; margin: 0; }
+    .ra-header p { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+    .ra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 16px; padding: 24px; overflow-y: auto; flex: 1; }
+    .ra-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; transition: border-color .15s, transform .15s;
+    }
+    .ra-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+    .ra-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .ra-card-icon { font-size: 20px; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: var(--panel-2); }
+    .ra-card-title { font-size: 14px; font-weight: 700; }
+    .ra-card-sub { font-size: 11px; color: var(--muted-2); margin-top: 1px; }
+    .ra-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+    .ra-label { font-size: 12px; color: var(--muted); }
+    .ra-value { font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .ra-value.up { color: var(--accent); }
+    .ra-value.down { color: var(--muted-2); }
+    .ra-value.warn { color: var(--warn); }
+    .ra-btn {
+      padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--panel-2); color: var(--muted); font-size: 11px; font-weight: 600;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .ra-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
+    .ra-btn.primary { background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.3); color: var(--accent); }
+    .ra-btn.primary:hover { background: rgba(34,197,94,.2); }
+    .ra-btn.danger { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.25); color: #EF4444; }
+    .ra-btn.danger:hover { background: rgba(239,68,68,.18); }
+    .ra-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .ra-badge {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px;
+      border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .ra-badge.on { background: rgba(34,197,94,.12); color: var(--accent); border: 1px solid rgba(34,197,94,.3); }
+    .ra-badge.off { background: rgba(148,163,184,.08); color: var(--muted-2); border: 1px solid var(--border); }
+    .ra-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .ra-badge.on .dot { animation: rapulse 1.5s infinite; }
+    @keyframes rapulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .ra-input {
+      width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-soft); color: var(--text); font-size: 12px; font-family: 'JetBrains Mono', monospace;
+      box-sizing: border-box; transition: border-color .15s;
+    }
+    .ra-input:focus { outline: none; border-color: var(--accent-2); }
+    .ra-textarea { resize: vertical; min-height: 70px; }
+    .ra-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .ra-link { color: var(--accent-2); font-size: 12px; text-decoration: none; font-family: 'JetBrains Mono', monospace; }
+    .ra-link:hover { text-decoration: underline; }
+    .ra-divider { height: 1px; background: var(--border); margin: 10px 0; }
+    .ra-info { font-size: 11px; color: var(--muted-2); margin-top: 4px; }
+    .ra-toast {
+      position: fixed; bottom: 24px; right: 24px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px;
+      font-size: 12px; color: var(--text); z-index: 9999; display: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .ra-toast.ok { border-color: rgba(34,197,94,.4); color: var(--accent); }
+    .ra-toast.err { border-color: rgba(239,68,68,.4); color: #EF4444; }
+    .ra-keys-list { max-height: 120px; overflow-y: auto; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--muted); margin-top: 6px; }
+    .ra-key-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 6px; border-radius: 4px; }
+    .ra-key-row:hover { background: var(--panel-2); }
+    .ra-key-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; margin-right: 8px; }
+    .ra-key-row button { background: none; border: none; color: var(--muted-2); cursor: pointer; font-size: 12px; padding: 2px 4px; }
+    .ra-key-row button:hover { color: #EF4444; }
+    .ra-iframe-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-top: 8px; }
+    .ra-iframe-wrap iframe { width: 100%; height: 420px; border: none; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Remote Access</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+        <a href="/remote-access" class="nav-item active"><span class="nav-dot"></span> Remote Access</a>
+        <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="main" style="padding:0;overflow:hidden">
+      <div class="ra-layout">
+        <div class="ra-header">
+          <div>
+            <h1>Remote Access</h1>
+            <p>SSH · TigerVNC · noVNC — manage remote connectivity</p>
+          </div>
+          <div class="ra-actions">
+            <button class="ra-btn" onclick="loadStatus()">↻ Refresh</button>
+          </div>
+        </div>
+
+        <div class="ra-grid">
+
+          <!-- SSH Card -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <div class="ra-card-icon">⚡</div>
+              <div>
+                <div class="ra-card-title">SSH Server</div>
+                <div class="ra-card-sub">OpenSSH · Port 22</div>
+              </div>
+              <div style="margin-left:auto">
+                <span class="ra-badge off" id="ssh-badge"><span class="dot"></span> <span id="ssh-badge-text">checking…</span></span>
+              </div>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Port</span>
+              <span class="ra-value" id="ssh-port">22</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Password auth</span>
+              <span class="ra-value" id="ssh-pass">—</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Pubkey auth</span>
+              <span class="ra-value" id="ssh-keys-count">0 keys</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Connection</span>
+              <span class="ra-value up" id="ssh-connect">—</span>
+            </div>
+            <div class="ra-divider"></div>
+            <div class="ra-actions">
+              <button class="ra-btn primary" id="ssh-start-btn" onclick="sshAction('start')">▶ Start</button>
+              <button class="ra-btn danger" id="ssh-stop-btn" onclick="sshAction('stop')">⏹ Stop</button>
+            </div>
+          </div>
+
+          <!-- VNC Card -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <div class="ra-card-icon">🖥</div>
+              <div>
+                <div class="ra-card-title">TigerVNC Server</div>
+                <div class="ra-card-sub">Display :1 · Port 5900</div>
+              </div>
+              <div style="margin-left:auto">
+                <span class="ra-badge off" id="vnc-badge"><span class="dot"></span> <span id="vnc-badge-text">checking…</span></span>
+              </div>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Port</span>
+              <span class="ra-value" id="vnc-port">5900</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Display</span>
+              <span class="ra-value" id="vnc-display">:1</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Password</span>
+              <span class="ra-value" id="vnc-pass">—</span>
+            </div>
+            <div class="ra-divider"></div>
+            <div class="ra-actions">
+              <button class="ra-btn primary" id="vnc-start-btn" onclick="vncAction('start')">▶ Start</button>
+              <button class="ra-btn danger" id="vnc-stop-btn" onclick="vncAction('stop')">⏹ Stop</button>
+            </div>
+          </div>
+
+          <!-- noVNC Card -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <div class="ra-card-icon">🌐</div>
+              <div>
+                <div class="ra-card-title">noVNC (Web VNC)</div>
+                <div class="ra-card-sub">Browser-based VNC client · Port 6080</div>
+              </div>
+              <div style="margin-left:auto">
+                <span class="ra-badge off" id="novnc-badge"><span class="dot"></span> <span id="novnc-badge-text">checking…</span></span>
+              </div>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">URL</span>
+              <a class="ra-link" id="novnc-url" href="http://localhost:6080/vnc.html" target="_blank">localhost:6080</a>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Websockify</span>
+              <span class="ra-value" id="novnc-proxy">—</span>
+            </div>
+            <div class="ra-divider"></div>
+            <div class="ra-iframe-wrap" id="novnc-iframe-wrap" style="display:none">
+              <iframe id="novnc-iframe" src="" loading="lazy"></iframe>
+            </div>
+            <div class="ra-actions">
+              <button class="ra-btn primary" onclick="toggleIframe()">🖥 Embed / Collapse</button>
+              <a class="ra-btn" href="http://localhost:6080/vnc.html" target="_blank">Open in new tab ↗</a>
+            </div>
+          </div>
+
+          <!-- SSH Keys Card -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <div class="ra-card-icon">🔑</div>
+              <div>
+                <div class="ra-card-title">SSH Authorized Keys</div>
+                <div class="ra-card-sub">Manage public keys for passwordless login</div>
+              </div>
+            </div>
+            <div>
+              <label class="ra-label" style="display:block;margin-bottom:4px">Add public key (one per line):</label>
+              <textarea class="ra-input ra-textarea" id="ssh-key-input" placeholder="ssh-ed25519 AAAA... user@host&#10;ssh-rsa AAAA... user@laptop"></textarea>
+            </div>
+            <div class="ra-actions">
+              <button class="ra-btn primary" onclick="addSshKey()">+ Add Key(s)</button>
+              <button class="ra-btn" onclick="loadKeys()">↻ Reload</button>
+            </div>
+            <div class="ra-divider"></div>
+            <div class="ra-label" style="margin-bottom:4px">Installed keys:</div>
+            <div class="ra-keys-list" id="ssh-keys-list">
+              <div class="ra-info">Loading…</div>
+            </div>
+          </div>
+
+          <!-- VNC Password Card -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <div class="ra-card-icon">🔒</div>
+              <div>
+                <div class="ra-card-title">VNC Password</div>
+                <div class="ra-card-sub">Change TigerVNC connection password</div>
+              </div>
+            </div>
+            <div>
+              <label class="ra-label" style="display:block;margin-bottom:4px">New VNC password (max 8 chars):</label>
+              <input class="ra-input" id="vnc-pass-input" type="password" maxlength="8" placeholder="••••••••" />
+            </div>
+            <div class="ra-actions">
+              <button class="ra-btn primary" onclick="changeVncPassword()">Update Password</button>
+              <button class="ra-btn" onclick="document.getElementById('vnc-pass-input').value=''">Clear</button>
+            </div>
+            <div class="ra-info" style="margin-top:8px">TigerVNC limits passwords to 8 characters. Longer passwords are truncated.</div>
+          </div>
+
+          <!-- Setup Info Card -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <div class="ra-card-icon">ℹ</div>
+              <div>
+                <div class="ra-card-title">Setup Information</div>
+                <div class="ra-card-sub">First-boot configuration status</div>
+              </div>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Setup complete</span>
+              <span class="ra-value" id="setup-done">—</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Config file</span>
+              <span class="ra-value" style="font-size:11px">/etc/freeai/remote-access.json</span>
+            </div>
+            <div class="ra-row">
+              <span class="ra-label">Setup script</span>
+              <span class="ra-value" style="font-size:11px">live/setup-remote-access.sh</span>
+            </div>
+            <div class="ra-divider"></div>
+            <div class="ra-info">
+              Run <code style="background:var(--panel-2);padding:1px 5px;border-radius:4px;font-size:11px">bash /path/to/live/setup-remote-access.sh</code> on first boot to configure SSH, VNC, and noVNC interactively.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ra-toast" id="ra-toast"></div>
+
+  <script>
+    const API = '';
+    function toast(msg, type='ok') {
+      const t = document.getElementById('ra-toast');
+      t.textContent = msg;
+      t.className = 'ra-toast ' + type;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+    function setBadge(id, text, on) {
+      const el = document.getElementById(id);
+      el.className = 'ra-badge ' + (on ? 'on' : 'off');
+      el.innerHTML = '<span class="dot"></span> ' + text;
+    }
+    function setLoading(id, loading) {
+      document.querySelectorAll('#' + id + ' button').forEach(b => b.disabled = loading);
+    }
+
+    async function loadStatus() {
+      try {
+        const r = await fetch(API + '/api/remote-access/status');
+        const d = await r.json();
+        if (d.error) { toast(d.error, 'err'); return; }
+
+        // SSH
+        const sshUp = d.ssh && d.ssh.running;
+        setBadge('ssh-badge', sshUp ? 'running' : 'stopped', sshUp);
+        document.getElementById('ssh-port').textContent = (d.ssh && d.ssh.port) || 22;
+        document.getElementById('ssh-pass').textContent = d.ssh && d.ssh.password_set ? 'yes' : 'no';
+        document.getElementById('ssh-keys-count').textContent = (d.ssh && d.ssh.keys_count || 0) + ' keys';
+        document.getElementById('ssh-connect').textContent = sshUp ? 'ready' : 'offline';
+        document.getElementById('ssh-connect').className = 'ra-value ' + (sshUp ? 'up' : 'down');
+        document.getElementById('ssh-start-btn').disabled = sshUp;
+        document.getElementById('ssh-stop-btn').disabled = !sshUp;
+
+        // VNC
+        const vncUp = d.vnc && d.vnc.running;
+        setBadge('vnc-badge', vncUp ? 'running' : 'stopped', vncUp);
+        document.getElementById('vnc-port').textContent = (d.vnc && d.vnc.port) || 5900;
+        document.getElementById('vnc-display').textContent = ':' + (d.vnc && d.vnc.display || 1);
+        document.getElementById('vnc-pass').textContent = d.vnc && d.vnc.password_set ? 'set' : '—';
+        document.getElementById('vnc-start-btn').disabled = vncUp;
+        document.getElementById('vnc-stop-btn').disabled = !vncUp;
+
+        // noVNC
+        const novncUp = d.novnc && d.novnc.running;
+        setBadge('novnc-badge', novncUp ? 'running' : 'stopped', novncUp);
+        document.getElementById('novnc-url').textContent = (d.novnc && d.novnc.url) || 'localhost:6080';
+        document.getElementById('novnc-url').href = d.novnc && d.novnc.url ? d.novnc.url : 'http://localhost:6080/vnc.html';
+        document.getElementById('novnc-proxy').textContent = novncUp ? 'active' : '—';
+        document.getElementById('novnc-proxy').className = 'ra-value ' + (novncUp ? 'up' : 'down');
+
+        // setup
+        const done = d.setup_done;
+        document.getElementById('setup-done').textContent = done ? 'yes' : 'no';
+        document.getElementById('setup-done').className = 'ra-value ' + (done ? 'up' : 'warn');
+
+      } catch(e) {
+        toast('Failed to load status: ' + e.message, 'err');
+      }
+    }
+
+    async function sshAction(action) {
+      setLoading('ssh', true);
+      try {
+        const r = await fetch(API + '/api/remote-access/ssh/' + action, { method: 'POST' });
+        const d = await r.json();
+        if (d.error) { toast(d.error, 'err'); }
+        else { toast('SSH ' + action + ' OK'); loadStatus(); }
+      } catch(e) { toast(e.message, 'err'); }
+      finally { setLoading('ssh', false); }
+    }
+
+    async function vncAction(action) {
+      setLoading('vnc', true);
+      try {
+        const r = await fetch(API + '/api/remote-access/vnc/' + action, { method: 'POST' });
+        const d = await r.json();
+        if (d.error) { toast(d.error, 'err'); }
+        else { toast('VNC ' + action + ' OK'); loadStatus(); }
+      } catch(e) { toast(e.message, 'err'); }
+      finally { setLoading('vnc', false); }
+    }
+
+    async function addSshKey() {
+      const input = document.getElementById('ssh-key-input').value.trim();
+      if (!input) { toast('No keys to add', 'err'); return; }
+      try {
+        const r = await fetch(API + '/api/remote-access/ssh/keys', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', keys: input.split('\n').filter(Boolean) })
+        });
+        const d = await r.json();
+        if (d.error) { toast(d.error, 'err'); }
+        else { toast('Added ' + (d.added || 0) + ' key(s)'); document.getElementById('ssh-key-input').value = ''; loadStatus(); loadKeys(); }
+      } catch(e) { toast(e.message, 'err'); }
+    }
+
+    async function loadKeys() {
+      try {
+        const r = await fetch(API + '/api/remote-access/ssh/keys');
+        const d = await r.json();
+        if (d.error) { document.getElementById('ssh-keys-list').innerHTML = '<div class="ra-info">' + d.error + '</div>'; return; }
+        const keys = d.keys || [];
+        if (keys.length === 0) {
+          document.getElementById('ssh-keys-list').innerHTML = '<div class="ra-info">No authorized keys</div>';
+          return;
+        }
+        document.getElementById('ssh-keys-list').innerHTML = keys.map((k, i) =>
+          '<div class="ra-key-row"><span>' + escHtml(k) + '</span><button onclick="removeKey(' + i + ')" title="Remove">✕</button></div>'
+        ).join('');
+      } catch(e) {
+        document.getElementById('ssh-keys-list').innerHTML = '<div class="ra-info">Load failed</div>';
+      }
+    }
+
+    async function removeKey(idx) {
+      try {
+        const r = await fetch(API + '/api/remote-access/ssh/keys', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'remove', index: idx })
+        });
+        const d = await r.json();
+        if (d.error) { toast(d.error, 'err'); }
+        else { toast('Key removed'); loadKeys(); loadStatus(); }
+      } catch(e) { toast(e.message, 'err'); }
+    }
+
+    async function changeVncPassword() {
+      const pw = document.getElementById('vnc-pass-input').value;
+      if (!pw) { toast('Enter a password', 'err'); return; }
+      try {
+        const r = await fetch(API + '/api/remote-access/vnc/password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pw })
+        });
+        const d = await r.json();
+        if (d.error) { toast(d.error, 'err'); }
+        else { toast('VNC password updated'); document.getElementById('vnc-pass-input').value = ''; loadStatus(); }
+      } catch(e) { toast(e.message, 'err'); }
+    }
+
+    function toggleIframe() {
+      const wrap = document.getElementById('novnc-iframe-wrap');
+      if (wrap.style.display === 'none') {
+        const url = document.getElementById('novnc-url').href;
+        document.getElementById('novnc-iframe').src = url;
+        wrap.style.display = 'block';
+      } else {
+        wrap.style.display = 'none';
+        document.getElementById('novnc-iframe').src = '';
+      }
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // init
+    loadStatus();
+    loadKeys();
+  </script>
+</body>
+</html>

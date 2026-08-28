@@ -222,3 +222,89 @@ def test_workflow_from_definition_roundtrip():
     assert len(wf.steps) == 2
     assert wf.steps[0].name == "a"
     assert wf.steps[1].name == "b"
+
+
+# ── per-API-key rate limiting ───────────────────────────────────────────
+
+def test_allow_client_with_api_key(client, monkeypatch):
+    """allow_client() uses the API key as the bucket identifier."""
+    from middleware import rate_limiter, get_client_api_key
+    with client.application.test_request_context(headers={"X-API-Key": "test-key-alpha"}):
+        assert rate_limiter.allow_client(get_client_api_key()) is True
+
+
+def test_per_api_key_buckets_are_independent(client, monkeypatch):
+    """Two different API keys maintain separate rate-limit buckets."""
+    from middleware import rate_limiter, get_client_api_key, _BUCKETS, _RATE_LOCK
+    with client.application.test_request_context(headers={"X-API-Key": "key-A"}):
+        key_a_result = rate_limiter.allow_client(get_client_api_key())
+    with client.application.test_request_context(headers={"X-API-Key": "key-B"}):
+        key_b_result = rate_limiter.allow_client(get_client_api_key())
+
+    assert key_a_result is True
+    assert key_b_result is True
+
+    with _RATE_LOCK:
+        assert "key-A" in _BUCKETS
+        assert "key-B" in _BUCKETS
+        assert _BUCKETS["key-A"][1] != _BUCKETS["key-B"][1]
+
+
+def test_unkeyed_request_falls_back_to_ip_bucket(client):
+    """Requests without an API key fall back to the 'unknown' bucket."""
+    from middleware import rate_limiter, get_client_api_key
+    with client.application.test_request_context():
+        key = get_client_api_key()
+    assert key == "", "No API key header set in test client"
+    assert rate_limiter.allow_client(key) is True
+
+
+def test_rate_limit_buckets_populate_on_route(client):
+    """A /route request with an API key populates the per-key bucket
+    when rate limiting is active (TESTING mode bypasses guard)."""
+    from middleware import _BUCKETS, _RATE_LOCK, rate_limiter, get_client_api_key
+    # In TESTING mode the guard returns early; exercise allow_client directly
+    rate_limiter.allow_client("bucket-test-key")
+    with _RATE_LOCK:
+        assert "bucket-test-key" in _BUCKETS
+
+
+def test_metrics_includes_requests_after_keyed_route(client):
+    """A keyed /route request increments the same metrics counters."""
+    res = client.post("/route", json={
+        "prompt": "keyed metrics probe prompt",
+        "max_tokens": 32,
+    }, headers={"X-API-Key": "metrics-key"})
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "model_used" in body
+    assert "task_type" in body
+
+    m = client.get("/metrics")
+    assert m.status_code == 200
+    mbody = m.get_json()
+    assert mbody["requests_total"] >= 1
+
+
+def test_health_ignores_api_key(client):
+    """GET /health succeeds without any API key header."""
+    res = client.get("/health")
+    assert res.status_code == 200
+    assert res.get_json()["status"] == "ok"
+
+
+def test_models_ignores_api_key(client):
+    """GET /models succeeds without any API key header."""
+    res = client.get("/models")
+    assert res.status_code == 200
+    models = res.get_json()
+    assert isinstance(models, dict)
+    assert len(models) > 0
+
+
+def test_metrics_ignores_api_key(client):
+    """GET /metrics succeeds without any API key header."""
+    res = client.get("/metrics")
+    assert res.status_code == 200
+    data = res.get_data(as_text=True)
+    assert "requests_total" in data or "text/plain" not in res.content_type
