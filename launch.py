@@ -51,6 +51,7 @@ SERVICES = {
     "mcp_catalog": {"port": 8190, "module": "mcp.catalog_api",               "cmd": "python"},
     "unified_catalog": {"port": 8195, "module": "skills.catalog_api",        "cmd": "python"},
     "godmode":    {"port": 8196, "module": "agents.godmode",                  "cmd": "python"},
+    "campaign":   {"port": 8192, "module": "agents.campaign_manager",         "cmd": "python"},
 }
 
 

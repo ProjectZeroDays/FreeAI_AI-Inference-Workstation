@@ -3638,7 +3638,7 @@ def api_dependency_analyze():
 def api_dependency_analyze_post():
     data = request.get_json(silent=True) or {}
     preset = data.get("preset", "balanced")
-    return api_dependency_analyze.__wrapped__() if hasattr(api_dependency_analyze, '__wrapped__') else api_dependency_analyze()
+    return api_dependency_analyze()
 
 
 @app.route("/api/dependency/fix", methods=["POST"])
@@ -3692,6 +3692,26 @@ def api_dependency_describe():
         from agents.specialized.dependency_agent import DependencyAgent
         agent = DependencyAgent()
         return jsonify(agent.describe())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/dependency/resources")
+def api_dependency_resources():
+    try:
+        from agents.specialized.intelligent_resources import get_all_resources
+        catalog = get_all_resources()
+        return jsonify(catalog)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/dependency/plugins")
+def api_dependency_plugins():
+    try:
+        from agents.specialized.intelligent_plugins import get_plugins
+        plugins = get_plugins()
+        return jsonify(plugins)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

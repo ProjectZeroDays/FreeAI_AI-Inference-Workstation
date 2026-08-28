@@ -13,6 +13,7 @@
   "nav.integrations": "Integrations",
   "nav.salad": "Salad GPU",
   "nav.aikido": "Aikido",
+  "nav.dependency_agent": "Dependency Agent",
   "nav.mcp": "MCP Registry",
   "nav.scheduler": "Scheduler",
   "nav.workflows": "Workflows",
