@@ -13,6 +13,7 @@ Features:
 """
 import hashlib
 import json
+import logging
 import os
 import threading
 import time
@@ -974,7 +975,8 @@ def api_godmode_status():
         return jsonify({"enabled": state.get("enabled", False),
                         "state": state})
     except Exception as e:
-        return jsonify({"enabled": False, "error": str(e)})
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"enabled": False, "error": "An internal error occurred"})
 
 
 @app.route("/api/godmode/toggle", methods=["POST"])
@@ -995,7 +997,8 @@ def api_godmode_toggle():
         )
         return jsonify(result)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/godmode/campaign", methods=["POST"])
@@ -1012,7 +1015,8 @@ def api_godmode_campaign():
         result = mod.set_campaign(data.get("name", ""), data.get("enable", True))
         return jsonify(result)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/catalog", methods=["GET"])
@@ -1027,7 +1031,8 @@ def api_catalog_summary():
         spec.loader.exec_module(mod)
         return jsonify({"summary": mod.get_stats(), "timestamp": int(time.time())})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/catalog/dropdowns", methods=["GET"])
@@ -1042,7 +1047,8 @@ def api_catalog_dropdowns():
         spec.loader.exec_module(mod)
         return jsonify(mod.get_dropdowns())
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/catalog/auto-install", methods=["POST"])
@@ -1058,7 +1064,8 @@ def api_catalog_auto_install():
         data = request.get_json(silent=True) or {}
         return jsonify(mod.auto_install(missing_only=data.get("missing_only", True)))
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/mcps", methods=["GET"])
@@ -1074,7 +1081,8 @@ def api_mcps_list():
         category = request.args.get("category")
         return jsonify({"mcps": mod.list_mcps(category), "total": len(mod.list_mcps(category))})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/mcps/install", methods=["POST"])
@@ -1090,7 +1098,8 @@ def api_mcp_install():
         data = request.get_json(silent=True) or {}
         return jsonify(mod.install_mcp(data.get("id", ""), data.get("config")))
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        logging.getLogger(__name__).exception("API error")
+        return jsonify({"error": "An internal error occurred"})
 
 
 @app.route("/api/providers", methods=["GET"])

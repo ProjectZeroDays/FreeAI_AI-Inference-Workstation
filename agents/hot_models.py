@@ -7,6 +7,7 @@ Provides in-process model lifecycle management:
   - Health monitoring with automatic degradation detection
 """
 import json
+import logging
 import os
 import subprocess
 import threading
@@ -160,9 +161,10 @@ class HotModelManager:
                 model.error_count = 0
             model.load_time_s = round(time.time() - model._start_time, 2) if model._start_time else 0.5
         except Exception as e:
+            logging.getLogger(__name__).exception("Hot model error")
             model.health = "unhealthy"
             model.error_count += 1
-            return {"ok": False, "error": str(e)}
+            return {"ok": False, "error": "An error occurred"}
 
         with _STATE_LOCK:
             self.save_config()

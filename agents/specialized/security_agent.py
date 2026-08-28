@@ -8,6 +8,7 @@ Builds on security_scanner.py with:
   - Report generation in multiple formats
 """
 import json
+import logging
 import re
 import subprocess
 import time
@@ -144,7 +145,8 @@ class SecurityAgent(SecurityScanner):
                 "template": fix_info["template"],
             }
         except Exception as e:
-            return {"ok": False, "reason": str(e)}
+            logging.getLogger(__name__).exception("Security agent error")
+            return {"ok": False, "reason": "An error occurred"}
 
     def generate_security_report(self, fmt: str = "json") -> str:
         """Generate security report in specified format."""

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import logging
 import os
 
 from fastapi import FastAPI, HTTPException
@@ -80,9 +81,10 @@ def run_workflow(req: WorkflowRequest):
                             strict_validation=req.strict_validation)
         return result
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc))
+        raise HTTPException(status_code=422, detail="Validation error")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.getLogger(__name__).exception("Workflow API error")
+        raise HTTPException(status_code=500, detail="An internal error occurred")
 
 
 @app.post("/workflow/run-inline")
@@ -98,7 +100,7 @@ def run_inline_workflow(req: InlineWorkflowRequest):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An internal error occurred")
 
 
 @app.get("/workflow/export/{name}")

@@ -10,6 +10,7 @@ Features:
   - Auto-patch mode with safety checks
 """
 import json
+import logging
 import re
 import subprocess
 import time
@@ -262,7 +263,8 @@ class DependencyAgent:
             result["vulns_addressed"] = len(self.fixed)
             result["path"] = str(req_path)
         except Exception as e:
-            result["errors"].append(str(e))
+            logging.getLogger(__name__).exception("Dependency agent error")
+            result["errors"].append("An error occurred")
 
         return result
 

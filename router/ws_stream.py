@@ -7,6 +7,7 @@ frames {"content": "..."} until {"done": true}.
 """
 import asyncio
 import json
+import logging
 import os
 import threading
 
@@ -41,7 +42,8 @@ async def ws_route(websocket):
                         continue
             await websocket.send(json.dumps({"done": True}))
         except Exception as e:
-            await websocket.send(json.dumps({"error": str(e)}))
+            logging.getLogger(__name__).exception("WebSocket error")
+            await websocket.send(json.dumps({"error": "A connection error occurred"}))
 
 def start_ws(port=8011):
     if websockets is None:
