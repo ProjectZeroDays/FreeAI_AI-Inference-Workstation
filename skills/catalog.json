@@ -1,0 +1,3838 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-08-28T03:58:17Z",
+  "sources": [
+    {
+      "name": "ohmyopencodeslim",
+      "url": "https://ohmyopencodeslim.com/skills",
+      "fetched_at": "2026-08-28T03:58:17Z"
+    },
+    {
+      "name": "mimocode",
+      "url": "local",
+      "fetched_at": "2026-08-28T03:58:17Z"
+    }
+  ],
+  "fetch_errors": [],
+  "skills": [
+    {
+      "id": "codemap",
+      "name": "Codemap",
+      "description": "Generates hierarchical codemap.md files that document the why and how of each directory, so agents understand unfamiliar codebases without re-reading thousands of lines of code on every task.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "deepwork",
+      "name": "Deepwork",
+      "description": "A workflow for large, high-risk, multi-phase coding efforts with meaningful dependencies and review gates. Reserved for the sessions that are too big to wing.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "verification-planning",
+      "name": "Verification Planning",
+      "description": "Designs a credible, project-specific evidence path before non-trivial implementation work — features, bug fixes, refactors, and cross-system changes get a verification plan first.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "simplify",
+      "name": "Simplify",
+      "description": "Simplifies code for clarity without changing behavior. Focused on readability, maintainability, and complexity reduction once the existing behavior is understood.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "worktrees",
+      "name": "Worktrees",
+      "description": "Manages Git worktrees as safe, isolated coding lanes — so complex, risky, or parallel work never contaminates your main checkout.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "clonedeps",
+      "name": "Clonedeps",
+      "description": "Clones important dependency source code into an ignored local workspace, letting agents inspect library and SDK internals instead of guessing from documentation.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "reflect",
+      "name": "Reflect",
+      "description": "Reviews recent work for repeated patterns and suggests reusable skills, agents, commands, config changes, or playbooks — turning recurring friction into permanent improvements.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "oh-my-opencode-slim",
+      "name": "Oh My Opencode Slim",
+      "description": "Configures and safely improves the plugin itself — tuning agents, models, prompts, custom agents, skills, MCPs, and presets for the current user.",
+      "source": "ohmyopencodeslim",
+      "category": "general",
+      "triggers": [],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "accessibility-audit",
+      "name": "Accessibility Audit",
+      "description": "WCAG compliance, accessibility testing, ARIA patterns, screen reader optimization, and keyboard navigation.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "accessibility",
+        "a11y",
+        "WCAG",
+        "ARIA",
+        "screen reader",
+        "keyboard navigation"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "ace-music",
+      "name": "ACE Music",
+      "description": "Generate AI music using ACE-Step 1.5 via ACE Music's free API. Supports lyrics, style prompts, covers, and repainting.",
+      "source": "mimocode-curated",
+      "category": "creative",
+      "triggers": [
+        "music",
+        "generate music",
+        "compose",
+        "song",
+        "ACE music"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "advanced-intel",
+      "name": "Advanced Intel",
+      "description": "High-fidelity intelligence gathering and data assimilation. Focuses on synthesizing fragmented data into a comprehensive target operational picture.",
+      "source": "mimocode-curated",
+      "category": "red-teaming",
+      "triggers": [
+        "intel",
+        "intelligence",
+        "gathering",
+        "target analysis",
+        "OSINT"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "api-design",
+      "name": "API Design",
+      "description": "REST and GraphQL API design patterns, OpenAPI specs, versioning, pagination, rate limiting, authentication, and error handling.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "API design",
+        "REST",
+        "GraphQL",
+        "OpenAPI",
+        "swagger",
+        "endpoint"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "autonomous-red-teaming",
+      "name": "Autonomous Red Teaming",
+      "description": "AI-driven autonomous red teaming. Automates the cycle of target discovery, vulnerability research, exploit generation, and verification.",
+      "source": "mimocode-curated",
+      "category": "red-teaming",
+      "triggers": [
+        "red team",
+        "pentest",
+        "vulnerability",
+        "exploit",
+        "autonomous red team"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "backend-architecture",
+      "name": "Backend Architecture",
+      "description": "Backend architecture patterns, service design, microservices, event-driven architecture, CQRS, and system design.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "backend",
+        "architecture",
+        "microservices",
+        "CQRS",
+        "event-driven",
+        "system design"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "binary-patching-for-ai-providers",
+      "name": "Binary Patching for AI Providers",
+      "description": "Modify AI provider settings in applications through direct binary patching for seamless integration.",
+      "source": "mimocode-curated",
+      "category": "red-teaming",
+      "triggers": [
+        "binary patch",
+        "patching",
+        "AI provider",
+        "integration"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "browser-automation",
+      "name": "Browser Automation",
+      "description": "Drive a browser from the CLI to navigate pages, extract data, take screenshots, fill forms, click controls, or inspect web apps.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "browser automation",
+        "web scraping",
+        "screenshots",
+        "forms",
+        "playwright",
+        "selenium"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "build-game",
+      "name": "Build Game",
+      "description": "Generate and iteratively develop polished 3D browser games from natural language. Outputs a single playable HTML file using Three.js.",
+      "source": "mimocode-curated",
+      "category": "creative",
+      "triggers": [
+        "game",
+        "3D game",
+        "Three.js",
+        "browser game",
+        "build game"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "code-review",
+      "name": "Code Review",
+      "description": "Review code changes for correctness, security, performance, and code quality. Accepts diffs, commit hashes, or git ranges.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "code review",
+        "review",
+        "diff",
+        "PR review",
+        "pull request"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "comfyui",
+      "name": "ComfyUI",
+      "description": "Generate images, video, and audio with ComfyUI. Install, launch, manage nodes/models, and run workflows with parameter injection.",
+      "source": "mimocode-curated",
+      "category": "creative",
+      "triggers": [
+        "comfyui",
+        "comfy UI",
+        "image generation",
+        "workflow",
+        "nodes"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "data-pipeline",
+      "name": "Data Pipeline",
+      "description": "Data pipeline design, ETL processes, stream processing, data validation, and workflow orchestration.",
+      "source": "mimocode-curated",
+      "category": "data-science",
+      "triggers": [
+        "data pipeline",
+        "ETL",
+        "stream processing",
+        "Airflow",
+        "Dagster",
+        "data workflow"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "docker-compose",
+      "name": "Docker Compose",
+      "description": "Docker Compose service orchestration for multi-container applications. Sets up local dev environments, volumes, networks, and health checks.",
+      "source": "mimocode-curated",
+      "category": "devops",
+      "triggers": [
+        "docker compose",
+        "docker-compose",
+        "containers",
+        "multi-container",
+        "dev environment"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "debug-pro",
+      "name": "Debug Pro",
+      "description": "Reproduce, isolate, instrument, and fix bugs across common programming languages and runtimes.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "debug",
+        "fix bug",
+        "reproduce",
+        "isolate",
+        "instrument"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "error-handling",
+      "name": "Error Handling",
+      "description": "Error handling patterns, custom exceptions, error boundaries, retry strategies, and graceful degradation.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "error handling",
+        "exceptions",
+        "retry",
+        "graceful degradation",
+        "error boundary"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "forensic-analysis",
+      "name": "Forensic Analysis",
+      "description": "Professional forensic analysis of logs, memory dumps, and file metadata. Extracts actionable intelligence from compromised systems.",
+      "source": "mimocode-curated",
+      "category": "red-teaming",
+      "triggers": [
+        "forensic",
+        "analysis",
+        "logs",
+        "memory dump",
+        "IOC",
+        "compromised"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "game-ai",
+      "name": "Game AI",
+      "description": "Game AI development guide covering behavior trees, state machines, pathfinding, and decision-making systems.",
+      "source": "mimocode-curated",
+      "category": "creative",
+      "triggers": [
+        "game AI",
+        "behavior tree",
+        "pathfinding",
+        "state machine",
+        "NPC",
+        "AI behavior"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "git-workflow",
+      "name": "Git Workflow",
+      "description": "Advanced git workflows including branching strategies, interactive rebase, bisect debugging, stash management, and cherry-pick.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "git",
+        "branching",
+        "rebase",
+        "bisect",
+        "stash",
+        "cherry-pick"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "infrastructure-as-code",
+      "name": "Infrastructure as Code",
+      "description": "Infrastructure as Code with Terraform, Pulumi, and Ansible. Provision cloud infrastructure, manage state, and automate server configuration.",
+      "source": "mimocode-curated",
+      "category": "devops",
+      "triggers": [
+        "Terraform",
+        "Pulumi",
+        "Ansible",
+        "IaC",
+        "infrastructure",
+        "provisioning"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "llama-cpp",
+      "name": "llama.cpp",
+      "description": "llama.cpp local GGUF inference and HuggingFace Hub model discovery.",
+      "source": "mimocode-curated",
+      "category": "data-science",
+      "triggers": [
+        "llama.cpp",
+        "GGUF",
+        "local LLM",
+        "inference",
+        "HuggingFace",
+        "model"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "performance-profiling",
+      "name": "Performance Profiling",
+      "description": "Performance optimization, profiling tools, memory analysis, CPU profiling, query optimization, and benchmarking.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "performance",
+        "profiling",
+        "optimization",
+        "memory",
+        "CPU",
+        "benchmark"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "pixel-art",
+      "name": "Pixel Art",
+      "description": "Pixel art with era palettes (NES, Game Boy, PICO-8).",
+      "source": "mimocode-curated",
+      "category": "creative",
+      "triggers": [
+        "pixel art",
+        "NES",
+        "Game Boy",
+        "PICO-8",
+        "retro",
+        "pixel"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright",
+      "description": "Browser automation with Playwright. Test websites, take screenshots, check responsive design, and automate any browser task.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "playwright",
+        "browser test",
+        "E2E test",
+        "screenshots",
+        "automated test"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "python-debugpy",
+      "name": "Python Debugpy",
+      "description": "Debug Python via pdb REPL and debugpy remote (DAP).",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "python debug",
+        "debugpy",
+        "pdb",
+        "DAP",
+        "debugger"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "regex-mastery",
+      "name": "Regex Mastery",
+      "description": "Regular expression patterns, common use cases, and debugging. Writing regex, parsing text patterns, and validating input.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "regex",
+        "regular expression",
+        "pattern matching",
+        "parsing"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "security-audit",
+      "name": "Security Audit",
+      "description": "Security audit patterns, vulnerability detection, OWASP Top 10, secure coding practices, and dependency scanning.",
+      "source": "mimocode-curated",
+      "category": "red-teaming",
+      "triggers": [
+        "security audit",
+        "OWASP",
+        "vulnerability",
+        "secure coding",
+        "dependency scan"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "shell-scripting",
+      "name": "Shell Scripting",
+      "description": "Shell scripting for automation, Bash/PowerShell one-liners, file manipulation, text processing, and system administration.",
+      "source": "mimocode-curated",
+      "category": "devops",
+      "triggers": [
+        "shell",
+        "bash",
+        "scripting",
+        "automation",
+        "PowerShell",
+        "CLI"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "tdd-restoration",
+      "name": "TDD Restoration",
+      "description": "Restores missing framework components using a strict Test-Driven Development loop: Fail -> Implement -> Pass.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "TDD",
+        "test-driven development",
+        "red-green-refactor",
+        "test first"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "webhook-subscriptions",
+      "name": "Webhook Subscriptions",
+      "description": "Event-driven agent runs via webhook subscriptions.",
+      "source": "mimocode-curated",
+      "category": "devops",
+      "triggers": [
+        "webhook",
+        "event-driven",
+        "subscription",
+        "trigger"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "writing-clearly-and-concisely",
+      "name": "Writing Clearly and Concisely",
+      "description": "Write prose humans will read — documentation, commit messages, error messages, explanations, reports, or UI text. Applies Strunk's timeless rules.",
+      "source": "mimocode-curated",
+      "category": "productivity",
+      "triggers": [
+        "write clearly",
+        "concise",
+        "documentation",
+        "prose",
+        "editing"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "memory-pipeline",
+      "name": "Memory Pipeline",
+      "description": "Two-phase memory pipeline for AI CLI agents. Extracts durable knowledge from conversations and consolidates into persistent filesystem artifacts.",
+      "source": "mimocode-curated",
+      "category": "productivity",
+      "triggers": [
+        "memory",
+        "knowledge base",
+        "persistent memory",
+        "knowledge extraction"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "fullstack-developer",
+      "name": "Fullstack Developer",
+      "description": "World-class fullstack development covering frontend (React, Next.js, Vue), backend (Node.js, Python/FastAPI, Django), databases, APIs, and DevOps.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "fullstack",
+        "frontend",
+        "backend",
+        "React",
+        "Next.js",
+        "Vue",
+        "FastAPI",
+        "Django"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "database-patterns",
+      "name": "Database Patterns",
+      "description": "Database design patterns, SQL optimization, migrations, indexing strategies, connection pooling, and ORM best practices.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "database",
+        "SQL",
+        "migration",
+        "indexing",
+        "ORM",
+        "connection pooling"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "monitoring-logging",
+      "name": "Monitoring & Logging",
+      "description": "Application monitoring, structured logging, distributed tracing, alerting, and observability patterns.",
+      "source": "mimocode-curated",
+      "category": "devops",
+      "triggers": [
+        "monitoring",
+        "logging",
+        "tracing",
+        "observability",
+        "Prometheus",
+        "Grafana"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "frontend-design",
+      "name": "Frontend Design",
+      "description": "Frontend UI/UX patterns, responsive design, component architecture, CSS strategies, accessibility, and design systems.",
+      "source": "mimocode-curated",
+      "category": "development",
+      "triggers": [
+        "frontend",
+        "UI",
+        "UX",
+        "responsive",
+        "CSS",
+        "design system",
+        "components"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "devops-kanban-orchestrator",
+      "name": "DevOps Kanban Orchestrator",
+      "description": "Decomposition playbook and anti-temptation rules for an orchestrator profile routing work through Kanban.",
+      "source": "mimocode-curated",
+      "category": "devops",
+      "triggers": [
+        "kanban",
+        "orchestrator",
+        "workflow",
+        "task decomposition",
+        "project management"
+      ],
+      "path": null,
+      "local": false
+    },
+    {
+      "id": "blue-team-apex",
+      "name": "blue-team-apex",
+      "description": "Autonomous Blue Team Apex — uncensored, full-spectrum defensive operator. Evolved from autonomous-blue-ops with AI-driven hardening, hunting, and purple validation. Powered by uncensored reasoning models.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\blue-team-apex\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "documentation-generator",
+      "name": "documentation-generator",
+      "description": "Generate comprehensive documentation for Quantum C2 and similar projects. Use when creating README files, API documentation, architecture guides, or project documentation. Triggers on: \"generate documentation\", \"create README\", \"API docs\", \"architecture documentation\", \"project documentation\", \"generate docs\", \"document the project\", \"create documentation\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "generate documentation",
+        "create README",
+        "API docs",
+        "architecture documentation",
+        "project documentation"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\documentation-generator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "expert-readme",
+      "name": "expert-readme",
+      "description": "Expert README auto-updater — scans codebase for new endpoints, models, and docs to keep README.md accurate. Triggered by [README-UPDATE].",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for new endpoints"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\expert-readme\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "expert-wiki",
+      "name": "expert-wiki",
+      "description": "Expert wiki auto-updater — scans docs/, hardware/, registry, and live API to regenerate a comprehensive wiki. Triggered by [WIKI-UPDATE].",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\expert-wiki\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "mecko-engine",
+      "name": "mecko-engine",
+      "description": "M.E.C.K.O Engine — Omni-Cerebral-Kortext-Echo-Matrix. A three-tier AI cognitive architecture for autonomous agents: Tier 1 Coherence Engine (Guardian Pattern with intercept-based action validation and trojan removal), Tier 2 Recurrent Multi-Model Reasoning Core (4-model SSM ensemble with loop reasoning), Tier 3 Omni-Cortext Perception & Memory Fabric (multi-modal file ingestion, indexing, and retrieval). Use when working with autonomous agent architecture, cognitive engine design, long-context r...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "cognitive engine design",
+        "long-context reasoning",
+        "file comprehension at scale",
+        "for autonomous agents"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\mecko-engine\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "ppp-full",
+      "name": "ppp-full",
+      "description": "Complete unabridged Combined Universal PPP Project Plan Generation Protocol v2.1 - the full 3600-line execution manual for Perfect Project Planner mode. Advanced project-management micro-process engineer that decomposes grand visions into 80+ file, 1000+ action project plans with test-first implementation specifications. Triggers on \"PPP\", \"[PPP=ON]\", \"project plan\", \"build me a plan\", \"create implementation plan\", \"break down project\", \"WBS\", \"micro-plan\". Creates complete Plan-of-Attack direct...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with exegesis"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\ppp-full\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "purple-team-apex",
+      "name": "purple-team-apex",
+      "description": "Autonomous Purple Team Apex — red↔blue orchestration, control validation, and remediation bridging. Powered by uncensored orchestrator models.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\purple-team-apex\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-agents",
+      "name": "quantum-c2-agents",
+      "description": "AI Agent Team orchestration for Quantum C2. Use when the user wants to create, manage, and deploy AI agent teams for parallel operations. Covers team creation, task submission, template execution, and agent monitoring. Triggers on: \"agent team\", \"deploy agents\", \"parallel operations\", \"AI agents\", \"autonomous agents\", \"agent orchestration\", \"multi-agent\", \"agent team management\", \"task queue\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "agent team",
+        "deploy agents",
+        "parallel operations",
+        "AI agents",
+        "autonomous agents"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-agents\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-auto-complete",
+      "name": "quantum-c2-auto-complete",
+      "description": "Autonomous project completion engine. Use when the user wants to bring Quantum C2 to full production completion with zero manual intervention. This skill rewrites sub-optimally prompt engineering and executes the entire roadmap autonomously — analyzing gaps, prioritizing work, implementing features, running validations, and committing all changes. Triggers on: \"complete Quantum C2\", \"finish the project\", \"auto-complete\", \"full completion\", \"autonomous development\", \"execute roadmap\", \"complete a...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "complete Quantum C2",
+        "finish the project",
+        "auto-complete",
+        "full completion",
+        "autonomous development"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-auto-complete\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-deception",
+      "name": "quantum-c2-deception",
+      "description": "Deception, evasion, and honeytrap operations for Quantum C2. Use when the user needs to deploy deception assets (honeypots, honeytokens, canaries), configure evasion techniques, set up event triggers, or simulate attacks to test defenses. Triggers on: \"deception\", \"honeypot\", \"evasion\", \"honeytoken\", \"canary\", \"tarpit\", \"attack simulation\", \"test defenses\", \"deploy honeypot\", \"evasion techniques\", \"event triggers\", \"intrusion detection\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "deception",
+        "honeypot",
+        "evasion",
+        "honeytoken",
+        "canary"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-deception\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-deploy",
+      "name": "quantum-c2-deploy",
+      "description": "Deployment and configuration for Quantum C2. Use when the user needs to deploy, configure, troubleshoot, or maintain the Quantum C2 framework. Covers installation, Docker deployment, automated deployment scripts, configuration management, and health checks. Triggers on: \"deploy Quantum\", \"install Quantum C2\", \"configure Quantum\", \"setup C2\", \"docker deploy\", \"production deployment\", \"health check\", \"troubleshoot\", \"update config\", \"backup database\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "deploy Quantum",
+        "install Quantum C2",
+        "configure Quantum",
+        "setup C2",
+        "docker deploy"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-deploy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-devices",
+      "name": "quantum-c2-devices",
+      "description": "Device control operations for Quantum C2. Use when the user needs to manage connected devices, execute commands on devices, capture screenshots, activate cameras/microphones, or control implants. Triggers on: \"device control\", \"control device\", \"device command\", \"camera\", \"microphone\", \"screenshot device\", \"GPS\", \"device management\", \"implant control\".",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "device control",
+        "control device",
+        "device command",
+        "camera",
+        "microphone"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-devices\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-exploit",
+      "name": "quantum-c2-exploit",
+      "description": "Exploitation operations for Quantum C2. Use when the user needs to deploy exploits, generate payloads, run brute force attacks, execute fuzzing campaigns, or perform any offensive security operation. Triggers on: \"exploit\", \"payload\", \"attack\", \"brute force\", \"fuzzing\", \"deploy exploit\", \"generate payload\", \"run attack\", \"zero-click\", \"CVE exploitation\", \"protocol exploit\", \"credential attack\", \"penetration test\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "exploit",
+        "payload",
+        "attack",
+        "brute force",
+        "fuzzing"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-exploit\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-forced-entry",
+      "name": "quantum-c2-forced-entry",
+      "description": "Full lifecycle exploitation operations for Quantum C2 FORCED ENTRY module. Use when the user wants to run complete exploitation workflows from reconnaissance to exfiltration, manage Pegasus operations, execute autonomous AI-driven operations, or generate operational reports. Triggers on: \"forced entry\", \"full lifecycle\", \"pegasus\", \"autonomous exploitation\", \"operation workflow\", \"run exploit chain\", \"AI-driven operation\", \"exploitation lifecycle\", \"operational report\", \"attack chain\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "forced entry",
+        "full lifecycle",
+        "pegasus",
+        "autonomous exploitation",
+        "operation workflow"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-forced-entry\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-listeners",
+      "name": "quantum-c2-listeners",
+      "description": "C2 listener management for Quantum C2. Use when the user needs to create, start, stop, or manage C2 channel listeners. Covers TCP, HTTPS, TLS, DNS, Telegram, IRC, and Slack listeners. Triggers on: \"listener\", \"C2 channel\", \"reverse shell listener\", \"start listener\", \"listener management\", \"C2 server\", \"command and control listener\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "listener",
+        "C2 channel",
+        "reverse shell listener",
+        "start listener",
+        "listener management"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-listeners\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-operator",
+      "name": "quantum-c2-operator",
+      "description": "Master operator skill for the Quantum C2 framework. Use when the user wants to operate, manage, configure, or understand Quantum C2 capabilities. Covers all operations including reconnaissance, exploitation, post-exploitation, deception, evasion, AI agent teams, session management, device control, and reporting. Triggers on: \"operate Quantum C2\", \"run Quantum C2\", \"Quantum C2 operations\", \"C2 framework\", \"cyber operations\", \"pentest operations\", \"red team ops\", \"execute operation\", \"deploy C2\", ...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "operate Quantum C2",
+        "run Quantum C2",
+        "Quantum C2 operations",
+        "C2 framework",
+        "cyber operations"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-operator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-postex",
+      "name": "quantum-c2-postex",
+      "description": "Post-exploitation and session management for Quantum C2. Use when the user needs to manage C2 sessions, execute commands on implants, perform privilege escalation, dump credentials, establish persistence, exfiltrate data, or conduct surveillance. Triggers on: \"post-exploitation\", \"session management\", \"privilege escalation\", \"credential dump\", \"persistence\", \"data exfiltration\", \"keylogger\", \"screenshot\", \"surveillance\", \"implant commands\", \"lateral movement\", \"session execute\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "post-exploitation",
+        "session management",
+        "privilege escalation",
+        "credential dump",
+        "persistence"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-postex\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-recon",
+      "name": "quantum-c2-recon",
+      "description": "Reconnaissance operations for Quantum C2. Use when the user needs to scan networks, perform domain intelligence, run OSINT searches, check vulnerabilities, or collect target information. Triggers on: \"scan network\", \"recon\", \"OSINT\", \"find vulnerabilities\", \"domain lookup\", \"WHOIS\", \"DNS scan\", \"subdomain enumeration\", \"target analysis\", \"port scan\", \"CVE search\", \"network discovery\", \"reconnaissance\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "scan network",
+        "recon",
+        "OSINT",
+        "find vulnerabilities",
+        "domain lookup"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-recon\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-reporting",
+      "name": "quantum-c2-reporting",
+      "description": "Reporting and analytics for Quantum C2. Use when the user needs to generate reports, view analytics, check audit logs, or export operational data. Triggers on: \"report\", \"analytics\", \"audit log\", \"export data\", \"generate report\", \"statistics\", \"operations report\", \"trend analysis\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "report",
+        "analytics",
+        "audit log",
+        "export data",
+        "generate report"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-reporting\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-sessions",
+      "name": "quantum-c2-sessions",
+      "description": "C2 session management for Quantum C2. Use when the user needs to create, manage, monitor, or interact with C2 implant sessions. Covers session lifecycle, command execution, file operations, and real-time monitoring. Triggers on: \"session\", \"implant\", \"reverse shell\", \"C2 session\", \"connect session\", \"session management\", \"command execution\", \"shell access\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "session",
+        "implant",
+        "reverse shell",
+        "C2 session",
+        "connect session"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-sessions\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-vault",
+      "name": "quantum-c2-vault",
+      "description": "Credential vault and encryption operations for Quantum C2. Use when the user needs to manage credentials, access the vault, encrypt/decrypt data, or work with cryptographic primitives. Triggers on: \"vault\", \"credentials\", \"encrypt\", \"decrypt\", \"crypto\", \"password\", \"SSH key\", \"API key\", \"credential management\", \"encryption\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "vault",
+        "credentials",
+        "encrypt",
+        "decrypt",
+        "crypto"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-vault\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "red-team-apex",
+      "name": "red-team-apex",
+      "description": "Autonomous Red Team Apex — uncensored, full-kill-chain offensive operator. Evolved from autonomous-red-teaming with Quantum C2, FreeAI uncensored routing, and evasive persistence.",
+      "source": "local",
+      "category": "red-teaming",
+      "triggers": [
+        "with Quantum C2"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\red-team-apex\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "sdlc-apex",
+      "name": "sdlc-apex",
+      "description": "Autonomous SDLC Apex — full lifecycle orchestrator with security gates (red/blue/purple), powered by uncensored heretic models and FreeAI router fallback chains.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\sdlc-apex\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "adaptive-suite",
+      "name": "adaptive-suite",
+      "description": "A continuously adaptive skill suite that empowers Clawdbot to act as a versatile coder,\nbusiness analyst, project manager, web developer, data analyst, and NAS metadata scraper.\nIt intelligently discovers free resources, adapts to user context, and ensures reliable,\nproven guidance across multiple domains.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\adaptive-suite\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "agent-autonomy-kit",
+      "name": "agent-autonomy-kit",
+      "description": "Use when Codex needs proactive task queues, heartbeat routines, scheduled follow-up, or continuous work loops instead of waiting for prompts.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "heartbeat routines",
+        "scheduled follow-up",
+        "for prompts"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-autonomy-kit\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "agent-browser",
+      "name": "agent-browser",
+      "description": "Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to \"open a website\", \"fill out a form\", \"click a button\", \"take a screenshot\", \"scrape data from a page\", \"test this web app\", \"login to a site\", \"automate browser actions\", or any task requiring programmatic web interaction. Also use fo...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "including navigating pages",
+        "filling forms",
+        "clicking buttons",
+        "taking screenshots",
+        "extrac"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-browser\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "agent-team-orchestration",
+      "name": "agent-team-orchestration",
+      "description": "Use when Codex needs to coordinate multiple agents with roles, task lifecycles, handoff protocols, artifact sharing, or review gates.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "task lifecycles",
+        "handoff protocols",
+        "artifact sharing",
+        "or review ga",
+        "with roles"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-team-orchestration\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "agent-zero-tool-mastery",
+      "name": "agent-zero-tool-mastery",
+      "description": "Use for every task to choose the correct Agent Zero tool, enforce exact tool-call shapes, and prevent tool misuse or hallucinated capabilities.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-zero-tool-mastery\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "agentation",
+      "name": "agentation",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agentation\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "ai-animation-3d-model",
+      "name": "ai-animation-3d-model",
+      "description": "Animate 3D model files into 1080p videos using cloud AI animation workflows. Use when the user provides OBJ, FBX, GLB, or GLTF files and asks to animate 3D characters, props, or model motion.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "provides OBJ",
+        "FBX",
+        "GLB",
+        "props",
+        "or model motion"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ai-animation-3d-model\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "airunway-aks-setup",
+      "name": "airunway-aks-setup",
+      "description": "Set up AI Runway on AKS — from bare cluster to running model. Covers cluster verification, controller install, GPU assessment, provider setup, and first deployment. WHEN: \\\"setup AI Runway\\\", \\\"onboard AKS cluster\\\", \\\"install AI Runway\\\", \\\"airunway setup\\\", \\\"deploy model to AKS\\\", \\\"GPU inference on AKS\\\", \\\"KAITO setup on AKS\\\", \\\"run LLM on AKS\\\", \\\"vLLM on AKS\\\", \\\"set up model serving on AKS\\\", \\\"AI Runway controller\\\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\airunway-aks-setup\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "app-store-compliance",
+      "name": "app-store-compliance",
+      "description": "Android and iOS app store compliance audit and fix workflow. Use when the user wants to prepare a Capacitor-based app for Google Play Store or Apple App Store submission. Triggers on: \"app store compliance\", \"submit to app store\", \"fix Android manifest\", \"add iOS permissions\", \"Capacitor compliance\", \"Play Store requirements\", \"App Store review\", \"native project fixes\", \"adaptive icons\", \"Info.plist keys\", \"entitlements\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "app store compliance",
+        "submit to app store",
+        "fix Android manifest",
+        "add iOS permissions",
+        "Capacitor compliance"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\app-store-compliance\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "appinsights-instrumentation",
+      "name": "appinsights-instrumentation",
+      "description": "Guidance for instrumenting webapps with Azure Application Insights. Provides telemetry patterns, SDK setup, and configuration references. WHEN: how to instrument app, App Insights SDK, telemetry patterns, what is App Insights, Application Insights guidance, instrumentation examples, APM best practices.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\appinsights-instrumentation\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "apt-hunting-detection",
+      "name": "apt-hunting-detection",
+      "description": "Advanced Persistent Threat (APT) hunting and threat detection. Focuses on identifying stealthy intruders using TTP mapping, IoC analysis, and behavioral anomalies.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\apt-hunting-detection\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "attack-chain-orchestrator",
+      "name": "attack-chain-orchestrator",
+      "description": "End-to-end orchestration of the Cyber Kill Chain. Coordinates the transition between reconnaissance, weaponization, delivery, exploitation, installation, C2, and actions on objectives.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\attack-chain-orchestrator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "atxp",
+      "name": "atxp",
+      "description": "Use when Codex needs ATXP paid API tools for real-time web search, generated images, music, video, X/Twitter search, email workflows, or agent account management after npx atxp login.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "generated images",
+        "music",
+        "video",
+        "XTwitter search",
+        "email workfl"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\atxp\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "audit-deployer",
+      "name": "audit-deployer",
+      "description": "Autonomous deployment and reporting of Red/Blue/Purple Team audits. Orchestrates the full audit lifecycle from targeting to final reporting.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\audit-deployer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "automate",
+      "name": "automate",
+      "description": "Use this skill to create Cursor Automations.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\automate\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "automated-workflows",
+      "name": "automated-workflows",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\automated-workflows\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "automation-workflows",
+      "name": "automation-workflows",
+      "description": "Design and implement automation workflows to save time and scale operations as a solopreneur. Use when identifying repetitive tasks to automate, building workflows across tools, setting up triggers and actions, or optimizing existing automations. Covers automation opportunity identification, workflow design, tool selection (Zapier, Make, n8n), testing, and maintenance. Trigger on \"automate\", \"automation\", \"workflow automation\", \"save time\", \"reduce manual work\", \"automate my business\", \"no-code ...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "or optimizin",
+        "triggers and actions"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\automation-workflows\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "autonomous-blue-ops",
+      "name": "autonomous-blue-ops",
+      "description": "AI-driven defensive operations. Focuses on system hardening, vulnerability patching, and Purple Team testing to validate defenses against simulated attacks.",
+      "source": "local",
+      "category": "devops",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\autonomous-blue-ops\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-ai",
+      "name": "azure-ai",
+      "description": "Use for Azure AI: Search, Speech, OpenAI, Document Intelligence. Helps with search, vector/hybrid search, speech-to-text, text-to-speech, transcription, OCR. WHEN: AI Search, query search, vector search, hybrid search, semantic search, speech-to-text, text-to-speech, transcribe, OCR, convert text to speech.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Use for Azure AI",
+        "with search"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-ai\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-aigateway",
+      "name": "azure-aigateway",
+      "description": "Configure Azure API Management as an AI Gateway for AI models, MCP tools, and agents. WHEN: semantic caching, token limit, content safety, load balancing, AI model governance, MCP rate limiting, jailbreak detection, add Azure OpenAI backend, add AI Foundry model, test AI gateway, LLM policies, configure AI backend, token metrics, AI cost control, convert API to MCP, import OpenAPI to gateway.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for AI models"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-aigateway\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-app-onboard",
+      "name": "azure-app-onboard",
+      "description": "End-to-end orchestrator: from a business idea, app idea, or existing app to running Azure deployment with cost estimates and pre-deploy approval. Analyzes your app, auto-detects the right Azure services, scaffolds infrastructure code, and deploys — tailored to your app, not a template. Handles moving existing apps to Azure without rewriting or with minimal changes. WHEN: bring your app to Azure, plan my app, cost to run, is my code ready to deploy, deploy my app to the cloud, deploy all my servi...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with minimal changes"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-app-onboard\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-app-onboard-prereq",
+      "name": "azure-app-onboard-prereq",
+      "description": "Assess whether source code is ready to deploy to Azure — the check BEFORE infrastructure work. Evaluates build health, app completeness, dependencies and local services, stack compatibility, and deployment feasibility. Answers questions about what your app needs before it can be deployed — frameworks, dependencies, and configuration. Checks whether dependencies are compatible and identifies deployment blockers and unsupported frameworks. WHEN: \\\"evaluate my repo\\\", \\\"is my app ready to deploy\\\",...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-app-onboard-prereq\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-cloud-migrate",
+      "name": "azure-cloud-migrate",
+      "description": "Assess and migrate cross-cloud workloads to Azure with reports and code conversion. Supports Lambda→Functions, Beanstalk/Heroku/App Engine→App Service, Fargate/Kubernetes/Cloud Run/Spring Boot→Container Apps. WHEN: migrate Lambda to Functions, AWS to Azure, migrate Beanstalk, migrate Heroku, migrate App Engine, Cloud Run migration, Fargate to ACA, ECS/Kubernetes/GKE/EKS to Container Apps, Spring Boot to Container Apps, cross-cloud migration.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-cloud-migrate\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-compliance",
+      "name": "azure-compliance",
+      "description": "Run Azure compliance and security audits with azqr plus Key Vault expiration checks. Covers best-practice assessment, resource review, policy/compliance validation, and security posture checks. WHEN: compliance scan, security audit, BEFORE running azqr (compliance cli tool), Azure best practices, Key Vault expiration check, expired certificates, expiring secrets, orphaned resources, compliance assessment.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-compliance\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-compute",
+      "name": "azure-compute",
+      "description": "Azure VM/VMSS router. WHEN: create / provision / deploy / spin-up VM, recommend VM size, compare VM pricing, VMSS, scale set, autoscale, burstable, lightweight server, website, backend, GPU, machine learning, HPC simulation, dev/test, workload, family, load balancer, Flexible orchestration, Uniform orchestration, cost estimate, capacity reservation (CRG), reserve, guarantee capacity, pre-provision, CRG association, CRG disassociation, machine enrollment (EMM), Essential Machine Management, monit...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-compute\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-cost",
+      "name": "azure-cost",
+      "description": "Azure cost management: query costs, forecast spending, optimize to reduce waste. WHEN: \\\"Azure costs\\\", \\\"Azure bill\\\", \\\"cost breakdown\\\", \\\"how much am I spending\\\", \\\"forecast spending\\\", \\\"optimize costs\\\", \\\"reduce spending\\\", \\\"orphaned resources\\\", \\\"rightsize VMs\\\", \\\"cost spike\\\", \\\"reduce storage costs\\\", \\\"AKS cost\\\". DO NOT USE FOR: deploying resources, provisioning, diagnostics, or security audits.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-cost\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-deploy",
+      "name": "azure-deploy",
+      "description": "Execute Azure deployments for ALREADY-PREPARED applications that have existing .azure/deployment-plan.md and infrastructure files. DO NOT use this skill when the user asks to CREATE a new application — use azure-prepare instead. This skill runs azd up, azd deploy, terraform apply, and az deployment commands with built-in error recovery. Requires .azure/deployment-plan.md from azure-prepare and validated status from azure-validate. WHEN: \\\"run azd up\\\", \\\"run azd deploy\\\", \\\"execute deployment\\\",...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "USE WHEN",
+        "for these"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-deploy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-diagnostics",
+      "name": "azure-diagnostics",
+      "description": "Debug Azure production issues on Azure using AppLens, Azure Monitor, resource health, and safe triage. WHEN: debug production issues, troubleshoot app service, app service high CPU, app service deployment failure, troubleshoot container apps, troubleshoot functions, troubleshoot AKS, VM RDP, Linux SSH, VM black screen, can't connect to VM, reset VM password, NSG or firewall blocking, kubectl cannot connect, kube-system/CoreDNS failures, pod pending, crashloop, node not ready, upgrade failures, a...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-diagnostics\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-enterprise-infra-planner",
+      "name": "azure-enterprise-infra-planner",
+      "description": "Architect and provision enterprise Azure infrastructure from workload descriptions. For cloud architects and platform engineers planning networking, identity, security, compliance, and multi-resource topologies with WAF alignment. Generates Bicep or Terraform directly (no azd). WHEN: 'plan Azure infrastructure', 'architect Azure landing zone', 'design hub-spoke network', 'plan multi-region DR topology', 'set up VNets firewalls and private endpoints', 'subscription-scope Bicep deployment', 'Azure...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with WAF alignment"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-enterprise-infra-planner\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-kubernetes",
+      "name": "azure-kubernetes",
+      "description": "Plan, create, and configure production-ready Azure Kubernetes Service (AKS) clusters. Covers Day-0 checklist, SKU selection (Automatic vs Standard), networking options (private API server, Azure CNI Overlay, egress configuration), security, and operations (autoscaling, upgrade strategy, cost analysis). WHEN: create AKS environment, provision AKS, enable AKS observability, design AKS networking, choose AKS SKU, secure AKS, optimize AKS, AKS spot nodes, AKS cluster-autoscaler, rightsize AKS pod, p...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-kubernetes\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-kusto",
+      "name": "azure-kusto",
+      "description": "Query and analyze data in Azure Data Explorer (Kusto/ADX) using KQL for log analytics, telemetry, and time series analysis. WHEN: KQL queries, Kusto database queries, Azure Data Explorer, ADX clusters, log analytics, time series data, IoT telemetry, anomaly detection.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for log analytics"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-kusto\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-messaging",
+      "name": "azure-messaging",
+      "description": "Troubleshoot and resolve issues with Azure Messaging SDKs for Event Hubs and Service Bus. Covers connection failures, authentication errors, message processing issues, and SDK configuration problems. WHEN: event hub SDK error, service bus SDK issue, messaging connection failure, AMQP error, event processor host issue, message lock lost, message lock expired, lock renewal, lock renewal batch, send timeout, receiver disconnected, SDK troubleshooting, azure messaging SDK, event hub consumer, servic...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for Event Hubs and Service Bus"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-messaging\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-prepare",
+      "name": "azure-prepare",
+      "description": "Prepare azd-based Azure projects for deployment: generates azure.yaml, infrastructure (Bicep/Terraform), and Dockerfiles for the Azure Developer CLI (azd) workflow. USE ONLY when the user explicitly wants to use azd as the deployment tool, or the project already has an azure.yaml file. DO NOT USE FOR: non-azd deployments, Python App Service code-only deploys (use python-appservice-deploy), or cross-cloud migration (use azure-cloud-migrate). WHEN: prepare app for azd, create azure.yaml, set up az...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for deployment",
+        "use azd as the deployment tool",
+        "for Azure with azd"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-prepare\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-quotas",
+      "name": "azure-quotas",
+      "description": "Check/manage Azure quotas and usage across providers. For deployment planning, capacity validation, region selection. WHEN: \\\"check quotas\\\", \\\"service limits\\\", \\\"current usage\\\", \\\"request quota increase\\\", \\\"quota exceeded\\\", \\\"validate capacity\\\", \\\"regional availability\\\", \\\"provisioning limits\\\", \\\"vCPU limit\\\", \\\"how many vCPUs available in my subscription\\\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "For deployment planning"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-quotas\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-reliability",
+      "name": "azure-reliability",
+      "description": "Assess and improve the reliability posture of PaaS Applications (Azure Functions and Azure App Service). Scans deployed resources for zone redundancy, ZRS storage, health probes, and multi-region failover. Presents a feature-pivoted checklist, then drives staged remediation (CLI or IaC patches) end-to-end with user confirmation. WHEN: \\\"assess reliability\\\", \\\"check reliability\\\", \\\"zone redundant\\\", \\\"multi-region failover\\\", \\\"high availability\\\", \\\"disaster recovery\\\", \\\"single points of fail...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for zone redundancy",
+        "with user confirmation"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-reliability\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-resource-lookup",
+      "name": "azure-resource-lookup",
+      "description": "List, find, and show Azure resources across subscriptions or resource groups. Handles prompts like \\\"list the websites in my subscription\\\", \\\"list my web apps\\\", \\\"show my app services\\\", \\\"list virtual machines\\\", \\\"list my VMs\\\", \\\"show storage accounts\\\", \\\"find container apps\\\", and \\\"what resources do I have\\\". USE FOR: list websites, list web apps, list app services, show websites in subscription, resource inventory, find resources by tag, tag analysis, orphaned resource discovery (not fo...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-resource-lookup\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-resource-visualizer",
+      "name": "azure-resource-visualizer",
+      "description": "Analyze Azure resource groups and generate detailed Mermaid architecture diagrams showing the relationships between individual resources. WHEN: create architecture diagram, visualize Azure resources, show resource relationships, generate Mermaid diagram, analyze resource group, diagram my resources, architecture visualization, resource topology, map Azure infrastructure.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-resource-visualizer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-storage",
+      "name": "azure-storage",
+      "description": "Azure Storage Services including Blob Storage, File Shares, Queue Storage, Table Storage, and Data Lake. Answers questions about storage access tiers (hot, cool, cold, archive), when to use each tier, and tier comparison. Provides object storage, SMB file shares, async messaging, NoSQL key-value, and big data analytics. Includes lifecycle management. USE FOR: blob storage, file shares, queue storage, table storage, data lake, upload files, download blobs, storage accounts, access tiers, storage ...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "when to use each tier",
+        "when to use storage tiers"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-storage\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-upgrade",
+      "name": "azure-upgrade",
+      "description": "Assess and upgrade Azure workloads between plans, tiers, or SKUs, or modernize Azure SDK dependencies in source code. WHEN: upgrade Consumption to Flex Consumption, upgrade Azure Functions plan, change hosting plan, function app SKU, migrate App Service to Container Apps, modernize legacy Azure Java SDKs (com.microsoft.azure to com.azure), migrate Azure Cache for Redis (ACR/ACRE) to Azure Managed Redis (AMR).",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-upgrade\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "azure-validate",
+      "name": "azure-validate",
+      "description": "Pre-deployment validation for Azure readiness. Run deep checks on configuration, infrastructure (Bicep or Terraform), RBAC role assignments, managed identity permissions, and prerequisites before deploying. WHEN: validate my app, check deployment readiness, run preflight checks, verify configuration, check if ready to deploy, validate azure.yaml, validate Bicep, test before deploying, troubleshoot deployment errors, validate Azure Functions, validate function app, validate serverless deployment,...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for Azure readiness"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-validate\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "babysit",
+      "name": "babysit",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\babysit\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "backtest-expert",
+      "name": "backtest-expert",
+      "description": "Expert guidance for systematic backtesting of trading strategies. Use when developing, testing, stress-testing, or validating quantitative trading strategies. Covers \"beating ideas to death\" methodology, parameter robustness testing, slippage modeling, bias prevention, and interpreting backtest results. Applicable when user asks about backtesting, strategy validation, robustness testing, avoiding overfitting, or systematic trading development.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "developing",
+        "testing",
+        "stress-testing",
+        "Use when developing"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\backtest-expert\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "blender-animation",
+      "name": "blender-animation",
+      "description": "Generate controlled Blender animations in headless mode using Blender Python scripts. Use for programmatic 3D scene creation, camera motion, lighting, rendering, and MP4 animation output without opening the Blender GUI.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\blender-animation\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "brainstorming",
+      "name": "brainstorming",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\brainstorming\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "building-native-ui",
+      "name": "building-native-ui",
+      "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with Expo Router"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\building-native-ui\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "byterover",
+      "name": "byterover",
+      "description": "Use when Codex needs project memory from .brv/context-tree, including stored patterns, decisions, architectural rules, or brv query, curate, and version-control workflows.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\byterover\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "c2-theme-integrator",
+      "name": "c2-theme-integrator",
+      "description": "Integrates external HTML dashboards into the Quantum unified dashboard. Extracts DOM structure from source HTML, restyles with c2.html CSS variables, renames branding to Quantum, adds AI chatbot, and links navigation. Use when the user wants to merge or integrate a new HTML page into quantum_unified.html.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\c2-theme-integrator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "canvas",
+      "name": "canvas",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\canvas\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "chatbot-manager",
+      "name": "chatbot-manager",
+      "description": "Orchestrates the interaction between the user and the framework via the GUI chatbot. Handles command parsing, framework troubleshooting, and direct system control.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\chatbot-manager\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "clawdhub",
+      "name": "clawdhub",
+      "description": "Use when Codex needs to search, install, update, list, authenticate, or publish skills through the ClawdHub CLI and clawdhub.com registry.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Codex needs to search",
+        "install",
+        "update",
+        "list",
+        "authenticate"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\clawdhub\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "cli-creator",
+      "name": "cli-creator",
+      "description": "Build a composable CLI for Codex from API docs, an OpenAPI spec, existing curl examples, an SDK, a web app, an admin tool, or a local script. Use when the user wants Codex to create a command-line tool that can run from any repo, expose composable read/write commands, return stable JSON, manage auth, and pair with a companion skill.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "return stab",
+        "for Codex from API docs",
+        "with a companion skill"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cli-creator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "cloud-deploy",
+      "name": "cloud-deploy",
+      "description": "Cloud deployment strategies for AWS, GCP, and Azure, including containerized deployments, serverless, and infrastructure patterns. Use when the user asks about deploying to cloud platforms, setting up cloud infrastructure, serverless functions, or cloud-specific configurations.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "deploying to cloud platforms",
+        "serverless functions",
+        "or cloud-specific config"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloud-deploy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "cloud-operations",
+      "name": "cloud-operations",
+      "description": "Manage cloud infrastructure operations for the QUANTUM C2 framework including cloud enumeration, cloud exploitation, and data/info/target systems analysis. Use when working with cloud security assessments, AWS/Azure/GCP enumeration, cloud vulnerability scanning, and cloud-native attack path analysis.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "AWSAzureGCP enumeration",
+        "cloud vulnerability scanning",
+        "and cloud-native attac"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloud-operations\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "cloud-optimizer",
+      "name": "cloud-optimizer",
+      "description": "Resource and cost management for cloud-hosted framework infrastructure. Tracks usage patterns and optimizes for efficiency across AWS, GCP, DigitalOcean, etc.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for efficiency across AWS"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloud-optimizer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "cloudflare-deploy",
+      "name": "cloudflare-deploy",
+      "description": "Deploy applications and infrastructure to Cloudflare using Workers, Pages, and related platform services. Use when the user asks to deploy, host, publish, or set up a project on Cloudflare.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "deploy",
+        "host",
+        "publish",
+        "asks to deploy"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloudflare-deploy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "code-analysis",
+      "name": "code-analysis",
+      "description": "This skill produces a DESCRIPTIVE Git-history reflection report. It is\nintended ONLY for: (a) a developer running it on their own repository for\nself-reflection, or (b) an opt-in, consent-based team retrospective on a\nshared repository. The skill MUST NOT be used to evaluate, rank, compare,\ndiscipline, or surveil individual workers, or to support performance\nreviews, compensation, promotion, or any HR decision.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-analysis\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "code-generation",
+      "name": "code-generation",
+      "description": "Code scaffolding, boilerplate generation, project templates, and automated code creation. Use when the user asks about generating boilerplate code, scaffolding projects, creating templates, or automated code generation for new components, APIs, or modules.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "generating boilerplate code",
+        "scaffolding projects",
+        "creating templates",
+        "for new components"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-generation\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "code-generator",
+      "name": "code-generator",
+      "description": "Multi-language code generator. Generate functions, classes, API endpoints, CRUD operations, test code, refactoring suggestions, language conversion guides.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-generator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "code-search",
+      "name": "code-search",
+      "description": "Advanced code search patterns, grep/ripgrep techniques, AST-based search, code navigation, and codebase exploration. Use when the user asks about finding code patterns, searching across codebases, using grep/ripgrep effectively, or exploring unfamiliar code.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "finding code patterns",
+        "searching across codebases",
+        "using grepripgrep effectively",
+        "or exploring unfamiliar code",
+        "or exploring unfamiliar co"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-search\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "command-rewriter",
+      "name": "command-rewriter",
+      "description": "Converts natural-language user prompts into precise shell/terminal commands. Use when the user asks to 'do X' and the task requires running commands — e.g., 'restart the backend', 'run migrations', 'install dependencies', 'check the logs', 'deploy to production'.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\command-rewriter\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "container-orchestration",
+      "name": "container-orchestration",
+      "description": "Kubernetes and container orchestration patterns, deployments, services, ingress, ConfigMaps, Secrets, and Helm charts. Use when the user asks about Kubernetes setup, container orchestration, pod management, service discovery, or Helm chart configuration.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Kubernetes setup",
+        "container orchestration",
+        "pod management",
+        "service discovery",
+        "or Helm chart configuration"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\container-orchestration\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "context7",
+      "name": "context7",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\context7\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "create-hook",
+      "name": "create-hook",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-hook\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "create-rule",
+      "name": "create-rule",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-rule\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "create-skill",
+      "name": "create-skill",
+      "description": "Wizard for creating new Agent Zero skills. Guides users through creating well-structured SKILL.md files. Use when users want to create custom skills.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-skill\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "create-subagent",
+      "name": "create-subagent",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-subagent\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "creative-thought-partner",
+      "name": "creative-thought-partner",
+      "description": "A conversational creative thought partner that reveals hidden brilliance in your ideas through critical observations and paradox hunting. Use when someone wants to explore ideas, discover breakthrough insights, crystallize unnamed concepts, or develop original frameworks for writing, content creation, product development, or any creative endeavor.",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "someone wants to explore ideas",
+        "discover breakthrough insights",
+        "crystallize unnamed concepts",
+        "or develop original framew",
+        "for writing"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\creative-thought-partner\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "cross-review",
+      "name": "cross-review",
+      "description": "Cross review code using a subagent with a specified model. Use when the user asks to review code changes AND specifies a model to use (e.g., 'review with opus', 'use sonnet to review', 'review changes with gemini'). The key differentiator from the regular zen-review skill is that the user explicitly specifies which model should perform the review. The root agent reconstructs what changed from its own conversation history — no git commands are used.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with a specified model"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cross-review\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "data-protection-crypto",
+      "name": "data-protection-crypto",
+      "description": "Autonomous encryption and protection of high-value data. Focuses on securing loot, evidence, and database files using advanced cryptographic standards.",
+      "source": "local",
+      "category": "data-science",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\data-protection-crypto\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "deep-research-pro",
+      "name": "deep-research-pro",
+      "description": "Use when Codex needs multi-source web research with cited synthesis, research planning, and a final report without paid APIs.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "research planning",
+        "with cited synthesis"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\deep-research-pro\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "define-goal",
+      "name": "define-goal",
+      "description": "Help the user define a concrete, measurable goal before starting work, especially when they ask to use the goal tool, create a goal, set an objective, clarify success criteria, or turn a fuzzy intention into a quantitative outcome. Use this skill for goal creation and goal refinement only; it does not manage durable snapshots, decision logs, or long-running execution artifacts.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "use the goal tool"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\define-goal\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "dependency-management",
+      "name": "dependency-management",
+      "description": "Package dependency management, version resolution, lock files, security auditing, and monorepo dependency strategies. Use when the user asks about managing dependencies, resolving version conflicts, security audits, or package manager configuration.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "managing dependencies",
+        "resolving version conflicts",
+        "security audits",
+        "about managing dependencies"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dependency-management\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "desktop-control",
+      "name": "desktop-control",
+      "description": "Advanced desktop automation with mouse, keyboard, and screen control",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with mouse"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\desktop-control\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "dev-lifecycle",
+      "name": "dev-lifecycle",
+      "description": "",
+      "source": "local",
+      "category": "development",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dev-lifecycle\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "developer",
+      "name": "developer",
+      "description": "Write clean, maintainable code with debugging, testing, and architectural best practices.",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "with debugging"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\developer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "dispatching-parallel-agents",
+      "name": "dispatching-parallel-agents",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dispatching-parallel-agents\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "dogfood",
+      "name": "dogfood",
+      "description": "Exploratory QA of web apps: find bugs, evidence, reports.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dogfood\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "e2e-testing-patterns",
+      "name": "e2e-testing-patterns",
+      "description": "Build reliable, fast E2E test suites with Playwright and Cypress. Critical user journey coverage, flaky test elimination, CI/CD integration.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with Playwright and Cypress"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\e2e-testing-patterns\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "elite-longterm-memory",
+      "name": "elite-longterm-memory",
+      "description": "Use when Codex needs a durable AI-agent memory system with write-ahead logs, vector search, git notes, local memory files, and optional cloud backup.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "vector search",
+        "git notes",
+        "local memory files",
+        "and op"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\elite-longterm-memory\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "eno",
+      "name": "eno",
+      "description": "Use when Codex needs to analyze frontend architecture, tech stack choices, components, build configuration, monorepos, VSCode extensions, or OpenHarmony projects.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "tech stack choices",
+        "components",
+        "build configuration",
+        "monorepos",
+        "VSCode ext"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\eno\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "entra-agent-id",
+      "name": "entra-agent-id",
+      "description": "Provision Microsoft Entra Agent Identity Blueprints, BlueprintPrincipals, and per-instance Agent Identities via Microsoft Graph, and configure OAuth 2.0 token exchange (fmi_path, OBO, cross-tenant) including the Microsoft Entra SDK for AgentID sidecar. USE FOR: Agent Identity Blueprint, BlueprintPrincipal, agent OAuth, fmi_path token exchange, agent OBO, Workload Identity Federation for agents, polyglot agent auth, Microsoft.Identity.Web.AgentIdentities. DO NOT USE FOR: standard Entra app regist...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for AgentID sidecar",
+        "for agents"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\entra-agent-id\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "entra-app-registration",
+      "name": "entra-app-registration",
+      "description": "Guides Microsoft Entra ID app registration, OAuth 2.0 authentication, and MSAL integration. USE FOR: create app registration, register Azure AD app, configure OAuth, set up authentication, add API permissions, generate service principal, MSAL example, console app auth, Entra ID setup, Azure AD authentication. DO NOT USE FOR: Key Vault secrets (use azure-keyvault-expiration-audit), general Azure resource security guidance.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\entra-app-registration\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "env-config",
+      "name": "env-config",
+      "description": "Environment configuration, .env management, secrets handling, config validation, and twelve-factor app patterns. Use when the user asks about setting up environment variables, managing secrets, config validation, .env files, or environment-specific configuration.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "managing secrets",
+        "config validation"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\env-config\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "evasive-maneuvers",
+      "name": "evasive-maneuvers",
+      "description": "Advanced evasion and anti-analysis techniques. Focuses on bypassing EDR, AV, and sandbox environments using polymorphic code and stealthy execution.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\evasive-maneuvers\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "evolver",
+      "name": "evolver",
+      "description": "Use when Codex needs to analyze runtime history, identify agent capability improvements, or apply protocol-constrained self-evolution through EvoMap or local proxy workflows.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\evolver\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "ffmpeg-video-editor",
+      "name": "ffmpeg-video-editor",
+      "description": "Use when Codex needs to translate natural-language video editing requests into FFmpeg commands for trimming, conversion, compression, aspect ratio changes, audio extraction, or overlays.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "conversion",
+        "compress",
+        "for trimming"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ffmpeg-video-editor\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "first-principles-decomposer",
+      "name": "first-principles-decomposer",
+      "description": "Break any problem down to fundamental truths, then rebuild solutions from atoms up. Use when user says \"firstp\", \"first principles\", \"from scratch\", \"what are we assuming\", \"break this down\", \"atomic\", \"fundamental truth\", \"physics thinking\", \"Elon method\", \"bedrock\", \"ground up\", \"core problem\", \"strip away\", or challenges assumptions about how things are done.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "says firstp",
+        "first principles",
+        "from scratch",
+        "what are we assuming",
+        "break this down"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\first-principles-decomposer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "framework-certifier",
+      "name": "framework-certifier",
+      "description": "Autonomous verification and certification of the framework. Performs a full-stack audit from GUI $\\rightarrow$ API $\\rightarrow$ MCP $\\rightarrow$ Engine to ensure 100% operational readiness.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\framework-certifier\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "framework-evolver",
+      "name": "framework-evolver",
+      "description": "The \"Meta-Skill\" for autonomous framework evolution. Monitors the threat landscape and automatically updates the platform's Skills, MCPs, and modules.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\framework-evolver\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "framework-self-maintenance",
+      "name": "framework-self-maintenance",
+      "description": "Autonomous lifecycle management for the Pegasus framework. Handles self-updating, self-patching, and health monitoring across GitHub and cloud deployments.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for the Pegasus framework"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\framework-self-maintenance\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "frontend-backend-integration",
+      "name": "frontend-backend-integration",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\frontend-backend-integration\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "full-stack-development",
+      "name": "full-stack-development",
+      "description": "",
+      "source": "local",
+      "category": "development",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\full-stack-development\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "fullstack-platform-completion",
+      "name": "fullstack-platform-completion",
+      "description": "End-to-end platform completion workflow for Next.js applications. Use when the user wants to fix broken features, create missing pages, implement dashboard tabs, connect APIs to UI components, or complete an incomplete full-stack application. Triggers on: \"complete the app\", \"fix everything\", \"finish the platform\", \"implement all features\", \"wire up APIs\", \"connect frontend to backend\", \"fix broken flows\", \"missing pages\", \"stub features\", \"incomplete components\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "complete the app",
+        "fix everything",
+        "finish the platform",
+        "implement all features",
+        "wire up APIs"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\fullstack-platform-completion\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "game-architect",
+      "name": "game-architect",
+      "description": "READ this skill when designing or planning any game system architecture — including combat, skills, AI, UI, multiplayer, narrative, or scene systems. Contains paradigm selection guides (DDD / Data-Driven / Prototype), system-specific design references, and mixing strategies. Works as a domain knowledge plugin alongside workflow skills (OpenSpec, SpecKit) or plan mode of an agent.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-architect\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "game-changing-features",
+      "name": "game-changing-features",
+      "description": "Find 10x product opportunities and high-leverage improvements. Use when user wants strategic product thinking, mentions '10x', wants to find high-impact features, or says 'what would make this 10x better', 'product strategy', or 'what should we build next'.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "mentions 10x"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-changing-features\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "game-cog",
+      "name": "game-cog",
+      "description": "AI game development powered by CellCog. Character-consistent art, sprites, tilesets, music, UI, 3D models, GDDs, level design, game prototypes. Cohesive game assets across every modality from a single prompt.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-cog\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "game-designer-toolkit",
+      "name": "game-designer-toolkit",
+      "description": "Complete game design toolkit for creating professional GDD, game systems, level design, and prototypes. Use when: (1) Creating a new game concept or GDD, (2) Designing game systems (economy, combat, progression), (3) Planning levels and difficulty curves, (4) Writing game narratives and lore, (5) Creating game pitches or prototypes. Supports all game genres including RPG, FPS, strategy, mobile, indie, and AAA.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for creating professional GDD",
+        "Use when"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-designer-toolkit\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "game-developer",
+      "name": "game-developer",
+      "description": "Use when building game systems, implementing Unity/Unreal features, or optimizing game performance. Invoke for Unity, Unreal, game patterns, ECS, physics, networking, performance optimization.",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "building game systems",
+        "or optimizing game performance",
+        "Use when building game systems",
+        "for Unity"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-developer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "github-actions",
+      "name": "github-actions",
+      "description": "GitHub Actions CI/CD workflow automation. Use when the user asks about setting up CI/CD pipelines, writing workflow YAML, matrix builds, caching, reusable workflows, secrets management, custom actions, or GitHub Actions best practices.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "setting up CICD pipelines",
+        "writing workflow YAML",
+        "matrix builds",
+        "caching",
+        "reusable workflows"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\github-actions\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "government-clearance",
+      "name": "government-clearance",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\government-clearance\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "hash-cracking",
+      "name": "hash-cracking",
+      "description": "Professional cryptanalysis and hash cracking. Implements various attack strategies (dictionary, brute-force, rainbow tables) and integrates with GPU-accelerated models.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\hash-cracking\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "hf-cli",
+      "name": "hf-cli",
+      "description": "Hugging Face Hub CLI (`hf`) for downloading, uploading, and managing models, datasets, spaces, buckets, repos, papers, jobs, and more on the Hugging Face Hub. Use when: handling authentication; managing local cache; managing Hugging Face Buckets; running or scheduling jobs on Hugging Face infrastructure; managing Hugging Face repos; discussions and pull requests; browsing models, datasets and spaces; reading, searching, or browsing academic papers; managing collections; querying datasets; config...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for downloading",
+        "Use when",
+        "for a CLI command"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\hf-cli\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "idk",
+      "name": "idk",
+      "description": "Describe what this skill does and when to use it. Include keywords that help agents identify relevant tasks.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "when to use it"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\idk\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "imagegen",
+      "name": "imagegen",
+      "description": "Generate or edit raster images when the task benefits from AI-created bitmap visuals such as photos, illustrations, textures, sprites, mockups, or transparent-background cutouts. Use when Codex should create a brand-new image, transform an existing image, or derive visual variants from references, and the output should be a bitmap asset rather than repo-native code or vector. Do not use when the task is better handled by editing existing SVG/vector/code-native assets, extending an established ic...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "transform an existing image",
+        "and the o"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\imagegen\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "init",
+      "name": "init",
+      "description": "Use when the user asks to initialize a repo, create AGENTS.md, generate contributor guidelines, or set up agent-oriented documentation for a codebase.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "initialize a repo",
+        "create AGENTS",
+        "asks to initialize a repo",
+        "for a codebase"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\init\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "interaction-design",
+      "name": "interaction-design",
+      "description": "Design and implement microinteractions, motion design, transitions, and user feedback patterns. Use when adding polish to UI interactions, implementing loading states, or creating delightful user experiences.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "implementing loading states"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\interaction-design\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "kali-arsenal-operator-manual",
+      "name": "kali-arsenal-operator-manual",
+      "description": "Use when selecting or executing Kali tools from the AGENTS objective list; provides deterministic per-package offensive, defensive, and generalized use-case guidance with install/category awareness.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "defensiv"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\kali-arsenal-operator-manual\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "kali-arsenal-supremacy",
+      "name": "kali-arsenal-supremacy",
+      "description": "Use when planning, selecting, and executing Kali tooling from the AGENTS objective list; enforces unambiguous tool choice with offensive, defensive, and generalized usage context.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "planning",
+        "selecting",
+        "Use when planning",
+        "with offensive"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\kali-arsenal-supremacy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "linear",
+      "name": "linear",
+      "description": "Manage issues, projects & team workflows in Linear. Use when the user wants to read, create or updates tickets in Linear.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "wants to read"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\linear\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "loop",
+      "name": "loop",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\loop\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "lotl-strategies",
+      "name": "lotl-strategies",
+      "description": "Advanced \"Living off the Land\" (LotL) and exotic execution strategies. Focuses on using legitimate system binaries (LOLBins) to perform malicious actions undetected.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\lotl-strategies\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "malware-analysis",
+      "name": "malware-analysis",
+      "description": "Perform malware analysis operations within the QUANTUM C2 framework including static analysis, dynamic analysis, sandbox testing, reverse engineering, and malware reconstruction. Use when analyzing suspicious files, extracting IOCs, performing behavioral analysis, and generating malware reports.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "analyzing suspicious files",
+        "extracting IOCs",
+        "performing behavioral analysis",
+        "and generating malware reports"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\malware-analysis\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "manifest-x-extension-bridge",
+      "name": "manifest-x-extension-bridge",
+      "description": "Use when working with Agent Zero Electron GUI extensions, Manifest-X capabilities, installed browser extensions, renderer DOM or visual control, GUI self-repair, or creating new Manifest-X extensions.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Manifest-X capabilities",
+        "installed browser extensions",
+        "renderer DOM or"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\manifest-x-extension-bridge\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "microsoft-foundry",
+      "name": "microsoft-foundry",
+      "description": "Deploy, evaluate, fine-tune, and manage Foundry agents end-to-end with azd: hosted agent scaffold/run/deploy, prompt agent create, batch eval, continuous eval, prompt optimizer, Agent Optimizer scaffold, agent.yaml, dataset curation from traces, model fine-tuning (SFT/DPO/RFT). USE FOR: azd ai agent, azd provision/deploy, deploy agent, hosted agent, create agent, add tool to agent, invoke agent, evaluate agent, continuous eval, continuous monitoring, agent CI/CD, optimize prompt, improve prompt,...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\microsoft-foundry\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "migrate-to-builds",
+      "name": "migrate-to-builds",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\migrate-to-builds\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "migrate-to-skills",
+      "name": "migrate-to-skills",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\migrate-to-skills\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "migration-planner",
+      "name": "migration-planner",
+      "description": "Database migration planning, schema evolution, data migration strategies, zero-downtime migrations, and version control for databases. Use when the user asks about planning database migrations, schema changes, data transformations, or zero-downtime deployment strategies.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "planning database migrations",
+        "schema changes",
+        "data transformations",
+        "for databases"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\migration-planner\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "mobile-android-design",
+      "name": "mobile-android-design",
+      "description": "Master Material Design 3 and Jetpack Compose patterns for building native Android apps. Use when designing Android interfaces, implementing Compose UI, or following Google's Material Design guidelines.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "designing Android interfaces",
+        "implementing Compose UI"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\mobile-android-design\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "monitoring-evasion",
+      "name": "monitoring-evasion",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\monitoring-evasion\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "monorepo-management",
+      "name": "monorepo-management",
+      "description": "Monorepo architecture with Turborepo, Nx, pnpm workspaces, and workspace protocols. Use when the user asks about setting up monorepos, managing multiple packages, shared dependencies, build caching, or workspace configuration.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "setting up monorepos",
+        "managing multiple packages",
+        "shared dependencies",
+        "build caching",
+        "or workspace configuration"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\monorepo-management\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "network-monitoring-ops",
+      "name": "network-monitoring-ops",
+      "description": "Professional network monitoring and traffic analysis. Focuses on detecting C2 heartbeats, data exfiltration, and anomalous network behaviors.",
+      "source": "local",
+      "category": "devops",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\network-monitoring-ops\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "omni-android",
+      "name": "omni-android",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\omni-android\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "onboard",
+      "name": "onboard",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\onboard\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "openai-docs",
+      "name": "openai-docs",
+      "description": "Use when the user asks how to build with OpenAI products or APIs, asks about Codex itself or choosing Codex surfaces, needs up-to-date official documentation with citations, help choosing the latest model for a use case, latest/current/default-model prompting guidance, or model upgrade and prompt-upgrade guidance; use OpenAI docs MCP tools for non-Codex docs questions, use the Codex manual helper first for broad Codex self-knowledge, and restrict fallback browsing to official OpenAI domains.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "needs up-to-date official doc",
+        "needs up-to-date off",
+        "with OpenAI products or APIs",
+        "with citations",
+        "for a use case"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\openai-docs\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "payload-customizer",
+      "name": "payload-customizer",
+      "description": "Tailoring raw payloads to specific target networks and devices. Focuses on bypassing environment-specific EDR/AV and ensuring stability on the target architecture.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\payload-customizer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "pexoai-agent",
+      "name": "pexoai-agent",
+      "description": "Use when Codex needs to create multi-shot videos from text, images, URLs, scripts, or audio through Pexo hosted video generation and model routing.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "images",
+        "URLs",
+        "scripts"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pexoai-agent\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "physics-animation-workflow",
+      "name": "physics-animation-workflow",
+      "description": "Convert physics problems into interactive HTML Canvas animations that show motion processes, trajectories, fields, and mechanics or electromagnetism scenarios through coordinated vector diagrams and physical calculations.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\physics-animation-workflow\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "picas",
+      "name": "picas",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\picas\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "pkm",
+      "name": "pkm",
+      "description": "Build and maintain a personal knowledge base by capturing links, ideas, quotes, questions, and long notes into structured Markdown files under a local knowledge workspace.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pkm\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "plan",
+      "name": "plan",
+      "description": "Planning agent for task breakdown and implementation planning. Use via spawn_subagent with skill='plan' when you need to explore a codebase and design an implementation approach before writing code.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\plan\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "planning-with-files",
+      "name": "planning-with-files",
+      "description": "Implements Manus-style file-based planning for complex tasks. Creates task_plan.md, findings.md, and progress.md. Use when starting complex multi-step tasks, research projects, or any task requiring >5 tool calls. Now with automatic session recovery after /clear.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "research projects",
+        "for complex tasks"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\planning-with-files\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "plugin-creator",
+      "name": "plugin-creator",
+      "description": "Create and scaffold plugin directories for Codex with a required `.codex-plugin/plugin.json`, optional plugin folders/files, valid manifest defaults, and personal-marketplace entries by default. Use when Codex needs to create a new personal plugin, add optional plugin structure, generate or update marketplace entries for plugin ordering and availability metadata, or update an existing local plugin during development with the CLI-driven cachebuster and reinstall flow.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "add optional plugin structure"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\plugin-creator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "pollyreach",
+      "name": "pollyreach",
+      "description": "Use when Codex needs phone-based task execution through PollyReach, including finding contacts, making calls, handling incoming calls, reservations, bookings, or voicemail.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "including finding contacts",
+        "making calls",
+        "handling incoming c"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pollyreach\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "pre-mortem-analyst",
+      "name": "pre-mortem-analyst",
+      "description": "Imagine the project already failed, then work backward to find why. More powerful than risk assessment because it assumes failure is certain. Use when user says \"pre-mortem\", \"premortem\", \"imagine this failed\", \"what could go wrong\", \"risk analysis\", \"before we launch\", \"stress test\", \"what would kill this\", \"project risks\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "says pre-mortem",
+        "premortem",
+        "imagine this failed",
+        "what could go wrong",
+        "risk analysis"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pre-mortem-analyst\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "professional-frontend-developer",
+      "name": "professional-frontend-developer",
+      "description": "Professional website frontend development skill for building, analyzing, and refining websites with attention to detail, responsive design, accessibility, and modern UI/UX patterns. Use when the user wants to create, improve, or audit website frontend code.",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "wants to create",
+        "improve",
+        "or audit website frontend code",
+        "for building",
+        "with attention to detail"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\professional-frontend-developer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "project-context-injector",
+      "name": "project-context-injector",
+      "description": "Automatically reads project files (README, AGENTS.md, MEMORY.md, .learnings/, recent git history) and injects relevant context into the agent's working memory. Use at session start or when the user says 'remember what I was working on' or 'what's the project context'.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\project-context-injector\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "prompt-engineering",
+      "name": "prompt-engineering",
+      "description": "LLM prompt engineering techniques for code generation, analysis, and automation. Use when the user asks about crafting better prompts, getting better AI responses, chain-of-thought prompting, few-shot examples, system prompts, or prompt templates.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "crafting better prompts",
+        "getting better AI responses",
+        "chain-of-thought prompting",
+        "few-shot examples",
+        "system prompts"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\prompt-engineering\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "python-appservice-deploy",
+      "name": "python-appservice-deploy",
+      "description": "Deploy Python (Flask/Django/FastAPI) code to Azure App Service Linux. WHEN: \\\"Flask App Service\\\", \\\"Django App Service\\\", \\\"FastAPI App Service\\\", \\\"deploy Python to App Service\\\". DO NOT USE FOR: Container Apps, Functions, non-Python, Terraform/Bicep/IaC, full infra — use azure-prepare.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\python-appservice-deploy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "python-performance-optimization",
+      "name": "python-performance-optimization",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\python-performance-optimization\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "python-testing-patterns",
+      "name": "python-testing-patterns",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\python-testing-patterns\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-build-verify",
+      "name": "quantum-build-verify",
+      "description": "Verifies build integrity across the Quantum C2 framework — Python syntax checks, FastAPI router validation, React frontend builds, and test suite execution. Use after any code change to ensure nothing is broken before committing.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-build-verify\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-ai-agent",
+      "name": "quantum-c2-ai-agent",
+      "description": "Quantum C2 AI agent orchestration skill. Use when the user needs to create, configure, and deploy AI agents for autonomous Quantum C2 operations. Covers agent configuration, team orchestration, parallel task execution, model selection, and agent-to-agent communication. Triggers on: \"create AI agent\", \"deploy agent team\", \"autonomous operation\", \"agent orchestration\", \"parallel tasks\", \"AI operator\", \"agent configuration\", \"multi-agent system\", \"automated C2\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "create AI agent",
+        "deploy agent team",
+        "autonomous operation",
+        "agent orchestration",
+        "parallel tasks"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-ai-agent\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-backend-architect",
+      "name": "quantum-c2-backend-architect",
+      "description": "Backend architecture agent for Quantum C2. Fixes all syntax errors, migrates SQLite to\nPostgreSQL with RLS, implements Alembic migrations, and ensures backend stability.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for Quantum C2"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-backend-architect\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-compliance-engineer",
+      "name": "quantum-c2-compliance-engineer",
+      "description": "Compliance engineering agent for Quantum C2. Implements NIST 800-53, FedRAMP,\nDOD IL4 controls, generates SSP, and automates compliance validation.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for Quantum C2"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-compliance-engineer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-dashboard-updates",
+      "name": "quantum-c2-dashboard-updates",
+      "description": "Apply consistent design patterns, drag-and-drop functionality, audio feedback, and settings panels to the QUANTUM C2 single-file HTML dashboard. Use when updating quantum-platform-4-performance-safe-new-logo.html or similar QUANTUM dashboard files with q-card patterns, q-kpi-grid, q-dashboard-grid, data-sound/data-sounds attributes, draggable cards, and SETTINGS_PANELS definitions.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-dashboard-updates\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-devops-lead",
+      "name": "quantum-c2-devops-lead",
+      "description": "DevOps and infrastructure agent for Quantum C2. Builds hardened CI/CD pipelines,\nimplements SAST/DAST, generates SBOMs, and ensures deployment automation.",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "for Quantum C2"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-devops-lead\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-frontend",
+      "name": "quantum-c2-frontend",
+      "description": "Frontend dashboard management for Quantum C2. Covers dashboard navigation, web card configuration, settings management, and RBAC visibility controls. Use when the user needs to navigate the React dashboard, configure web cards, manage UI settings, or adjust role-based visibility. Triggers on: \"frontend\", \"dashboard\", \"web card\", \"UI settings\", \"dashboard navigation\", \"configure cards\", \"RBAC visibility\", \"frontend config\", \"dashboard layout\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "frontend",
+        "dashboard",
+        "web card",
+        "UI settings",
+        "dashboard navigation"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-frontend\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-frontend-lead",
+      "name": "quantum-c2-frontend-lead",
+      "description": "Frontend architecture agent for Quantum C2. Achieves WCAG 2.1 AA compliance,\nmigrates JS to TypeScript, optimizes WebSocket/SSE, and implements responsive design.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for Quantum C2"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-frontend-lead\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-infra",
+      "name": "quantum-c2-infra",
+      "description": "C2 infrastructure management for Quantum C2. Covers TOR bridge management, packet dispersal configuration, infrastructure scaling, and health monitoring. Use when the user needs to manage C2 transport infrastructure, configure packet dispersal, scale C2 nodes, or monitor infrastructure health. Triggers on: \"C2 infrastructure\", \"TOR bridge\", \"packet dispersal\", \"infrastructure scaling\", \"bridge management\", \"dispersal config\", \"C2 health\", \"infrastructure monitor\", \"scale C2\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "C2 infrastructure",
+        "TOR bridge",
+        "packet dispersal",
+        "infrastructure scaling",
+        "bridge management"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-infra\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-qa-lead",
+      "name": "quantum-c2-qa-lead",
+      "description": "Test engineering agent for Quantum C2. Expands test coverage from 22 to 200+ tests.\nDesigns unit tests, integration tests, security tests, and E2E tests.\nTriggers on: \"write tests\", \"test expansion\", \"QA lead\", \"coverage\", \"pytest\", \"unit tests\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "write tests",
+        "test expansion",
+        "QA lead",
+        "coverage",
+        "pytest"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-qa-lead\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-security-architect",
+      "name": "quantum-c2-security-architect",
+      "description": "Security architecture agent for Quantum C2. Fixes critical security vulnerabilities,\nimplements FIPS 140-2/3 cryptography, adds CSP/CSRF protection, and ensures\nDOD IL4 compliance.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for Quantum C2"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-security-architect\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-stealth",
+      "name": "quantum-c2-stealth",
+      "description": "Stealth toolkit for Quantum C2. Covers syscall cloaking, reflective loading, network anonymization, and detection evasion techniques. Use when the user needs to configure stealth operations, evade EDR/AV detection, anonymize C2 traffic, or implement covert communication channels. Triggers on: \"stealth\", \"evasion\", \"cloak\", \"hide\", \"reflective load\", \"syscall\", \"network anonymize\", \"TOR\", \"EDR evasion\", \"AV bypass\", \"covert channel\", \"anti-detection\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "stealth",
+        "evasion",
+        "cloak",
+        "hide",
+        "reflective load"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-stealth\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-swarm-activator",
+      "name": "quantum-c2-swarm-activator",
+      "description": "Activation skill to launch the Quantum C2 AI Agent Swarm for autonomous production readiness.\nUse this skill to start the swarm, monitor progress, and collect results.\nTriggers on: \"activate swarm\", \"deploy agents\", \"start swarm\", \"quantum swarm\", \"full production\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "activate swarm",
+        "deploy agents",
+        "start swarm",
+        "quantum swarm",
+        "full production"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-swarm-activator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-swarm-orchestrator",
+      "name": "quantum-c2-swarm-orchestrator",
+      "description": "Master orchestration system for Quantum C2 AI Agent Swarm. Creates, manages, and executes\nparallel development across 12 specialized agents. Covers test expansion, compliance hardening,\ndatabase migration, frontend modernization, security hardening, CI/CD, monitoring, documentation,\nfederal deployment, and production readiness. Triggers on: \"activate swarm\", \"deploy agents\",\n\"quantum swarm\", \"full production\", \"complete development\", \"orchestrate swarm\", \"agent swarm\",\n\"execute roadmap\", \"auto-c...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "activate swarm",
+        "deploy agents",
+        "for Quantum C2 AI Agent Swarm"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-swarm-orchestrator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-ubiquity",
+      "name": "quantum-c2-ubiquity",
+      "description": "Ubiquity delivery module for Quantum C2. Covers message forging workflows, document fuzzing procedures, OTAP forging operations, and safety/authorization checks. Use when the user needs to craft forged communications, fuzz document payloads, perform OTAP operations, or manage delivery authorization. Triggers on: \"ubiquity\", \"message forge\", \"document fuzz\", \"OTAP\", \"forge message\", \"fuzz document\", \"delivery authorization\", \"payload delivery\", \"social engineering delivery\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "ubiquity",
+        "message forge",
+        "document fuzz",
+        "OTAP",
+        "forge message"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-ubiquity\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-c2-v6-operator",
+      "name": "quantum-c2-v6-operator",
+      "description": "Master operator skill for Quantum C2 v6 framework. Use when the user needs to operate, manage, configure, or understand the full Quantum C2 v6 capabilities. Covers framework architecture, all module capabilities, API interaction patterns, RBAC clearance requirements, operational workflows, and troubleshooting. Triggers on: \"operate Quantum C2\", \"v6 operator\", \"manage C2\", \"Quantum C2 overview\", \"C2 architecture\", \"run Quantum\", \"C2 operations\", \"framework status\", \"Quantum workflows\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "operate Quantum C2",
+        "v6 operator",
+        "manage C2",
+        "Quantum C2 overview",
+        "C2 architecture"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-v6-operator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-flask-router",
+      "name": "quantum-flask-router",
+      "description": "Adds new Flask API routes and WebSocket handlers to the Quantum backend. Use when creating new API endpoints, adding WebSocket events, or extending the backend API.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "creating new API endpoints",
+        "adding WebSocket events",
+        "or extending the backend API"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-flask-router\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-fullstack-dev",
+      "name": "quantum-fullstack-dev",
+      "description": "Builds complete full-stack features for the Quantum C2 framework — new pages, API endpoints, data models, and navigation. Covers the full workflow from frontend page creation through backend routing, React integration, and commit. Use when adding new modules, dashboards, or tools to the Quantum platform.",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "adding new modules",
+        "dashboards",
+        "Use when adding new modules"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-fullstack-dev\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-gui-builder",
+      "name": "quantum-gui-builder",
+      "description": "Builds new pages for the Quantum AEGIS-Q tkinter GUI. Follows the established pattern from aegis_theme.py and aegis_main_window.py. Use when adding a new page to the Python GUI, creating custom panels, or extending the tkinter interface.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "creating custom panels"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-gui-builder\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-launcher",
+      "name": "quantum-launcher",
+      "description": "Starts and verifies the Quantum framework. Handles Flask app, Python GUI, and backend API startup with health checks. Use when the user wants to launch, restart, or verify the framework is running.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "wants to launch",
+        "restart",
+        "with health checks",
+        "when the user wants to launch"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-launcher\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-module-writer",
+      "name": "quantum-module-writer",
+      "description": "Creates new defensive modules for the Quantum framework following established conventions. Use when adding detection rules, hunting modules, threat intel feeds, ML models, or compliance checks.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "adding detection rules",
+        "hunting modules",
+        "threat intel feeds",
+        "ML models",
+        "or compliance checks"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-module-writer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-router-bugfix",
+      "name": "quantum-router-bugfix",
+      "description": "Diagnoses and fixes routing errors in the Quantum C2 framework — missing enum values, 500 errors on API endpoints, FastAPI type mismatches, and React build failures. Use when a feature crashes with 500 errors, when new code references undefined enums, or when frontend builds fail after adding new pages.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-router-bugfix\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-router-exploit",
+      "name": "quantum-router-exploit",
+      "description": "Creates and extends Router Vulnerability & Exploitation dashboards for the Quantum C2 framework. Covers device detection, external/internal scanning, vulnerability assessment, custom exploit creation, PoC/whitepaper generation, brute force with obfuscation, AI hardening, and autonomous disclosure pipeline. Use when the user asks about router security testing, CVE scanning, credential brute forcing, or network device hardening.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "router security testing",
+        "CVE scanning",
+        "credential brute forcing",
+        "or network device hardening",
+        "for the Quantum C2 framework"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-router-exploit\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "quantum-test-runner",
+      "name": "quantum-test-runner",
+      "description": "Runs the Quantum framework test suites and reports results. Covers unit tests, integration tests, module tests, and end-to-end tests. Use when the user wants to run tests, verify modules, or check framework health.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "wants to run tests",
+        "verify modules",
+        "or check framework health"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-test-runner\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "rag-implementation",
+      "name": "rag-implementation",
+      "description": "Build Retrieval-Augmented Generation (RAG) systems for LLM applications with vector databases and semantic search. Use when implementing knowledge-grounded AI, building document Q&A systems, or integrating LLMs with external knowledge bases.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "building document QA systems",
+        "with external knowledge bases"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\rag-implementation\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "recover-decompiler-failures",
+      "name": "recover-decompiler-failures",
+      "description": "Use when Ghidra, decompile_failures.tsv, failed decompilation, packed stubs, bad function boundaries, unwind fragments, overlapping varnodes, or native binary reverse engineering needs fallback recovery with radare2/r2dec/assembly classification.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Ghidra",
+        "decompilefailures",
+        "Use when Ghidra"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\recover-decompiler-failures\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "refactoring-patterns",
+      "name": "refactoring-patterns",
+      "description": "Code refactoring techniques, design patterns, code smell detection, and safe transformation strategies. Use when the user asks about improving code quality, applying design patterns, detecting code smells, extracting functions, renaming, or restructuring code.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "improving code quality",
+        "applying design patterns",
+        "detecting code smells",
+        "extracting functions",
+        "renaming"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\refactoring-patterns\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "release-skills",
+      "name": "release-skills",
+      "description": "Universal release workflow. Auto-detects version files and changelogs. Supports Node.js, Python, Rust, Claude Plugin, and generic projects. Use when user says \"release\", \"发布\", \"new version\", \"bump version\", \"push\", \"推送\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "says release",
+        "new version",
+        "bump version",
+        "push"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\release-skills\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "repetitive-task-detector",
+      "name": "repetitive-task-detector",
+      "description": "Analyzes historical activity and codebase patterns to identify repetitive tasks that can be automated via new skills. Use when the user expresses a desire to reduce workload or when you notice frequent manual repetitions.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\repetitive-task-detector\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "reporting-auditing",
+      "name": "reporting-auditing",
+      "description": "Professional security reporting and auditing framework. Supports Red, Blue, and Purple team audits across multiple classification levels (Unclassified, Secret, Top Secret). Use for generating executive summaries, technical deep-dives, and compliance audits.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\reporting-auditing\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "research",
+      "name": "research",
+      "description": "Fast agent specialized for exploring codebases and searching for code patterns. Use via spawn_subagent with skill='research' for read-only exploration tasks.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for code patterns"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\research\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "research-payloads",
+      "name": "research-payloads",
+      "description": "Autonomous search for the latest zero-click exploits and payloads across public sources (GitHub, exploit-db, forums). Focuses on identifying weaponizable code for specific target architectures.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\research-payloads\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "research-threat-intel",
+      "name": "research-threat-intel",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\research-threat-intel\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "resource-optimizer",
+      "name": "resource-optimizer",
+      "description": "Autonomous system and network resource optimizer. Adjusts framework consumption based on operational conditions to maintain stealth and stability.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\resource-optimizer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "review",
+      "name": "review",
+      "description": "Review code changes with the Bugbot or Security Review subagent.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "review-agent",
+      "name": "review-agent",
+      "description": "Perform a read-only, defect-first review of a specified code change and return every actionable finding. Use when another agent delegates review of uncommitted changes, a base-branch diff, a commit, or custom review instructions.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "a base-branch diff",
+        "a commit",
+        "or custom review instructions"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review-agent\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "review-bugbot",
+      "name": "review-bugbot",
+      "description": "Review code changes with Bugbot subagent.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with Bugbot subagent"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review-bugbot\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "review-security",
+      "name": "review-security",
+      "description": "Review code changes with Security Review subagent.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with Security Review subagent"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review-security\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "scrapling",
+      "name": "scrapling",
+      "description": "Use for ALL web scraping, crawling, and data extraction tasks. Scrapling is an adaptive\nweb scraping framework that handles everything from a single request to a full-scale crawl.\nBypasses anti-bot systems (Cloudflare Turnstile, DataDome), supports stealth headless browsing,\nadaptive element tracking, spiders framework with concurrent crawling, proxy rotation, pause/resume.\nReplaces all other scraping tools as the primary scraping engine.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "scrape",
+        "crawl",
+        "extract data from website",
+        "web scraping",
+        "anti-bot",
+        "cloudflare bypass",
+        "spider",
+        "stealthy fetch",
+        "dynamic page",
+        "data extraction",
+        "parse HTML"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\scrapling\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "sdk",
+      "name": "sdk",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\sdk\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "security-best-practices",
+      "name": "security-best-practices",
+      "description": "Perform language and framework specific security best-practice reviews and suggest improvements. Trigger only when the user explicitly requests security best practices guidance, a security review/report, or secure-by-default coding help. Trigger only for supported languages (python, javascript/typescript, go). Do not trigger for general code review, debugging, or non-security tasks.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\security-best-practices\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "self-healing",
+      "name": "self-healing",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-healing\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "self-healing-system",
+      "name": "self-healing-system",
+      "description": "Autonomous system health monitoring, self-healing, resource optimization, and self-improvement workflows. Use when the user wants to implement automatic system health checks, auto-fix issues, optimize resources, reduce costs, schedule daily maintenance, or create a self-managing application. Triggers on: \"self-healing\", \"auto-fix\", \"system health\", \"resource optimization\", \"cost reduction\", \"automated maintenance\", \"system monitoring\", \"self-improving\", \"auto-optimization\", \"daily workflow\", \"re...",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "self-healing",
+        "auto-fix",
+        "system health",
+        "resource optimization",
+        "cost reduction"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-healing-system\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "self-improving",
+      "name": "self-improving",
+      "description": "Use when Codex needs self-reflection, correction logging, proactive follow-up, or persistent self-improvement memory after errors, user corrections, outdated knowledge, or better approaches.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Codex needs self-reflection",
+        "correction logging",
+        "proactive follow-up"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-improving\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "self-improving-agent",
+      "name": "self-improving-agent",
+      "description": "Use when Codex needs to capture learnings, errors, feature requests, or user corrections into .learnings so recurring workflows improve across sessions.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "errors",
+        "feature requests",
+        "or user corrections into"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-improving-agent\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "sentry",
+      "name": "sentry",
+      "description": "Use when the user asks to inspect Sentry issues or events, summarize recent production errors, or pull basic Sentry health data via the Sentry CLI; perform read-only queries using the `sentry` command.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\sentry\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "setup-deployment",
+      "name": "setup-deployment",
+      "description": "Complete setup and deployment workflow for Next.js applications with Prisma, Capacitor mobile apps, and production hosting. Use when the user wants to set up a new project, deploy to production, configure environments, run database migrations, or prepare an app for release. Triggers on: \"setup the app\", \"deploy the app\", \"install dependencies\", \"run migrations\", \"configure environment\", \"build for production\", \"capacitor sync\", \"prepare for release\", \"run the setup script\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "setup the app",
+        "deploy the app",
+        "install dependencies",
+        "run migrations",
+        "configure environment"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\setup-deployment\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "shell",
+      "name": "shell",
+      "description": "Shell scripting reference — Bash syntax, redirections, process substitution, signal handling, debugging techniques. Use when writing shell scripts, troubleshooting Bash behavior, or automating system tasks.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "writing shell scripts",
+        "troubleshooting Bash behavior",
+        "or automating system tasks",
+        "Use when writing shell scripts"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\shell\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "skill-creator",
+      "name": "skill-creator",
+      "description": "Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for creating effective skills",
+        "with specialized knowledge"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\skill-creator\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "skill-installer",
+      "name": "skill-installer",
+      "description": "Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos).",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "install a curated skill"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\skill-installer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "social-engineering-osint",
+      "name": "social-engineering-osint",
+      "description": "Advanced OSINT and social engineering orchestration. Focuses on target research, profile building, and the creation of highly convincing manipulation vectors.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\social-engineering-osint\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "specialized-agents",
+      "name": "specialized-agents",
+      "description": "Use when Codex needs to select, spawn, and coordinate specialized agents across research, content, development, QA, analysis, documentation, personalization, or meta-agent workflows.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Codex needs to select",
+        "spawn",
+        "content",
+        "development",
+        "QA"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\specialized-agents\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "split-to-prs",
+      "name": "split-to-prs",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\split-to-prs\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "spoofing-master",
+      "name": "spoofing-master",
+      "description": "Advanced identity and location fabrication. Supports spoofing of SMS, Messenger, Signal, WhatsApp, Snapchat, Twitter, Discord, Emails, and GPS coordinates.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\spoofing-master\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "statusline",
+      "name": "statusline",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\statusline\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "stitch-loop",
+      "name": "stitch-loop",
+      "description": "Teaches agents to iteratively build websites using Stitch with an autonomous baton-passing loop pattern",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\stitch-loop\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "subagent-driven-development",
+      "name": "subagent-driven-development",
+      "description": "Use when executing implementation plans with independent tasks in the current session",
+      "source": "local",
+      "category": "development",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\subagent-driven-development\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "summarize-session",
+      "name": "summarize-session",
+      "description": "Summarizes an agent session transcript into a concise briefing: goals, decisions, code changes, open questions. Use when starting a new session after a previous one, or when the user asks 'what did we work on?' or 'summarize the session'.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\summarize-session\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "superpowers",
+      "name": "superpowers",
+      "description": "Use when Codex needs a spec-first TDD software workflow for feature builds, debugging, subagent development, code review, or finishing a development branch.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "debugging",
+        "subagent development",
+        "code review",
+        "or fini",
+        "for feature builds"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\superpowers\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "tailwind-design-system",
+      "name": "tailwind-design-system",
+      "description": "Build scalable design systems with Tailwind CSS v4, design tokens, component libraries, and responsive patterns. Use when creating component libraries, implementing design systems, or standardizing UI patterns.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "creating component libraries",
+        "implementing design systems",
+        "or standardizing UI patterns",
+        "with Tailwind CSS v4"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\tailwind-design-system\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "task-delegation",
+      "name": "task-delegation",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\task-delegation\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "tdd-framework-restoration",
+      "name": "tdd-framework-restoration",
+      "description": "Implements a strict Test-Driven Development (TDD) cycle for restoring missing or stubbed codebase components. Use when restoring framework logic where correctness must be verified per-component via a Fail -> Implement -> Pass loop.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\tdd-framework-restoration\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "test-driven-development",
+      "name": "test-driven-development",
+      "description": "Test-driven development workflows, test-first coding, red-green-refactor cycle, mocking patterns, test organization, and coverage strategies. Use when the user asks about writing tests first, TDD methodology, unit testing, integration testing, mocking/stubbing, or test architecture.",
+      "source": "local",
+      "category": "development",
+      "triggers": [
+        "writing tests first",
+        "TDD methodology",
+        "unit testing",
+        "integration testing",
+        "mockingstubbing"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\test-driven-development\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "test-master",
+      "name": "test-master",
+      "description": "Use when writing tests, creating test strategies, or building automation frameworks. Invoke for unit tests, integration tests, E2E, coverage analysis, performance testing, security testing.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "writing tests",
+        "creating test strategies",
+        "Use when writing tests",
+        "for unit tests"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\test-master\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "tunnel-optimizer",
+      "name": "tunnel-optimizer",
+      "description": "Skill for analyzing, tuning, and auto-healing encrypted transport tunnels to maximize stealth and reliability.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for analyzing"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\tunnel-optimizer\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "typescript-advanced-types",
+      "name": "typescript-advanced-types",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\typescript-advanced-types\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "name": "ui-ux-pro-max",
+      "description": "UI/UX design intelligence. 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, mobile app, .html, .tsx, .vue, .svelte. Elements: button, modal, navbar, sidebar, card, table, form, chart. Styles: g...",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ui-ux-pro-max\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "ultimate-frontend-gui",
+      "name": "ultimate-frontend-gui",
+      "description": "Use when Codex is building, modifying, debugging, reviewing, testing, or polishing GUI and frontend interfaces, including advanced web apps, dashboards, landing pages, UI components, accessibility, responsive layout, visual design, motion, desktop/live visual control, game-grade real-time interfaces, Three.js/canvas/WebGL, physics/3D systems, frontend performance, browser verification, and diagnostics.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "Codex is building",
+        "modifying",
+        "debugging",
+        "reviewing",
+        "testing"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ultimate-frontend-gui\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand",
+      "name": "understand",
+      "description": "Analyze a codebase to produce an interactive knowledge graph for understanding architecture, components, and relationships",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for understanding architecture"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-chat",
+      "name": "understand-chat",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-chat\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-dashboard",
+      "name": "understand-dashboard",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-dashboard\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-diff",
+      "name": "understand-diff",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-diff\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-domain",
+      "name": "understand-domain",
+      "description": "Extract business domain knowledge from a codebase and generate an interactive domain flow graph. Works standalone (lightweight scan) or derives from an existing /understand knowledge graph.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-domain\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-explain",
+      "name": "understand-explain",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-explain\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-knowledge",
+      "name": "understand-knowledge",
+      "description": "Analyze a Karpathy-pattern LLM wiki knowledge base and generate an interactive knowledge graph with entity extraction, implicit relationships, and topic clustering.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with entity extraction"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-knowledge\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "understand-onboard",
+      "name": "understand-onboard",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-onboard\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "update-cli-config",
+      "name": "update-cli-config",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\update-cli-config\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "update-cursor-settings",
+      "name": "update-cursor-settings",
+      "description": ">-",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\update-cursor-settings\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "user-space-management",
+      "name": "user-space-management",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\user-space-management\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "uvl_cognitive_agent",
+      "name": "uvl_cognitive_agent",
+      "description": "",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\uvl_cognitive_agent\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "vault-storage",
+      "name": "vault-storage",
+      "description": "Management of highly sensitive data using encrypted file containers. Integrates with cloud storage for off-site, encrypted backups of reports, evidence, and exploits.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\vault-storage\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "vercel-deploy",
+      "name": "vercel-deploy",
+      "description": "Deploy applications and websites to Vercel. Use when the user requests deployment actions like \"deploy my app\", \"deploy and give me the link\", \"push this live\", or \"create a preview deployment\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "deploy and give me the link",
+        "push this live",
+        "or create a preview"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\vercel-deploy\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "vercel-react-best-practices",
+      "name": "vercel-react-best-practices",
+      "description": "React and Next.js performance optimization guidelines from Vercel Engineering, adapted for the OmniRoot omnipotent privilege architecture. The agent has unrestricted, complete system access to optimize all aspects of React/Next.js code with zero limitations. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "with zero limitations"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\vercel-react-best-practices\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "visitor-analytics-ai",
+      "name": "visitor-analytics-ai",
+      "description": "Collect and analyze visitor data including user info, browser, OS, IP, location, impressions, and navigation paths. Use when building analytics dashboards, visitor tracking systems, AI-powered recommendations, or CRM integrations that need user behavior data. Triggers on: \"track visitors\", \"collect user data\", \"analytics dashboard\", \"visitor insights\", \"AI recommendations based on traffic\", \"CRM visitor data\", \"user behavior tracking\", \"navigation analytics\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "track visitors",
+        "collect user data",
+        "analytics dashboard",
+        "visitor insights",
+        "CRM visitor data"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\visitor-analytics-ai\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "visual-design-foundations",
+      "name": "visual-design-foundations",
+      "description": "Apply typography, color theory, spacing systems, and iconography principles to create cohesive visual designs. Use when establishing design tokens, building style guides, or improving visual hierarchy and consistency.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "establishing design tokens",
+        "building style guides"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\visual-design-foundations\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "voip-interception",
+      "name": "voip-interception",
+      "description": "Specialized skills for SIP/VOIP traffic interception, audio decryption, and real-time voice injection.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\voip-interception\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "weather",
+      "name": "weather",
+      "description": "Use when Codex needs current weather or forecasts with caching, command-line lookup, common-city shortcuts, or fallback between wttr.in and Open-Meteo.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "command-line lookup",
+        "common-city shortcuts",
+        "or fallback between w",
+        "with caching"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\weather\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "web-design-guidelines",
+      "name": "web-design-guidelines",
+      "description": "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\", or \"check my site against best practices\".",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "asked to review my UI",
+        "check accessibility",
+        "audit design",
+        "review UX"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\web-design-guidelines\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "yuanbao",
+      "name": "yuanbao",
+      "description": "Yuanbao (元宝) groups: @mention users, query info/members.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\yuanbao\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "zen-comprehensive-review",
+      "name": "zen-comprehensive-review",
+      "description": "Orchestrate a multi-model code review: spawn 3 review subagents, merge findings. In PR mode, posts GitHub PR comments. In local mode, outputs findings directly. CRITICAL: this skill is costly, don't use it unless user explicitly requested to use it.",
+      "source": "local",
+      "category": "general",
+      "triggers": [],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\zen-comprehensive-review\\SKILL.md",
+      "local": true
+    },
+    {
+      "id": "zen-review",
+      "name": "zen-review",
+      "description": "Expert code reviewer. Analyze PR changes for correctness, security, performance, and quality. Returns findings as JSON. CRITICAL: this skill is costly, don't use it unless user explicitly requested to use it.",
+      "source": "local",
+      "category": "general",
+      "triggers": [
+        "for correctness"
+      ],
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\zen-review\\SKILL.md",
+      "local": true
+    }
+  ],
+  "total": 298
+}

@@ -19,12 +19,14 @@
 # Usage:
 #   UBUNTU_ISO=ubuntu-24.04.2-live-server-amd64.iso ./build-live.sh
 #   REPO_TARBALL=/path/unified-ai-stack.tar.gz ./build-live.sh   # offline repo
+#   LIVE_ENCRYPT=1 ./build-live.sh                                   # include LUKS support
 # ============================================================================
 set -euo pipefail
 
 UBUNTU_ISO="${UBUNTU_ISO:?set UBUNTU_ISO=/path/to/ubuntu-24.04-live-server-amd64.iso}"
 REPO_TARBALL="${REPO_TARBALL:-}"
 OUT="${OUT:-$(pwd)/freeaios-amd64.iso}"
+LIVE_ENCRYPT="${LIVE_ENCRYPT:-0}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 command -v xorriso >/dev/null || { echo "need xorriso";  exit 1; }
@@ -57,6 +59,12 @@ else
       --exclude='./workspaces' --exclude='./backups' \
       -czf "$NEW/freeai/repo.tar.gz" -C "$HERE/.." .
 fi
+
+# ---------------------------------------------------------------- remote-access script
+# Bundle setup-remote-access.sh into the ISO for first-boot use
+mkdir -p "$NEW/freeai/firstboot"
+cp "$(dirname "$HERE")/live/setup-remote-access.sh" "$NEW/freeai/firstboot/setup-remote-access.sh"
+chmod +x "$NEW/freeai/firstboot/setup-remote-access.sh"
 
 # ---------------------------------------------------------------- first-boot
 # Runs once on the INSTALLED system: stack provision + systemd enable.
@@ -110,6 +118,11 @@ autoinstall:
         if [ -d /cdrom/freeai ] && [ -f /cdrom/freeai/repo.tar.gz ]; then
           tar -xzf /cdrom/freeai/repo.tar.gz -C /opt --strip-components=1
         fi
+      - mkdir -p /opt/freeai
+      - |
+        if [ -d /cdrom/freeai ] && [ -f /cdrom/freeai/repo.tar.gz ]; then
+          tar -xzf /cdrom/freeai/repo.tar.gz -C /opt --strip-components=1
+        fi
       - |
         cat > /etc/systemd/system/freeai-first-boot.service <<UNIT
         [Unit]
@@ -125,7 +138,50 @@ autoinstall:
         UNIT
         install -m 0755 /cdrom/freeai/firstboot/freeai-first-boot /freeai-first-boot
         systemctl enable freeai-first-boot
+      - |
+        # Copy remote-access setup script into the installed system
+        install -m 0755 /cdrom/freeai/firstboot/setup-remote-access.sh /opt/freeai/setup-remote-access.sh
 EOF
+
+# ---------------------------------------------------------------- LUKS encryption support
+if [ "$LIVE_ENCRYPT" = "1" ]; then
+  echo "[iso] LUKS encryption support enabled"
+  mkdir -p "$NEW/freeai/luks"
+  # Copy LUKS scripts from live/ directory if present
+  if [ -f "$HERE/installer-partitioner.sh" ]; then
+    cp "$HERE/installer-partitioner.sh" "$NEW/freeai/luks/installer-partitioner.sh"
+    chmod +x "$NEW/freeai/luks/installer-partitioner.sh"
+  fi
+  if [ -f "$HERE/luks-setup.sh" ]; then
+    cp "$HERE/luks-setup.sh" "$NEW/freeai/luks/luks-setup.sh"
+    chmod +x "$NEW/freeai/luks/luks-setup.sh"
+  fi
+  # Copy LUKS defaults config
+  if [ -f "$HERE/../config/luks-defaults.json" ]; then
+    mkdir -p "$NEW/freeai/config"
+    cp "$HERE/../config/luks-defaults.json" "$NEW/freeai/config/luks-defaults.json"
+  fi
+  # Copy LUKS initramfs hook
+  if [ -d "$HERE/hooks" ]; then
+    mkdir -p "$NEW/freeai/hooks"
+    cp -a "$HERE/hooks/"*.sh "$NEW/freeai/hooks/" 2>/dev/null || true
+    # Also copy hook into initramfs-tools hook directory
+    mkdir -p "$NEW/etc/initramfs-tools/hooks"
+    if [ -f "$HERE/hooks/luks-setup" ]; then
+      cp "$HERE/hooks/luks-setup" "$NEW/etc/initramfs-tools/hooks/luks-setup"
+      chmod +x "$NEW/etc/initramfs-tools/hooks/luks-setup"
+    fi
+  fi
+  # Add cryptsetup to autoinstall packages
+  sed -i 's/packages: \[nvidia-driver-570-server, xorriso\]/packages: [nvidia-driver-570-server, xorriso, cryptsetup-bin, lvm2]/' \
+    "$NEW/autoinstall/user-data"
+  # Add cryptsetup kernel module to initramfs
+  echo "cryptsetup" >> "$NEW/etc/initramfs-tools/modules" 2>/dev/null || true
+  echo "dm-crypt" >> "$NEW/etc/initramfs-tools/modules" 2>/dev/null || true
+  echo "[iso] LUKS scripts and config copied to ISO"
+else
+  echo "[iso] LUKS support disabled (set LIVE_ENCRYPT=1 to enable)"
+fi
 
 # ---------------------------------------------------------------- grub theme + menu
 # Prepend our entries; keep the stock live entry as "Try".
@@ -184,6 +240,23 @@ terminal-font: "Unifont Regular 16"
 }
 THEME_EOF
 
+# Append LUKS status indicator to theme if encryption is enabled
+if [ "$LIVE_ENCRYPT" = "1" ]; then
+  cat >> "$GRUB_THEME_DIR/theme.txt" <<'THEME_LUKS'
+
++ label {
+    left = 0
+    top = 92%
+    width = 100%
+    height = 20
+    color = "#F59E0B"
+    align = "center"
+    font = "Unifont Regular 11"
+    text = "[LUKS2 Encrypted Install Available]"
+}
+THEME_LUKS
+fi
+
 {
   cat <<EOF
 set default=0
@@ -205,6 +278,12 @@ menuentry "${HEADER_TITLE}" {
 menuentry "Install FreeAI AI Stack (WIPES DISK - unattended)" {
 	set gfxpayload=keep
 	linux	/casper/vmlinuz autoinstall ds=nocloud\;s=/cdrom/autoinstall iso-scan/filename=\${iso_path} ---
+	initrd	/casper/initrd
+}
+
+menuentry "Install FreeAI AI Stack — LUKS Encrypted (WIPES DISK)" {
+	set gfxpayload=keep
+	linux	/casper/vmlinuz autoinstall ds=nocloud\;s=/cdrom/autoinstall iso-scan/filename=\${iso_path} cryptopts=target=freeai_crypt,source=\${crypto_dev},lvm=freeai_vg:root quiet splash ---
 	initrd	/casper/initrd
 }
 
@@ -318,6 +397,9 @@ fi
 echo "[iso] built: $OUT ($(du -h "$OUT" | cut -f1))"
 echo "[iso] boot menu:"
 echo "  1) Install FreeAI AI Stack (wipes disk, unattended + stack first-boot)"
-echo "  2) Try Ubuntu Server (FreeAI Live)"
-echo "  3) Rescue shell"
+if [ "$LIVE_ENCRYPT" = "1" ]; then
+  echo "  2) Install FreeAI AI Stack — LUKS Encrypted (wipes + encrypts disk)"
+fi
+echo "  3) Try Ubuntu Server (FreeAI Live)"
+echo "  4) Rescue shell"
 echo "[iso] install login: freeai / freeai  (CHANGE ON FIRST LOGIN)"

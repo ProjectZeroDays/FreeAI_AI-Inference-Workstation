@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Disk Encryption</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .encryption-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+
+    /* Header area */
+    .enc-header { display: flex; align-items: center; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .enc-header h1 { font-size: 20px; font-weight: 700; margin: 0; }
+    .enc-header .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .badge-encrypted { background: rgba(34,197,94,.15); color: #22C55E; }
+    .badge-unencrypted { background: rgba(239,68,68,.15); color: #EF4444; }
+    .badge-luks { background: rgba(56,189,248,.15); color: #38BDF8; }
+
+    /* Disk grid */
+    .disk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; padding: 20px 24px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+    .disk-card { padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); transition: all .15s; }
+    .disk-card:hover { border-color: var(--accent-2); }
+    .disk-card .disk-name { font-size: 15px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .disk-card .disk-meta { font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .disk-card .disk-meta code { font-family: 'Fira Code', monospace; color: var(--accent-2); font-size: 11px; }
+    .disk-card .disk-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .disk-card .disk-actions button { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 11px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .disk-card .disk-actions button:hover { border-color: var(--accent-2); }
+    .disk-card .disk-actions button.danger { border-color: rgba(239,68,68,.3); color: #EF4444; }
+    .disk-card .disk-actions button.danger:hover { background: rgba(239,68,68,.1); }
+
+    /* Info section */
+    .info-area { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .info-section { margin-bottom: 24px; }
+    .info-section h2 { font-size: 14px; font-weight: 700; margin: 0 0 12px 0; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .info-card { padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); margin-bottom: 10px; }
+    .info-card .row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .info-card .row:last-child { border-bottom: none; }
+    .info-card .row .label { color: var(--muted); }
+    .info-card .row .value { font-weight: 600; font-family: 'Fira Code', monospace; font-size: 12px; }
+
+    /* Recovery key display */
+    .recovery-key-box { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; margin: 12px 0; }
+    .recovery-key-box .key { font-size: 22px; font-family: 'Fira Code', monospace; letter-spacing: .12em; color: var(--accent-2); font-weight: 700; user-select: all; }
+    .recovery-key-box .key-hint { font-size: 11px; color: var(--muted-2); margin-top: 8px; }
+
+    /* Passphrase checker */
+    .pass-check { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .pass-check select, .pass-check input[type="password"] { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 13px; font-family: 'Fira Code', monospace; }
+    .pass-check select { min-width: 140px; cursor: pointer; }
+    .pass-check input[type="password"] { flex: 1; min-width: 200px; }
+    .pass-check button { padding: 8px 18px; border-radius: 8px; border: none; background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .pass-check button:disabled { opacity: .5; cursor: not-allowed; }
+    .pass-result { font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px; }
+    .pass-result.ok { background: rgba(34,197,94,.15); color: #22C55E; }
+    .pass-result.fail { background: rgba(239,68,68,.15); color: #EF4444; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(2,6,23,.8); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 28px; max-width: 460px; width: 90%; box-shadow: var(--shadow); }
+    .modal h3 { margin: 0 0 16px 0; font-size: 16px; }
+    .modal label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+    .modal input, .modal select { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 13px; margin-bottom: 14px; box-sizing: border-box; }
+    .modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+    .modal .modal-actions button { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .modal .modal-actions button.primary { background: linear-gradient(135deg, #0EA5E9, #22C55E); color: #020617; border: none; font-weight: 700; }
+    .modal .modal-actions button.danger { border-color: rgba(239,68,68,.4); color: #EF4444; }
+
+    /* Spinner */
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent-2); border-radius: 50%; animation: spin .6s linear infinite; margin-right: 6px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">&#9670;</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Encryption</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Dashboard</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
+        <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+        <a href="/encryption" class="nav-item active"><span class="nav-dot"></span> Encryption</a>
+        <a href="/hardware" class="nav-item"><span class="nav-dot"></span> Hardware</a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <div class="encryption-layout">
+
+        <!-- Header -->
+        <div class="enc-header">
+          <h1>Disk Encryption</h1>
+          <span id="status-badge" class="badge badge-unencrypted">Checking...</span>
+          <span id="luks-version-badge" class="badge badge-luks" style="display:none">LUKS2</span>
+          <div style="margin-left:auto; font-size:12px; color:var(--muted-2)" id="last-scan-time"></div>
+        </div>
+
+        <!-- Disk grid -->
+        <div class="disk-grid" id="disk-grid">
+          <div class="disk-card">
+            <div class="disk-name"><span class="spinner"></span> Scanning disks...</div>
+            <div class="disk-meta">Running lsblk to detect block devices.</div>
+          </div>
+        </div>
+
+        <!-- Info area -->
+        <div class="info-area">
+
+          <!-- Recovery key -->
+          <div class="info-section">
+            <h2>Recovery Key</h2>
+            <div class="info-card">
+              <div class="recovery-key-box" id="recovery-key-box" style="display:none">
+                <div class="key" id="recovery-key-display">—</div>
+                <div class="key-hint">Store this key securely. Use it if you forget your passphrase.</div>
+              </div>
+              <div id="no-recovery" style="font-size:13px; color:var(--muted); padding:8px 0">
+                No recovery key found. Generate one below.
+              </div>
+              <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap">
+                <button onclick="generateRecoveryKey()" id="gen-key-btn">Generate New Key</button>
+                <button onclick="copyRecoveryKey()" id="copy-key-btn" style="display:none">Copy to Clipboard</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passphrase checker -->
+          <div class="info-section">
+            <h2>Passphrase Check</h2>
+            <div class="info-card">
+              <div style="font-size:13px; color:var(--muted); margin-bottom:12px">
+                Test a passphrase against a LUKS device without unlocking.
+              </div>
+              <div class="pass-check">
+                <select id="pass-disk-select">
+                  <option value="">Select disk...</option>
+                </select>
+                <input type="password" id="pass-input" placeholder="Enter passphrase to test..." />
+                <button onclick="checkPassphrase()" id="pass-check-btn">Test</button>
+              </div>
+              <div id="pass-result" style="margin-top:10px"></div>
+            </div>
+          </div>
+
+          <!-- Encryption config -->
+          <div class="info-section">
+            <h2>LUKS Configuration</h2>
+            <div class="info-card" id="luks-config-card">
+              <div class="row"><span class="label">Version</span><span class="value" id="cfg-version">—</span></div>
+              <div class="row"><span class="label">Cipher</span><span class="value" id="cfg-cipher">—</span></div>
+              <div class="row"><span class="label">Key Size</span><span class="value" id="cfg-keysize">—</span></div>
+              <div class="row"><span class="label">PBKDF</span><span class="value" id="cfg-pbkdf">—</span></div>
+              <div class="row"><span class="label">PBKDF Memory</span><span class="value" id="cfg-memory">—</span></div>
+              <div class="row"><span class="label">Partition Info</span><span class="value" id="cfg-partinfo">Not found</span></div>
+            </div>
+          </div>
+
+          <!-- Available disks detail -->
+          <div class="info-section">
+            <h2>Block Devices</h2>
+            <div class="info-card">
+              <pre id="lsblk-output" style="font-size:11px; font-family:'Fira Code',monospace; color:var(--muted); margin:0; white-space:pre-wrap; max-height:200px; overflow-y:auto">Loading...</pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="regen-modal">
+    <div class="modal">
+      <h3>Regenerate Recovery Key</h3>
+      <p style="font-size:13px; color:var(--muted); margin:0 0 16px 0">
+        A new recovery key will be generated. The old key will no longer work.
+      </p>
+      <label>New Key Length</label>
+      <select id="regen-length">
+        <option value="16">16 characters</option>
+        <option value="24">24 characters</option>
+        <option value="32" selected>32 characters</option>
+        <option value="48">48 characters</option>
+      </select>
+      <div class="modal-actions">
+        <button onclick="closeModal('regen-modal')">Cancel</button>
+        <button class="danger" onclick="confirmRegenKey()">Regenerate</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="encrypt-modal">
+    <div class="modal">
+      <h3>Encrypt Disk</h3>
+      <p style="font-size:13px; color:var(--muted); margin:0 0 16px 0">
+        This will wipe the selected disk and encrypt it with LUKS2. This action is irreversible.
+      </p>
+      <label>Passphrase</label>
+      <input type="password" id="encrypt-pass1" placeholder="Enter passphrase" />
+      <label>Confirm Passphrase</label>
+      <input type="password" id="encrypt-pass2" placeholder="Confirm passphrase" />
+      <div class="modal-actions">
+        <button onclick="closeModal('encrypt-modal')">Cancel</button>
+        <button class="danger" onclick="confirmEncrypt()">Encrypt &amp; Wipe</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let disks = [];
+    let recoveryKey = null;
+
+    async function fetchJSON(url) {
+      const r = await fetch(url);
+      return r.json();
+    }
+
+    async function scanDisks() {
+      try {
+        const data = await fetchJSON('/api/encryption/disks');
+        disks = data.disks || [];
+        renderDisks();
+        updateStatus(data);
+        populateDiskSelect(data.disks);
+        document.getElementById('lsblk-output').textContent = data.lsblk || 'N/A';
+      } catch(e) {
+        document.getElementById('disk-grid').innerHTML =
+          '<div class="disk-card"><div class="disk-name" style="color:#EF4444">Scan failed</div>' +
+          '<div class="disk-meta">' + escHtml(e.message) + '</div></div>';
+      }
+    }
+
+    function renderDisks() {
+      const grid = document.getElementById('disk-grid');
+      if (disks.length === 0) {
+        grid.innerHTML = '<div class="disk-card"><div class="disk-name">No disks detected</div>' +
+          '<div class="disk-meta">Run lsblk to verify block devices are visible.</div></div>';
+        return;
+      }
+      grid.innerHTML = disks.map(d => {
+        const encStatus = d.encrypted ? 'badge-encrypted' : 'badge-unencrypted';
+        const encLabel = d.encrypted ? 'Encrypted' : 'Unencrypted';
+        const sizeGb = (parseInt(d.size_bytes) / 1e9).toFixed(1);
+        return `<div class="disk-card">
+          <div class="disk-name">
+            ${d.name}
+            <span class="badge ${encStatus}">${encLabel}</span>
+            ${d.luks_version ? '<span class="badge badge-luks">LUKS2</span>' : ''}
+          </div>
+          <div class="disk-meta">
+            Size: <code>${sizeGb} GB</code><br>
+            Model: <code>${escHtml(d.model || 'Unknown')}</code><br>
+            Type: <code>${d.type || 'disk'}</code><br>
+            ${d.luks_uuid ? 'UUID: <code>' + escHtml(d.luks_uuid) + '</code><br>' : ''}
+            ${d.partition_info ? 'Info: <code>' + escHtml(d.partition_info) + '</code>' : ''}
+          </div>
+          <div class="disk-actions">
+            ${!d.encrypted ? '<button onclick="openEncryptModal(\'' + escHtml(d.name) + '\')">Encrypt Disk</button>' : ''}
+            <button onclick="refreshDisk('${escHtml(d.name)}')">Refresh</button>
+            ${d.encrypted ? '<button onclick="openPassCheckModal(\'' + escHtml(d.name) + '\')">Check Passphrase</button>' : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function updateStatus(data) {
+      const badge = document.getElementById('status-badge');
+      const luksBadge = document.getElementById('luks-version-badge');
+      const lastTime = document.getElementById('last-scan-time');
+      const encryptedCount = disks.filter(d => d.encrypted).length;
+      if (encryptedCount > 0) {
+        badge.textContent = encryptedCount + ' Disk(s) Encrypted';
+        badge.className = 'badge badge-encrypted';
+        luksBadge.style.display = '';
+      } else {
+        badge.textContent = 'No Encryption';
+        badge.className = 'badge badge-unencrypted';
+        luksBadge.style.display = 'none';
+      }
+      lastTime.textContent = 'Last scan: ' + (data.scanned_at || new Date().toISOString());
+    }
+
+    function populateDiskSelect(diskList) {
+      const sel = document.getElementById('pass-disk-select');
+      sel.innerHTML = '<option value="">Select disk...</option>' +
+        diskList.filter(d => d.encrypted).map(d =>
+          `<option value="${escHtml(d.name)}">${escHtml(d.name)} (LUKS)</option>`
+        ).join('');
+    }
+
+    async function checkPassphrase() {
+      const disk = document.getElementById('pass-disk-select').value;
+      const pass = document.getElementById('pass-input').value;
+      const resultEl = document.getElementById('pass-result');
+      const btn = document.getElementById('pass-check-btn');
+
+      if (!disk || !pass) {
+        resultEl.innerHTML = '<span class="pass-result fail">Select a disk and enter a passphrase.</span>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Testing...';
+      resultEl.innerHTML = '';
+
+      try {
+        const data = await fetchJSON('/api/encryption/check-passphrase', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({disk: disk, passphrase: pass})
+        });
+        if (data.valid) {
+          resultEl.innerHTML = '<span class="pass-result ok">&#10003; Passphrase is valid for ' + escHtml(disk) + '</span>';
+        } else {
+          resultEl.innerHTML = '<span class="pass-result fail">&#10007; Invalid passphrase for ' + escHtml(disk) + '</span>';
+        }
+      } catch(e) {
+        resultEl.innerHTML = '<span class="pass-result fail">Error: ' + escHtml(e.message) + '</span>';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Test';
+      }
+    }
+
+    async function generateRecoveryKey() {
+      const btn = document.getElementById('gen-key-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Generating...';
+      try {
+        const data = await fetchJSON('/api/encryption/recovery-key', {method: 'POST'});
+        recoveryKey = data.key;
+        document.getElementById('recovery-key-display').textContent = recoveryKey;
+        document.getElementById('recovery-key-box').style.display = '';
+        document.getElementById('no-recovery').style.display = 'none';
+        document.getElementById('copy-key-btn').style.display = '';
+      } catch(e) {
+        alert('Failed to generate key: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Generate New Key';
+      }
+    }
+
+    function copyRecoveryKey() {
+      if (!recoveryKey) return;
+      navigator.clipboard.writeText(recoveryKey).then(() => {
+        const btn = document.getElementById('copy-key-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy to Clipboard', 2000);
+      });
+    }
+
+    function openEncryptModal(diskName) {
+      document.getElementById('encrypt-modal').classList.add('active');
+      document.getElementById('encrypt-pass1').value = '';
+      document.getElementById('encrypt-pass2').value = '';
+      document.getElementById('encrypt-modal').dataset.disk = diskName;
+    }
+
+    async function confirmEncrypt() {
+      const disk = document.getElementById('encrypt-modal').dataset.disk;
+      const p1 = document.getElementById('encrypt-pass1').value;
+      const p2 = document.getElementById('encrypt-pass2').value;
+      if (p1 !== p2) { alert('Passphrases do not match!'); return; }
+      if (p1.length < 8) { alert('Passphrase must be at least 8 characters.'); return; }
+      if (!confirm('WARNING: This will WIPE ' + disk + ' and encrypt it with LUKS2. This cannot be undone. Continue?')) return;
+
+      const btn = document.querySelector('#encrypt-modal .modal-actions button.danger');
+      btn.disabled = true;
+      btn.textContent = 'Encrypting...';
+      try {
+        await fetchJSON('/api/encryption/encrypt-disk', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({disk: disk, passphrase: p1})
+        });
+        closeModal('encrypt-modal');
+        await scanDisks();
+        alert('Disk ' + disk + ' has been encrypted. Reboot to apply.');
+      } catch(e) {
+        alert('Encryption failed: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = 'Encrypt & Wipe';
+      }
+    }
+
+    function openPassCheckModal(diskName) {
+      document.getElementById('pass-disk-select').value = diskName;
+      document.getElementById('pass-input').focus();
+      document.getElementById('pass-result').innerHTML = '';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    async function refreshDisk(diskName) {
+      await scanDisks();
+    }
+
+    function escHtml(t) {
+      return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Load on page open
+    scanDisks();
+    setInterval(scanDisks, 60000);
+  </script>
+</body>
+</html>

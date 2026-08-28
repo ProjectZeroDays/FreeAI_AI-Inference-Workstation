@@ -1,0 +1,200 @@
+#!/bin/sh
+# ============================================================================
+# FreeAIOS — initramfs hook for LUKS boot-time unlock
+#
+# This hook is invoked by update-initramfs to add LUKS support into the
+# initramfs. It provides the cryptsetup binary, kernel modules, and a
+# hook script that runs in the initramfs to unlock the encrypted root.
+#
+# Hook name: 'luks-setup' — invoked during 'local_top' phase
+# ============================================================================
+# HOOKNAME=luks-setup
+# ============================================================================
+
+prereqs() {
+    echo "@requires cryptsetup"
+    echo "@requires dm-crypt"
+}
+
+depends() {
+    # This hook depends on cryptsetup and dm-crypt being available
+    echo "cryptsetup"
+    echo "dm-crypt"
+}
+
+process() {
+    # Add required binaries and modules to the initramfs
+    if [ -e /usr/sbin/cryptsetup ]; then
+        copy_exec /usr/sbin/cryptsetup /bin
+    fi
+    if [ -e /lib/cryptsetup/scripts/luks-setup ]; then
+        copy_script /lib/cryptsetup/scripts/luks-setup /lib/cryptsetup/scripts
+    fi
+    # Copy our custom hook script into the initramfs
+    if [ -n "$1" ]; then
+        mkdir -p "$1/bin"
+        cat > "$1/bin/luks-setup" <<'HOOK_EOF'
+#!/bin/sh
+# ============================================================================
+# FreeAIOS initramfs LUKS unlock script
+# Runs during initramfs boot to unlock the encrypted root partition.
+# ============================================================================
+set -e
+
+LOG="/tmp/luks-setup-initramfs.log"
+PARTITION_INFO="/etc/freeai/partition-info.json"
+MAX_RETRIES=3
+RETRY_DELAY=5
+
+log() {
+    local ts
+    ts="$(date -Is 2>/dev/null || echo '?')"
+    echo "[$ts] $*" | tee -a "$LOG"
+}
+
+# Prompt for passphrase using busybox/terminal utilities if available
+read_passphrase() {
+    local prompt="$1"
+    local pass=""
+    local attempt=1
+
+    while [ "$attempt" -le "$MAX_RETRIES" ]; do
+        echo "$prompt (attempt $attempt/$MAX_RETRIES):"
+        # Try stty-based read first, fall back to read -s
+        if command -v read >/dev/null 2>&1; then
+            read -r -s pass
+        else
+            echo -n "$prompt: "
+            read -r pass
+        fi
+        echo ""
+        if [ -n "$pass" ]; then
+            return 0
+        fi
+        attempt=$((attempt + 1))
+    done
+    return 1
+}
+
+log "=== FreeAIOS LUKS initramfs hook started ==="
+
+# Detect LUKS devices
+luks_devs=""
+for dev in /dev/sd* /dev/nvme* /dev/vd* /dev/mmcblk*; do
+    [ -b "$dev" ] || continue
+    # Check disk itself
+    if blkid -o value -s TYPE "$dev" 2>/dev/null | grep -qi luks; then
+        luks_devs="$luks_devs $dev"
+    fi
+    # Check partitions
+    for p in "${dev}"[0-9]*; do
+        [ -b "$p" ] || continue
+        if blkid -o value -s TYPE "$p" 2>/dev/null | grep -qi luks; then
+            luks_devs="$luks_devs $p"
+        fi
+    done
+done
+
+luks_devs="$(echo "$luks_devs" | xargs)"
+
+if [ -z "$luks_devs" ]; then
+    log "No LUKS devices detected — proceeding with normal boot"
+    exit 0
+fi
+
+log "Found LUKS devices:$luks_devs"
+
+# Read cryptopts from kernel cmdline
+cryptopts=""
+if [ -f /proc/cmdline ]; then
+    cryptopts="$(cat /proc/cmdline | tr ' ' '\n' | grep '^cryptopts=' | head -1 | cut -d= -f2- || true)"
+fi
+log "cryptopts from kernel: ${cryptopts:-<none>}"
+
+# Read LUKS device UUID from partition-info.json
+luks_uuid=""
+if [ -f "$PARTITION_INFO" ]; then
+    log "Found partition-info.json"
+    if command -v jq >/dev/null 2>&1; then
+        luks_uuid="$(jq -r '.luks_uuid // empty' "$PARTITION_INFO" 2>/dev/null)"
+    fi
+fi
+
+# Prompt for passphrase interactively (always — the recovery_key field is a random reference string, NOT the LUKS passphrase)
+if [ -z "$luks_uuid" ]; then
+    log "No LUKS UUID found in partition-info.json, scanning devices..."
+fi
+
+if ! passphrase="$(read_passphrase "Enter LUKS passphrase for ${luks_devs%% *}")"; then
+        log "Too many failed attempts — dropping to emergency shell"
+        echo ""
+        echo "EMERGENCY: LUKS unlock failed after $MAX_RETRIES attempts."
+        echo "Available commands: cryptsetup, lsblk, fdisk, mount, reboot"
+        echo "Type 'exit' to retry, 'reboot' to restart."
+        /bin/sh
+        exit 1
+    fi
+fi
+
+# Unlock LUKS device(s)
+mapper_name="freeai_crypt"
+unlocked=0
+for dev in $luks_devs; do
+    log "Opening LUKS device: $dev (UUID check: ${luks_uuid:-scan-only})"
+    # If we have a stored UUID, verify it matches before attempting unlock
+    if [ -n "$luks_uuid" ]; then
+        dev_uuid="$(blkid -o value -s UUID "$dev" 2>/dev/null || true)"
+        if [ "$dev_uuid" != "$luks_uuid" ]; then
+            log "UUID mismatch for $dev (have $dev_uuid, expected $luks_uuid) — skipping"
+            continue
+        fi
+    fi
+    if echo "$passphrase" | cryptsetup open "$dev" "$mapper_name" --type luks2 --key-file=- 2>/dev/null; then
+        log "LUKS device unlocked: /dev/mapper/$mapper_name"
+        unlocked=1
+        break
+    fi
+    log "Failed to open $dev, retrying in ${RETRY_DELAY}s..."
+    sleep "$RETRY_DELAY"
+done
+
+if [ "$unlocked" -eq 0 ]; then
+    log "All LUKS unlock attempts failed"
+    echo "EMERGENCY: Could not unlock any LUKS container."
+    /bin/sh
+    exit 1
+fi
+
+# Mount root filesystem
+root_dev="/dev/mapper/$mapper_name"
+# If LVM is present, use the root LV
+if [ -b /dev/freeai_vg/root ]; then
+    root_dev="/dev/freeai_vg/root"
+    log "Using LVM root: $root_dev"
+elif [ -b /dev/mapper/freeai_vg-root ]; then
+    root_dev="/dev/mapper/freeai_vg-root"
+    log "Using LVM root (mapper): $root_dev"
+fi
+
+log "Mounting root: $root_dev"
+mkdir -p /target
+mount "$root_dev" /target 2>/dev/null || {
+    log "Failed to mount $root_dev — checking LVM..."
+    # Try activating LVM volumes
+    vgchange -ay 2>/dev/null || true
+    mount /dev/freeai_vg/root /target 2>/dev/null || \
+    mount /dev/mapper/freeai_vg-root /target 2>/dev/null || {
+        log "Could not mount root. Dropping to emergency shell."
+        echo "ROOT_DEV=$root_dev"
+        /bin/sh
+        exit 1
+    }
+}
+
+log "Root mounted at /target"
+log "=== LUKS initramfs hook complete ==="
+HOOK_EOF
+        chmod +x "$1/bin/luks-setup"
+        log "Installed initramfs hook script"
+    fi
+}
