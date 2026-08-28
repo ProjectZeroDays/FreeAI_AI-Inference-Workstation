@@ -829,6 +829,78 @@ def wiki_dashboard_page():
     return render_template("wiki-dashboard.html")
 
 
+# -- Wiki Content API ---------------------------------------------------------
+WIKI_PAGES = {
+    "overview": ("Overview", "INDEX.md"),
+    "quickstart": ("Quick Start", "FIRST-BOOT-GUIDE.md"),
+    "installation": ("Installation Guide", "BUILD-SHEET.md"),
+    "aikido-panel": ("Aikido Security", "SECURITY_ADVANCED.md"),
+    "pentest-panel": ("Pentest Agent", "SECURITY_ADVANCED.md"),
+    "builders-panel": ("Builder Agents", "AUTONOMOUS-AGENTS.md"),
+    "comms-panel": ("Communication Stack", "COMMS-OVERVIEW.md"),
+    "api-rest-guide": ("REST API Guide", "API-GUIDE.md"),
+    "architecture": ("Architecture", "ARCHITECTURE.md"),
+    "providers": ("Providers", "PROVIDERS.md"),
+    "mcp": ("MCP Registry", "MCP.md"),
+    "rag": ("RAG & Vector DB", "RAG.md"),
+    "websocket": ("WebSocket", "WEBSOCKET.md"),
+    "function-calling": ("Function Calling", "FUNCTION_CALLING.md"),
+    "log-streaming": ("Log Streaming", "LOG_STREAMING.md"),
+    "deployment": ("Deployment", "DEPLOYMENT.md"),
+    "security-advanced": ("Security", "SECURITY_ADVANCED.md"),
+    "builders-overview": ("Builders", "AUTONOMOUS-AGENTS.md"),
+    "comms-overview": ("Comms", "COMMS-OVERVIEW.md"),
+    "troubleshooting": ("Troubleshooting", "TROUBLESHOOTING.md"),
+}
+DOCS_DIR = ROOT.parent / "docs"
+
+
+@app.route("/api/wiki/content/<page>")
+def api_wiki_content(page):
+    title, filename = WIKI_PAGES.get(page, (page.title(), "INDEX.md"))
+    path = DOCS_DIR / filename
+    if not path.exists():
+        return jsonify({"error": f"Page not found: {page}"}), 404
+    md = path.read_text(encoding="utf-8", errors="ignore")
+    return jsonify({"title": title, "markdown": md, "page": page})
+
+
+@app.route("/api/wiki/blog")
+def api_wiki_blog():
+    blog_path = CONFIG_DIR / "blog.json"
+    if not blog_path.exists():
+        default_posts = [
+            {"id": "welcome", "title": "Welcome to FreeAI", "category": "announcements", "author": "FreeAI Team", "date": "2026-08-28", "excerpt": "FreeAI v1.3.1 released.", "content": "# Welcome to FreeAI"},
+            {"id": "v131", "title": "v1.3.1 Release Notes", "category": "releases", "author": "FreeAI Team", "date": "2026-08-28", "excerpt": "task_printer, Shodan, docs polish.", "content": "## v1.3.1"},
+        ]
+        blog_path.write_text(json.dumps(default_posts, indent=2), encoding="utf-8")
+        posts = default_posts
+    else:
+        try:
+            posts = json.loads(blog_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            posts = []
+    return jsonify(posts)
+
+
+@app.route("/api/wiki/forum")
+def api_wiki_forum():
+    forum_path = CONFIG_DIR / "forum.json"
+    if not forum_path.exists():
+        default_threads = [
+            {"id": "get-started", "title": "Getting Started with FreeAI", "category": "general", "author": "Admin", "created_at": "2026-08-28", "content": "Welcome!", "replies": [{"author": "User1", "content": "Great project!", "created_at": "2026-08-28"}]},
+            {"id": "gpu-setup", "title": "GPU Setup Help", "category": "support", "author": "NewUser", "created_at": "2026-08-27", "content": "CUDA issue...", "replies": []},
+        ]
+        forum_path.write_text(json.dumps(default_threads, indent=2), encoding="utf-8")
+        threads = default_threads
+    else:
+        try:
+            threads = json.loads(forum_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            threads = []
+    return jsonify(threads)
+
+
 @app.route("/blog")
 def blog_page():
     return render_template("blog.html")
