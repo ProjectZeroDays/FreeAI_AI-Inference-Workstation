@@ -69,6 +69,6 @@ Full service registry: `config/services.json`
 
 ## Project
 
-- Repo: `ProjectZeroDays/FreeAI_AI-Inference-Workstation`
+- Repo: `ProjectZeroDays/FreeAI_AI_Inference_Workstation`
 - Dashboard: `http://localhost:8080`
 - Router API: `http://localhost:8010`

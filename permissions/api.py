@@ -14,6 +14,73 @@ from .rbac import (
 
 rbac_bp = Blueprint("rbac", __name__, url_prefix="/api/rbac")
 
+# GODMODE state (imported lazily to avoid circular deps)
+_godmode_state = None
+
+
+def _get_godmode():
+    global _godmode_state
+    if _godmode_state is None:
+        try:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                "godmode",
+                str(__import__("pathlib").Path(__file__).parent.parent / "agents" / "godmode.py")
+            )
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            _godmode_state = mod
+        except Exception:
+            _godmode_state = {"is_enabled": False, "state": {}}
+    return _godmode_state
+
+
+@rbac_bp.route("/godmode")
+def godmode_status():
+    gm = _get_godmode()
+    if hasattr(gm, "is_enabled"):
+        return jsonify({"godmode_enabled": gm.is_enabled()})
+    return jsonify({"godmode_enabled": False, "note": "godmode module unavailable"})
+
+
+@rbac_bp.route("/godmode/toggle", methods=["POST"])
+def godmode_toggle():
+    data = request.get_json(silent=True) or {}
+    gm = _get_godmode()
+    agent = data.get("agent", "")
+    model = data.get("model", "")
+    enable = data.get("enable", True)
+    if hasattr(gm, "toggle_godmode"):
+        result = gm.toggle_godmode(agent=agent, model=model, enable=enable)
+        return jsonify(result)
+    return jsonify({"error": "godmode module unavailable"}), 503
+
+
+@rbac_bp.route("/godmode/campaign", methods=["POST"])
+def godmode_campaign():
+    data = request.get_json(silent=True) or {}
+    gm = _get_godmode()
+    if hasattr(gm, "set_campaign"):
+        result = gm.set_campaign(data.get("name", ""), data.get("enable", True))
+        return jsonify(result)
+    return jsonify({"error": "godmode module unavailable"}), 503
+
+
+@rbac_bp.route("/godmode/enable")
+def godmode_enable():
+    gm = _get_godmode()
+    if hasattr(gm, "enable_godmode"):
+        return jsonify(gm.enable_godmode())
+    return jsonify({"error": "godmode module unavailable"}), 503
+
+
+@rbac_bp.route("/godmode/disable")
+def godmode_disable():
+    gm = _get_godmode()
+    if hasattr(gm, "disable_godmode"):
+        return jsonify(gm.disable_godmode())
+    return jsonify({"error": "godmode module unavailable"}), 503
+
 
 @rbac_bp.route("/roles")
 def list_roles():

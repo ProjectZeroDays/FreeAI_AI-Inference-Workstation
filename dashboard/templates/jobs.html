@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Job / Cron Manager</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .jobs-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .jobs-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .jobs-topbar { display:flex; align-items:center; justify-content:space-between;
+                   padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                   margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .jobs-topbar h1 { margin:0; font-size:22px; }
+    .jobs-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .jobs-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:18px; }
+    .job-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .job-stat .js-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .job-stat .js-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .job-stat.warn .js-val { color:var(--warn); }
+    .job-stat.err .js-val { color:var(--danger); }
+
+    .jobs-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .jobs-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                     border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .jobs-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .jobs-table tr:hover td { background:rgba(255,255,255,.02); }
+    .jobs-table .mono { font-family:'Fira Code',monospace; font-size:11px; color:var(--muted); }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                  border-radius:10px; padding:7px 12px; font-size:13px; width:220px;
+                  font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,.7);
+                     backdrop-filter:blur(4px); z-index:100; place-items:center; }
+    .modal-overlay.open { display:grid; }
+    .modal { background:var(--panel); border:1px solid var(--border); border-radius:16px;
+             padding:24px; width:min(520px,90vw); box-shadow:var(--shadow); }
+    .modal h2 { margin:0 0 16px; font-size:16px; }
+    .modal-field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    .modal-field label { font-size:12px; color:var(--muted); font-weight:500; }
+    .modal-field input, .modal-field textarea, .modal-field select {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:8px 12px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif; }
+    .modal-field textarea { min-height:80px; resize:vertical; font-family:'Fira Code',monospace; }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    .exec-history { background:rgba(2,6,23,.5); border:1px solid var(--border); border-radius:12px;
+                    padding:12px; max-height:200px; overflow-y:auto; margin-top:12px; }
+    .exec-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,.03); font-size:12px; }
+    .exec-row:last-child { border-bottom:none; }
+    .exec-time { color:var(--muted-2); font-family:'Fira Code',monospace; font-size:11px; white-space:nowrap; }
+    .exec-status { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .exec-status.ok { background:var(--accent); }
+    .exec-status.err { background:var(--danger); }
+    .exec-status.running { background:var(--accent-2); animation:pulse 1s infinite; }
+    .exec-detail { color:var(--muted); flex:1; }
+    .exec-dur { color:var(--muted-2); font-family:'Fira Code',monospace; font-size:11px; }
+  </style>
+</head>
+<body>
+  <div class="jobs-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Jobs</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item active"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="jobs-main">
+      <header class="jobs-topbar">
+        <div>
+          <h1>Job / Cron Manager</h1>
+          <p>Scheduled task orchestration — cron jobs, one-shot tasks, and execution history</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="openNewJob()">+ New Job</button>
+          <button class="btn btn-sm" onclick="openRunNow()">▶ Run Now</button>
+        </div>
+      </header>
+
+      <div class="jobs-stats" id="jobs-stats">
+        <div class="job-stat"><div class="js-val" id="js-total">—</div><div class="js-lbl">Total Jobs</div></div>
+        <div class="job-stat"><div class="js-val" id="js-enabled">—</div><div class="js-lbl">Enabled</div></div>
+        <div class="job-stat warn"><div class="js-val" id="js-running">—</div><div class="js-lbl">Running</div></div>
+        <div class="job-stat err"><div class="js-val" id="js-failed">—</div><div class="js-lbl">Failed (24h)</div></div>
+        <div class="job-stat"><div class="js-val" id="js-completed">—</div><div class="js-lbl">Completed</div></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+        <input type="text" class="search-box" id="job-search" placeholder="Search jobs…" oninput="filterJobs()" />
+        <select id="job-status-filter" onchange="filterJobs()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="all">All Status</option>
+          <option value="enabled">Enabled</option>
+          <option value="running">Running</option>
+          <option value="disabled">Disabled</option>
+          <option value="failed">Failed</option>
+        </select>
+        <select id="job-type-filter" onchange="filterJobs()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="all">All Types</option>
+          <option value="cron">Cron</option>
+          <option value="oneday">One-shot</option>
+          <option value="interval">Interval</option>
+        </select>
+      </div>
+
+      <table class="jobs-table">
+        <thead><tr><th>Name</th><th>Type</th><th>Cron</th><th>Status</th><th>Last Run</th><th>Next Run</th><th>Actions</th></tr></thead>
+        <tbody id="jobs-tbody">
+          <tr><td colspan="7" class="empty-state">Loading jobs…</td></tr>
+        </tbody>
+      </table>
+
+      <div class="live-dot" style="margin-top:16px"></div>
+      <span class="mono" style="font-size:11px;color:var(--muted-2);margin-left:8px" id="last-refresh">Last refresh: —</span>
+    </div>
+  </div>
+
+  <!-- New Job Modal -->
+  <div class="modal-overlay" id="job-modal">
+    <div class="modal">
+      <h2 id="modal-title">New Job</h2>
+      <div class="modal-field">
+        <label>Job Name</label>
+        <input type="text" id="job-name" placeholder="my-scheduled-task" />
+      </div>
+      <div class="modal-field">
+        <label>Job Type</label>
+        <select id="job-type" onchange="toggleCronField()">
+          <option value="cron">Cron Schedule</option>
+          <option value="oneday">One-shot</option>
+          <option value="interval">Interval</option>
+        </select>
+      </div>
+      <div class="modal-field" id="cron-field">
+        <label>Cron Expression</label>
+        <input type="text" id="job-cron" placeholder="0 2 * * *" value="0 0 * * *" />
+        <span class="mono" style="font-size:11px;color:var(--muted-2)">Min Hour Dom Month Dow</span>
+      </div>
+      <div class="modal-field" id="interval-field" style="display:none">
+        <label>Interval (seconds)</label>
+        <input type="number" id="job-interval" placeholder="3600" value="3600" />
+      </div>
+      <div class="modal-field">
+        <label>Handler (module.function)</label>
+        <input type="text" id="job-handler" placeholder="workflow.engine.run" />
+      </div>
+      <div class="modal-field">
+        <label>Timeout (seconds, 0 = unlimited)</label>
+        <input type="number" id="job-timeout" placeholder="0" value="0" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeNewJob()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveJob()">Save Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Run Now Modal -->
+  <div class="modal-overlay" id="run-modal">
+    <div class="modal">
+      <h2>Run Job Now</h2>
+      <div class="modal-field">
+        <label>Select Job</label>
+        <select id="run-job-select">
+          <option value="">— Select a job —</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeRunNow()">Cancel</button>
+        <button class="btn btn-primary" onclick="executeJob()">Execute</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Execution History -->
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal" style="max-width:640px">
+      <h2>Execution History</h2>
+      <div class="exec-history" id="exec-history">
+        <div class="empty-state">Loading history…</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeHistory()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const toast = (msg, type='success') => {
+      const t = $('toast');
+      t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    let jobs = [
+      {id:'j1', name:'daily-backup', type:'cron', cron:'0 2 * * *', handler:'backup.run', status:'enabled', last_run:'2025-07-15 02:00:01', next_run:'2025-07-16 02:00:00', duration:'2m 34s', failed_count:0},
+      {id:'j2', name:'vuln-scan', type:'cron', cron:'0 */6 * * *', handler:'scanner.run', status:'enabled', last_run:'2025-07-15 12:00:03', next_run:'2025-07-15 18:00:00', duration:'15m 22s', failed_count:0},
+      {id:'j3', name:'model-refresh', type:'cron', cron:'0 4 * * *', handler:'model.refresh', status:'enabled', last_run:'2025-07-15 04:00:00', next_run:'2025-07-16 04:00:00', duration:'8m 12s', failed_count:1},
+      {id:'j4', name:'agent-health-check', type:'interval', cron:'*/5 * * * *', handler:'health.check', status:'running', last_run:'2025-07-15 14:30:00', next_run:'2025-07-15 14:35:00', duration:'12s', failed_count:0},
+      {id:'j5', name:'log-rotation', type:'cron', cron:'0 0 * * *', handler:'logs.rotate', status:'enabled', last_run:'2025-07-15 00:00:00', next_run:'2025-07-16 00:00:00', duration:'45s', failed_count:0},
+      {id:'j6', name:'report-gen', type:'oneday', cron:null, handler:'reports.generate', status:'disabled', last_run:'2025-07-10 10:00:00', next_run:'Never', duration:'3m 11s', failed_count:0},
+      {id:'j7', name:'cert-expiry-check', type:'cron', cron:'0 9 * * 1', handler:'security.cert_check', status:'enabled', last_run:'2025-07-14 09:00:00', next_run:'2025-07-21 09:00:00', duration:'8s', failed_count:0},
+      {id:'j8', name:'data-sync', type:'interval', cron:'*/15 * * * *', handler:'sync.run', status:'failed', last_run:'2025-07-15 14:15:00', next_run:'Never', duration:'ERROR', failed_count:3},
+    ];
+
+    function renderJobs(list) {
+      const tbody = $('jobs-tbody');
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No jobs found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(j => `<tr>
+        <td><div style="font-weight:600">${esc(j.name)}</div><div class="mono" style="font-size:11px;color:var(--muted-2)">${esc(j.handler)}</div></td>
+        <td><span class="badge badge-${j.type==='cron'?'blue':j.type==='interval'?'yellow':'gray'}">${esc(j.type)}</span></td>
+        <td class="mono">${j.cron || 'One-shot'}</td>
+        <td><span class="badge badge-${j.status==='enabled'?'green':j.status==='running'?'blue':j.status==='failed'?'red':'gray'}">${esc(j.status)}</span></td>
+        <td class="mono">${esc(j.last_run)}</td>
+        <td class="mono">${esc(j.next_run)}</td>
+        <td>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-sm" onclick="toggleJob('${j.id}')" title="${j.status==='enabled'?'Disable':'Enable'}">${j.status==='enabled'?'⏸':'▶'}</button>
+            <button class="btn btn-sm" onclick="runJobNow('${j.id}')" title="Run Now">⚡</button>
+            <button class="btn btn-sm" onclick="showHistory('${j.id}')" title="History">📜</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteJob('${j.id}')" title="Delete">🗑</button>
+          </div>
+        </td>
+      </tr>`).join('');
+    }
+
+    function filterJobs() {
+      const search = $('job-search').value.toLowerCase();
+      const status = $('job-status-filter').value;
+      const type = $('job-type-filter').value;
+      const filtered = jobs.filter(j => {
+        const ms = !search || j.name.toLowerCase().includes(search) || j.handler.toLowerCase().includes(search);
+        const ms2 = status === 'all' || j.status === status;
+        const mt = type === 'all' || j.type === type;
+        return ms && ms2 && mt;
+      });
+      renderJobs(filtered);
+      updateStats();
+    }
+
+    function updateStats() {
+      $('js-total').textContent      = jobs.length;
+      $('js-enabled').textContent    = jobs.filter(j => j.status === 'enabled').length;
+      $('js-running').textContent    = jobs.filter(j => j.status === 'running').length;
+      $('js-failed').textContent     = jobs.filter(j => j.failed_count > 0).length;
+      $('js-completed').textContent  = jobs.filter(j => j.status === 'enabled').length;
+    }
+
+    function toggleJob(id) {
+      const j = jobs.find(x => x.id === id);
+      if (!j) return;
+      j.status = j.status === 'enabled' ? 'disabled' : 'enabled';
+      filterJobs();
+      toast(j.status === 'enabled' ? 'Enabled: ' + j.name : 'Disabled: ' + j.name);
+    }
+
+    function runJobNow(id) {
+      const j = jobs.find(x => x.id === id);
+      if (!j) return;
+      j.status = 'running';
+      filterJobs();
+      toast('Running: ' + j.name);
+      setTimeout(() => { j.status = 'enabled'; filterJobs(); toast(j.name + ' completed'), 3000; }, 2000);
+    }
+
+    function openRunNow() {
+      const sel = $('run-job-select');
+      sel.innerHTML = '<option value="">— Select a job —</option>' +
+        jobs.filter(j => j.status !== 'running').map(j => `<option value="${j.id}">${esc(j.name)} (${j.handler})</option>`).join('');
+      $('run-modal').classList.add('open');
+    }
+    function closeRunNow() { $('run-modal').classList.remove('open'); }
+    function executeJob() {
+      const id = $('run-job-select').value;
+      if (!id) { toast('Please select a job', 'error'); return; }
+      runJobNow(id);
+      closeRunNow();
+    }
+
+    function openNewJob() { $('modal-title').textContent = 'New Job'; $('job-name').value = ''; $('job-handler').value = ''; $('job-cron').value = '0 0 * * *'; $('job-modal').classList.add('open'); }
+    function closeNewJob() { $('job-modal').classList.remove('open'); }
+    function saveJob() {
+      const name = $('job-name').value.trim();
+      const handler = $('job-handler').value.trim();
+      if (!name || !handler) { toast('Please fill in name and handler', 'error'); return; }
+      const type = $('job-type').value;
+      const cron = type === 'cron' ? $('job-cron').value.trim() : null;
+      jobs.push({id:'j'+Date.now(), name, type, cron, handler, status:'enabled', last_run:'Never', next_run:'—', duration:'—', failed_count:0});
+      closeNewJob();
+      filterJobs();
+      toast('Job created: ' + name);
+    }
+
+    function deleteJob(id) {
+      const idx = jobs.findIndex(x => x.id === id);
+      if (idx < 0) return;
+      if (!confirm('Delete job "' + jobs[idx].name + '"?')) return;
+      jobs.splice(idx, 1);
+      filterJobs();
+      toast('Job deleted: ' + id);
+    }
+
+    function showHistory(id) {
+      const j = jobs.find(x => x.id === id);
+      if (!j) return;
+      const history = [
+        {time:'2025-07-15 14:00:01', status:'ok', detail:'Completed successfully', duration:'2m 34s'},
+        {time:'2025-07-15 02:00:01', status:'ok', detail:'Completed successfully', duration:'2m 34s'},
+        {time:'2025-07-14 02:00:00', status:'err', detail:'Timeout after 300s', duration:'5m 0s'},
+        {time:'2025-07-13 02:00:02', status:'ok', detail:'Completed successfully', duration:'2m 28s'},
+      ];
+      $('exec-history').innerHTML = history.map(h => `<div class="exec-row">
+        <span class="exec-status ${h.status}"></span>
+        <span class="exec-time">${h.time}</span>
+        <span class="exec-detail">${esc(h.detail)}</span>
+        <span class="exec-dur">${h.duration}</span>
+      </div>`).join('');
+      $('history-modal').classList.add('open');
+    }
+    function closeHistory() { $('history-modal').classList.remove('open'); }
+
+    function toggleCronField() {
+      const type = $('job-type').value;
+      $('cron-field').style.display = type === 'cron' ? 'flex' : 'none';
+      $('interval-field').style.display = type === 'interval' ? 'flex' : 'none';
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function refreshAll() {
+      filterJobs();
+      $('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString();
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    filterJobs();
+    setInterval(() => { $('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString(); }, 30000);
+  </script>
+</body>
+</html>

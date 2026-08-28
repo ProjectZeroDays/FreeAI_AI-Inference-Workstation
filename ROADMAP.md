@@ -53,6 +53,15 @@ Status of the master improvement list. ✅ implemented · 🕐 planned.
 - 🕐 Drag-and-drop designer, prompt templates/history, theme toggle,
   multi-tab UI, model load-time charts, logs viewer — `docs/UI_ENHANCEMENTS.md`
 
+## 7. Communications Infrastructure
+- ✅ Custom email server in dashboard for all AI/agents (SendGrid, Gmail)
+- ✅ SendGrid + Twilio integrations (SMS, Voice, WhatsApp via Twilio)
+- ✅ Telegram, WhatsApp Business, Signal, Gmail providers (Hermes/OpenClaw style)
+- ✅ Shared API layer across hermes, opencode, mimocode, jcode, openclaw, freecode
+- ✅ All Hermes integrations added to FreeAI (`/api/comm/*`)
+- ✅ 3rd party APIs + pre-configured extensions dashboard page
+- ✅ `/communications` dashboard page with provider management, send, logs, shared-configs tabs
+
 ## 7. Performance
 - ✅ Tunable llama.cpp flags (`N_GPU_LAYERS`, ctx via env)
 - ✅ vLLM prefix caching enabled

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Permissions</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .perm-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .perm-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .perm-topbar { display:flex; align-items:center; justify-content:space-between;
+                   padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                   margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .perm-topbar h1 { margin:0; font-size:22px; }
+    .perm-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .perm-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .perm-tab { padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600;
+                border:1px solid var(--border); background:transparent; color:var(--muted);
+                cursor:pointer; transition:all .15s; }
+    .perm-tab.active { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:var(--accent); }
+
+    .perm-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; }
+    .perm-card { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                 border:1px solid var(--border); border-radius:14px; padding:16px; }
+    .perm-card-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .perm-card-icon { width:32px; height:32px; border-radius:8px; display:grid; place-items:center;
+                      font-size:14px; flex-shrink:0; }
+    .perm-card-title { font-size:13px; font-weight:700; }
+    .perm-card-sub   { font-size:11px; color:var(--muted); }
+
+    .perm-row { display:flex; align-items:center; justify-content:space-between;
+                padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .perm-row:last-child { border-bottom:none; }
+    .perm-label { font-size:12px; color:var(--text); }
+    .perm-meta  { font-size:11px; color:var(--muted-2); }
+
+    .toggle { position:relative; width:36px; height:20px; cursor:pointer; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:rgba(148,163,184,.15);
+                     border-radius:999px; transition:.2s; }
+    .toggle-slider::before { content:''; position:absolute; width:14px; height:14px;
+                             left:3px; top:3px; background:var(--muted); border-radius:50%; transition:.2s; }
+    .toggle input:checked + .toggle-slider { background:rgba(34,197,94,.3); }
+    .toggle input:checked + .toggle-slider::before { transform:translateX(16px); background:var(--accent); }
+
+    .perm-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .perm-table th { text-align:left; padding:8px 10px; color:var(--muted-2); font-weight:600;
+                     font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+                     border-bottom:1px solid var(--border); }
+    .perm-table td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .perm-table tr:hover td { background:rgba(255,255,255,.02); }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                  border-radius:10px; padding:7px 12px; font-size:13px; width:220px;
+                  font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+
+    .empty-state { text-align:center; padding:40px; color:var(--muted); font-size:13px; }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+  </style>
+</head>
+<body>
+  <div class="perm-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Permissions</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item active"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="perm-main">
+      <header class="perm-topbar">
+        <div>
+          <h1>Permissions &amp; Access</h1>
+          <p>AI agent permissions, sandbox policies, and tool install controls</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="openAddTool()">+ Add Tool</button>
+        </div>
+      </header>
+
+      <div class="perm-tabs">
+        <button class="perm-tab active" data-tab="agents" onclick="switchTab(this)">Agent Permissions</button>
+        <button class="perm-tab" data-tab="sandbox" onclick="switchTab(this)">Sandbox Policy</button>
+        <button class="perm-tab" data-tab="tools" onclick="switchTab(this)">Tool Install Rules</button>
+        <button class="perm-tab" data-tab="audit" onclick="switchTab(this)">Audit Log</button>
+      </div>
+
+      <!-- Agent Permissions -->
+      <div class="perm-panel" id="panel-agents">
+        <div class="perm-grid">
+          <div class="perm-card">
+            <div class="perm-card-head">
+              <div class="perm-card-icon" style="background:rgba(92,139,255,.12)">🤖</div>
+              <div>
+                <div class="perm-card-title">Recon Agent</div>
+                <div class="perm-card-sub">Network reconnaissance &amp; scanning</div>
+              </div>
+            </div>
+            <div class="perm-row"><span class="perm-label">Network Scan</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('recon','network_scan',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Port Scan</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('recon','port_scan',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Shodan Access</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('recon','shodan',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Sandbox Escape</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('recon','sandbox_escape',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Network Exfil</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('recon','exfil',this.checked)"><span class="toggle-slider"></span></label></div>
+          </div>
+
+          <div class="perm-card">
+            <div class="perm-card-head">
+              <div class="perm-card-icon" style="background:rgba(239,68,68,.12)">⚔️</div>
+              <div>
+                <div class="perm-card-title">Exploit Agent</div>
+                <div class="perm-card-sub">Exploitation &amp; payload generation</div>
+              </div>
+            </div>
+            <div class="perm-row"><span class="perm-label">Exploit Dev</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('exploit','dev',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Payload Gen</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('exploit','payload',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Brute Force</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('exploit','brute',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Social Eng</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('exploit','social',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Zero-Day Research</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('exploit','zeroday',this.checked)"><span class="toggle-slider"></span></label></div>
+          </div>
+
+          <div class="perm-card">
+            <div class="perm-card-head">
+              <div class="perm-card-icon" style="background:rgba(34,197,94,.12)">🛡️</div>
+              <div>
+                <div class="perm-card-title">Defense Agent</div>
+                <div class="perm-card-sub">Blue team &amp; hardening operations</div>
+              </div>
+            </div>
+            <div class="perm-row"><span class="perm-label">Vuln Scan</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('defense','vuln_scan',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">System Hardening</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('defense','harden',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Log Analysis</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('defense','logs',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Incident Response</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('defense','ir',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Forensics</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('defense','forensics',this.checked)"><span class="toggle-slider"></span></label></div>
+          </div>
+
+          <div class="perm-card">
+            <div class="perm-card-head">
+              <div class="perm-card-icon" style="background:rgba(167,139,250,.12)">🧠</div>
+              <div>
+                <div class="perm-card-title">Inference Agent</div>
+                <div class="perm-card-sub">Model serving &amp; prompt routing</div>
+              </div>
+            </div>
+            <div class="perm-row"><span class="perm-label">API Calls</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('inference','api',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Local Model Load</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('inference','local_load',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">GPU Access</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('inference','gpu',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">System Commands</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('inference','syscmd',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Network Access</span>
+              <label class="toggle"><input type="checkbox" onchange="savePerm('inference','network',this.checked)"><span class="toggle-slider"></span></label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sandbox Policy -->
+      <div class="perm-panel" id="panel-sandbox" style="display:none">
+        <div class="perm-grid">
+          <div class="perm-card">
+            <div class="perm-card-head">
+              <div class="perm-card-icon" style="background:rgba(245,158,11,.12)">🔒</div>
+              <div>
+                <div class="perm-card-title">Sandbox Rules</div>
+                <div class="perm-card-sub">Network &amp; filesystem isolation policies</div>
+              </div>
+            </div>
+            <div class="perm-row"><span class="perm-label">Network Outbound</span>
+              <select onchange="savePerm('sandbox','net_outbound',this.value)" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px">
+                <option value="deny">Deny All</option>
+                <option value="allow-internal" selected>Allow Internal</option>
+                <option value="allow-all">Allow All</option>
+              </select></div>
+            <div class="perm-row"><span class="perm-label">Filesystem Write</span>
+              <select onchange="savePerm('sandbox','fs_write',this.value)" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px">
+                <option value="deny" selected>Deny All</option>
+                <option value="tmp">Allow /tmp only</option>
+                <option value="allow">Allow All</option>
+              </select></div>
+            <div class="perm-row"><span class="perm-label">Process Spawn</span>
+              <select onchange="savePerm('sandbox','proc_spawn',this.value)" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px">
+                <option value="deny" selected>Deny All</option>
+                <option value="allow-list">Allowlisted</option>
+                <option value="allow">Allow All</option>
+              </select></div>
+            <div class="perm-row"><span class="perm-label">Clipboard Access</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('sandbox','clipboard',this.checked)"><span class="toggle-slider"></span></label></div>
+            <div class="perm-row"><span class="perm-label">Screenshot</span>
+              <label class="toggle"><input type="checkbox" checked onchange="savePerm('sandbox','screenshot',this.checked)"><span class="toggle-slider"></span></label></div>
+          </div>
+
+          <div class="perm-card">
+            <div class="perm-card-head">
+              <div class="perm-card-icon" style="background:rgba(92,139,255,.12)">📋</div>
+              <div>
+                <div class="perm-card-title">Agent Sandboxes</div>
+                <div class="perm-card-sub">Per-agent isolation profiles</div>
+              </div>
+            </div>
+            <table class="perm-table">
+              <thead><tr><th>Agent</th><th>Sandbox</th><th>Profile</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td style="font-weight:600">Recon Agent</td><td class="mono">nsjail-01</td><td><span class="badge badge-blue">Restricted</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td style="font-weight:600">Exploit Agent</td><td class="mono">nsjail-02</td><td><span class="badge badge-red">Isolated</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td style="font-weight:600">Defense Agent</td><td class="mono">nsjail-03</td><td><span class="badge badge-yellow">Moderate</span></td><td><span class="badge badge-green">Active</span></td></tr>
+                <tr><td style="font-weight:600">Inference Agent</td><td class="mono">none</td><td><span class="badge badge-gray">None</span></td><td><span class="badge badge-green">Active</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tool Install Rules -->
+      <div class="perm-panel" id="panel-tools" style="display:none">
+        <div class="perm-card" style="margin-bottom:14px">
+          <div class="perm-card-head">
+            <div class="perm-card-icon" style="background:rgba(34,197,94,.12)">🔧</div>
+            <div>
+              <div class="perm-card-title">Tool Install Policies</div>
+              <div class="perm-card-sub">Control which tools agents can install or invoke</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <input type="text" class="search-box" id="tool-search" placeholder="Search tools…" oninput="filterTools(this.value)" />
+            <select id="tool-filter" onchange="filterTools()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+              <option value="all">All Tools</option>
+              <option value="allowed">Allowed</option>
+              <option value="blocked">Blocked</option>
+            </select>
+          </div>
+          <table class="perm-table" id="tool-table">
+            <thead><tr><th>Tool</th><th>Category</th><th>Policy</th><th>Default</th><th>Actions</th></tr></thead>
+            <tbody id="tool-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Audit Log -->
+      <div class="perm-panel" id="panel-audit" style="display:none">
+        <div class="perm-card">
+          <div class="perm-card-head">
+            <div class="perm-card-icon" style="background:rgba(245,158,11,.12)">📜</div>
+            <div>
+              <div class="perm-card-title">Permission Audit Log</div>
+              <div class="perm-card-sub">Recent permission changes and access events</div>
+            </div>
+          </div>
+          <table class="perm-table">
+            <thead><tr><th>Time</th><th>Agent</th><th>Action</th><th>Target</th><th>Result</th></tr></thead>
+            <tbody id="audit-tbody">
+              <tr><td class="mono" style="color:var(--muted)">2025-07-15 14:32:01</td><td style="font-weight:600">Recon Agent</td><td class="mono">permit</td><td class="mono">port_scan</td><td><span class="badge badge-green">Allowed</span></td></tr>
+              <tr><td class="mono" style="color:var(--muted)">2025-07-15 14:30:45</td><td style="font-weight:600">Exploit Agent</td><td class="mono">block</td><td class="mono">brute_force</td><td><span class="badge badge-red">Denied</span></td></tr>
+              <tr><td class="mono" style="color:var(--muted)">2025-07-15 14:28:12</td><td style="font-weight:600">Defense Agent</td><td class="mono">permit</td><td class="mono">vuln_scan</td><td><span class="badge badge-green">Allowed</span></td></tr>
+              <tr><td class="mono" style="color:var(--muted)">2025-07-15 14:15:33</td><td style="font-weight:600">Inference Agent</td><td class="mono">permit</td><td class="mono">gpu_access</td><td><span class="badge badge-green">Allowed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Tool Modal -->
+  <div class="modal-overlay" id="tool-modal" style="display:none;position:fixed;inset:0;background:rgba(2,6,23,.7);backdrop-filter:blur(4px);z-index:100;place-items:center">
+    <div class="perm-card" style="max-width:400px;width:90%">
+      <h2 style="margin:0 0 16px;font-size:16px">Add Tool Rule</h2>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:12px;color:var(--muted)">Tool Name</label>
+          <input type="text" id="new-tool-name" placeholder="e.g. nmap, hydra, burpsuite" style="background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:12px;color:var(--muted)">Policy</label>
+          <select id="new-tool-policy" style="background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px">
+            <option value="allowed">Allowed</option>
+            <option value="blocked">Blocked</option>
+            <option value="ask">Ask on Use</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-sm" onclick="closeAddTool()">Cancel</button>
+          <button class="btn btn-sm btn-primary" onclick="addTool()">Add Rule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const toast = (msg, type='success') => {
+      const t = $('toast');
+      t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    function switchTab(btn) {
+      document.querySelectorAll('.perm-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.perm-panel').forEach(p => p.style.display = 'none');
+      $('panel-' + btn.dataset.tab).style.display = 'block';
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    async function savePerm(agent, perm, value) {
+      try {
+        await fetch('/api/permissions/set', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({agent, permission: perm, allowed: value})
+        });
+        toast('Permission updated: ' + perm);
+      } catch(e) { toast('Failed to save', 'error'); }
+    }
+
+    const TOOLS = [
+      {name:'nmap', cat:'Network', policy:'allowed', default:true},
+      {name:'burp-suite', cat:'Network', policy:'ask', default:false},
+      {name:'hydra', cat:'Network', policy:'blocked', default:false},
+      {name:'metasploit', cat:'Exploit', policy:'blocked', default:false},
+      {name:'hashcat', cat:'Crypto', policy:'allowed', default:true},
+      {name:'john', cat:'Crypto', policy:'allowed', default:true},
+      {name:'aircrack-ng', cat:'Wireless', policy:'blocked', default:false},
+      {name:'sqlmap', cat:'Exploit', policy:'blocked', default:false},
+      {name:'curl', cat:'System', policy:'allowed', default:true},
+      {name:'python3', cat:'System', policy:'allowed', default:true},
+      {name:'git', cat:'System', policy:'allowed', default:true},
+      {name:'docker', cat:'System', policy:'ask', default:false},
+    ];
+
+    function renderTools(filter='all', search='') {
+      let tools = TOOLS;
+      if (filter === 'allowed') tools = tools.filter(t => t.policy === 'allowed');
+      if (filter === 'blocked') tools = tools.filter(t => t.policy === 'blocked');
+      if (search) tools = tools.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+      $('tool-tbody').innerHTML = tools.map(t => `<tr>
+        <td style="font-weight:600">${esc(t.name)}</td>
+        <td><span class="badge badge-gray">${esc(t.cat)}</span></td>
+        <td><span class="badge badge-${t.policy==='allowed'?'green':t.policy==='blocked'?'red':'yellow'}">${esc(t.policy)}</span></td>
+        <td>${t.default ? '<span class="badge badge-blue">Default</span>' : '—'}</td>
+        <td>
+          <select onchange="toggleTool('${t.name}',this.value)" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px">
+            <option value="allowed" ${t.policy==='allowed'?'selected':''}>Allow</option>
+            <option value="blocked" ${t.policy==='blocked'?'selected':''}>Block</option>
+            <option value="ask" ${t.policy==='ask'?'selected':''}>Ask</option>
+          </select>
+          <button class="btn btn-sm btn-danger" onclick="removeTool('${t.name}')" style="margin-left:4px">×</button>
+        </td>
+      </tr>`).join('') || '<tr><td colspan="5" class="empty-state">No tools match your filter.</td></tr>';
+    }
+
+    function filterTools(val) {
+      const search = $('tool-search').value || val || '';
+      const filter = $('tool-filter').value;
+      renderTools(filter, search);
+    }
+
+    function toggleTool(name, policy) {
+      toast('Tool policy updated: ' + name + ' → ' + policy);
+    }
+
+    function removeTool(name) {
+      const idx = TOOLS.findIndex(t => t.name === name);
+      if (idx >= 0) TOOLS.splice(idx, 1);
+      renderTools($('tool-filter').value, $('tool-search').value);
+      toast('Tool rule removed: ' + name);
+    }
+
+    function openAddTool() { $('tool-modal').style.display = 'grid'; }
+    function closeAddTool() { $('tool-modal').style.display = 'none'; }
+    function addTool() {
+      const name = $('new-tool-name').value.trim();
+      const policy = $('new-tool-policy').value;
+      if (!name) return;
+      TOOLS.push({name, cat:'Custom', policy, default:false});
+      renderTools($('tool-filter').value, $('tool-search').value);
+      closeAddTool();
+      toast('Tool added: ' + name);
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function refreshAll() { renderTools($('tool-filter').value, $('tool-search').value); }
+    renderTools();
+  </script>
+</body>
+</html>

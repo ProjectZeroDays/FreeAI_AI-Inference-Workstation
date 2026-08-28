@@ -2,14 +2,20 @@
 
 Starts all integrated services with a single command.
 Services:
-  - proxy      (:8100)  Unified LLM proxy (opencodex-style)
-  - memory     (:8110)  Agent Zero persistent memory
-  - agents     (:8120)  7 specialized agents (oh-my-opencode-slim)
-  - registry   (:8130)  Plugin registry (awesome-opencode)
-  - rag        (:8140)  RAG retrieval service
-  - brain      (:8150)  AgentBrain three-tier router
-  - skills     (:8160)  Skills API & auto-skill creation
-  - dashboard  (:8080)  Web UI (dashboard + skills manager)
+  - proxy            (:8100)  Unified LLM proxy (opencodex-style)
+  - memory           (:8110)  Agent Zero persistent memory
+  - agents           (:8120)  7 specialized agents (oh-my-opencode-slim)
+  - registry         (:8130)  Plugin registry (awesome-opencode)
+  - rag              (:8140)  RAG retrieval service
+  - brain            (:8150)  AgentBrain three-tier router
+  - skills           (:8160)  Skills API & auto-skill creation
+  - pipeline         (:8170)  Workflow pipeline service
+  - dashboard        (:8080)  Web UI (dashboard + skills manager)
+  - autonomous       (:8050)  Autonomous operations engine
+  - knightshade      (:8180)  Browser automation (Knight-Shade)
+  - mcp_catalog      (:8190)  MCP server catalog API
+  - unified_catalog  (:8195)  Skills+Plugins+MCPs+Providers catalog API
+  - godmode          (:8196)  GODMODE uncensored agent mode + campaign
 
 Usage:
     python launch.py                  # start all services
@@ -42,6 +48,9 @@ SERVICES = {
     "dashboard":  {"port": 8080, "module": "dashboard.backend",              "cmd": "python"},
     "autonomous": {"port": 8050, "module": "autonomous.api", "launcher": "start_autonomous.py"},
     "knightshade": {"port": 8180, "module": "browser.api", "launcher": "start_browser.py"},
+    "mcp_catalog": {"port": 8190, "module": "mcp.catalog_api",               "cmd": "python"},
+    "unified_catalog": {"port": 8195, "module": "skills.catalog_api",        "cmd": "python"},
+    "godmode":    {"port": 8196, "module": "agents.godmode",                  "cmd": "python"},
 }
 
 
@@ -88,6 +97,8 @@ def start_service(name):
     env["AGENTS_PORT"] = str(SERVICES.get("agents", {}).get("port", 8120))
     env["REGISTRY_PORT"] = str(SERVICES.get("registry", {}).get("port", 8130))
     env["RAG_PORT"] = str(svc["port"])
+    env["GODMODE_PORT"] = str(SERVICES.get("godmode", {}).get("port", 8190))
+    env["CAMPAIGN_PORT"] = str(SERVICES.get("campaign", {}).get("port", 8192))
 
     print(f"[launch] Starting {name} on :{svc['port']}...")
     try:
@@ -183,7 +194,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="FreeAI Service Launcher")
     parser.add_argument("service", nargs="?",
-                        help="Service to start (proxy|memory|agents|registry|rag|brain|all)")
+                        help="Service to start (proxy|memory|agents|registry|rag|brain|skills|pipeline|knightshade|godmode|campaign|all)")
     parser.add_argument("--stop", nargs="?", const="all",
                         help="Stop a service or all services")
     parser.add_argument("--status", action="store_true",

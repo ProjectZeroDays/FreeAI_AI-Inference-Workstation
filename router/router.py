@@ -959,6 +959,150 @@ def api_models_benchmark_report():
     return jsonify(load_report())
 
 
+# ── GODMODE & Catalog endpoints ──────────────────────────────────
+@app.route("/api/godmode", methods=["GET"])
+def api_godmode_status():
+    """Check GODMODE status (delegates to agents/godmode.py)."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "agents" / "godmode.py"
+        spec = _iu.spec_from_file_location("gm_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        state = mod._load_state()
+        return jsonify({"enabled": state.get("enabled", False),
+                        "state": state})
+    except Exception as e:
+        return jsonify({"enabled": False, "error": str(e)})
+
+
+@app.route("/api/godmode/toggle", methods=["POST"])
+def api_godmode_toggle():
+    """Toggle GODMODE for agent or model."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "agents" / "godmode.py"
+        spec = _iu.spec_from_file_location("gm_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        data = request.get_json(silent=True) or {}
+        result = mod.toggle_godmode(
+            agent=data.get("agent", ""),
+            model=data.get("model", ""),
+            enable=data.get("enable", True),
+        )
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/godmode/campaign", methods=["POST"])
+def api_godmode_campaign():
+    """Set GODMODE campaign."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "agents" / "godmode.py"
+        spec = _iu.spec_from_file_location("gm_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        data = request.get_json(silent=True) or {}
+        result = mod.set_campaign(data.get("name", ""), data.get("enable", True))
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/catalog", methods=["GET"])
+def api_catalog_summary():
+    """Unified catalog summary."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "skills" / "catalog_api.py"
+        spec = _iu.spec_from_file_location("catalog_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return jsonify({"summary": mod.get_stats(), "timestamp": int(time.time())})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/catalog/dropdowns", methods=["GET"])
+def api_catalog_dropdowns():
+    """Dropdown-ready catalog data for dashboard."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "skills" / "catalog_api.py"
+        spec = _iu.spec_from_file_location("catalog_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return jsonify(mod.get_dropdowns())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/catalog/auto-install", methods=["POST"])
+def api_catalog_auto_install():
+    """Auto-install missing catalog items."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "skills" / "catalog_api.py"
+        spec = _iu.spec_from_file_location("catalog_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        data = request.get_json(silent=True) or {}
+        return jsonify(mod.auto_install(missing_only=data.get("missing_only", True)))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mcps", methods=["GET"])
+def api_mcps_list():
+    """List cataloged MCPs."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "mcp" / "catalog_api.py"
+        spec = _iu.spec_from_file_location("mcp_catalog_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        category = request.args.get("category")
+        return jsonify({"mcps": mod.list_mcps(category), "total": len(mod.list_mcps(category))})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/mcps/install", methods=["POST"])
+def api_mcp_install():
+    """Install an MCP from catalog."""
+    try:
+        import importlib.util as _iu
+        import pathlib as _pl
+        p = _pl.Path(__file__).parent.parent / "mcp" / "catalog_api.py"
+        spec = _iu.spec_from_file_location("mcp_catalog_mod", p)
+        mod = _iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        data = request.get_json(silent=True) or {}
+        return jsonify(mod.install_mcp(data.get("id", ""), data.get("config")))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/api/providers", methods=["GET"])
+def api_providers_list():
+    """List all configured providers."""
+    providers = load_providers()
+    out = []
+    for name, cfg in providers.items():
+        out.append({"id": name, **cfg, "keyed": is_keyed(name, cfg)})
+    return jsonify({"providers": out, "total": len(out)})
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0",
             port=int(os.environ.get("ROUTER_PORT",

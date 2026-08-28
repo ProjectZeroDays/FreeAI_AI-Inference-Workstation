@@ -62,6 +62,18 @@ check_port 8010 router
 check_port 8020 agents
 check_port 8030 dashboard
 check_port 8040 workflow
+check_port 8050 autonomous
+check_port 8100 proxy
+check_port 8110 memory
+check_port 8120 agents-api
+check_port 8130 registry
+check_port 8140 rag
+check_port 8150 brain
+check_port 8160 skills
+check_port 8170 pipeline
+check_port 8180 knightshade
+check_port 8190 godmode
+check_port 8192 campaign
 check_port 9001 llama
 
 if [ "$fail" -eq 0 ]; then

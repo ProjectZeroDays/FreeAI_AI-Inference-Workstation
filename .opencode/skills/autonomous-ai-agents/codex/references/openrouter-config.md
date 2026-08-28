@@ -1,4 +1,4 @@
-﻿# OpenRouter Configuration for Codex CLI
+# OpenRouter Configuration for Codex CLI
 
 ## API Endpoint
 - **Base URL**: https://openrouter.ai/api/v1

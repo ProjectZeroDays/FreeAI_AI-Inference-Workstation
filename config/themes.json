@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "themes": [
+    {"id": "dark", "name": "Dark", "dark": true, "primary": "#1a1a2e", "accent": "#e94560"},
+    {"id": "light", "name": "Light", "dark": false, "primary": "#ffffff", "accent": "#0f3460"},
+    {"id": "quantum", "name": "Quantum", "dark": true, "primary": "#0d1117", "accent": "#58a6ff"},
+    {"id": "heretic", "name": "Heretic", "dark": true, "primary": "#1a0a0a", "accent": "#ff4444"},
+    {"id": "neon", "name": "Neon Cyber", "dark": true, "primary": "#0a0a1a", "accent": "#00ff88"},
+    {"id": "aurora", "name": "Aurora", "dark": true, "primary": "#0f0f23", "accent": "#7b2fff"},
+    {"id": "solarized", "name": "Solarized", "dark": false, "primary": "#fdf6e3", "accent": "#268bd2"},
+    {"id": "ocean", "name": "Ocean Deep", "dark": true, "primary": "#0b1621", "accent": "#1a73e8"},
+    {"id": "midnight", "name": "Midnight", "dark": true, "primary": "#0a0a0a", "accent": "#8888ff"},
+    {"id": "forest", "name": "Forest", "dark": true, "primary": "#0d1f0d", "accent": "#4caf50"}
+  ]
+}

@@ -71,6 +71,12 @@
         "deepseek/deepseek-r1"
       ],
       "key_set": true
+    },
+    "aikido": {
+      "name": "Aikido Security",
+      "base_url": "https://api.aikido.dev",
+      "models": [],
+      "key_set": true
     }
   },
   "skills": [

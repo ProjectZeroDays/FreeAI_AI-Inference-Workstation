@@ -1,0 +1,23 @@
+{
+  "extensions": [
+    {
+      "name": "test-ext",
+      "manifest": {
+        "name": "test-ext",
+        "manifest_version": 3
+      },
+      "source": "user",
+      "enabled": true,
+      "install_time": 1787920603.8750627,
+      "last_active": 1787920603.875064,
+      "injection_count": 0,
+      "errors": []
+    }
+  ],
+  "settings": {
+    "auto_inject": true,
+    "inject_on_navigation": true,
+    "max_extensions": 50,
+    "allow_remote": false
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "tasks": [
+    {
+      "id": "task-e175133d",
+      "name": "t",
+      "schedule_type": "cron",
+      "schedule_value": "0 0 * * *",
+      "handler": "h",
+      "mode": "background",
+      "enabled": true,
+      "args": {},
+      "priority": 0,
+      "status": "scheduled",
+      "last_run": null,
+      "next_run": 1787924174.1356318,
+      "run_count": 0,
+      "last_status": null,
+      "last_error": null,
+      "created_at": 1787920574.1356301,
+      "history": []
+    },
+    {
+      "id": "task-dbc5ed6b",
+      "name": "test-daily",
+      "schedule_type": "cron",
+      "schedule_value": "0 8 * * *",
+      "handler": "daily_report",
+      "mode": "background",
+      "enabled": true,
+      "args": {},
+      "priority": 0,
+      "status": "scheduled",
+      "last_run": null,
+      "next_run": 1787924221.2218614,
+      "run_count": 0,
+      "last_status": null,
+      "last_error": null,
+      "created_at": 1787920621.2218575,
+      "history": []
+    }
+  ],
+  "settings": {
+    "poll_interval": 5,
+    "max_concurrent": 4,
+    "timezone": "UTC",
+    "fail_fast": false
+  }
+}

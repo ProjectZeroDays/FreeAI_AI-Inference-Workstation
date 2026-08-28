@@ -1,52 +1,70 @@
 site_name: FreeAI — Unified AI Workstation
 site_description: Build, secure, and scale AI applications on your own hardware. Router, agents, workflows, security, and builder tools.
-site_url: https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation
-repo_url: https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation
-repo_name: ProjectZeroDays/FreeAI_AI-Inference-Workstation
+site_url: https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation
+repo_url: https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation
+repo_name: ProjectZeroDays/FreeAI_AI_Inference_Workstation
 
 nav:
   - Home: INDEX.md
   - Quick Start: FIRST-BOOT-GUIDE.md
-  - Architecture: ARCHITECTURE.md
-  - API Reference: API.md
-  - Autonomous SDLC: AUTONOMOUS-AGENTS.md
-  - Model Switching: MODEL-SWITCHING.md
-  - Providers: PROVIDERS.md
-  - MCP Registry: MCP.md
-  - RAG & Vector DB: RAG.md
-  - WebSocket: WEBSOCKET.md
-  - Function Calling: FUNCTION_CALLING.md
-  - Log Streaming: LOG_STREAMING.md
-  - Deployment: DEPLOYMENT.md
-  - Deployment Plans: DEPLOYMENT-PLANS.md
-  - Cloud Fallback: CLOUD-FALLBACK.md
-  - Security Overview: SECURITY_ADVANCED.md
-  - Secrets Management: SECRETS.md
-  - Codex Integration: CODEX-INTEGRATION.md
+  - Architecture:
+      - Overview: ARCHITECTURE.md
+      - Build Sheet: BUILD-SHEET.md
+  - Core Services:
+      - Router: API.md
+      - API Reference: API-GUIDE.md
+      - Endpoints: API-ENDPOINTS.md
+      - Model Switching: MODEL-SWITCHING.md
+      - Providers: PROVIDERS.md
+      - Provider Integration: PROVIDER-INTEGRATION.md
+  - Autonomous Agents:
+      - Overview: AUTONOMOUS-AGENTS.md
+      - SDLC Tutorial: SDLC-TUTORIAL.md
+      - Function Calling: FUNCTION_CALLING.md
+      - Log Streaming: LOG_STREAMING.md
+  - AI Infrastructure:
+      - MCP Registry: MCP.md
+      - MCP Security: MCP-SECURITY.md
+      - RAG & Vector DB: RAG.md
+      - WebSocket: WEBSOCKET.md
+      - Cloud Fallback: CLOUD-FALLBACK.md
+  - Security:
+      - Overview: SECURITY_ADVANCED.md
+      - Secrets Management: SECRETS.md
+      - OpenClaw Kali Setup: OPENCLAW-KALI-SETUP.md
+  - Development:
+      - Codex Integration: CODEX-INTEGRATION.md
+      - freeai-cli: FREEAI-CLI.md
+      - VSCode Extension: VSCODE_EXTENSION.md
+  - Dashboard & UI:
+      - Dashboard Guide: UI_ENHANCEMENTS.md
+      - Model Registry UI: MODEL_REGISTRY_UI.md
   - Performance:
       - Optimization Audit: OPTIMIZATION-AUDIT.md
       - Advanced Performance: PERFORMANCE_ADVANCED.md
-  - UI & Dashboard:
-      - Dashboard Guide: UI_ENHANCEMENTS.md
-      - Model Registry UI: MODEL_REGISTRY_UI.md
-      - VSCode Extension: VSCODE_EXTENSION.md
-  - Stack Rating: STACK_RATING.md
-  - Build Sheet: BUILD-SHEET.md
-  - Enhancement Plan: ENHANCEMENT-PLAN.md
-  - Gap Analysis: GAP-ANALYSIS-CODEX.md
-  - Troubleshooting: TROUBLESHOOTING.md
-  - Roadmap: ROADMAP.md
-  - Changelog: CHANGELOG.md
-  - Contributing: CONTRIBUTING.md
+  - Planning:
+      - Enhancement Plan: ENHANCEMENT-PLAN.md
+      - Gap Analysis: GAP-ANALYSIS-CODEX.md
+      - Stack Rating: STACK_RATING.md
+  - Operations:
+      - Deployment: DEPLOYMENT.md
+      - Deployment Plans: DEPLOYMENT-PLANS.md
+      - Troubleshooting: TROUBLESHOOTING.md
+  - Community:
+      - Roadmap: ROADMAP.md
+      - Changelog: CHANGELOG.md
+      - Contributing: CONTRIBUTING.md
 
 theme:
   name: material
   logo: assets/logo.svg
   favicon: assets/logo.svg
   palette:
-    scheme: default
-    primary: cyan
+    scheme: slate
+    primary: custom
     accent: lime
+    media: screen
+  custom_dir: partials
   font:
     text: Inter
     code: JetBrains Mono
@@ -56,20 +74,30 @@ theme:
     - navigation.expand
     - navigation.top
     - navigation.tracking
+    - navigation.indexes
     - search.highlight
     - search.suggest
     - content.code.copy
     - content.tabs.link
     - toc.follow
     - toc.integrate
+    - header.autohide
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.paths
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
     view: material/eye
+    logo: custom/logo
+    prev: material/chevron-left
+    next: material/chevron-right
+    top: material/arrow-up
+  favicon: assets/logo.svg
 
 extra_css:
   - stylesheets/extra.css
-
+  - stylesheets/custom.css
 
 markdown_extensions:
   - toc:
@@ -77,6 +105,7 @@ markdown_extensions:
       permalink_title: Anchor link
   - pymdownx.highlight:
       anchor_linenums: true
+      use_pygments: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.tasklist:
@@ -84,20 +113,41 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - attr_list
   - md_in_html
   - tables
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
 
 plugins:
   - search
+  - social
 
 extra:
   generator: false
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation
+      link: https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation
     - icon: fontawesome/brands/docker
       link: https://hub.docker.com/r/projectzeroai/freeai
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/freeai/
   analytics:
   version:
     provider: mike
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation.
+    actions:
+      - accept
+      - reject

@@ -693,7 +693,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\blue-team-apex\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\blue-team-apex\\SKILL.md",
       "local": true
     },
     {
@@ -709,7 +709,7 @@
         "architecture documentation",
         "project documentation"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\documentation-generator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\documentation-generator\\SKILL.md",
       "local": true
     },
     {
@@ -721,7 +721,7 @@
       "triggers": [
         "for new endpoints"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\expert-readme\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\expert-readme\\SKILL.md",
       "local": true
     },
     {
@@ -731,7 +731,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\expert-wiki\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\expert-wiki\\SKILL.md",
       "local": true
     },
     {
@@ -746,7 +746,7 @@
         "file comprehension at scale",
         "for autonomous agents"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\mecko-engine\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\mecko-engine\\SKILL.md",
       "local": true
     },
     {
@@ -758,7 +758,7 @@
       "triggers": [
         "with exegesis"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\ppp-full\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\ppp-full\\SKILL.md",
       "local": true
     },
     {
@@ -768,7 +768,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\purple-team-apex\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\purple-team-apex\\SKILL.md",
       "local": true
     },
     {
@@ -784,7 +784,7 @@
         "AI agents",
         "autonomous agents"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-agents\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-agents\\SKILL.md",
       "local": true
     },
     {
@@ -800,7 +800,7 @@
         "full completion",
         "autonomous development"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-auto-complete\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-auto-complete\\SKILL.md",
       "local": true
     },
     {
@@ -816,7 +816,7 @@
         "honeytoken",
         "canary"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-deception\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-deception\\SKILL.md",
       "local": true
     },
     {
@@ -832,7 +832,7 @@
         "setup C2",
         "docker deploy"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-deploy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-deploy\\SKILL.md",
       "local": true
     },
     {
@@ -848,7 +848,7 @@
         "camera",
         "microphone"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-devices\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-devices\\SKILL.md",
       "local": true
     },
     {
@@ -864,7 +864,7 @@
         "brute force",
         "fuzzing"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-exploit\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-exploit\\SKILL.md",
       "local": true
     },
     {
@@ -880,7 +880,7 @@
         "autonomous exploitation",
         "operation workflow"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-forced-entry\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-forced-entry\\SKILL.md",
       "local": true
     },
     {
@@ -896,7 +896,7 @@
         "start listener",
         "listener management"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-listeners\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-listeners\\SKILL.md",
       "local": true
     },
     {
@@ -912,7 +912,7 @@
         "C2 framework",
         "cyber operations"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-operator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-operator\\SKILL.md",
       "local": true
     },
     {
@@ -928,7 +928,7 @@
         "credential dump",
         "persistence"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-postex\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-postex\\SKILL.md",
       "local": true
     },
     {
@@ -944,7 +944,7 @@
         "find vulnerabilities",
         "domain lookup"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-recon\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-recon\\SKILL.md",
       "local": true
     },
     {
@@ -960,7 +960,7 @@
         "export data",
         "generate report"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-reporting\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-reporting\\SKILL.md",
       "local": true
     },
     {
@@ -976,7 +976,7 @@
         "C2 session",
         "connect session"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-sessions\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-sessions\\SKILL.md",
       "local": true
     },
     {
@@ -992,7 +992,7 @@
         "decrypt",
         "crypto"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\quantum-c2-vault\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\quantum-c2-vault\\SKILL.md",
       "local": true
     },
     {
@@ -1004,7 +1004,7 @@
       "triggers": [
         "with Quantum C2"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\red-team-apex\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\red-team-apex\\SKILL.md",
       "local": true
     },
     {
@@ -1014,7 +1014,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.opencode\\skills\\sdlc-apex\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.opencode\\skills\\sdlc-apex\\SKILL.md",
       "local": true
     },
     {
@@ -1024,7 +1024,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\adaptive-suite\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\adaptive-suite\\SKILL.md",
       "local": true
     },
     {
@@ -1038,7 +1038,7 @@
         "scheduled follow-up",
         "for prompts"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-autonomy-kit\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\agent-autonomy-kit\\SKILL.md",
       "local": true
     },
     {
@@ -1054,7 +1054,7 @@
         "taking screenshots",
         "extrac"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-browser\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\agent-browser\\SKILL.md",
       "local": true
     },
     {
@@ -1070,7 +1070,7 @@
         "or review ga",
         "with roles"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-team-orchestration\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\agent-team-orchestration\\SKILL.md",
       "local": true
     },
     {
@@ -1080,7 +1080,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agent-zero-tool-mastery\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\agent-zero-tool-mastery\\SKILL.md",
       "local": true
     },
     {
@@ -1090,7 +1090,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\agentation\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\agentation\\SKILL.md",
       "local": true
     },
     {
@@ -1106,7 +1106,7 @@
         "props",
         "or model motion"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ai-animation-3d-model\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\ai-animation-3d-model\\SKILL.md",
       "local": true
     },
     {
@@ -1116,7 +1116,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\airunway-aks-setup\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\airunway-aks-setup\\SKILL.md",
       "local": true
     },
     {
@@ -1132,7 +1132,7 @@
         "add iOS permissions",
         "Capacitor compliance"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\app-store-compliance\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\app-store-compliance\\SKILL.md",
       "local": true
     },
     {
@@ -1142,7 +1142,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\appinsights-instrumentation\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\appinsights-instrumentation\\SKILL.md",
       "local": true
     },
     {
@@ -1152,7 +1152,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\apt-hunting-detection\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\apt-hunting-detection\\SKILL.md",
       "local": true
     },
     {
@@ -1162,7 +1162,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\attack-chain-orchestrator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\attack-chain-orchestrator\\SKILL.md",
       "local": true
     },
     {
@@ -1178,7 +1178,7 @@
         "XTwitter search",
         "email workfl"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\atxp\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\atxp\\SKILL.md",
       "local": true
     },
     {
@@ -1188,7 +1188,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\audit-deployer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\audit-deployer\\SKILL.md",
       "local": true
     },
     {
@@ -1198,7 +1198,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\automate\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\automate\\SKILL.md",
       "local": true
     },
     {
@@ -1208,7 +1208,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\automated-workflows\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\automated-workflows\\SKILL.md",
       "local": true
     },
     {
@@ -1221,7 +1221,7 @@
         "or optimizin",
         "triggers and actions"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\automation-workflows\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\automation-workflows\\SKILL.md",
       "local": true
     },
     {
@@ -1231,7 +1231,7 @@
       "source": "local",
       "category": "devops",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\autonomous-blue-ops\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\autonomous-blue-ops\\SKILL.md",
       "local": true
     },
     {
@@ -1244,7 +1244,7 @@
         "Use for Azure AI",
         "with search"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-ai\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-ai\\SKILL.md",
       "local": true
     },
     {
@@ -1256,7 +1256,7 @@
       "triggers": [
         "for AI models"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-aigateway\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-aigateway\\SKILL.md",
       "local": true
     },
     {
@@ -1268,7 +1268,7 @@
       "triggers": [
         "with minimal changes"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-app-onboard\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-app-onboard\\SKILL.md",
       "local": true
     },
     {
@@ -1278,7 +1278,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-app-onboard-prereq\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-app-onboard-prereq\\SKILL.md",
       "local": true
     },
     {
@@ -1288,7 +1288,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-cloud-migrate\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-cloud-migrate\\SKILL.md",
       "local": true
     },
     {
@@ -1298,7 +1298,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-compliance\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-compliance\\SKILL.md",
       "local": true
     },
     {
@@ -1308,7 +1308,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-compute\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-compute\\SKILL.md",
       "local": true
     },
     {
@@ -1318,7 +1318,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-cost\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-cost\\SKILL.md",
       "local": true
     },
     {
@@ -1331,7 +1331,7 @@
         "USE WHEN",
         "for these"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-deploy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-deploy\\SKILL.md",
       "local": true
     },
     {
@@ -1341,7 +1341,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-diagnostics\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-diagnostics\\SKILL.md",
       "local": true
     },
     {
@@ -1353,7 +1353,7 @@
       "triggers": [
         "with WAF alignment"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-enterprise-infra-planner\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-enterprise-infra-planner\\SKILL.md",
       "local": true
     },
     {
@@ -1363,7 +1363,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-kubernetes\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-kubernetes\\SKILL.md",
       "local": true
     },
     {
@@ -1375,7 +1375,7 @@
       "triggers": [
         "for log analytics"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-kusto\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-kusto\\SKILL.md",
       "local": true
     },
     {
@@ -1387,7 +1387,7 @@
       "triggers": [
         "for Event Hubs and Service Bus"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-messaging\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-messaging\\SKILL.md",
       "local": true
     },
     {
@@ -1401,7 +1401,7 @@
         "use azd as the deployment tool",
         "for Azure with azd"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-prepare\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-prepare\\SKILL.md",
       "local": true
     },
     {
@@ -1413,7 +1413,7 @@
       "triggers": [
         "For deployment planning"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-quotas\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-quotas\\SKILL.md",
       "local": true
     },
     {
@@ -1426,7 +1426,7 @@
         "for zone redundancy",
         "with user confirmation"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-reliability\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-reliability\\SKILL.md",
       "local": true
     },
     {
@@ -1436,7 +1436,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-resource-lookup\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-resource-lookup\\SKILL.md",
       "local": true
     },
     {
@@ -1446,7 +1446,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-resource-visualizer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-resource-visualizer\\SKILL.md",
       "local": true
     },
     {
@@ -1459,7 +1459,7 @@
         "when to use each tier",
         "when to use storage tiers"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-storage\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-storage\\SKILL.md",
       "local": true
     },
     {
@@ -1469,7 +1469,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-upgrade\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-upgrade\\SKILL.md",
       "local": true
     },
     {
@@ -1481,7 +1481,7 @@
       "triggers": [
         "for Azure readiness"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\azure-validate\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\azure-validate\\SKILL.md",
       "local": true
     },
     {
@@ -1491,7 +1491,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\babysit\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\babysit\\SKILL.md",
       "local": true
     },
     {
@@ -1506,7 +1506,7 @@
         "stress-testing",
         "Use when developing"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\backtest-expert\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\backtest-expert\\SKILL.md",
       "local": true
     },
     {
@@ -1516,7 +1516,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\blender-animation\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\blender-animation\\SKILL.md",
       "local": true
     },
     {
@@ -1526,7 +1526,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\brainstorming\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\brainstorming\\SKILL.md",
       "local": true
     },
     {
@@ -1538,7 +1538,7 @@
       "triggers": [
         "with Expo Router"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\building-native-ui\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\building-native-ui\\SKILL.md",
       "local": true
     },
     {
@@ -1548,7 +1548,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\byterover\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\byterover\\SKILL.md",
       "local": true
     },
     {
@@ -1558,7 +1558,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\c2-theme-integrator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\c2-theme-integrator\\SKILL.md",
       "local": true
     },
     {
@@ -1568,7 +1568,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\canvas\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\canvas\\SKILL.md",
       "local": true
     },
     {
@@ -1578,7 +1578,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\chatbot-manager\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\chatbot-manager\\SKILL.md",
       "local": true
     },
     {
@@ -1594,7 +1594,7 @@
         "list",
         "authenticate"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\clawdhub\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\clawdhub\\SKILL.md",
       "local": true
     },
     {
@@ -1608,7 +1608,7 @@
         "for Codex from API docs",
         "with a companion skill"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cli-creator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\cli-creator\\SKILL.md",
       "local": true
     },
     {
@@ -1622,7 +1622,7 @@
         "serverless functions",
         "or cloud-specific config"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloud-deploy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\cloud-deploy\\SKILL.md",
       "local": true
     },
     {
@@ -1636,7 +1636,7 @@
         "cloud vulnerability scanning",
         "and cloud-native attac"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloud-operations\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\cloud-operations\\SKILL.md",
       "local": true
     },
     {
@@ -1648,7 +1648,7 @@
       "triggers": [
         "for efficiency across AWS"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloud-optimizer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\cloud-optimizer\\SKILL.md",
       "local": true
     },
     {
@@ -1663,7 +1663,7 @@
         "publish",
         "asks to deploy"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cloudflare-deploy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\cloudflare-deploy\\SKILL.md",
       "local": true
     },
     {
@@ -1673,7 +1673,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-analysis\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\code-analysis\\SKILL.md",
       "local": true
     },
     {
@@ -1688,7 +1688,7 @@
         "creating templates",
         "for new components"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-generation\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\code-generation\\SKILL.md",
       "local": true
     },
     {
@@ -1698,7 +1698,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-generator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\code-generator\\SKILL.md",
       "local": true
     },
     {
@@ -1714,7 +1714,7 @@
         "or exploring unfamiliar code",
         "or exploring unfamiliar co"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\code-search\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\code-search\\SKILL.md",
       "local": true
     },
     {
@@ -1724,7 +1724,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\command-rewriter\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\command-rewriter\\SKILL.md",
       "local": true
     },
     {
@@ -1740,7 +1740,7 @@
         "service discovery",
         "or Helm chart configuration"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\container-orchestration\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\container-orchestration\\SKILL.md",
       "local": true
     },
     {
@@ -1750,7 +1750,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\context7\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\context7\\SKILL.md",
       "local": true
     },
     {
@@ -1760,7 +1760,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-hook\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\create-hook\\SKILL.md",
       "local": true
     },
     {
@@ -1770,7 +1770,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-rule\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\create-rule\\SKILL.md",
       "local": true
     },
     {
@@ -1780,7 +1780,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-skill\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\create-skill\\SKILL.md",
       "local": true
     },
     {
@@ -1790,7 +1790,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\create-subagent\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\create-subagent\\SKILL.md",
       "local": true
     },
     {
@@ -1806,7 +1806,7 @@
         "or develop original framew",
         "for writing"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\creative-thought-partner\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\creative-thought-partner\\SKILL.md",
       "local": true
     },
     {
@@ -1818,7 +1818,7 @@
       "triggers": [
         "with a specified model"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\cross-review\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\cross-review\\SKILL.md",
       "local": true
     },
     {
@@ -1828,7 +1828,7 @@
       "source": "local",
       "category": "data-science",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\data-protection-crypto\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\data-protection-crypto\\SKILL.md",
       "local": true
     },
     {
@@ -1841,7 +1841,7 @@
         "research planning",
         "with cited synthesis"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\deep-research-pro\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\deep-research-pro\\SKILL.md",
       "local": true
     },
     {
@@ -1853,7 +1853,7 @@
       "triggers": [
         "use the goal tool"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\define-goal\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\define-goal\\SKILL.md",
       "local": true
     },
     {
@@ -1868,7 +1868,7 @@
         "security audits",
         "about managing dependencies"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dependency-management\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\dependency-management\\SKILL.md",
       "local": true
     },
     {
@@ -1880,7 +1880,7 @@
       "triggers": [
         "with mouse"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\desktop-control\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\desktop-control\\SKILL.md",
       "local": true
     },
     {
@@ -1890,7 +1890,7 @@
       "source": "local",
       "category": "development",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dev-lifecycle\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\dev-lifecycle\\SKILL.md",
       "local": true
     },
     {
@@ -1902,7 +1902,7 @@
       "triggers": [
         "with debugging"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\developer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\developer\\SKILL.md",
       "local": true
     },
     {
@@ -1912,7 +1912,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dispatching-parallel-agents\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\dispatching-parallel-agents\\SKILL.md",
       "local": true
     },
     {
@@ -1922,7 +1922,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\dogfood\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\dogfood\\SKILL.md",
       "local": true
     },
     {
@@ -1934,7 +1934,7 @@
       "triggers": [
         "with Playwright and Cypress"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\e2e-testing-patterns\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\e2e-testing-patterns\\SKILL.md",
       "local": true
     },
     {
@@ -1949,7 +1949,7 @@
         "local memory files",
         "and op"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\elite-longterm-memory\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\elite-longterm-memory\\SKILL.md",
       "local": true
     },
     {
@@ -1965,7 +1965,7 @@
         "monorepos",
         "VSCode ext"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\eno\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\eno\\SKILL.md",
       "local": true
     },
     {
@@ -1978,7 +1978,7 @@
         "for AgentID sidecar",
         "for agents"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\entra-agent-id\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\entra-agent-id\\SKILL.md",
       "local": true
     },
     {
@@ -1988,7 +1988,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\entra-app-registration\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\entra-app-registration\\SKILL.md",
       "local": true
     },
     {
@@ -2001,7 +2001,7 @@
         "managing secrets",
         "config validation"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\env-config\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\env-config\\SKILL.md",
       "local": true
     },
     {
@@ -2011,7 +2011,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\evasive-maneuvers\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\evasive-maneuvers\\SKILL.md",
       "local": true
     },
     {
@@ -2021,7 +2021,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\evolver\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\evolver\\SKILL.md",
       "local": true
     },
     {
@@ -2035,7 +2035,7 @@
         "compress",
         "for trimming"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ffmpeg-video-editor\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\ffmpeg-video-editor\\SKILL.md",
       "local": true
     },
     {
@@ -2051,7 +2051,7 @@
         "what are we assuming",
         "break this down"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\first-principles-decomposer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\first-principles-decomposer\\SKILL.md",
       "local": true
     },
     {
@@ -2061,7 +2061,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\framework-certifier\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\framework-certifier\\SKILL.md",
       "local": true
     },
     {
@@ -2071,7 +2071,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\framework-evolver\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\framework-evolver\\SKILL.md",
       "local": true
     },
     {
@@ -2083,7 +2083,7 @@
       "triggers": [
         "for the Pegasus framework"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\framework-self-maintenance\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\framework-self-maintenance\\SKILL.md",
       "local": true
     },
     {
@@ -2093,7 +2093,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\frontend-backend-integration\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\frontend-backend-integration\\SKILL.md",
       "local": true
     },
     {
@@ -2103,7 +2103,7 @@
       "source": "local",
       "category": "development",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\full-stack-development\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\full-stack-development\\SKILL.md",
       "local": true
     },
     {
@@ -2119,7 +2119,7 @@
         "implement all features",
         "wire up APIs"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\fullstack-platform-completion\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\fullstack-platform-completion\\SKILL.md",
       "local": true
     },
     {
@@ -2129,7 +2129,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-architect\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\game-architect\\SKILL.md",
       "local": true
     },
     {
@@ -2141,7 +2141,7 @@
       "triggers": [
         "mentions 10x"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-changing-features\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\game-changing-features\\SKILL.md",
       "local": true
     },
     {
@@ -2151,7 +2151,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-cog\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\game-cog\\SKILL.md",
       "local": true
     },
     {
@@ -2164,7 +2164,7 @@
         "for creating professional GDD",
         "Use when"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-designer-toolkit\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\game-designer-toolkit\\SKILL.md",
       "local": true
     },
     {
@@ -2179,7 +2179,7 @@
         "Use when building game systems",
         "for Unity"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\game-developer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\game-developer\\SKILL.md",
       "local": true
     },
     {
@@ -2195,7 +2195,7 @@
         "caching",
         "reusable workflows"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\github-actions\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\github-actions\\SKILL.md",
       "local": true
     },
     {
@@ -2205,7 +2205,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\government-clearance\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\government-clearance\\SKILL.md",
       "local": true
     },
     {
@@ -2215,7 +2215,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\hash-cracking\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\hash-cracking\\SKILL.md",
       "local": true
     },
     {
@@ -2229,7 +2229,7 @@
         "Use when",
         "for a CLI command"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\hf-cli\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\hf-cli\\SKILL.md",
       "local": true
     },
     {
@@ -2241,7 +2241,7 @@
       "triggers": [
         "when to use it"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\idk\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\idk\\SKILL.md",
       "local": true
     },
     {
@@ -2254,7 +2254,7 @@
         "transform an existing image",
         "and the o"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\imagegen\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\imagegen\\SKILL.md",
       "local": true
     },
     {
@@ -2269,7 +2269,7 @@
         "asks to initialize a repo",
         "for a codebase"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\init\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\init\\SKILL.md",
       "local": true
     },
     {
@@ -2281,7 +2281,7 @@
       "triggers": [
         "implementing loading states"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\interaction-design\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\interaction-design\\SKILL.md",
       "local": true
     },
     {
@@ -2293,7 +2293,7 @@
       "triggers": [
         "defensiv"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\kali-arsenal-operator-manual\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\kali-arsenal-operator-manual\\SKILL.md",
       "local": true
     },
     {
@@ -2308,7 +2308,7 @@
         "Use when planning",
         "with offensive"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\kali-arsenal-supremacy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\kali-arsenal-supremacy\\SKILL.md",
       "local": true
     },
     {
@@ -2320,7 +2320,7 @@
       "triggers": [
         "wants to read"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\linear\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\linear\\SKILL.md",
       "local": true
     },
     {
@@ -2330,7 +2330,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\loop\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\loop\\SKILL.md",
       "local": true
     },
     {
@@ -2340,7 +2340,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\lotl-strategies\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\lotl-strategies\\SKILL.md",
       "local": true
     },
     {
@@ -2355,7 +2355,7 @@
         "performing behavioral analysis",
         "and generating malware reports"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\malware-analysis\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\malware-analysis\\SKILL.md",
       "local": true
     },
     {
@@ -2369,7 +2369,7 @@
         "installed browser extensions",
         "renderer DOM or"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\manifest-x-extension-bridge\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\manifest-x-extension-bridge\\SKILL.md",
       "local": true
     },
     {
@@ -2379,7 +2379,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\microsoft-foundry\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\microsoft-foundry\\SKILL.md",
       "local": true
     },
     {
@@ -2389,7 +2389,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\migrate-to-builds\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\migrate-to-builds\\SKILL.md",
       "local": true
     },
     {
@@ -2399,7 +2399,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\migrate-to-skills\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\migrate-to-skills\\SKILL.md",
       "local": true
     },
     {
@@ -2414,7 +2414,7 @@
         "data transformations",
         "for databases"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\migration-planner\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\migration-planner\\SKILL.md",
       "local": true
     },
     {
@@ -2427,7 +2427,7 @@
         "designing Android interfaces",
         "implementing Compose UI"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\mobile-android-design\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\mobile-android-design\\SKILL.md",
       "local": true
     },
     {
@@ -2437,7 +2437,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\monitoring-evasion\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\monitoring-evasion\\SKILL.md",
       "local": true
     },
     {
@@ -2453,7 +2453,7 @@
         "build caching",
         "or workspace configuration"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\monorepo-management\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\monorepo-management\\SKILL.md",
       "local": true
     },
     {
@@ -2463,7 +2463,7 @@
       "source": "local",
       "category": "devops",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\network-monitoring-ops\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\network-monitoring-ops\\SKILL.md",
       "local": true
     },
     {
@@ -2473,7 +2473,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\omni-android\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\omni-android\\SKILL.md",
       "local": true
     },
     {
@@ -2483,7 +2483,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\onboard\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\onboard\\SKILL.md",
       "local": true
     },
     {
@@ -2499,7 +2499,7 @@
         "with citations",
         "for a use case"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\openai-docs\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\openai-docs\\SKILL.md",
       "local": true
     },
     {
@@ -2509,7 +2509,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\payload-customizer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\payload-customizer\\SKILL.md",
       "local": true
     },
     {
@@ -2523,7 +2523,7 @@
         "URLs",
         "scripts"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pexoai-agent\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\pexoai-agent\\SKILL.md",
       "local": true
     },
     {
@@ -2533,7 +2533,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\physics-animation-workflow\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\physics-animation-workflow\\SKILL.md",
       "local": true
     },
     {
@@ -2543,7 +2543,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\picas\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\picas\\SKILL.md",
       "local": true
     },
     {
@@ -2553,7 +2553,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pkm\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\pkm\\SKILL.md",
       "local": true
     },
     {
@@ -2563,7 +2563,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\plan\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\plan\\SKILL.md",
       "local": true
     },
     {
@@ -2576,7 +2576,7 @@
         "research projects",
         "for complex tasks"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\planning-with-files\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\planning-with-files\\SKILL.md",
       "local": true
     },
     {
@@ -2588,7 +2588,7 @@
       "triggers": [
         "add optional plugin structure"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\plugin-creator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\plugin-creator\\SKILL.md",
       "local": true
     },
     {
@@ -2602,7 +2602,7 @@
         "making calls",
         "handling incoming c"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pollyreach\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\pollyreach\\SKILL.md",
       "local": true
     },
     {
@@ -2618,7 +2618,7 @@
         "what could go wrong",
         "risk analysis"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\pre-mortem-analyst\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\pre-mortem-analyst\\SKILL.md",
       "local": true
     },
     {
@@ -2634,7 +2634,7 @@
         "for building",
         "with attention to detail"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\professional-frontend-developer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\professional-frontend-developer\\SKILL.md",
       "local": true
     },
     {
@@ -2644,7 +2644,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\project-context-injector\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\project-context-injector\\SKILL.md",
       "local": true
     },
     {
@@ -2660,7 +2660,7 @@
         "few-shot examples",
         "system prompts"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\prompt-engineering\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\prompt-engineering\\SKILL.md",
       "local": true
     },
     {
@@ -2670,7 +2670,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\python-appservice-deploy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\python-appservice-deploy\\SKILL.md",
       "local": true
     },
     {
@@ -2680,7 +2680,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\python-performance-optimization\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\python-performance-optimization\\SKILL.md",
       "local": true
     },
     {
@@ -2690,7 +2690,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\python-testing-patterns\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\python-testing-patterns\\SKILL.md",
       "local": true
     },
     {
@@ -2700,7 +2700,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-build-verify\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-build-verify\\SKILL.md",
       "local": true
     },
     {
@@ -2716,7 +2716,7 @@
         "agent orchestration",
         "parallel tasks"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-ai-agent\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-ai-agent\\SKILL.md",
       "local": true
     },
     {
@@ -2728,7 +2728,7 @@
       "triggers": [
         "for Quantum C2"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-backend-architect\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-backend-architect\\SKILL.md",
       "local": true
     },
     {
@@ -2740,7 +2740,7 @@
       "triggers": [
         "for Quantum C2"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-compliance-engineer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-compliance-engineer\\SKILL.md",
       "local": true
     },
     {
@@ -2750,7 +2750,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-dashboard-updates\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-dashboard-updates\\SKILL.md",
       "local": true
     },
     {
@@ -2762,7 +2762,7 @@
       "triggers": [
         "for Quantum C2"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-devops-lead\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-devops-lead\\SKILL.md",
       "local": true
     },
     {
@@ -2778,7 +2778,7 @@
         "UI settings",
         "dashboard navigation"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-frontend\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-frontend\\SKILL.md",
       "local": true
     },
     {
@@ -2790,7 +2790,7 @@
       "triggers": [
         "for Quantum C2"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-frontend-lead\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-frontend-lead\\SKILL.md",
       "local": true
     },
     {
@@ -2806,7 +2806,7 @@
         "infrastructure scaling",
         "bridge management"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-infra\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-infra\\SKILL.md",
       "local": true
     },
     {
@@ -2822,7 +2822,7 @@
         "coverage",
         "pytest"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-qa-lead\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-qa-lead\\SKILL.md",
       "local": true
     },
     {
@@ -2834,7 +2834,7 @@
       "triggers": [
         "for Quantum C2"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-security-architect\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-security-architect\\SKILL.md",
       "local": true
     },
     {
@@ -2850,7 +2850,7 @@
         "hide",
         "reflective load"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-stealth\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-stealth\\SKILL.md",
       "local": true
     },
     {
@@ -2866,7 +2866,7 @@
         "quantum swarm",
         "full production"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-swarm-activator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-swarm-activator\\SKILL.md",
       "local": true
     },
     {
@@ -2880,7 +2880,7 @@
         "deploy agents",
         "for Quantum C2 AI Agent Swarm"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-swarm-orchestrator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-swarm-orchestrator\\SKILL.md",
       "local": true
     },
     {
@@ -2896,7 +2896,7 @@
         "OTAP",
         "forge message"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-ubiquity\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-ubiquity\\SKILL.md",
       "local": true
     },
     {
@@ -2912,7 +2912,7 @@
         "Quantum C2 overview",
         "C2 architecture"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-c2-v6-operator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-c2-v6-operator\\SKILL.md",
       "local": true
     },
     {
@@ -2926,7 +2926,7 @@
         "adding WebSocket events",
         "or extending the backend API"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-flask-router\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-flask-router\\SKILL.md",
       "local": true
     },
     {
@@ -2940,7 +2940,7 @@
         "dashboards",
         "Use when adding new modules"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-fullstack-dev\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-fullstack-dev\\SKILL.md",
       "local": true
     },
     {
@@ -2952,7 +2952,7 @@
       "triggers": [
         "creating custom panels"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-gui-builder\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-gui-builder\\SKILL.md",
       "local": true
     },
     {
@@ -2967,7 +2967,7 @@
         "with health checks",
         "when the user wants to launch"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-launcher\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-launcher\\SKILL.md",
       "local": true
     },
     {
@@ -2983,7 +2983,7 @@
         "ML models",
         "or compliance checks"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-module-writer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-module-writer\\SKILL.md",
       "local": true
     },
     {
@@ -2993,7 +2993,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-router-bugfix\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-router-bugfix\\SKILL.md",
       "local": true
     },
     {
@@ -3009,7 +3009,7 @@
         "or network device hardening",
         "for the Quantum C2 framework"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-router-exploit\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-router-exploit\\SKILL.md",
       "local": true
     },
     {
@@ -3023,7 +3023,7 @@
         "verify modules",
         "or check framework health"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\quantum-test-runner\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\quantum-test-runner\\SKILL.md",
       "local": true
     },
     {
@@ -3036,7 +3036,7 @@
         "building document QA systems",
         "with external knowledge bases"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\rag-implementation\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\rag-implementation\\SKILL.md",
       "local": true
     },
     {
@@ -3050,7 +3050,7 @@
         "decompilefailures",
         "Use when Ghidra"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\recover-decompiler-failures\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\recover-decompiler-failures\\SKILL.md",
       "local": true
     },
     {
@@ -3066,7 +3066,7 @@
         "extracting functions",
         "renaming"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\refactoring-patterns\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\refactoring-patterns\\SKILL.md",
       "local": true
     },
     {
@@ -3081,7 +3081,7 @@
         "bump version",
         "push"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\release-skills\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\release-skills\\SKILL.md",
       "local": true
     },
     {
@@ -3091,7 +3091,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\repetitive-task-detector\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\repetitive-task-detector\\SKILL.md",
       "local": true
     },
     {
@@ -3101,7 +3101,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\reporting-auditing\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\reporting-auditing\\SKILL.md",
       "local": true
     },
     {
@@ -3113,7 +3113,7 @@
       "triggers": [
         "for code patterns"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\research\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\research\\SKILL.md",
       "local": true
     },
     {
@@ -3123,7 +3123,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\research-payloads\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\research-payloads\\SKILL.md",
       "local": true
     },
     {
@@ -3133,7 +3133,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\research-threat-intel\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\research-threat-intel\\SKILL.md",
       "local": true
     },
     {
@@ -3143,7 +3143,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\resource-optimizer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\resource-optimizer\\SKILL.md",
       "local": true
     },
     {
@@ -3153,7 +3153,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\review\\SKILL.md",
       "local": true
     },
     {
@@ -3167,7 +3167,7 @@
         "a commit",
         "or custom review instructions"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review-agent\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\review-agent\\SKILL.md",
       "local": true
     },
     {
@@ -3179,7 +3179,7 @@
       "triggers": [
         "with Bugbot subagent"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review-bugbot\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\review-bugbot\\SKILL.md",
       "local": true
     },
     {
@@ -3191,7 +3191,7 @@
       "triggers": [
         "with Security Review subagent"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\review-security\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\review-security\\SKILL.md",
       "local": true
     },
     {
@@ -3213,7 +3213,7 @@
         "data extraction",
         "parse HTML"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\scrapling\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\scrapling\\SKILL.md",
       "local": true
     },
     {
@@ -3223,7 +3223,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\sdk\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\sdk\\SKILL.md",
       "local": true
     },
     {
@@ -3233,7 +3233,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\security-best-practices\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\security-best-practices\\SKILL.md",
       "local": true
     },
     {
@@ -3243,7 +3243,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-healing\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\self-healing\\SKILL.md",
       "local": true
     },
     {
@@ -3259,7 +3259,7 @@
         "resource optimization",
         "cost reduction"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-healing-system\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\self-healing-system\\SKILL.md",
       "local": true
     },
     {
@@ -3273,7 +3273,7 @@
         "correction logging",
         "proactive follow-up"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-improving\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\self-improving\\SKILL.md",
       "local": true
     },
     {
@@ -3287,7 +3287,7 @@
         "feature requests",
         "or user corrections into"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\self-improving-agent\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\self-improving-agent\\SKILL.md",
       "local": true
     },
     {
@@ -3297,7 +3297,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\sentry\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\sentry\\SKILL.md",
       "local": true
     },
     {
@@ -3313,7 +3313,7 @@
         "run migrations",
         "configure environment"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\setup-deployment\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\setup-deployment\\SKILL.md",
       "local": true
     },
     {
@@ -3328,7 +3328,7 @@
         "or automating system tasks",
         "Use when writing shell scripts"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\shell\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\shell\\SKILL.md",
       "local": true
     },
     {
@@ -3341,7 +3341,7 @@
         "for creating effective skills",
         "with specialized knowledge"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\skill-creator\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\skill-creator\\SKILL.md",
       "local": true
     },
     {
@@ -3353,7 +3353,7 @@
       "triggers": [
         "install a curated skill"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\skill-installer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\skill-installer\\SKILL.md",
       "local": true
     },
     {
@@ -3363,7 +3363,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\social-engineering-osint\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\social-engineering-osint\\SKILL.md",
       "local": true
     },
     {
@@ -3379,7 +3379,7 @@
         "development",
         "QA"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\specialized-agents\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\specialized-agents\\SKILL.md",
       "local": true
     },
     {
@@ -3389,7 +3389,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\split-to-prs\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\split-to-prs\\SKILL.md",
       "local": true
     },
     {
@@ -3399,7 +3399,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\spoofing-master\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\spoofing-master\\SKILL.md",
       "local": true
     },
     {
@@ -3409,7 +3409,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\statusline\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\statusline\\SKILL.md",
       "local": true
     },
     {
@@ -3419,7 +3419,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\stitch-loop\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\stitch-loop\\SKILL.md",
       "local": true
     },
     {
@@ -3429,7 +3429,7 @@
       "source": "local",
       "category": "development",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\subagent-driven-development\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\subagent-driven-development\\SKILL.md",
       "local": true
     },
     {
@@ -3439,7 +3439,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\summarize-session\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\summarize-session\\SKILL.md",
       "local": true
     },
     {
@@ -3455,7 +3455,7 @@
         "or fini",
         "for feature builds"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\superpowers\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\superpowers\\SKILL.md",
       "local": true
     },
     {
@@ -3470,7 +3470,7 @@
         "or standardizing UI patterns",
         "with Tailwind CSS v4"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\tailwind-design-system\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\tailwind-design-system\\SKILL.md",
       "local": true
     },
     {
@@ -3480,7 +3480,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\task-delegation\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\task-delegation\\SKILL.md",
       "local": true
     },
     {
@@ -3490,7 +3490,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\tdd-framework-restoration\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\tdd-framework-restoration\\SKILL.md",
       "local": true
     },
     {
@@ -3506,7 +3506,7 @@
         "integration testing",
         "mockingstubbing"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\test-driven-development\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\test-driven-development\\SKILL.md",
       "local": true
     },
     {
@@ -3521,7 +3521,7 @@
         "Use when writing tests",
         "for unit tests"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\test-master\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\test-master\\SKILL.md",
       "local": true
     },
     {
@@ -3533,7 +3533,7 @@
       "triggers": [
         "for analyzing"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\tunnel-optimizer\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\tunnel-optimizer\\SKILL.md",
       "local": true
     },
     {
@@ -3543,7 +3543,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\typescript-advanced-types\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\typescript-advanced-types\\SKILL.md",
       "local": true
     },
     {
@@ -3553,7 +3553,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ui-ux-pro-max\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\ui-ux-pro-max\\SKILL.md",
       "local": true
     },
     {
@@ -3569,7 +3569,7 @@
         "reviewing",
         "testing"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\ultimate-frontend-gui\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\ultimate-frontend-gui\\SKILL.md",
       "local": true
     },
     {
@@ -3581,7 +3581,7 @@
       "triggers": [
         "for understanding architecture"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand\\SKILL.md",
       "local": true
     },
     {
@@ -3591,7 +3591,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-chat\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-chat\\SKILL.md",
       "local": true
     },
     {
@@ -3601,7 +3601,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-dashboard\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-dashboard\\SKILL.md",
       "local": true
     },
     {
@@ -3611,7 +3611,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-diff\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-diff\\SKILL.md",
       "local": true
     },
     {
@@ -3621,7 +3621,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-domain\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-domain\\SKILL.md",
       "local": true
     },
     {
@@ -3631,7 +3631,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-explain\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-explain\\SKILL.md",
       "local": true
     },
     {
@@ -3643,7 +3643,7 @@
       "triggers": [
         "with entity extraction"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-knowledge\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-knowledge\\SKILL.md",
       "local": true
     },
     {
@@ -3653,7 +3653,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\understand-onboard\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\understand-onboard\\SKILL.md",
       "local": true
     },
     {
@@ -3663,7 +3663,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\update-cli-config\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\update-cli-config\\SKILL.md",
       "local": true
     },
     {
@@ -3673,7 +3673,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\update-cursor-settings\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\update-cursor-settings\\SKILL.md",
       "local": true
     },
     {
@@ -3683,7 +3683,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\user-space-management\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\user-space-management\\SKILL.md",
       "local": true
     },
     {
@@ -3693,7 +3693,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\uvl_cognitive_agent\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\uvl_cognitive_agent\\SKILL.md",
       "local": true
     },
     {
@@ -3703,7 +3703,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\vault-storage\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\vault-storage\\SKILL.md",
       "local": true
     },
     {
@@ -3717,7 +3717,7 @@
         "push this live",
         "or create a preview"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\vercel-deploy\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\vercel-deploy\\SKILL.md",
       "local": true
     },
     {
@@ -3729,7 +3729,7 @@
       "triggers": [
         "with zero limitations"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\vercel-react-best-practices\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\vercel-react-best-practices\\SKILL.md",
       "local": true
     },
     {
@@ -3745,7 +3745,7 @@
         "visitor insights",
         "CRM visitor data"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\visitor-analytics-ai\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\visitor-analytics-ai\\SKILL.md",
       "local": true
     },
     {
@@ -3758,7 +3758,7 @@
         "establishing design tokens",
         "building style guides"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\visual-design-foundations\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\visual-design-foundations\\SKILL.md",
       "local": true
     },
     {
@@ -3768,7 +3768,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\voip-interception\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\voip-interception\\SKILL.md",
       "local": true
     },
     {
@@ -3783,7 +3783,7 @@
         "or fallback between w",
         "with caching"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\weather\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\weather\\SKILL.md",
       "local": true
     },
     {
@@ -3798,7 +3798,7 @@
         "audit design",
         "review UX"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\web-design-guidelines\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\web-design-guidelines\\SKILL.md",
       "local": true
     },
     {
@@ -3808,7 +3808,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\yuanbao\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\yuanbao\\SKILL.md",
       "local": true
     },
     {
@@ -3818,7 +3818,7 @@
       "source": "local",
       "category": "general",
       "triggers": [],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\zen-comprehensive-review\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\zen-comprehensive-review\\SKILL.md",
       "local": true
     },
     {
@@ -3830,7 +3830,7 @@
       "triggers": [
         "for correctness"
       ],
-      "path": "C:\\Users\\Project Zero\\FreeAI_AI-Inference-Workstation\\.agents\\skills\\zen-review\\SKILL.md",
+      "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\zen-review\\SKILL.md",
       "local": true
     }
   ],

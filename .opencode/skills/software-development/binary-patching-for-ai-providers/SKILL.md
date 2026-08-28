@@ -1,4 +1,4 @@
-﻿---
+---
 name: binary-patching-for-ai-providers
 description: Modify AI provider settings in applications through direct binary patching for seamless integration
 version: 1.0.0
@@ -31,7 +31,7 @@ strings -t x /path/to/binary | grep -i "openai\|gpt\|api\|model\|provider"
 
 # Or using Ghidra:
 # - Load binary into Ghidra
-# - Search for strings (Search â†’ For Strings)
+# - Search for strings (Search → For Strings)
 # - Look for strings containing: "api.openai.com", "gpt-", "openai", etc.
 ```
 
@@ -99,9 +99,9 @@ strings -t x /path/to/binary | grep -i "part_of_your_replacement"
 Based on the user's successful modification of Codex CLI:
 
 ### Targets to Replace:
-1. **Base URL**: `https://api.openai.com/v1` â†’ `https://openrouter.ai/api/v1` (both 28 bytes)
-2. **Provider**: `openai` variants â†’ `openrouter` (10 bytes, padded)
-3. **Model**: `gpt-5.1-codex-ma` â†’ `poolside/laguna-xs.2:free` (25 bytes)
+1. **Base URL**: `https://api.openai.com/v1` → `https://openrouter.ai/api/v1` (both 28 bytes)
+2. **Provider**: `openai` variants → `openrouter` (10 bytes, padded)
+3. **Model**: `gpt-5.1-codex-ma` → `poolside/laguna-xs.2:free` (25 bytes)
 
 ### Offsets Found:
 - Base URL: 0xa1e8ef0 (in a longer https:// string context)
@@ -128,7 +128,7 @@ printf 'poolside/laguna-xs.2:free\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\
 
 ## Pitfalls and Safety Considerations
 
-### âš ï¸ Critical Pitfalls to Avoid
+### ⚠️ Critical Pitfalls to Avoid
 
 1. **Length Mismatches**
    - **Problem**: Replacement strings of different lengths can corrupt binary structure
@@ -156,7 +156,7 @@ printf 'poolside/laguna-xs.2:free\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\
      - Test thoroughly after patching
      - Keep backups of original binaries
 
-### âœ… Best Practices
+### ✅ Best Practices
 
 1. **Always Backup First**
    ```bash
@@ -177,7 +177,7 @@ printf 'poolside/laguna-xs.2:free\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\
 
 5. **Document Your Changes**
    - Keep notes of:
-     - Original string â†’ New string
+     - Original string → New string
      - Offsets used
      - Length considerations
      - Any special padding/truncation needed
@@ -204,7 +204,7 @@ After patching, verify:
 1. Double-check you patched the right string instances
 2. Look for multiple copies of the same string
 3. Check if application uses configuration files that override binary defaults
-4. Verify the strings are actually used at runtime (strings in binary â‰  strings used)
+4. Verify the strings are actually used at runtime (strings in binary ≠ strings used)
 
 ### If Binary Won't Execute:
 1. You may have corrupted headers or critical structures
@@ -252,7 +252,7 @@ model_provider = "openrouter"
 `;
 
 fs.writeFileSync(CONFIG_FILE, config);
-console.log('âœ… Configuration patched successfully');
+console.log('✅ Configuration patched successfully');
 ```
 
 2. **Add postinstall hook** to `package.json`:

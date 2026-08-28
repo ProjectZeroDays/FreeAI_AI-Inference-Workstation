@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Dashboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .dash-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .dash-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .dash-topbar { display:flex; align-items:center; justify-content:space-between;
+                   padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                   margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .dash-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .dash-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    /* Compartmented table layout */
+    .compartment-grid { display:grid; grid-template-columns:repeat(12, 1fr); gap:14px; }
+    .comp { background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
+            border:1px solid var(--border); border-radius:14px; padding:16px;
+            box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px); }
+    .comp:hover { border-color:var(--border-strong); }
+    .comp-1  { grid-column:span 1; }
+    .comp-2  { grid-column:span 2; }
+    .comp-3  { grid-column:span 3; }
+    .comp-4  { grid-column:span 4; }
+    .comp-6  { grid-column:span 6; }
+    .comp-8  { grid-column:span 8; }
+    .comp-12 { grid-column:span 12; }
+    .comp-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .comp-title { font-size:11px; font-weight:700; text-transform:uppercase;
+                  letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px; }
+    .comp-title .dot { width:8px; height:8px; border-radius:50%; }
+    .comp-body { font-size:13px; }
+
+    /* KPI */
+    .kpi-val { font-size:28px; font-weight:700; color:var(--text); line-height:1.1; }
+    .kpi-lbl { font-size:11px; color:var(--muted-2); margin-top:4px; }
+    .kpi-delta { font-size:11px; margin-top:4px; }
+    .kpi-delta.up { color:var(--accent); }
+    .kpi-delta.down { color:var(--danger); }
+
+    /* Table */
+    .comp-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .comp-table th { text-align:left; padding:6px 10px; color:var(--muted-2); font-weight:600;
+                     font-size:10px; text-transform:uppercase; letter-spacing:.05em;
+                     border-bottom:1px solid var(--border); }
+    .comp-table td { padding:7px 10px; border-bottom:1px solid rgba(255,255,255,.04);
+                     vertical-align:middle; }
+    .comp-table tr:hover td { background:rgba(255,255,255,.02); }
+    .comp-table .mono { font-family:'Fira Code',monospace; font-size:11px; color:var(--muted); }
+
+    /* Badges */
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue  { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow{ background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red   { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray  { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+
+    /* Progress bar */
+    .prog-track { height:5px; background:rgba(2,6,23,.6); border-radius:999px; overflow:hidden; margin-top:4px; }
+    .prog-fill  { height:100%; border-radius:999px; transition:width .5s ease; }
+
+    /* Chart container */
+    .chart-wrap { position:relative; height:160px; }
+
+    /* Buttons */
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+
+    /* Quick actions */
+    .quick-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .quick-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 12px;
+                 border-radius:8px; border:1px solid var(--border); background:var(--panel-2);
+                 color:var(--muted); font-size:12px; cursor:pointer; transition:all .15s; }
+    .quick-btn:hover { border-color:var(--accent-2); color:var(--text); }
+
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  </style>
+</head>
+<body>
+  <div class="dash-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Dashboard</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item active"><span class="nav-dot"></span> GPU Workstation</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Security</span>
+        <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+        <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+        <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="dash-main">
+      <header class="dash-topbar">
+        <div>
+          <h1>Unified Dashboard</h1>
+          <p>FreeAI — compartmented monitoring &amp; control surface</p>
+        </div>
+        <div class="quick-actions">
+          <button class="quick-btn" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="location.href='/gpu-workstation'">GPU Workstation</button>
+          <button class="btn btn-sm" onclick="location.href='/permissions'">Permissions</button>
+        </div>
+      </header>
+
+      <div class="compartment-grid">
+        <!-- KPI: Total Jobs -->
+        <section class="comp comp-2">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--accent)"></span>Jobs</span>
+          </div>
+          <div class="comp-body">
+            <div class="kpi-val" id="kpi-jobs">—</div>
+            <div class="kpi-lbl">Total Scheduled</div>
+            <div class="kpi-delta up" id="kpi-jobs-delta">↑ 12% vs last week</div>
+          </div>
+        </section>
+
+        <!-- KPI: Active Agents -->
+        <section class="comp comp-2">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--accent-2)"></span>Agents</span>
+          </div>
+          <div class="comp-body">
+            <div class="kpi-val" id="kpi-agents">—</div>
+            <div class="kpi-lbl">Active</div>
+            <div class="kpi-delta up" id="kpi-agents-delta">↑ 3 new today</div>
+          </div>
+        </section>
+
+        <!-- KPI: GPU Util -->
+        <section class="comp comp-2">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:#A78BFA"></span>GPU</span>
+          </div>
+          <div class="comp-body">
+            <div class="kpi-val" id="kpi-gpu">—</div>
+            <div class="kpi-lbl">Utilization</div>
+            <div class="prog-track"><div class="prog-fill" id="kpi-gpu-bar" style="width:0%;background:linear-gradient(90deg,#0EA5E9,#22C55E)"></div></div>
+          </div>
+        </section>
+
+        <!-- KPI: Providers -->
+        <section class="comp comp-2">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:#F59E0B"></span>Providers</span>
+          </div>
+          <div class="comp-body">
+            <div class="kpi-val" id="kpi-providers">—</div>
+            <div class="kpi-lbl">Configured</div>
+            <div class="kpi-delta" id="kpi-providers-delta" style="color:var(--muted-2)">—</div>
+          </div>
+        </section>
+
+        <!-- KPI: Alerts -->
+        <section class="comp comp-2">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--danger)"></span>Alerts</span>
+          </div>
+          <div class="comp-body">
+            <div class="kpi-val" id="kpi-alerts" style="color:var(--danger)">—</div>
+            <div class="kpi-lbl">Active Warnings</div>
+            <div class="kpi-delta down" id="kpi-alerts-delta">—</div>
+          </div>
+        </section>
+
+        <!-- KPI: Uptime -->
+        <section class="comp comp-2">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--accent)"></span>Uptime</span>
+          </div>
+          <div class="comp-body">
+            <div class="kpi-val" id="kpi-uptime" style="color:var(--accent)">—</div>
+            <div class="kpi-lbl">Service Uptime</div>
+            <div class="kpi-delta up">↑ Stable</div>
+          </div>
+        </section>
+
+        <!-- GPU Chart -->
+        <section class="comp comp-6">
+          <div class="comp-head">
+            <span class="comp-title"><span class="live-dot"></span> GPU Utilization Trend</span>
+            <select id="gpu-chart-range" onchange="updateGpuChart()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;">
+              <option value="5m">5m</option>
+              <option value="1h" selected>1h</option>
+              <option value="24h">24h</option>
+            </select>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="gpu-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Recent Jobs Table -->
+        <section class="comp comp-6">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--accent-2)"></span>Recent Jobs</span>
+            <a href="/jobs" style="font-size:11px;color:var(--accent-2);text-decoration:none;">View all →</a>
+          </div>
+          <div class="comp-body">
+            <table class="comp-table" id="jobs-table">
+              <thead><tr><th>Name</th><th>Status</th><th>Cron</th><th>Last Run</th><th>Next Run</th></tr></thead>
+              <tbody id="jobs-tbody">
+                <tr><td colspan="5" class="mono" style="color:var(--muted-2)">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Active Agents -->
+        <section class="comp comp-4">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:#A78BFA"></span>Active Agents</span>
+          </div>
+          <div class="comp-body" id="agents-list" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="mono" style="color:var(--muted-2)">Loading…</div>
+          </div>
+        </section>
+
+        <!-- Provider Status -->
+        <section class="comp comp-4">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:#F59E0B"></span>Provider Health</span>
+            <a href="/external-providers" style="font-size:11px;color:var(--accent-2);text-decoration:none;">Manage →</a>
+          </div>
+          <div class="comp-body">
+            <table class="comp-table" id="provider-table">
+              <thead><tr><th>Provider</th><th>Status</th><th>Latency</th></tr></thead>
+              <tbody id="provider-tbody">
+                <tr><td colspan="3" class="mono" style="color:var(--muted-2)">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Alert Feed -->
+        <section class="comp comp-4">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--danger)"></span>Alert Feed</span>
+          </div>
+          <div class="comp-body" id="alert-feed" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+            <div class="mono" style="color:var(--muted-2)">No alerts.</div>
+          </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="comp comp-8">
+          <div class="comp-head">
+            <span class="comp-title"><span class="dot" style="background:var(--accent)"></span>Quick Actions</span>
+          </div>
+          <div class="comp-body">
+            <div class="quick-actions" style="gap:10px;flex-wrap:wrap;">
+              <button class="quick-btn" onclick="location.href='/gpu-workstation'">⬢ Train Model</button>
+              <button class="quick-btn" onclick="location.href='/permissions'">🔐 Manage Permissions</button>
+              <button class="quick-btn" onclick="location.href='/campaign-manager'">📋 Campaigns</button>
+              <button class="quick-btn" onclick="location.href='/scheduler'">◷ Scheduler</button>
+              <button class="quick-btn" onclick="location.href='/skills'">🧩 Skills</button>
+              <button class="quick-btn" onclick="location.href='/providers'">⚡ Providers</button>
+              <button class="quick-btn" onclick="location.href='/browser-v2'">🌐 Browser</button>
+              <button class="quick-btn" onclick="location.href='/hermes'">🤖 Hermes</button>
+              <button class="quick-btn" onclick="location.href='/mcp'">🔗 MCP</button>
+              <button class="quick-btn" onclick="location.href='/desktop'">🖥️ Desktop</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- System Resources -->
+        <section class="comp comp-4">
+          <div class="comp-head">
+            <span class="comp-title"><span class="live-dot"></span> System Resources</span>
+          </div>
+          <div class="comp-body" id="sys-resources">
+            <div style="margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+                <span>CPU</span><span id="cpu-val">—</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" id="cpu-bar" style="width:0%;background:var(--accent-2)"></div></div>
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+                <span>Memory</span><span id="mem-val">—</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" id="mem-bar" style="width:0%;background:#A78BFA"></div></div>
+            </div>
+            <div style="margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+                <span>GPU VRAM</span><span id="vram-val">—</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" id="vram-bar" style="width:0%;background:#F59E0B"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+                <span>Disk</span><span id="disk-val">—</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" id="disk-bar" style="width:0%;background:var(--accent)"></div></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let gpuChart = null;
+
+    // Sidebar toggle
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    async function refreshAll() {
+      await Promise.all([loadKPIs(), loadJobs(), loadAgents(), loadProviders(), loadAlerts(), loadSystem()]);
+      updateGpuChart();
+    }
+
+    async function loadKPIs() {
+      try {
+        const r = await fetch('/api/dashboard/overview');
+        const d = await r.json();
+        $('kpi-jobs').textContent   = d.jobs_total ?? '—';
+        $('kpi-agents').textContent = d.agents_active ?? '—';
+        $('kpi-gpu').textContent    = (d.gpu_util ?? 0) + '%';
+        $('kpi-gpu-bar').style.width = (d.gpu_util ?? 0) + '%';
+        $('kpi-providers').textContent = d.providers_total ?? '—';
+        $('kpi-alerts').textContent  = d.alerts_active ?? '0';
+        $('kpi-uptime').textContent  = d.uptime ?? '—';
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadJobs() {
+      try {
+        const r = await fetch('/api/dashboard/jobs');
+        const d = await r.json();
+        const jobs = (d.jobs || []).slice(0, 5);
+        $('kpi-jobs').textContent = d.total ?? '—';
+        $('jobs-tbody').innerHTML = jobs.length > 0
+          ? jobs.map(j => `<tr>
+              <td style="font-weight:600">${esc(j.name)}</td>
+              <td><span class="badge badge-${j.status==='running'?'blue':j.status==='enabled'?'green':'gray'}">${esc(j.status||'idle')}</span></td>
+              <td class="mono">${esc(j.cron||'—')}</td>
+              <td class="mono">${esc(j.last_run||'—')}</td>
+              <td class="mono">${esc(j.next_run||'—')}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="5" class="mono" style="color:var(--muted-2)">No jobs found.</td></tr>';
+      } catch(e) { $('jobs-tbody').innerHTML = '<tr><td colspan="5" class="mono" style="color:var(--danger)">Failed to load</td></tr>'; }
+    }
+
+    async function loadAgents() {
+      try {
+        const r = await fetch('/api/agents/list');
+        const d = await r.json();
+        const agents = (d.agents || []).slice(0, 6);
+        $('kpi-agents').textContent = agents.length;
+        $('agents-list').innerHTML = agents.length > 0
+          ? agents.map(a => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+              <span class="live-dot" style="width:6px;height:6px"></span>
+              <span style="flex:1;font-size:12px;font-weight:600">${esc(a.name)}</span>
+              <span class="badge badge-green">${esc(a.model||'—')}</span>
+            </div>`).join('')
+          : '<div class="mono" style="color:var(--muted-2)">No active agents.</div>';
+      } catch(e) { $('agents-list').innerHTML = '<div class="mono" style="color:var(--danger)">Failed to load</div>'; }
+    }
+
+    async function loadProviders() {
+      try {
+        const r = await fetch('/api/providers');
+        const d = await r.json();
+        const providers = (d.providers || []).slice(0, 5);
+        $('kpi-providers').textContent = d.total ?? '—';
+        $('provider-tbody').innerHTML = providers.length > 0
+          ? providers.map(p => `<tr>
+              <td style="font-weight:600">${esc(p.name)}</td>
+              <td><span class="badge badge-${p.health==='healthy'?'green':p.health==='degraded'?'yellow':'red'}">${esc(p.health||'unknown')}</span></td>
+              <td class="mono">${p.latency ? p.latency + 'ms' : '—'}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="3" class="mono" style="color:var(--muted-2)">No providers.</td></tr>';
+      } catch(e) { $('provider-tbody').innerHTML = '<tr><td colspan="3" class="mono" style="color:var(--danger)">Failed to load</td></tr>'; }
+    }
+
+    async function loadAlerts() {
+      try {
+        const r = await fetch('/api/alerts');
+        const d = await r.json();
+        const alerts = (d.alerts || []).slice(0, 8);
+        $('kpi-alerts').textContent = alerts.length;
+        $('alert-feed').innerHTML = alerts.length > 0
+          ? alerts.map(a => `<div style="padding:6px 8px;border-radius:8px;background:rgba(239,68,68,.06);border-left:3px solid var(--danger);font-size:12px">
+              <div style="font-weight:600;color:#FCA5A5">${esc(a.title)}</div>
+              <div style="color:var(--muted);font-size:11px;margin-top:2px">${esc(a.message)}</div>
+            </div>`).join('')
+          : '<div class="mono" style="color:var(--accent)">No active alerts.</div>';
+      } catch(e) { $('alert-feed').innerHTML = '<div class="mono" style="color:var(--muted-2)">Failed to load alerts.</div>'; }
+    }
+
+    async function loadSystem() {
+      try {
+        const r = await fetch('/api/system');
+        const d = await r.json();
+        const cpu  = d.cpu ?? 0;
+        const mem  = d.memory ?? 0;
+        const vram = d.gpu_vram ?? 0;
+        const disk = d.disk ?? 0;
+        $('cpu-val').textContent  = Math.round(cpu) + '%';
+        $('cpu-bar').style.width  = cpu + '%';
+        $('mem-val').textContent  = Math.round(mem) + '%';
+        $('mem-bar').style.width  = mem + '%';
+        $('vram-val').textContent = Math.round(vram) + '%';
+        $('vram-bar').style.width = vram + '%';
+        $('disk-val').textContent = Math.round(disk) + '%';
+        $('disk-bar').style.width = disk + '%';
+      } catch(e) { console.error(e); }
+    }
+
+    function initGpuChart() {
+      const ctx = $('gpu-chart').getContext('2d');
+      gpuChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'GPU Util %',
+            data: [],
+            borderColor: '#22C55E',
+            backgroundColor: 'rgba(34,197,94,.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          }, {
+            label: 'GPU Mem %',
+            data: [],
+            borderColor: '#A78BFA',
+            backgroundColor: 'rgba(167,139,250,.08)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { legend: { labels: { color: '#94A3B8', font: { size: 11 } } } },
+          scales: {
+            x: { grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B', font: { size: 10 } } },
+            y: { min: 0, max: 100, grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B', font: { size: 10 }, callback: v => v + '%' } }
+          }
+        }
+      });
+    }
+
+    async function updateGpuChart() {
+      if (!gpuChart) initGpuChart();
+      try {
+        const r = await fetch('/api/gpu/chart?range=' + ($('gpu-chart-range').value || '1h'));
+        const d = await r.json();
+        gpuChart.data.labels   = d.labels || [];
+        gpuChart.data.datasets[0].data = d.gpu_util || [];
+        gpuChart.data.datasets[1].data = d.gpu_mem  || [];
+        gpuChart.update('none');
+      } catch(e) { console.error(e); }
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // Init
+    refreshAll();
+    setInterval(refreshAll, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — External Providers</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .ext-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .ext-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .ext-topbar { display:flex; align-items:center; justify-content:space-between;
+                  padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                  margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .ext-topbar h1 { margin:0; font-size:22px; }
+    .ext-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .ext-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .ext-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .ext-stat .es-val { font-size:22px; font-weight:700; }
+    .ext-stat .es-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .ext-stat.green .es-val { color:var(--accent); }
+    .ext-stat.yellow .es-val { color:var(--warn); }
+    .ext-stat.red .es-val { color:var(--danger); }
+
+    .ext-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .ext-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                     border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .ext-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .ext-table tr:hover td { background:rgba(255,255,255,.02); }
+    .ext-url { font-family:monospace; font-size:11px; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ext-models { font-size:11px; color:var(--muted-2); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+    .badge-purple { background:rgba(167,139,250,.12); color:#DDD6FE; border:1px solid rgba(167,139,250,.3); }
+
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                  border-radius:10px; padding:7px 12px; font-size:13px; width:220px;
+                  font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,.7);
+                     backdrop-filter:blur(4px); z-index:100; place-items:center; }
+    .modal-overlay.open { display:grid; }
+    .modal { background:var(--panel); border:1px solid var(--border); border-radius:16px;
+             padding:24px; width:min(520px,90vw); box-shadow:var(--shadow); }
+    .modal h2 { margin:0 0 16px; font-size:16px; }
+    .modal-field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    .modal-field label { font-size:12px; color:var(--muted); font-weight:500; }
+    .modal-field input, .modal-field textarea, .modal-field select {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:8px 12px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif; }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    .latency-badge { font-family:'Fira Code',monospace; font-size:11px; padding:2px 6px; border-radius:4px; }
+    .latency-fast { background:rgba(34,197,94,.12); color:var(--accent); }
+    .latency-slow { background:rgba(245,158,11,.12); color:var(--warn); }
+    .latency-crit { background:rgba(239,68,68,.12); color:var(--danger); }
+
+    .router-card { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                   border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:14px; }
+    .router-card-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .router-card-title { font-size:14px; font-weight:700; }
+    .router-card-sub   { font-size:11px; color:var(--muted); }
+    .router-priority { display:flex; align-items:center; gap:4px; padding:2px 8px; border-radius:6px;
+                       font-size:11px; font-weight:600; background:rgba(92,139,255,.12); color:#93C5FD; }
+  </style>
+</head>
+<body>
+  <div class="ext-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>External Providers</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="ext-main">
+      <header class="ext-topbar">
+        <div>
+          <h1>External Providers</h1>
+          <p>Third-party AI providers, routing rules, and failover configuration</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="openAddProvider()">+ Add Provider</button>
+        </div>
+      </header>
+
+      <div class="ext-stats" id="ext-stats">
+        <div class="ext-stat green"><div class="es-val" id="es-total">—</div><div class="es-lbl">Total Providers</div></div>
+        <div class="ext-stat green"><div class="es-val" id="es-healthy">—</div><div class="es-lbl">Healthy</div></div>
+        <div class="ext-stat yellow"><div class="es-val" id="es-degraded">—</div><div class="es-lbl">Degraded</div></div>
+        <div class="ext-stat red"><div class="es-val" id="es-down">—</div><div class="es-lbl">Down</div></div>
+        <div class="ext-stat"><div class="es-val" id="es-avg-latency">—</div><div class="es-lbl">Avg Latency</div></div>
+      </div>
+
+      <!-- Provider Routing -->
+      <div class="router-card">
+        <div class="router-card-head">
+          <div>
+            <div class="router-card-title">Provider Routing</div>
+            <div class="router-card-sub">Smart routing with failover and load balancing</div>
+          </div>
+          <span class="router-priority">Priority-based</span>
+        </div>
+        <table class="ext-table">
+          <thead><tr><th>Priority</th><th>Provider</th><th>Model Fallback</th><th>Status</th><th>Latency</th></tr></thead>
+          <tbody id="route-tbody">
+            <tr><td><span class="badge badge-green">1</span></td><td style="font-weight:600">OpenAI</td><td class="mono">gpt-4o, gpt-4-turbo</td><td><span class="badge badge-green">Healthy</span></td><td><span class="latency-badge latency-fast">45ms</span></td></tr>
+            <tr><td><span class="badge badge-blue">2</span></td><td style="font-weight:600">Anthropic</td><td class="mono">claude-3-opus, claude-3-sonnet</td><td><span class="badge badge-green">Healthy</span></td><td><span class="latency-badge latency-fast">62ms</span></td></tr>
+            <tr><td><span class="badge badge-yellow">3</span></td><td style="font-weight:600">Azure OpenAI</td><td class="mono">gpt-4, gpt-35-turbo</td><td><span class="badge badge-yellow">Degraded</span></td><td><span class="latency-badge latency-slow">210ms</span></td></tr>
+            <tr><td><span class="badge badge-gray">4</span></td><td style="font-weight:600">Local (ollama)</td><td class="mono">llama3, mistral</td><td><span class="badge badge-green">Healthy</span></td><td><span class="latency-badge latency-fast">12ms</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Provider List -->
+      <div class="search-box" style="width:100%;margin-bottom:14px" id="search-wrap">
+        <input type="text" class="search-box" id="ext-search" placeholder="Search providers…" oninput="filterProviders()" style="width:100%;background:transparent;border:none;padding:0" />
+      </div>
+
+      <table class="ext-table">
+        <thead><tr><th>Provider</th><th>Type</th><th>URL / Endpoint</th><th>Models</th><th>Status</th><th>Latency</th><th>Actions</th></tr></thead>
+        <tbody id="ext-tbody">
+          <tr><td colspan="7" class="empty-state">Loading providers…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Provider Modal -->
+  <div class="modal-overlay" id="provider-modal">
+    <div class="modal">
+      <h2>Add Provider</h2>
+      <div class="modal-field">
+        <label>Provider Name</label>
+        <input type="text" id="prov-name" placeholder="openai, anthropic, azure, local" />
+      </div>
+      <div class="modal-field">
+        <label>Type</label>
+        <select id="prov-type">
+          <option value="primary">Primary</option>
+          <option value="fallback">Fallback</option>
+          <option value="local">Local</option>
+          <option value="tool">Tool</option>
+          <option value="aggregator">Aggregator</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Endpoint URL</label>
+        <input type="text" id="prov-url" placeholder="https://api.openai.com/v1" />
+      </div>
+      <div class="modal-field">
+        <label>API Key (leave blank to keep existing)</label>
+        <input type="password" id="prov-key" placeholder="sk-..." />
+      </div>
+      <div class="modal-field">
+        <label>Models (comma-separated)</label>
+        <input type="text" id="prov-models" placeholder="gpt-4o, gpt-4-turbo, gpt-3.5-turbo" />
+      </div>
+      <div class="modal-field">
+        <label>Priority (lower = higher priority)</label>
+        <input type="number" id="prov-priority" placeholder="1" value="1" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeAddProvider()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProvider()">Save Provider</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const toast = (msg, type='success') => {
+      const t = $('toast');
+      t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    let providers = [
+      {name:'OpenAI', type:'primary', url:'https://api.openai.com/v1', models:['gpt-4o','gpt-4-turbo','gpt-3.5-turbo'], status:'healthy', latency:45},
+      {name:'Anthropic', type:'primary', url:'https://api.anthropic.com/v1', models:['claude-3-opus','claude-3-sonnet','claude-3-haiku'], status:'healthy', latency:62},
+      {name:'Azure OpenAI', type:'fallback', url:'https://freeai.openai.azure.com', models:['gpt-4','gpt-35-turbo'], status:'degraded', latency:210},
+      {name:'Local (Ollama)', type:'local', url:'http://localhost:11434', models:['llama3','mistral','qwen2'], status:'healthy', latency:12},
+      {name:'Groq', type:'fallback', url:'https://api.groq.com/openai/v1', models:['llama-3.1-70b','llama-3.1-8b'], status:'healthy', latency:38},
+      {name:'Together AI', type:'fallback', url:'https://api.together.xyz', models:['mistral-7b','qwen-72b'], status:'down', latency:0},
+      {name:'Fireworks AI', type:'tool', url:'https://api.fireworks.ai/inference', models:['llama-v3-70b','mixtral-8x7b'], status:'healthy', latency:55},
+      {name:'OpenRouter', type:'aggregator', url:'https://openrouter.ai/api/v1', models:['multiple'], status:'healthy', latency:78},
+    ];
+
+    function renderProviders(list) {
+      const tbody = $('ext-tbody');
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No providers found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(p => `<tr>
+        <td style="font-weight:600">${esc(p.name)}</td>
+        <td><span class="badge badge-${p.type==='primary'?'green':p.type==='fallback'?'yellow':p.type==='local'?'blue':p.type==='tool'?'purple':'gray'}">${esc(p.type)}</span></td>
+        <td class="ext-url" title="${esc(p.url)}">${esc(p.url)}</td>
+        <td class="ext-models" title="${p.models.join(', ')}">${esc(p.models.join(', '))}</td>
+        <td><span class="badge badge-${p.status==='healthy'?'green':p.status==='degraded'?'yellow':'red'}">${esc(p.status)}</span></td>
+        <td>${p.latency ? '<span class="latency-badge '+(p.latency<100?'latency-fast':p.latency<200?'latency-slow':'latency-crit')+'">'+p.latency+'ms</span>' : '—'}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm" onclick="testProvider('${p.name}')" title="Test">⚡</button>
+            <button class="btn btn-sm" onclick="editProvider('${p.name}')" title="Edit">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteProvider('${p.name}')" title="Delete">🗑</button>
+          </div>
+        </td>
+      </tr>`).join('');
+      updateStats();
+    }
+
+    function filterProviders() {
+      const search = $('ext-search').value.toLowerCase();
+      const filtered = providers.filter(p => !search || p.name.toLowerCase().includes(search) || p.url.toLowerCase().includes(search));
+      renderProviders(filtered);
+    }
+
+    function updateStats() {
+      $('es-total').textContent   = providers.length;
+      $('es-healthy').textContent = providers.filter(p => p.status === 'healthy').length;
+      $('es-degraded').textContent= providers.filter(p => p.status === 'degraded').length;
+      $('es-down').textContent    = providers.filter(p => p.status === 'down').length;
+      const healthy = providers.filter(p => p.latency > 0);
+      const avg = healthy.length > 0 ? Math.round(healthy.reduce((a,b) => a + b.latency, 0) / healthy.length) : 0;
+      $('es-avg-latency').textContent = avg + 'ms';
+    }
+
+    function testProvider(name) {
+      toast('Testing ' + name + '…');
+      setTimeout(() => {
+        const p = providers.find(x => x.name === name);
+        if (p) { p.status = 'healthy'; p.latency = Math.floor(Math.random() * 100) + 20; renderProviders(providers); toast(name + ' is healthy (' + p.latency + 'ms)'); }
+      }, 1500);
+    }
+
+    function openAddProvider() { $('provider-modal').classList.add('open'); }
+    function closeAddProvider() { $('provider-modal').classList.remove('open'); }
+    function saveProvider() {
+      const name = $('prov-name').value.trim();
+      const type = $('prov-type').value;
+      const url = $('prov-url').value.trim();
+      if (!name || !url) { toast('Please fill in name and URL', 'error'); return; }
+      const models = $('prov-models').value.split(',').map(s => s.trim()).filter(Boolean);
+      providers.push({name, type, url, models, status:'healthy', latency:0});
+      closeAddProvider();
+      renderProviders(providers);
+      toast('Provider added: ' + name);
+    }
+
+    function editProvider(name) {
+      const p = providers.find(x => x.name === name);
+      if (!p) return;
+      $('prov-name').value = p.name;
+      $('prov-type').value = p.type;
+      $('prov-url').value = p.url;
+      $('prov-models').value = p.models.join(', ');
+      openAddProvider();
+    }
+
+    function deleteProvider(name) {
+      if (!confirm('Delete provider "' + name + '"?')) return;
+      providers = providers.filter(p => p.name !== name);
+      renderProviders(providers);
+      toast('Provider deleted: ' + name);
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function refreshAll() {
+      try {
+        const r = await fetch('/api/providers');
+        const d = await r.json();
+        providers = (d.providers || providers).map(p => ({...p, models: p.models || [p.default_model]}));
+        renderProviders(providers);
+      } catch(e) { renderProviders(providers); }
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    renderProviders(providers);
+  </script>
+</body>
+</html>

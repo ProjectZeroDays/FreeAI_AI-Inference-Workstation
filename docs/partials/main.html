@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block header %}
+<header class="md-header" data-md-component="header" data-md-fixed="">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" class="md-header__title md-header__title--logo" aria-label="FreeAI">
+      <img src="{{ ('assets/logo.svg' | url) }}" alt="FreeAI" class="md-logo">
+      <div class="header-text">
+        <span class="header-title">FreeAI</span>
+        <span class="header-sub">AI Workstation</span>
+      </div>
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Open navigation">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">{{ config.site_name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="md-header__options">
+      <label class="md-header__button md-icon" for="__search" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5a6.5 6.5 0 0 1-6.5 6.5H4L2 18.5V16H4A6.5 6.5 0 0 1 4 9.5 6.5 6.5 0 0 1 9.5 3m0 2a4.5 4.5 0 0 0-4.5 4.5A4.5 4.5 0 0 0 9.5 14 4.5 4.5 0 0 0 14 9.5 4.5 4.5 0 0 0 9.5 5Z"/></svg>
+      </label>
+    </div>
+    <div class="md-header__source">
+      <a href="{{ config.repo_url }}" title="GitHub" class="md-source" data-md-component="source">
+        <div class="md-source__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+        </div>
+        <div class="md-source__repository">ProjectZeroDays/FreeAI</div>
+      </a>
+    </div>
+  </nav>
+</header>
+{% endblock %}
+
+{% block hero %}
+{% if page.meta.hero %}
+<section class="md-hero" aria-label="FreeAI Documentation">
+  <div class="md-hero__inner md-grid">
+    <h1>{{ page.meta.hero.title | default(config.site_name) }}</h1>
+    <p>{{ page.meta.hero.description | default(config.site_description) }}</p>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+<footer class="md-footer" data-md-component="footer">
+  <div class="md-footer__inner md-grid">
+    <div class="md-footer__metrics">
+      <p style="color: var(--md-typeset-color); font-size: 12px; margin: 0;">
+        FreeAI v{{ config.extra.version.current | default("1.7.0") }} &middot;
+        <a href="{{ config.repo_url }}" style="color: #38BDF8; text-decoration: none;">GitHub</a> &middot;
+        <a href="https://hub.docker.com/r/projectzeroai/freeai" style="color: #38BDF8; text-decoration: none;">Docker</a>
+      </p>
+    </div>
+  </div>
+</footer>
+{% endblock %}

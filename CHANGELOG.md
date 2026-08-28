@@ -1,3 +1,27 @@
+## 1.3.2 - 2026-08-28
+
+### Added
+- **GODMODE API endpoints**: `/api/godmode/*` routes in dashboard backend (get/enable/disable/toggle/campaign/fallback-chain/copy-skill)
+- **Campaign microservice**: `agents/campaign_manager.py` with full CRUD, lifecycle transitions, metrics, and asset building on :8192
+- **Setup wizard**: `setup-wizard.py` — interactive, auto, and check modes for first-time provisioning
+- **launch.py expanded**: now includes `godmode` (:8190) and `campaign` (:8192) services; `--status`, `--stop`, and `--bg` work across all 14 services
+- **Registry service**: `plugins/registry/registry_api.py` on :8130 with remote fetch, install/remove/toggle, category filtering
+- **Service health aggregation**: dashboard `/api/services` now reports all 14 microservices (proxy, memory, agents, registry, rag, brain, skills, pipeline, knightshade, godmode, campaign)
+
+### Changed
+- **Repo renamed**: `FreeAI_AI-Inference-Workstation` → `FreeAI_AI_Inference_Workstation` (GitHub + all references)
+- **GitHub topics**: added `ai-inference`, `llm`, `security`, `pentesting`, `red-team`, `godmode`, `inference`, `local-first`
+- **Build scripts**: `validate.sh`/`validate.ps1` now check all microservice dirs and launcher scripts; `Makefile` adds `launch` target
+- **.env.example**: added `GODMODE_PORT=8190`, `CAMPAIGN_PORT=8192`, `BROWSER_PORT=8180` to SERVICE PORTS section
+- **chained_zero_day fix**: `build_chain` now returns `stages` count (int) instead of raw list; test updated accordingly
+- **Flask endpoint collision**: renamed `/api/campaigns/*` handlers with explicit `endpoint=` to avoid `api_campaign_create` conflict
+
+### Fixed
+- Fixed 7 failing `test_chained_zero_day` tests (API contract mismatch)
+- Fixed duplicate Flask endpoint `api_campaign_create` causing import errors in 22+ test modules
+
+---
+
 ## 1.3.1 - 2026-08-28
 
 ### Added

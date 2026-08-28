@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="FreeAI">
+  <title>FreeAI Logo</title>
+  <defs>
+    <linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background hexagon -->
+  <polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="url(#bg)" stroke="url(#fg)" stroke-width="1.5" filter="url(#glow)"/>
+  <!-- Inner AI symbol — stylized 'F' + neural nodes -->
+  <g fill="none" stroke="url(#fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left vertical stem -->
+    <line x1="20" y1="18" x2="20" y2="46"/>
+    <!-- Top bar -->
+    <line x1="20" y1="18" x2="38" y2="18"/>
+    <!-- Middle bar -->
+    <line x1="20" y1="32" x2="36" y2="32"/>
+    <!-- Bottom bar -->
+    <line x1="20" y1="46" x2="34" y2="46"/>
+  </g>
+  <!-- Neural network dots -->
+  <circle cx="42" cy="22" r="2.5" fill="#22C55E" opacity="0.9"/>
+  <circle cx="46" cy="34" r="2" fill="#38BDF8" opacity="0.8"/>
+  <circle cx="42" cy="46" r="2.5" fill="#22C55E" opacity="0.9"/>
+  <!-- Connection lines from F to nodes -->
+  <line x1="34" y1="18" x2="42" y2="22" stroke="#38BDF8" stroke-width="1" opacity="0.5"/>
+  <line x1="36" y1="32" x2="46" y2="34" stroke="#22C55E" stroke-width="1" opacity="0.5"/>
+  <line x1="34" y1="46" x2="42" y2="46" stroke="#38BDF8" stroke-width="1" opacity="0.5"/>
+  <!-- Diamond accent -->
+  <polygon points="50,28 53,31 50,34 47,31" fill="url(#fg)" opacity="0.7"/>
+</svg>

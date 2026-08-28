@@ -1,4 +1,4 @@
-﻿---
+---
 name: codex
 description: "Delegate coding to OpenAI Codex CLI (features, PRs)."
 version: 1.0.0
@@ -28,8 +28,8 @@ Delegate coding tasks to [Codex](https://github.com/openai/codex) via the Hermes
 - Codex installed: `npm install -g @openai/codex`
 - OpenAI auth configured: either `OPENAI_API_KEY` or Codex OAuth credentials
   from the Codex CLI login flow
-- **Must run inside a git repository** â€” Codex refuses to run outside one
-- Use `pty=true` in terminal calls â€” Codex is an interactive terminal app
+- **Must run inside a git repository** — Codex refuses to run outside one
+- Use `pty=true` in terminal calls — Codex is an interactive terminal app
 - **For OpenRouter native integration**: Basic binary patching knowledge (strings, hex editing)
 - **For verified patches**: Access to Ghidra or similar disassembler (optional but recommended)
 - **User preference**: Strong preference for native binary modification over environment variables or configuration files (demonstrated in session - "You want to modify binaries natively rather than using environment variables or configuration files")
@@ -172,7 +172,7 @@ For truly seamless OpenRouter integration that feels native to the application (
    cp /usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex /usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex/codex.backup
    ```
 
-2. **Handle URL length difference** (24 â†’ 28 bytes):
+2. **Handle URL length difference** (24 → 28 bytes):
    - **Option A: Jump Technique** (Recommended for true native integration - **no external dependencies**)
      * Find free space in .rodata section (sequences of null bytes `\x00`)
      * Write full OpenRouter URL to free space: `https://openrouter.ai/api.v1` + null terminator (`\x00`)
@@ -223,10 +223,10 @@ See `references/binary-patching.md` for detailed Ghidra reverse engineering step
 
 ## Rules
 
-1. **Always use `pty=true`** â€” Codex is an interactive terminal app and hangs without a PTY
-2. **Git repo required** â€” Codex won't run outside a git directory. Use `mktemp -d && git init` for scratch
-3. **Use `exec` for one-shots** â€” `codex exec "prompt"` runs and exits cleanly
-4. **`--full-auto` for building** â€” auto-approves changes within the sandbox
-5. **Background for long tasks** â€” use `background=true` and monitor with `process` tool
-6. **Don't interfere** â€” monitor with `poll`/`log`, be patient with long-running tasks
-7. **Parallel is fine** â€” run multiple Codex processes at once for batch work
+1. **Always use `pty=true`** — Codex is an interactive terminal app and hangs without a PTY
+2. **Git repo required** — Codex won't run outside a git directory. Use `mktemp -d && git init` for scratch
+3. **Use `exec` for one-shots** — `codex exec "prompt"` runs and exits cleanly
+4. **`--full-auto` for building** — auto-approves changes within the sandbox
+5. **Background for long tasks** — use `background=true` and monitor with `process` tool
+6. **Don't interfere** — monitor with `poll`/`log`, be patient with long-running tasks
+7. **Parallel is fine** — run multiple Codex processes at once for batch work

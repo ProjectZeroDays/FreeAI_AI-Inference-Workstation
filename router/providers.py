@@ -2279,6 +2279,48 @@ PRESETS = {
         "models": ["zen-coder", "zen-think", "zen-4"],
         "description": "Opencode Zen (local + cloud)",
     },
+    "mimocode": {
+        "style": "openai", "base_url": "https://api.mimocode.com/v1",
+        "key_env": "MIMOCODE_API_KEY",
+        "models": ["mimocode-flash", "mimocode-pro", "mimocode-coder"],
+        "description": "MiMoCode LLM providers (Xiaomi)",
+        "enabled": True,
+    },
+    "jcode": {
+        "style": "openai", "base_url": "https://api.jcode.ai/v1",
+        "key_env": "JCODE_API_KEY",
+        "models": ["jcode-v1", "jcode-coder"],
+        "description": "JCode AI coding models",
+        "enabled": True,
+    },
+    "zcode": {
+        "style": "openai", "base_url": "https://api.zcode.ai/v1",
+        "key_env": "ZCODE_API_KEY",
+        "models": ["zcode-7b", "zcode-32b", "zcode-coder"],
+        "description": "ZCode fast inference providers",
+        "enabled": True,
+    },
+    "hermes": {
+        "style": "openai", "base_url": "https://api.hermes-ai.dev/v1",
+        "key_env": "HERMES_API_KEY",
+        "models": ["hermes-2-pro", "hermes-3-flash", "hermes-coder"],
+        "description": "Hermes AI platform (uncensored fine-tunes)",
+        "enabled": True,
+    },
+    "opencode": {
+        "style": "openai", "base_url": "https://api.opencode.ai/v1",
+        "key_env": "OPENCODE_API_KEY",
+        "models": ["opencode-coder", "opencode-think", "opencode-uncensored"],
+        "description": "OpenCode AI — full uncensored coder stack",
+        "enabled": True,
+    },
+    "openclaw": {
+        "style": "openai", "base_url": "https://api.openclaw.ai/v1",
+        "key_env": "OPENCLAW_API_KEY",
+        "models": ["openclaw-v1", "openclaw-coder", "openclaw-reasoner"],
+        "description": "OpenClaw AI — agent-native model providers",
+        "enabled": True,
+    },
 }
 
 # ---------------------------------------------------------------- loading

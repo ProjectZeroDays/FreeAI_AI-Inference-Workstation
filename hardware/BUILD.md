@@ -144,7 +144,7 @@ quarter-turn). Don't forget the center standoff — it aligns the board.
 
 ```bash
 sudo apt-get update && sudo apt-get install -y git
-git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git ~/FreeAI
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git ~/FreeAI
 cd ~/FreeAI
 sudo ./hardware/install-stack.sh              # drivers→CUDA→docker→stack→systemd
 sudo reboot                                   # only if driver was freshly installed

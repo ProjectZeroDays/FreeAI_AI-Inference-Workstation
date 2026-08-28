@@ -9,6 +9,7 @@ DEFAULT_CONFIG_PATH = CONFIG_DIR / "rbac.json"
 ROLE_HIERARCHY = {
     "superadmin": 5,
     "admin": 4,
+    "godmode": 4,
     "developer": 3,
     "viewer": 2,
     "readonly": 1,
@@ -16,9 +17,10 @@ ROLE_HIERARCHY = {
 
 DEFAULT_PERMISSIONS = {
     "superadmin": ["*"],
-    "admin": ["route", "agent/*", "workflow/*", "rbac/*", "config/*", "admin/*"],
-    "developer": ["route", "agent/*", "workflow/*", "status", "metrics", "health"],
-    "viewer": ["status", "metrics", "health", "models", "logs"],
+    "admin": ["route", "agent/*", "workflow/*", "rbac/*", "config/*", "admin/*", "godmode/*", "catalog/*", "mcp/*"],
+    "godmode": ["route", "agent/*", "workflow/*", "rbac/*", "config/*", "admin/*", "godmode/*", "catalog/*", "mcp/*"],
+    "developer": ["route", "agent/*", "workflow/*", "status", "metrics", "health", "catalog/*"],
+    "viewer": ["status", "metrics", "health", "models", "logs", "catalog/skills"],
     "readonly": ["status", "health"],
 }
 

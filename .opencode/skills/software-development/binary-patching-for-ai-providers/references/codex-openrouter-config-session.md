@@ -1,4 +1,4 @@
-﻿# Codex-OpenRouter Configuration Integration Session
+# Codex-OpenRouter Configuration Integration Session
 
 ## Session Summary
 Configuration-based integration of OpenRouter with Codex CLI, replacing binary patching approach.

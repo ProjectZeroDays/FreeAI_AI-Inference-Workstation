@@ -1,26 +1,55 @@
 {
-  "_comment": "Default scheduler settings for FreeAI",
-  "scheduler": {
-    "enabled": true,
-    "max_concurrent_jobs": 5,
-    "default_cron": "0 0 * * *",
-    "timezone": "UTC",
-    "retry_policy": {
-      "max_retries": 3,
-      "backoff_base": 60,
-      "backoff_max": 3600
+  "jobs": [
+    {
+      "id": "job-20260828073553-348",
+      "name": "t",
+      "schedule_type": "cron",
+      "cron": "cron",
+      "interval_seconds": "0 0 * * *",
+      "handler": "h",
+      "enabled": true,
+      "priority": 0,
+      "last_run": null,
+      "next_run": 1787924153.5390196,
+      "run_count": 0,
+      "last_status": null,
+      "created_at": 1787920553.539016
     },
-    "notifications": {
-      "on_success": true,
-      "on_failure": true,
-      "channels": ["log", "webhook"]
+    {
+      "id": "job-20260828073638-952",
+      "name": "test-daily",
+      "schedule_type": "cron",
+      "cron": "cron",
+      "interval_seconds": "0 8 * * *",
+      "handler": "daily_report",
+      "enabled": true,
+      "priority": 0,
+      "last_run": null,
+      "next_run": 1787924198.896677,
+      "run_count": 0,
+      "last_status": null,
+      "created_at": 1787920598.8966749
     },
-    "services": {
-      "workflow_engine": {"enabled": true, "auto_start": true},
-      "mcp_registry": {"enabled": true, "auto_start": true},
-      "skills_aggregator": {"enabled": true, "auto_start": true},
-      "campaign_manager": {"enabled": true, "auto_start": true},
-      "gpu_monitor": {"enabled": true, "auto_start": true}
+    {
+      "id": "job-20260828073659-748",
+      "name": "test-daily",
+      "schedule_type": "cron",
+      "cron": "0 8 * * *",
+      "interval_seconds": 0,
+      "handler": "daily_report",
+      "enabled": true,
+      "priority": 0,
+      "last_run": null,
+      "next_run": 1787990460.0,
+      "run_count": 0,
+      "last_status": null,
+      "created_at": 1787920619.2301242
     }
+  ],
+  "history": [],
+  "settings": {
+    "poll_interval": 5,
+    "max_concurrent": 4,
+    "timezone": "UTC"
   }
 }

@@ -13,8 +13,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
 
 # Run preflight validation
 ./validate.sh
@@ -276,8 +276,8 @@ The Vast.ai kit includes:
 ssh root@<instance-ip>
 
 # Clone and deploy
-git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
 
 # Install (auto-detects GPU)
 ./install.sh
@@ -350,8 +350,8 @@ podctl create \
 
 ```bash
 # Bare Ubuntu with pre-installed NVIDIA drivers
-git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
 ./install-stack.sh
 bash models/auto-download-models.sh
 ./start.sh

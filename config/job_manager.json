@@ -1,0 +1,29 @@
+{
+  "jobs": [
+    {
+      "id": "job-51ac4b52",
+      "name": "scan",
+      "handler": "network_scan",
+      "args": {
+        "target": "127.0.0.1"
+      },
+      "mode": "background",
+      "enabled": true,
+      "priority": 0,
+      "status": "queued",
+      "result": null,
+      "error": null,
+      "created_at": 1787920604.6632907,
+      "started_at": null,
+      "completed_at": null,
+      "run_count": 0
+    }
+  ],
+  "settings": {
+    "max_concurrent": 4,
+    "default_mode": "background",
+    "timeout_seconds": 300,
+    "auto_retry": true,
+    "max_retries": 3
+  }
+}

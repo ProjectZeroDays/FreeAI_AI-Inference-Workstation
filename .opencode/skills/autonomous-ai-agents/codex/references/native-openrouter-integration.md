@@ -1,4 +1,4 @@
-﻿# Truly Native OpenRouter Integration for Codex CLI
+# Truly Native OpenRouter Integration for Codex CLI
 
 ## Overview
 This guide details how to patch the Codex binary to work natively with OpenRouter without requiring any external processes, environment variables, or configuration files. This approach provides the seamless experience the user requested - the binary behaves as if it was always configured for OpenRouter.
@@ -58,7 +58,7 @@ Patch default model string to prefer a specific OpenRouter model if desired.
 
 #### 1.1 Find Free Space in .rodata
 ```bash
-# In Ghidra: Window â†’ Defined Strings â†’ Look for large gaps or unused areas
+# In Ghidra: Window → Defined Strings → Look for large gaps or unused areas
 # Alternative: Look for strings with lots of null padding or duplicate content
 # Target: Find at least 28 consecutive null/writable bytes
 ```
@@ -142,12 +142,12 @@ In Ghidra:
 - Navigate to 0xa50000
 - Switch to Listing view
 - Select 28 bytes
-- Right-click â†’ Patch Instruction â†’ Bytes view
+- Right-click → Patch Instruction → Bytes view
 - Enter: `68 74 74 70 73 3a 2f 2f 6f 70 65 6e 72 6f 75 74 65 72 2e 61 69 2f 61 70 69 2f 76 31`
 - Leave last byte as 00 for null termination (makes it 29 bytes total)
 
 #### 1.4 Find and Patch String Reference/Pointer
-- Search for references to 0xa46bd4c: Window â†’ References â†’ Define References
+- Search for references to 0xa46bd4c: Window → References → Define References
 - Look for:
   - Instructions that load this address into a register (lea, mov)
   - Data references in structs
@@ -194,7 +194,7 @@ At the header construction point:
 ### Phase 3: Verification
 
 #### 3.1 Export Patched Binary
-- File â†’ Export Programâ€¦ â†’ Binary format
+- File → Export Program… → Binary format
 - Save as: `codex-openrouter-native`
 
 #### 3.2 Test Basic Functionality
@@ -258,11 +258,11 @@ Look for TCP packets directly to openrouter.ai:443 with our expected headers.
 ## Final Notes
 
 This approach produces a truly native Codex binary that:
-- âœ… Requires no external proxy or server
-- âœ… Needs no environment variables or config files
-- âœ… Works with standard `codex` command workflow
-- âœ… Feels intrinsically configured for OpenRouter
-- âœ… Sends requests directly to openrouter.ai:443 with proper headers
-- âœ… Can be distributed and used like any other binary
+- ✅ Requires no external proxy or server
+- ✅ Needs no environment variables or config files
+- ✅ Works with standard `codex` command workflow
+- ✅ Feels intrinsically configured for OpenRouter
+- ✅ Sends requests directly to openrouter.ai:443 with proper headers
+- ✅ Can be distributed and used like any other binary
 
 The result is the seamless integration experience requested - the binary behaves identically to before, but all API traffic goes directly to OpenRouter with correct authentication, making it feel as if Codex was always designed for OpenRouter.

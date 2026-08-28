@@ -1,4 +1,4 @@
-﻿# Codex OpenRouter Patching Session - May 2026
+# Codex OpenRouter Patching Session - May 2026
 
 ## Session Overview
 This reference documents the specific session where the Codex binary was modified to use OpenRouter with the model `poolside/laguna-xs.2:free` as default settings.
@@ -14,7 +14,7 @@ This reference documents the specific session where the Codex binary was modifie
 ## Patching Details
 
 ### 1. Base URL Patch
-- **Target**: `https://api.openai.com/v1` â†’ `https://openrouter.ai/api/v1`
+- **Target**: `https://api.openai.com/v1` → `https://openrouter.ai/api/v1`
 - **Location**: 0xa1e8ef0
 - **Original Context**: Part of longer string `https://chatgpt./chat.openai.comhttps://chat.opeuser_authorizatiilable_decisionsavailable_decisional_permissionsadditional_permi_context` (136 bytes)
 - **Length**: Both strings are 28 bytes (exact match after truncation/padding)
@@ -25,7 +25,7 @@ This reference documents the specific session where the Codex binary was modifie
   ```
 
 ### 2. Provider Patch
-- **Target**: `openai-bH1` â†’ `openrouter`
+- **Target**: `openai-bH1` → `openrouter`
 - **Location**: 0xfacc8d
 - **Original Length**: 35 bytes (including `bundledH1` suffix and padding)
 - **New Length**: 10 bytes (`openrouter`)
@@ -37,7 +37,7 @@ This reference documents the specific session where the Codex binary was modifie
   ```
 
 ### 3. Model Patch
-- **Target**: `gpt-5.1-codex-maapproval requestReviewing approv` â†’ `poolside/laguna-xs.2:free`
+- **Target**: `gpt-5.1-codex-maapproval requestReviewing approv` → `poolside/laguna-xs.2:free`
 - **Location**: 0xa1f1510
 - **Original Length**: 48 bytes
 - **New Length**: 25 bytes (`poolside/laguna-xs.2:free`)
@@ -93,12 +93,12 @@ Created a complete npm package that automates the binary patching process with a
 ### Package Structure
 ```
 codex-openrouter-patcher/
-â”œâ”€â”€ package.json              # NPM config with postinstall hook
-â”œâ”€â”€ postinstall.js            # Binary patching script (Node.js)
-â”œâ”€â”€ openrouter-proxy.js       # HTTP proxy with multi-model support
-â”œâ”€â”€ bin/codex-openrouter-proxy # Shell launcher
-â”œâ”€â”€ README.md                 # Documentation
-â””â”€â”€ .gitignore
+├── package.json              # NPM config with postinstall hook
+├── postinstall.js            # Binary patching script (Node.js)
+├── openrouter-proxy.js       # HTTP proxy with multi-model support
+├── bin/codex-openrouter-proxy # Shell launcher
+├── README.md                 # Documentation
+└── .gitignore
 ```
 
 ### Key Features
@@ -198,7 +198,7 @@ model_provider = "openrouter"
 `;
 
 fs.writeFileSync(CONFIG_FILE, config);
-console.log('âœ… Configuration patched successfully');
+console.log('✅ Configuration patched successfully');
 ```
 
 2. **Add postinstall hook** to `package.json`:

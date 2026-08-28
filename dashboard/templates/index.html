@@ -70,6 +70,8 @@
         <a href="#" class="nav-item"><span class="nav-dot"></span> File Parse (XXE/PDF/Email)</a>
         <a href="#" class="nav-item"><span class="nav-dot"></span> Memory Primitives</a>
         <a href="#" class="nav-item"><span class="nav-dot"></span> Chained Zero-Day</a>
+        <span class="nav-label">Infrastructure</span>
+        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
       </div>
       <div class="sidebar-foot">
         <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
@@ -187,21 +189,47 @@
              <ul id="uploads-list" class="muted"></ul>
            </section>
 
-           <section class="card">
-             <div class="card-head"><h2>Shodan</h2><span id="shodan-status-badge" class="pill muted">no key</span></div>
-             <div class="row">
-               <input type="text" id="shodan-query" placeholder="Search Shodan (e.g. apache, port:443)..." style="flex:1" />
-               <button id="shodan-search-btn">Search</button>
-               <span id="shodan-search-status" class="muted"></span>
-             </div>
-             <div id="shodan-results" class="muted" style="font-size:12px;max-height:200px;overflow-y:auto;margin-top:8px">Search for hosts or enter an IP below.</div>
-             <div class="row" style="margin-top:8px">
-               <input type="text" id="shodan-host-ip" placeholder="Host IP (e.g. 8.8.8.8)" style="flex:1" />
-               <button id="shodan-host-btn">Lookup</button>
-               <span id="shodan-host-status" class="muted"></span>
-             </div>
-             <div id="shodan-host-results" class="muted" style="font-size:12px;max-height:200px;overflow-y:auto;margin-top:8px"></div>
-           </section>
+            <section class="card">
+              <div class="card-head"><h2>Shodan</h2><span id="shodan-status-badge" class="pill muted">no key</span></div>
+              <div class="row">
+                <input type="text" id="shodan-query" placeholder="Search Shodan (e.g. apache, port:443)..." style="flex:1" />
+                <button id="shodan-search-btn">Search</button>
+                <span id="shodan-search-status" class="muted"></span>
+              </div>
+              <div id="shodan-results" class="muted" style="font-size:12px;max-height:200px;overflow-y:auto;margin-top:8px">Search for hosts or enter an IP below.</div>
+              <div class="row" style="margin-top:8px">
+                <input type="text" id="shodan-host-ip" placeholder="Host IP (e.g. 8.8.8.8)" style="flex:1" />
+                <button id="shodan-host-btn">Lookup</button>
+                <span id="shodan-host-status" class="muted"></span>
+              </div>
+              <div id="shodan-host-results" class="muted" style="font-size:12px;max-height:200px;overflow-y:auto;margin-top:8px"></div>
+            </section>
+
+            <section class="card" id="aikido-panel">
+              <div class="card-head"><h2>Aikido Security</h2><span id="aikido-status-badge" class="pill muted">checking…</span></div>
+              <div class="metric-grid" style="grid-template-columns:1fr 1fr;">
+                <div class="metric"><span class="metric-label">Score</span><span id="aikido-score" class="metric-value">—</span></div>
+                <div class="metric"><span class="metric-label">Findings</span><span id="aikido-findings" class="metric-value">—</span></div>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button id="aikido-scan-btn" style="font-size:12px;padding:4px 10px;">Run Scan</button>
+                <button id="aikido-settings-btn" style="font-size:12px;padding:4px 10px;">⚙ Settings</button>
+                <span id="aikido-scan-status" class="muted"></span>
+              </div>
+            </section>
+
+            <section class="card" id="dependency-panel">
+              <div class="card-head"><h2>Dependency Agent</h2><span id="dep-status-badge" class="pill muted">ready</span></div>
+              <div class="metric-grid" style="grid-template-columns:1fr 1fr 1fr;">
+                <div class="metric"><span class="metric-label">Packages</span><span id="dep-total" class="metric-value">—</span></div>
+                <div class="metric"><span class="metric-label">CVEs</span><span id="dep-cves" class="metric-value" style="color:#EF4444">—</span></div>
+                <div class="metric"><span class="metric-label">Updates</span><span id="dep-updates" class="metric-value">—</span></div>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button id="dep-scan-btn" style="font-size:12px;padding:4px 10px;">Analyze</button>
+                <a href="/dependency-agent" style="font-size:12px;color:var(--accent-2)">Details →</a>
+              </div>
+            </section>
          </div>
        </div>
 
@@ -773,6 +801,81 @@
 
     // ── Utility ─────────────────────────────────────────────────────
     function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── Aikido Security card ────────────────────────────────────────
+    async function loadAikidoCard() {
+      try {
+        const r = await fetch('/api/aikido');
+        const d = await r.json();
+        const badge = document.getElementById('aikido-status-badge');
+        if (!d.configured) {
+          badge.textContent = 'not configured';
+          badge.style.background = 'rgba(245,158,11,.14)';
+          badge.style.color = '#FDE68A';
+          document.getElementById('aikido-score').textContent = '—';
+          document.getElementById('aikido-findings').textContent = 'Set AIKIDO_API_KEY';
+          return;
+        }
+        badge.textContent = 'connected';
+        badge.style.background = 'rgba(34,197,94,.14)';
+        badge.style.color = '#BBF7D0';
+        document.getElementById('aikido-score').textContent = '—';
+        document.getElementById('aikido-findings').textContent = d.scan_count || 0;
+      } catch(e) {
+        document.getElementById('aikido-status-badge').textContent = 'error';
+      }
+    }
+    document.getElementById('aikido-scan-btn')?.addEventListener('click', async () => {
+      const st = document.getElementById('aikido-scan-status');
+      st.textContent = 'Scanning...';
+      try {
+        const r = await fetch('/api/aikido/scan', {method:'POST', headers:{'Content-Type':'application/json'}});
+        const d = await r.json();
+        if (d.ok) {
+          st.textContent = 'Scan initiated ✓';
+          loadAikidoCard();
+        } else {
+          st.textContent = 'Error: ' + (d.error || 'unknown');
+        }
+      } catch(e) { st.textContent = 'Error: ' + e.message; }
+    });
+    document.getElementById('aikido-settings-btn')?.addEventListener('click', async () => {
+      const key = prompt('Enter Aikido API Key (leave blank to keep current):');
+      if (key !== null) {
+        await fetch('/api/aikido/settings', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({aikido_api_key: key}),
+        });
+        loadAikidoCard();
+      }
+    });
+    loadAikidoCard();
+
+    // ── Dependency Agent card ───────────────────────────────────────
+    async function loadDependencyCard() {
+      try {
+        const r = await fetch('/api/dependency/analyze');
+        const d = await r.json();
+        document.getElementById('dep-total').textContent = d.total_packages || 0;
+        document.getElementById('dep-cves').textContent = d.summary?.critical || 0;
+        document.getElementById('dep-updates').textContent = d.updates_available || 0;
+        const badge = document.getElementById('dep-status-badge');
+        const cves = d.summary?.critical || 0;
+        if (cves > 0) {
+          badge.textContent = `${cves} critical`;
+          badge.style.background = 'rgba(239,68,68,.15)';
+          badge.style.color = '#FCA5A5';
+        } else {
+          badge.textContent = 'clean';
+          badge.style.background = 'rgba(34,197,94,.15)';
+          badge.style.color = '#BBF7D0';
+        }
+      } catch(e) {
+        document.getElementById('dep-status-badge').textContent = 'error';
+      }
+    }
+    document.getElementById('dep-scan-btn')?.addEventListener('click', loadDependencyCard);
+    loadDependencyCard();
   </script>
 </body>
 </html>

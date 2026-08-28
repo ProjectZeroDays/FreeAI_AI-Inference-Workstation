@@ -1,0 +1,292 @@
+{
+  "version": "2.0",
+  "generated_at": "2026-08-28T04:00:00Z",
+  "source": "freeai-unified-catalog",
+  "mcp_servers": [
+    {
+      "id": "ejentum-mcp",
+      "name": "Ejentum MCP",
+      "description": "Ejentum enterprise integration MCP server",
+      "type": "stdio",
+      "command": "ejentum-mcp",
+      "args": [],
+      "enabled": true,
+      "category": "enterprise",
+      "tools": ["ejentum_query", "ejentum_write", "ejentum_sync"]
+    },
+    {
+      "id": "lemma",
+      "name": "Lemma",
+      "description": "Lemma knowledge graph and reasoning MCP server",
+      "type": "stdio",
+      "command": "lemma",
+      "args": [],
+      "enabled": true,
+      "category": "knowledge",
+      "tools": ["lemma_query", "lemma_reason", "lemma_connect"]
+    },
+    {
+      "id": "oc-mnemoria",
+      "name": "OC-Mnemoria",
+      "description": "OpenClaw persistent memory MCP server with vector search",
+      "type": "stdio",
+      "command": "oc-mnemoria",
+      "args": [],
+      "enabled": true,
+      "category": "memory",
+      "tools": ["mnemoria_store", "mnemoria_retrieve", "mnemoria_delete"]
+    },
+    {
+      "id": "hiai-opencode",
+      "name": "HiAI OpenCode",
+      "description": "HiAI-powered OpenCode integration with multiple tool sets",
+      "type": "http",
+      "url": "http://localhost:8200/mcp",
+      "enabled": true,
+      "category": "ai",
+      "tools": [
+        "playwright", "stitch", "sequential-thinking", "firecrawl",
+        "rag", "mempalace", "context7", "websearch", "grep_app"
+      ]
+    },
+    {
+      "id": "flowdeck",
+      "name": "FlowDeck",
+      "description": "FlowDeck unified MCP with Context7, Exa, and Grep.app",
+      "type": "stdio",
+      "command": "flowdeck-mcp",
+      "args": [],
+      "enabled": true,
+      "category": "workflow",
+      "tools": ["context7", "exa_search", "grep_app_search", "flowdeck_run"]
+    },
+    {
+      "id": "opencode-litellm",
+      "name": "OpenCode LiteLLM",
+      "description": "LiteLLM proxy MCP for unified LLM routing",
+      "type": "stdio",
+      "command": "opencode-litellm",
+      "args": [],
+      "enabled": true,
+      "category": "llm",
+      "tools": ["litellm_route", "litellm_anthropic", "litellm_openai", "litellm_cost"]
+    },
+    {
+      "id": "liter-llm",
+      "name": "Liter LLM",
+      "description": "Liter LLM MCP with 143 provider integrations",
+      "type": "stdio",
+      "command": "liter-llm",
+      "args": [],
+      "enabled": true,
+      "category": "llm",
+      "tools": ["liter_route", "liter_compare", "liter_cost", "liter_fallback"]
+    },
+    {
+      "id": "crawlberg",
+      "name": "Crawlberg",
+      "description": "Web crawling and scraping MCP server",
+      "type": "stdio",
+      "command": "crawlberg",
+      "args": [],
+      "enabled": true,
+      "category": "web",
+      "tools": ["crawlberg_crawl", "crawlberg_scrape", "crawlberg_extract"]
+    },
+    {
+      "id": "opencode-chromium-browser-plugin",
+      "name": "OpenCode Chromium Browser Plugin",
+      "description": "Chromium browser automation via MCP",
+      "type": "stdio",
+      "command": "opencode-chromium-browser-plugin",
+      "args": [],
+      "enabled": true,
+      "category": "browser",
+      "tools": ["chromium_navigate", "chromium_click", "chromium_screenshot", "chromium_evaluate"]
+    },
+    {
+      "id": "opencode-telemetry",
+      "name": "OpenCode Telemetry",
+      "description": "Observability and telemetry MCP server",
+      "type": "stdio",
+      "command": "opencode-telemetry",
+      "args": [],
+      "enabled": true,
+      "category": "observability",
+      "tools": ["telemetry_metrics", "telemetry_traces", "telemetry_logs"]
+    },
+    {
+      "id": "opencode-mem",
+      "name": "OpenCode Mem",
+      "description": "OpenCode persistent memory and context management",
+      "type": "stdio",
+      "command": "opencode-mem",
+      "args": [],
+      "enabled": true,
+      "category": "memory",
+      "tools": ["mem_store", "mem_retrieve", "mem_index"]
+    },
+    {
+      "id": "opencode-claude-memory",
+      "name": "OpenCode Claude Memory",
+      "description": "Claude-style persistent memory for OpenCode",
+      "type": "stdio",
+      "command": "opencode-claude-memory",
+      "args": [],
+      "enabled": true,
+      "category": "memory",
+      "tools": ["claude_memory_store", "claude_memory_retrieve", "claude_memory_delete"]
+    },
+    {
+      "id": "magic-context",
+      "name": "Magic Context",
+      "description": "Intelligent context compression and retrieval MCP",
+      "type": "stdio",
+      "command": "magic-context",
+      "args": [],
+      "enabled": true,
+      "category": "context",
+      "tools": ["magic_compress", "magic_retrieve", "magic_summarize"]
+    },
+    {
+      "id": "harness-memory",
+      "name": "Harness Memory",
+      "description": "LM Harness memory management and recall MCP",
+      "type": "stdio",
+      "command": "harness-memory",
+      "args": [],
+      "enabled": true,
+      "category": "memory",
+      "tools": ["harness_store", "harness_recall", "harness_delete"]
+    },
+    {
+      "id": "honcho",
+      "name": "Honcho",
+      "description": "Honcho task orchestration and state management MCP",
+      "type": "stdio",
+      "command": "honcho",
+      "args": [],
+      "enabled": true,
+      "category": "workflow",
+      "tools": ["honcho_task", "honcho_state", "honcho_status"]
+    },
+    {
+      "id": "tree-sitter-language-pack",
+      "name": "Tree-sitter Language Pack",
+      "description": "AST parsing and code understanding via tree-sitter",
+      "type": "stdio",
+      "command": "tree-sitter-language-pack",
+      "args": [],
+      "enabled": true,
+      "category": "code",
+      "tools": ["tree_sitter_parse", "tree_sitter_query", "tree_sitter_symbols"]
+    },
+    {
+      "id": "xberg",
+      "name": "Xberg",
+      "description": "Xberg social media and data extraction MCP",
+      "type": "stdio",
+      "command": "xberg",
+      "args": [],
+      "enabled": true,
+      "category": "social",
+      "tools": ["xberg_search", "xberg_post", "xberg_analyze"]
+    },
+    {
+      "id": "xquik",
+      "name": "Xquik",
+      "description": "Xquik rapid task execution MCP",
+      "type": "stdio",
+      "command": "xquik",
+      "args": [],
+      "enabled": true,
+      "category": "workflow",
+      "tools": ["xquik_run", "xquik_status", "xquik_cancel"]
+    },
+    {
+      "id": "with-context-mcp",
+      "name": "With Context MCP",
+      "description": "Context-aware tool calling and management MCP",
+      "type": "stdio",
+      "command": "with-context-mcp",
+      "args": [],
+      "enabled": true,
+      "category": "context",
+      "tools": ["context_bind", "context_retrieve", "context_invalidate"]
+    },
+    {
+      "id": "opencode-chat-export",
+      "name": "OpenCode Chat Export",
+      "description": "Export and import OpenCode chat sessions",
+      "type": "stdio",
+      "command": "opencode-chat-export",
+      "args": [],
+      "enabled": true,
+      "category": "export",
+      "tools": ["chat_export", "chat_import", "chat_list"]
+    },
+    {
+      "id": "agentdeals",
+      "name": "AgentDeals",
+      "description": "Agent marketplace and task negotiation MCP",
+      "type": "stdio",
+      "command": "agentdeals",
+      "args": [],
+      "enabled": true,
+      "category": "marketplace",
+      "tools": ["agentdeals_list", "agentdeals_propose", "agentdeals_accept"]
+    },
+    {
+      "id": "mcp-voice-interface",
+      "name": "MCP Voice Interface",
+      "description": "Voice-controlled MCP operations",
+      "type": "stdio",
+      "command": "mcp-voice-interface",
+      "args": [],
+      "enabled": true,
+      "category": "voice",
+      "tools": ["voice_command", "voice_status", "voice_record"]
+    },
+    {
+      "id": "open-code-rag",
+      "name": "Open Code RAG",
+      "description": "Retrieval-augmented generation for codebases",
+      "type": "stdio",
+      "command": "open-code-rag",
+      "args": [],
+      "enabled": true,
+      "category": "rag",
+      "tools": ["rag_query", "rag_index", "rag_rerank"]
+    }
+  ],
+  "categories": [
+    "enterprise", "knowledge", "memory", "ai", "workflow", "llm",
+    "web", "browser", "observability", "context", "code", "social",
+    "export", "marketplace", "voice", "rag"
+  ],
+  "tool_counts": {
+    "ejentum-mcp": 3,
+    "lemma": 3,
+    "oc-mnemoria": 3,
+    "hiai-opencode": 9,
+    "flowdeck": 4,
+    "opencode-litellm": 4,
+    "liter-llm": 4,
+    "crawlberg": 3,
+    "opencode-chromium-browser-plugin": 4,
+    "opencode-telemetry": 3,
+    "opencode-mem": 3,
+    "opencode-claude-memory": 3,
+    "magic-context": 3,
+    "harness-memory": 3,
+    "honcho": 3,
+    "tree-sitter-language-pack": 3,
+    "xberg": 3,
+    "xquik": 3,
+    "with-context-mcp": 3,
+    "opencode-chat-export": 3,
+    "agentdeals": 3,
+    "mcp-voice-interface": 3,
+    "open-code-rag": 3
+  }
+}

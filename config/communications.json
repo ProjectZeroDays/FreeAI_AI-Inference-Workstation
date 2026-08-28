@@ -1,0 +1,91 @@
+{
+  "_comment": "FreeAI Communications Infrastructure — shared config across hermes, opencode, mimocode, jcode, openclaw, freecode",
+  "version": "7.0.0",
+  "global": {
+    "max_log_entries": 500,
+    "auto_retry": true,
+    "retry_attempts": 3,
+    "retry_delay_s": 2,
+    "default_provider": "telegram",
+    "rate_limit": {
+      "per_provider_per_min": 60,
+      "global_per_min": 200
+    }
+  },
+  "providers": {
+    "sendgrid": {
+      "enabled": false,
+      "config": {
+        "from_email": "noreply@freeai.local",
+        "from_name": "FreeAI",
+        "sandbox_enabled": true
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    },
+    "twilio": {
+      "enabled": false,
+      "config": {
+        "from_number": "",
+        "whatsapp_from": "",
+        "voice_enabled": true
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    },
+    "telegram": {
+      "enabled": false,
+      "config": {
+        "poll_interval": 5,
+        "allowed_chats": [],
+        "webhook_url": ""
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    },
+    "whatsapp": {
+      "enabled": false,
+      "config": {
+        "phone_number_id": "",
+        "business_account_id": "",
+        "message_template_lang": "en"
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    },
+    "signal": {
+      "enabled": false,
+      "config": {
+        "signal_cli_path": "signal-cli",
+        "username": "",
+        "config_dir": "~/.signal-cli",
+        "rest_api": false,
+        "rest_port": 8080
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    },
+    "gmail": {
+      "enabled": false,
+      "config": {
+        "email": "",
+        "smtp_host": "smtp.gmail.com",
+        "smtp_port": 587,
+        "use_app_password": true
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    },
+    "hermes": {
+      "enabled": true,
+      "config": {
+        "port": 8090,
+        "host": "127.0.0.1",
+        "health_check_interval": 30
+      },
+      "shared_with": ["hermes", "opencode", "mimocode", "jcode", "openclaw", "freecode"]
+    }
+  },
+  "integration_notes": {
+    "task_36": "Custom email server in dashboard for all AI/agents",
+    "task_37": "SendGrid + Twilio integrations",
+    "task_38": "Telegram, WhatsApp Business, Signal, Gmail (Hermes/OpenClaw style)",
+    "task_39": "Shared APIs across hermes, opencode, mimocode, jcode, openclaw, freecode",
+    "task_40": "All Hermes integrations added to FreeAI",
+    "task_41": "3rd party APIs + Popular MCPs + Pre-configured extensions"
+  }
+}

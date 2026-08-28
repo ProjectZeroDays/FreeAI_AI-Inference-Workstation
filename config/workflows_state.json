@@ -1,0 +1,49 @@
+{
+  "workflows": [
+    {
+      "id": "wf-20260828073700-896",
+      "name": "deploy",
+      "description": "",
+      "version": "1.0",
+      "enabled": true,
+      "status": "idle",
+      "steps": [
+        {
+          "step_id": "build",
+          "name": "Build",
+          "action": "build",
+          "params": {},
+          "depends_on": [],
+          "condition": "",
+          "timeout": 60,
+          "status": "pending",
+          "result": null,
+          "error": null,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "step_id": "test",
+          "name": "Test",
+          "action": "test",
+          "params": {},
+          "depends_on": [
+            "build"
+          ],
+          "condition": "",
+          "timeout": 60,
+          "status": "pending",
+          "result": null,
+          "error": null,
+          "started_at": null,
+          "completed_at": null
+        }
+      ],
+      "run_count": 0,
+      "last_run": null,
+      "last_result": null,
+      "created_at": 1787920620.7302804
+    }
+  ],
+  "active_runs": {}
+}

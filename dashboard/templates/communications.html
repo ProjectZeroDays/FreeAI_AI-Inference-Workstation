@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Communications</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .comm-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .comm-main { padding:22px 24px 32px; min-width:0; }
+    .comm-topbar { display:flex; align-items:center; justify-content:space-between;
+                  padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                  margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .comm-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .comm-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .comm-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:18px; }
+    .c-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .c-stat .c-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .c-stat .c-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .provider-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; margin-bottom:18px; }
+    .prov-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:14px; padding:16px; transition:all .2s; }
+    .prov-card:hover { border-color:rgba(56,189,248,.3); }
+    .prov-card.connected { border-color:rgba(34,197,94,.35); }
+    .prov-card-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .prov-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+    .prov-icon.email { background:rgba(239,68,68,.12); }
+    .prov-icon.sms { background:rgba(34,197,94,.12); }
+    .prov-icon.msg { background:rgba(56,189,248,.12); }
+    .prov-icon.voice { background:rgba(168,85,247,.12); }
+    .prov-info { flex:1; min-width:0; }
+    .prov-info .name { font-weight:600; font-size:15px; }
+    .prov-info .type-tag { font-size:11px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.05em; }
+    .prov-status { display:flex; align-items:center; gap:6px; font-size:12px; }
+    .prov-status .dot { width:8px; height:8px; border-radius:50%; }
+    .prov-status .dot.on { background:#22C55E; box-shadow:0 0 6px rgba(34,197,94,.6); }
+    .prov-status .dot.off { background:var(--muted-2); }
+    .prov-details { font-size:12px; color:var(--muted); margin-bottom:10px; line-height:1.6; }
+    .prov-details code { font-family:monospace; color:var(--accent-2); font-size:11px; }
+    .prov-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn { padding:6px 14px; font-size:12px; border-radius:8px; border:1px solid var(--border);
+           background:rgba(255,255,255,.05); color:var(--text); cursor:pointer; transition:all .15s; }
+    .btn:hover { background:rgba(255,255,255,.1); }
+    .btn.primary { background:rgba(56,189,248,.15); border-color:rgba(56,189,248,.4); color:#BAE6FD; }
+    .btn.primary:hover { background:rgba(56,189,248,.25); }
+    .btn.success { background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.4); color:#BBF7D0; }
+    .btn.success:hover { background:rgba(34,197,94,.25); }
+    .btn.danger { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); color:#FECACA; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; }
+    .send-panel { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:18px; }
+    .send-panel h3 { margin:0 0 12px; font-size:14px; color:var(--accent-2); }
+    .field-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+    .field-row label { font-size:13px; color:var(--muted); min-width:90px; }
+    .field-row input, .field-row select, .field-row textarea {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:7px 10px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif; flex:1; min-width:120px; }
+    .field-row textarea { min-height:80px; resize:vertical; }
+    .field-row input:focus, .field-row select:focus, .field-row textarea:focus {
+      outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .msg-log { background:rgba(2,6,23,.6); border:1px solid var(--border); border-radius:12px;
+               padding:14px; max-height:320px; overflow-y:auto; font-size:12px; }
+    .msg-entry { padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04); display:flex; gap:10px; }
+    .msg-entry:last-child { border-bottom:none; }
+    .msg-ts { color:var(--muted-2); flex-shrink:0; font-family:monospace; font-size:11px; }
+    .msg-prov { flex-shrink:0; padding:1px 6px; border-radius:4px; font-size:10px; font-weight:700;
+                background:rgba(56,189,248,.12); color:#BAE6FD; }
+    .msg-content { color:var(--muted); flex:1; word-break:break-word; }
+    .msg-result { font-size:11px; flex-shrink:0; }
+    .msg-result.ok { color:#22C55E; }
+    .msg-result.err { color:#EF4444; }
+    .tab-bar { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0; }
+    .tab-btn { padding:8px 16px; font-size:13px; font-weight:500; color:var(--muted);
+               background:none; border:none; border-bottom:2px solid transparent;
+               cursor:pointer; transition:all .15s; margin-bottom:-1px; }
+    .tab-btn:hover { color:var(--text); }
+    .tab-btn.active { color:var(--accent-2); border-bottom-color:var(--accent-2); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error { border-color:rgba(239,68,68,.4); }
+    .empty-state { text-align:center; padding:40px; color:var(--muted); }
+    .shared-badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:10px;
+                    background:rgba(168,85,247,.12); color:#DDD6FE; margin-left:6px; }
+  </style>
+</head>
+<body>
+  <div class="comm-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">&#9670;</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Communications</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/communications" class="nav-item active"><span class="nav-dot"></span> Communications</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Phase 7 — Comms</span>
+      </div>
+    </nav>
+
+    <div class="comm-main">
+      <header class="comm-topbar">
+        <div>
+          <h1>Communications</h1>
+          <p>Unified messaging layer for all AI/agents — shared across hermes, opencode, mimocode, jcode, openclaw, freecode</p>
+        </div>
+        <button class="btn primary" id="btn-test-all">Test All Providers</button>
+      </header>
+
+      <div class="comm-stats" id="stats">
+        <div class="c-stat"><span class="c-val" id="s-connected">—</span><span class="c-lbl">Connected</span></div>
+        <div class="c-stat"><span class="c-val" id="s-total">—</span><span class="c-lbl">Providers</span></div>
+        <div class="c-stat"><span class="c-val" id="s-sent">—</span><span class="c-lbl">Messages Sent</span></div>
+        <div class="c-stat"><span class="c-val" id="s-recv">—</span><span class="c-lbl">Messages Received</span></div>
+        <div class="c-stat"><span class="c-val" id="s-types">—</span><span class="c-lbl">Types</span></div>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="providers-tab">Providers</button>
+        <button class="tab-btn" data-tab="send-tab">Send Message</button>
+        <button class="tab-btn" data-tab="logs-tab">Message Logs</button>
+        <button class="tab-btn" data-tab="shared-tab">Shared Configs</button>
+      </div>
+
+      <!-- Providers Tab -->
+      <div class="tab-panel active" id="providers-tab">
+        <div class="provider-grid" id="provider-grid">
+          <div class="empty-state">Loading providers...</div>
+        </div>
+      </div>
+
+      <!-- Send Tab -->
+      <div class="tab-panel" id="send-tab">
+        <div class="send-panel">
+          <h3>Send Message</h3>
+          <div class="field-row">
+            <label>Provider</label>
+            <select id="send-provider">
+              <option value="">— Select —</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <label>Recipient</label>
+            <input type="text" id="send-recipient" placeholder="email, phone, or chat ID" />
+          </div>
+          <div class="field-row">
+            <label>Content</label>
+            <textarea id="send-content" placeholder="Message content..."></textarea>
+          </div>
+          <div class="field-row">
+            <label>Subject</label>
+            <input type="text" id="send-subject" placeholder="Email subject (optional)" />
+          </div>
+          <div class="field-row">
+            <label>Options</label>
+            <select id="send-channel">
+              <option value="">default</option>
+              <option value="sms">SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="voice">Voice Call</option>
+              <option value="html">HTML Email</option>
+            </select>
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="btn-send">Send</button>
+            <button class="btn" id="btn-send-test">Test Connection</button>
+          </div>
+          <div id="send-result" style="margin-top:12px; font-size:13px;"></div>
+        </div>
+      </div>
+
+      <!-- Logs Tab -->
+      <div class="tab-panel" id="logs-tab">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="margin:0; font-size:14px; color:var(--accent-2);">Message Log</h3>
+          <button class="btn danger" id="btn-clear-logs">Clear</button>
+        </div>
+        <div class="msg-log" id="msg-log">
+          <div class="empty-state">No messages yet</div>
+        </div>
+      </div>
+
+      <!-- Shared Configs Tab -->
+      <div class="tab-panel" id="shared-tab">
+        <div class="section" style="background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:14px;">
+          <h3 style="margin:0 0 12px; font-size:14px; color:var(--accent-2);">Shared Provider Configs</h3>
+          <p style="font-size:13px; color:var(--muted); margin:0 0 14px;">
+            Configuration is shared across all FreeAI client tools: <strong>hermes</strong>, <strong>opencode</strong>,
+            <strong>mimocode</strong>, <strong>jcode</strong>, <strong>openclaw</strong>, <strong>freecode</strong>.
+          </p>
+          <div id="shared-providers-list"></div>
+        </div>
+        <div class="section" style="background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:14px; padding:16px;">
+          <h3 style="margin:0 0 12px; font-size:14px; color:var(--accent-2);">API Endpoints</h3>
+          <div id="api-endpoints-list" style="font-size:12px; font-family:monospace; color:var(--muted); line-height:1.8;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API = '/api/comm';
+    const PROVIDER_META = {
+      sendgrid: { name: 'SendGrid', icon: '&#9993;', type: 'email', cls: 'email' },
+      twilio:   { name: 'Twilio',   icon: '&#9742;', type: 'sms',    cls: 'sms' },
+      telegram: { name: 'Telegram', icon: '&#9997;', type: 'messaging', cls: 'msg' },
+      whatsapp: { name: 'WhatsApp', icon: '&#128242;', type: 'messaging', cls: 'msg' },
+      signal:   { name: 'Signal',   icon: '&#128274;', type: 'messaging', cls: 'msg' },
+      gmail:    { name: 'Gmail',    icon: '&#9993;', type: 'email', cls: 'email' },
+      hermes:   { name: 'Hermes',   icon: '&#9889;', type: 'messaging', cls: 'msg' },
+    };
+
+    function toast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.className = 'toast', 3000);
+    }
+
+    async function apiFetch(path, opts = {}) {
+      const r = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+      return r.json();
+    }
+
+    async function loadProviders() {
+      const data = await apiFetch('/providers');
+      const grid = document.getElementById('provider-grid');
+      const select = document.getElementById('send-provider');
+      select.innerHTML = '<option value="">— Select —</option>';
+
+      let connected = 0, sent = 0, recv = 0, types = new Set();
+      const providers = Object.entries(data);
+
+      if (!providers.length) {
+        grid.innerHTML = '<div class="empty-state">No providers configured. Use the Shared Configs tab to set up providers.</div>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      for (const [pid, info] of providers) {
+        const meta = PROVIDER_META[pid] || { name: pid, icon: '?', type: pid, cls: 'msg' };
+        types.add(meta.type);
+        if (info.connected) connected++;
+        sent += info.messages_sent || 0;
+        recv += info.messages_received || 0;
+
+        const card = document.createElement('div');
+        card.className = 'prov-card' + (info.connected ? ' connected' : '');
+        card.innerHTML = `
+          <div class="prov-card-header">
+            <div class="prov-icon ${meta.cls}">${meta.icon}</div>
+            <div class="prov-info">
+              <div class="name">${meta.name}</div>
+              <div class="type-tag">${meta.type}</div>
+            </div>
+            <div class="prov-status">
+              <span class="dot ${info.connected ? 'on' : 'off'}"></span>
+              <span>${info.connected ? 'Connected' : 'Disconnected'}</span>
+            </div>
+          </div>
+          <div class="prov-details">
+            Sent: <code>${info.messages_sent || 0}</code> &middot;
+            Received: <code>${info.messages_received || 0}</code>
+            ${info.last_error ? '<br/><span style="color:#FCA5A5;">' + info.last_error + '</span>' : ''}
+          </div>
+          <div class="prov-actions">
+            <button class="btn ${info.connected ? 'danger' : 'success'}" onclick="toggleProvider('${pid}')">${info.connected ? 'Disconnect' : 'Connect'}</button>
+            <button class="btn primary" onclick="testProvider('${pid}')">Test</button>
+            <button class="btn" onclick="healthProvider('${pid}')">Health</button>
+          </div>
+        `;
+        grid.appendChild(card);
+        const opt = document.createElement('option');
+        opt.value = pid; opt.textContent = meta.name;
+        select.appendChild(opt);
+      }
+
+      document.getElementById('s-connected').textContent = connected;
+      document.getElementById('s-total').textContent = providers.length;
+      document.getElementById('s-sent').textContent = sent;
+      document.getElementById('s-recv').textContent = recv;
+      document.getElementById('s-types').textContent = types.size;
+    }
+
+    async function toggleProvider(pid) {
+      const data = await apiFetch(`/providers/${pid}/connect`, { method: 'POST' });
+      toast(data.ok ? `${pid} connected` : `${pid} failed: ${data.error}`, data.ok ? 'success' : 'error');
+      loadProviders();
+    }
+
+    async function testProvider(pid) {
+      const data = await apiFetch(`/providers/${pid}/test`, {
+        method: 'POST',
+        body: JSON.stringify({ recipient: 'test', content: 'FreeAI connection test' })
+      });
+      toast(data.ok ? `${pid} test OK` : `${pid} failed: ${data.error}`, data.ok ? 'success' : 'error');
+    }
+
+    async function healthProvider(pid) {
+      const data = await apiFetch(`/providers/${pid}/health`);
+      toast(`${pid}: ${data.connected ? 'OK' : 'ERROR'} — ${data.last_error || ''}`, data.connected ? 'success' : 'error');
+    }
+
+    async function loadLogs() {
+      const data = await apiFetch('/messages');
+      const log = document.getElementById('msg-log');
+      if (!data.length) { log.innerHTML = '<div class="empty-state">No messages yet</div>'; return; }
+      log.innerHTML = data.map(m => `
+        <div class="msg-entry">
+          <span class="msg-ts">${new Date(m.ts * 1000).toLocaleTimeString()}</span>
+          <span class="msg-prov">${m.provider}</span>
+          <span class="msg-content">${m.content}</span>
+          <span class="msg-result ${m.result?.ok ? 'ok' : 'err'}">${m.result?.ok ? 'OK' : (m.result?.error || '?')}</span>
+        </div>
+      `).join('');
+    }
+
+    async function loadSharedConfigs() {
+      const data = await apiFetch('/config');
+      const list = document.getElementById('shared-clients');
+      const clients = ['hermes', 'opencode', 'mimocode', 'jcode', 'openclaw', 'freecode'];
+      list.innerHTML = clients.map(c => `<div class="domain-item"><span>&#10003;</span> ${c}</div>`).join('');
+
+      const epList = document.getElementById('api-endpoints-list');
+      const endpoints = [
+        ['GET',    '/api/comm/providers'],
+        ['GET',    '/api/comm/providers/<pid>'],
+        ['POST',   '/api/comm/providers/<pid>/connect'],
+        ['POST',   '/api/comm/providers/<pid>/disconnect'],
+        ['POST',   '/api/comm/providers/<pid>/configure'],
+        ['POST',   '/api/comm/providers/<pid>/test'],
+        ['GET',    '/api/comm/providers/<pid>/health'],
+        ['POST',   '/api/comm/providers/test-all'],
+        ['POST',   '/api/comm/send'],
+        ['GET',    '/api/comm/receive/<pid>'],
+        ['GET',    '/api/comm/messages'],
+        ['POST',   '/api/comm/messages/clear'],
+        ['GET',    '/api/comm/stats'],
+        ['GET',    '/api/comm/config'],
+        ['POST',   '/api/comm/config'],
+      ];
+      epList.innerHTML = endpoints.map(([m, p]) =>
+        `<div style="display:flex;gap:8px;"><span style="color:${m==='POST'?'#22C55E':'#38BDF8'};min-width:50px;">${m}</span> ${p}</div>`
+      ).join('');
+    }
+
+    // ── Event listeners ────────────────────────────────────────────
+    document.getElementById('btn-test-all').addEventListener('click', async () => {
+      const data = await apiFetch('/providers/test-all', { method: 'POST' });
+      toast(`Tested ${Object.keys(data).length} providers`, 'success');
+      loadProviders();
+    });
+
+    document.getElementById('btn-send').addEventListener('click', async () => {
+      const pid = document.getElementById('send-provider').value;
+      const recipient = document.getElementById('send-recipient').value;
+      const content = document.getElementById('send-content').value;
+      const subject = document.getElementById('send-subject').value;
+      const channel = document.getElementById('send-channel').value;
+      if (!pid || !recipient || !content) { toast('Fill in provider, recipient, and content', 'error'); return; }
+      const body = { provider: pid, recipient, content };
+      if (subject) body.subject = subject;
+      if (channel) body.channel = channel;
+      const data = await apiFetch('/send', { method: 'POST', body: JSON.stringify(body) });
+      const el = document.getElementById('send-result');
+      el.innerHTML = data.ok
+        ? `<span style="color:#22C55E">&#10003; Sent via ${pid}</span>`
+        : `<span style="color:#EF4444">&#10007; ${data.error}</span>`;
+      toast(data.ok ? 'Message sent' : `Send failed: ${data.error}`, data.ok ? 'success' : 'error');
+      loadLogs();
+    });
+
+    document.getElementById('btn-send-test').addEventListener('click', async () => {
+      const pid = document.getElementById('send-provider').value;
+      if (!pid) { toast('Select a provider first', 'error'); return; }
+      await testProvider(pid);
+    });
+
+    document.getElementById('btn-clear-logs').addEventListener('click', async () => {
+      await apiFetch('/messages/clear', { method: 'POST' });
+      loadLogs();
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Init ───────────────────────────────────────────────────────
+    loadProviders();
+    loadLogs();
+    loadSharedConfigs();
+    setInterval(loadProviders, 30000);
+    setInterval(loadLogs, 15000);
+  </script>
+</body>
+</html>

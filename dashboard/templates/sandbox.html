@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Sandbox</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .sandbox-page {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .sandbox-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .sandbox-panel.full { grid-column: 1 / -1; }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all .15s;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* VM List */
+    .vm-list {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vm-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-soft);
+      transition: all .15s;
+    }
+
+    .vm-card:hover {
+      border-color: var(--accent);
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .vm-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .vm-info { flex: 1; min-width: 0; }
+    .vm-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .vm-meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; }
+
+    .vm-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.15);
+      color: #22C55E;
+    }
+
+    .vm-status.stopped {
+      background: rgba(100, 116, 139, 0.15);
+      color: #64748B;
+    }
+
+    .vm-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .vm-btn {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: all .15s;
+    }
+
+    .vm-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .vm-btn.power:hover { border-color: #22C55E; color: #22C55E; }
+    .vm-btn.restart:hover { border-color: #F59E0B; color: #F59E0B; }
+    .vm-btn.shutdown:hover { border-color: #EF4444; color: #EF4444; }
+
+    /* Tools Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .tool-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-soft);
+      cursor: pointer;
+      transition: all .15s;
+      text-align: center;
+    }
+
+    .tool-card:hover {
+      border-color: var(--accent);
+      background: rgba(34, 197, 94, 0.05);
+      transform: translateY(-2px);
+    }
+
+    .tool-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+    }
+
+    .tool-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .tool-desc { font-size: 10px; color: var(--muted); }
+
+    /* Popout Window */
+    .popout-window {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px;
+      height: 600px;
+      max-width: 95vw;
+      max-height: 90vh;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .popout-window.active { display: flex; }
+
+    .popout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+    }
+
+    .popout-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .popout-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .popout-btn {
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .popout-btn.close:hover { border-color: #EF4444; color: #EF4444; }
+
+    .popout-body {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    /* Overlay */
+    .popout-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+    }
+
+    .popout-overlay.active { display: block; }
+
+    /* Resource Bars */
+    .resource-bar {
+      margin-bottom: 12px;
+    }
+
+    .resource-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    .resource-track {
+      height: 6px;
+      background: var(--bg);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .resource-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #22C55E);
+      border-radius: 3px;
+      transition: width .3s ease;
+    }
+
+    .resource-fill.warning { background: linear-gradient(90deg, #F59E0B, #EF4444); }
+  </style>
+</head>
+<body>
+  <div class="sandbox-page">
+    <!-- VM Management -->
+    <div class="sandbox-panel full">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>📱</span>
+          <span>Virtual Machines</span>
+          <span class="muted" style="font-size: 11px; font-weight: 400;">(4 online / 8 total)</span>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-icon" title="Add VM" onclick="showAddVM()">+</button>
+          <button class="btn-icon" title="Refresh">↻</button>
+        </div>
+      </div>
+      <div class="vm-list">
+        <!-- iOS VMs -->
+        <div class="vm-card">
+          <div class="vm-icon">🍎</div>
+          <div class="vm-info">
+            <div class="vm-name">iOS Simulator - iPhone 15 Pro</div>
+            <div class="vm-meta">
+              <span>iOS 17.4</span>
+              <span>•</span>
+              <span>192.168.1.42</span>
+              <span>•</span>
+              <span>GPU: A17 Pro</span>
+            </div>
+          </div>
+          <div class="vm-status">● Online</div>
+          <div class="vm-controls">
+            <button class="vm-btn" title="Popout" onclick="popoutVM('ios-1')">⛶</button>
+            <button class="vm-btn restart" title="Restart">↺</button>
+            <button class="vm-btn shutdown" title="Shutdown">■</button>
+          </div>
+        </div>
+
+        <div class="vm-card">
+          <div class="vm-icon">🍎</div>
+          <div class="vm-info">
+            <div class="vm-name">iOS Simulator - iPad Pro</div>
+            <div class="vm-meta">
+              <span>iOS 17.4</span>
+              <span>•</span>
+              <span>192.168.1.43</span>
+              <span>•</span>
+              <span>GPU: A16Z</span>
+            </div>
+          </div>
+          <div class="vm-status">● Online</div>
+          <div class="vm-controls">
+            <button class="vm-btn" title="Popout" onclick="popoutVM('ios-2')">⛶</button>
+            <button class="vm-btn restart" title="Restart">↺</button>
+            <button class="vm-btn shutdown" title="Shutdown">■</button>
+          </div>
+        </div>
+
+        <!-- Android VMs -->
+        <div class="vm-card">
+          <div class="vm-icon">🤖</div>
+          <div class="vm-info">
+            <div class="vm-name">Android Emulator - Pixel 8</div>
+            <div class="vm-meta">
+              <span>Android 14</span>
+              <span>•</span>
+              <span>192.168.1.50</span>
+              <span>•</span>
+              <span>GPU: Adreno 740</span>
+            </div>
+          </div>
+          <div class="vm-status">● Online</div>
+          <div class="vm-controls">
+            <button class="vm-btn" title="Popout" onclick="popoutVM('android-1')">⛶</button>
+            <button class="vm-btn restart" title="Restart">↺</button>
+            <button class="vm-btn shutdown" title="Shutdown">■</button>
+          </div>
+        </div>
+
+        <div class="vm-card">
+          <div class="vm-icon">🤖</div>
+          <div class="vm-info">
+            <div class="vm-name">Android Emulator - Pixel 7 Pro</div>
+            <div class="vm-meta">
+              <span>Android 13</span>
+              <span>•</span>
+              <span>192.168.1.51</span>
+              <span>•</span>
+              <span>GPU: Mali-G710</span>
+            </div>
+          </div>
+          <div class="vm-status stopped">○ Stopped</div>
+          <div class="vm-controls">
+            <button class="vm-btn" title="Popout" onclick="popoutVM('android-2')">⛶</button>
+            <button class="vm-btn power" title="Power On">▶</button>
+          </div>
+        </div>
+
+        <!-- Desktop VMs -->
+        <div class="vm-card">
+          <div class="vm-icon">🖥️</div>
+          <div class="vm-info">
+            <div class="vm-name">Windows 11 Pro - C2 Controller</div>
+            <div class="vm-meta">
+              <span>Win 11</span>
+              <span>•</span>
+              <span>10.0.5.20</span>
+              <span>•</span>
+              <span>GPU: RTX 4090</span>
+            </div>
+          </div>
+          <div class="vm-status">● Online</div>
+          <div class="vm-controls">
+            <button class="vm-btn" title="Popout" onclick="popoutVM('win-1')">⛶</button>
+            <button class="vm-btn restart" title="Restart">↺</button>
+            <button class="vm-btn shutdown" title="Shutdown">■</button>
+          </div>
+        </div>
+
+        <div class="vm-card">
+          <div class="vm-icon">🐧</div>
+          <div class="vm-info">
+            <div class="vm-name">Kali Linux - Penetration Testing</div>
+            <div class="vm-meta">
+              <span>Kali 2024.3</span>
+              <span>•</span>
+              <span>10.0.5.25</span>
+              <span>•</span>
+              <span>SSH: 2222</span>
+            </div>
+          </div>
+          <div class="vm-status">● Online</div>
+          <div class="vm-controls">
+            <button class="vm-btn" title="Popout" onclick="popoutVM('kali-1')">⛶</button>
+            <button class="vm-btn restart" title="Restart">↺</button>
+            <button class="vm-btn shutdown" title="Shutdown">■</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Resources -->
+    <div class="sandbox-panel">
+      <div class="panel-header">
+        <div class="panel-title"><span>📊</span> Resources</div>
+      </div>
+      <div style="padding: 16px;">
+        <div class="resource-bar">
+          <div class="resource-label"><span>CPU Usage</span><span>67%</span></div>
+          <div class="resource-track"><div class="resource-fill" style="width: 67%"></div></div>
+        </div>
+        <div class="resource-bar">
+          <div class="resource-label"><span>Memory</span><span>18.2 / 32 GB</span></div>
+          <div class="resource-track"><div class="resource-fill" style="width: 57%"></div></div>
+        </div>
+        <div class="resource-bar">
+          <div class="resource-label"><span>GPU VRAM</span><span>24 / 24 GB</span></div>
+          <div class="resource-track"><div class="resource-fill warning" style="width: 100%"></div></div>
+        </div>
+        <div class="resource-bar">
+          <div class="resource-label"><span>Disk</span><span>450 / 1000 GB</span></div>
+          <div class="resource-track"><div class="resource-fill" style="width: 45%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Tools -->
+    <div class="sandbox-panel">
+      <div class="panel-header">
+        <div class="panel-title"><span>🛠️</span> Quick Tools</div>
+        <div class="panel-actions">
+          <button class="btn-icon" title="Manage">⚙</button>
+        </div>
+      </div>
+      <div class="tools-grid">
+        <div class="tool-card" onclick="openTool('nmap')">
+          <div class="tool-icon">🔍</div>
+          <div class="tool-name">Nmap</div>
+          <div class="tool-desc">Network Scanner</div>
+        </div>
+        <div class="tool-card" onclick="openTool('burp')">
+          <div class="tool-icon">🦇</div>
+          <div class="tool-name">Burp Suite</div>
+          <div class="tool-desc">Web Proxy</div>
+        </div>
+        <div class="tool-card" onclick="openTool('hydra')">
+          <div class="tool-icon">💧</div>
+          <div class="tool-name">Hydra</div>
+          <div class="tool-desc">Brute Force</div>
+        </div>
+        <div class="tool-card" onclick="openTool('metasploit')">
+          <div class="tool-icon">🎯</div>
+          <div class="tool-name">Metasploit</div>
+          <div class="tool-desc">Exploit Framework</div>
+        </div>
+        <div class="tool-card" onclick="openTool('aircrack')">
+          <div class="tool-icon">📡</div>
+          <div class="tool-name">Aircrack</div>
+          <div class="tool-desc">WiFi Attack</div>
+        </div>
+        <div class="tool-card" onclick="openTool('john')">
+          <div class="tool-icon">🔓</div>
+          <div class="tool-name">John</div>
+          <div class="tool-desc">Password Crack</div>
+        </div>
+        <div class="tool-card" onclick="openTool('social- Eng')">
+          <div class="tool-icon">🎣</div>
+          <div class="tool-name">Social-Eng</div>
+          <div class="tool-desc">Phishing Framework</div>
+        </div>
+        <div class="tool-card" onclick="openTool('hashcat')">
+          <div class="tool-icon">⚡</div>
+          <div class="tool-name">Hashcat</div>
+          <div class="tool-desc">GPU Cracker</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C2 Device Controls -->
+    <div class="sandbox-panel full">
+      <div class="panel-header">
+        <div class="panel-title"><span>🎮</span> C2 Device Controls</div>
+        <div class="panel-actions">
+          <button class="btn-icon" title="Add Device">+</button>
+          <button class="btn-icon" title="Refresh">↻</button>
+        </div>
+      </div>
+      <div style="padding: 16px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+          <!-- Device Card 1 -->
+          <div class="vm-card">
+            <div class="vm-icon" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3);">🎯</div>
+            <div class="vm-info">
+              <div class="vm-name">Target: 192.168.1.100</div>
+              <div class="vm-meta">
+                <span>Windows 10</span>
+                <span>•</span>
+                <span>Implant: v2.4</span>
+                <span>•</span>
+                <span>Active</span>
+              </div>
+            </div>
+            <div class="vm-controls" style="flex-wrap: wrap;">
+              <button class="vm-btn" title="Screenshot" onclick="c2Action('screenshot')">📸</button>
+              <button class="vm-btn" title="Keylogger" onclick="c2Action('keylogger')">⌨️</button>
+              <button class="vm-btn" title="Terminal" onclick="c2Action('terminal')">⌘</button>
+              <button class="vm-btn" title="Files" onclick="c2Action('files')">📁</button>
+              <button class="vm-btn" title="Popout" onclick="popoutC2('192.168.1.100')">⛶</button>
+            </div>
+          </div>
+
+          <!-- Device Card 2 -->
+          <div class="vm-card">
+            <div class="vm-icon" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.3);">📱</div>
+            <div class="vm-info">
+              <div class="vm-name">Android: Pixel 7 (Mock)</div>
+              <div class="vm-meta">
+                <span>Android 14</span>
+                <span>•</span>
+                <span>Implant: v1.8</span>
+                <span>•</span>
+                <span>Idle</span>
+              </div>
+            </div>
+            <div class="vm-controls" style="flex-wrap: wrap;">
+              <button class="vm-btn" title="Location" onclick="c2Action('location')">📍</button>
+              <button class="vm-btn" title="Contacts" onclick="c2Action('contacts')">👥</button>
+              <button class="vm-btn" title="SMS" onclick="c2Action('sms')">💬</button>
+              <button class="vm-btn" title="Popout" onclick="popoutC2('android-1')">⛶</button>
+            </div>
+          </div>
+
+          <!-- Device Card 3 -->
+          <div class="vm-card">
+            <div class="vm-icon" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.3);">🍎</div>
+            <div class="vm-info">
+              <div class="vm-name">iOS: iPhone 15 Pro (Mock)</div>
+              <div class="vm-meta">
+                <span>iOS 17.4</span>
+                <span>•</span>
+                <span>Implant: v1.6</span>
+                <span>•</span>
+                <span>Active</span>
+              </div>
+            </div>
+            <div class="vm-controls" style="flex-wrap: wrap;">
+              <button class="vm-btn" title="Location" onclick="c2Action('location')">📍</button>
+              <button class="vm-btn" title="Camera" onclick="c2Action('camera')">📷</button>
+              <button class="vm-btn" title="Messages" onclick="c2Action('messages')">💬</button>
+              <button class="vm-btn" title="Popout" onclick="popoutC2('ios-1')">⛶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popout Overlay -->
+  <div class="popout-overlay" id="popoutOverlay" onclick="closePopout()"></div>
+
+  <!-- VM Popout Window -->
+  <div class="popout-window" id="vmPopout">
+    <div class="popout-header">
+      <div class="popout-title">
+        <span>🖥️</span>
+        <span id="vmPopoutTitle">VM Console</span>
+      </div>
+      <div class="popout-controls">
+        <button class="popout-btn" title="Minimize" onclick="minimizePopout()">−</button>
+        <button class="popout-btn close" title="Close" onclick="closePopout()">✕</button>
+      </div>
+    </div>
+    <div class="popout-body" id="vmPopoutBody">
+      <iframe id="vmConsole" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+    </div>
+  </div>
+
+  <!-- C2 Popout Window -->
+  <div class="popout-window" id="c2Popout" style="width: 800px; height: 500px;">
+    <div class="popout-header">
+      <div class="popout-title">
+        <span>🎮</span>
+        <span id="c2PopoutTitle">C2 Control</span>
+      </div>
+      <div class="popout-controls">
+        <button class="popout-btn" title="Minimize" onclick="minimizePopout()">−</button>
+        <button class="popout-btn close" title="Close" onclick="closePopout()">✕</button>
+      </div>
+    </div>
+    <div class="popout-body" id="c2PopoutBody">
+      <div id="c2Controls" style="padding: 16px;">
+        <div style="margin-bottom: 16px;">
+          <div class="panel-title" style="margin-bottom: 12px;"><span>⌘</span> Terminal</div>
+          <div style="background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: 'Fira Code', monospace; font-size: 12px; color: #22C55E; min-height: 120px; overflow-y: auto;" id="c2Terminal">
+            <div>$ whoami</div>
+            <div style="color: var(--text);">root</div>
+            <div>$ id</div>
+            <div style="color: var(--text);">uid=0(root) gid=0(root) groups=0(root)</div>
+            <div>$ <span class="blink">_</span></div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn-icon" onclick="c2Action('screenshot')">📸 Screenshot</button>
+          <button class="btn-icon" onclick="c2Action('keylogger')">⌨️ Keylogger</button>
+          <button class="btn-icon" onclick="c2Action('files')">📁 Files</button>
+          <button class="btn-icon" onclick="c2Action('download')">⬇️ Download</button>
+          <button class="btn-icon" onclick="c2Action('upload')">⬆️ Upload</button>
+          <button class="btn-icon" onclick="c2Action('execute')">▶️ Execute</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/dashboard.js"></script>
+  <script>
+    // Popout Functions
+    function popoutVM(vmId) {
+      const titles = {
+        'ios-1': 'iOS Simulator - iPhone 15 Pro',
+        'ios-2': 'iOS Simulator - iPad Pro',
+        'android-1': 'Android Emulator - Pixel 8',
+        'android-2': 'Android Emulator - Pixel 7 Pro',
+        'win-1': 'Windows 11 Pro - C2 Controller',
+        'kali-1': 'Kali Linux - Penetration Testing'
+      };
+
+      document.getElementById('vmPopoutTitle').textContent = titles[vmId] || 'VM Console';
+      document.getElementById('vmPopout').classList.add('active');
+      document.getElementById('popoutOverlay').classList.add('active');
+    }
+
+    function popoutC2(deviceId) {
+      document.getElementById('c2PopoutTitle').textContent = 'C2 Control - ' + deviceId;
+      document.getElementById('c2Popout').classList.add('active');
+      document.getElementById('popoutOverlay').classList.add('active');
+    }
+
+    function closePopout() {
+      document.getElementById('vmPopout').classList.remove('active');
+      document.getElementById('c2Popout').classList.remove('active');
+      document.getElementById('popoutOverlay').classList.remove('active');
+    }
+
+    function minimizePopout() {
+      const body = document.getElementById('vmPopoutBody') || document.getElementById('c2PopoutBody');
+      body.style.display = body.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // C2 Actions
+    function c2Action(action) {
+      const terminal = document.getElementById('c2Terminal');
+      const commands = {
+        'screenshot': 'Screenshot captured and saved to /loot/screenshots/',
+        'keylogger': 'Keylogger active - capturing keystrokes',
+        'terminal': 'Terminal session established',
+        'files': 'File browser opened',
+        'location': 'Location data retrieved',
+        'contacts': 'Contact list exported',
+        'sms': 'SMS messages retrieved',
+        'camera': 'Camera activated',
+        'messages': 'iMessage history exported',
+        'download': 'File download initiated',
+        'upload': 'File upload dialog opened',
+        'execute': 'Executing command...'
+      };
+
+      terminal.innerHTML += `<div style="color: #22C55E;">$ ${action}</div>`;
+      terminal.innerHTML += `<div style="color: var(--text);">${commands[action] || 'Command executed'}</div>`;
+      terminal.innerHTML += `<div>$ <span class="blink">_</span></div>`;
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // Tool Functions
+    function openTool(tool) {
+      const toolNames = {
+        'nmap': 'Nmap Network Scanner',
+        'burp': 'Burp Suite Community',
+        'hydra': 'Hydra Brute Forcer',
+        'metasploit': 'Metasploit Framework',
+        'aircrack': 'Aircrack-ng Suite',
+        'john': 'John the Ripper',
+        'social-Eng': 'Social-Engineer Toolkit',
+        'hashcat': 'Hashcat GPU Cracker'
+      };
+      alert('Opening ' + (toolNames[tool] || tool) + '...');
+    }
+
+    function showAddVM() {
+      alert('Add new VM dialog');
+    }
+
+    // Blink cursor animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+      .blink { animation: blink 1s infinite; }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

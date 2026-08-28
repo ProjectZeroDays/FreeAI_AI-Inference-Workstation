@@ -15,6 +15,12 @@
 #   9) Network Diagnostics                    <- full DHCP live
 #  10) Memory Test (memtest86+)               <- hardware diagnostics
 #
+# Build Kali ISO:
+#   KALI_ISO=kali-linux-2024.1-live-amd64.iso ./build-live.sh
+#
+# Build NixOS ISO:
+#   NIXOS_ISO=nixos-minimal-24.05.iso ./build-live.sh
+#
 # Run on Ubuntu 24.04 with:  sudo apt-get install -y xorriso isolinux
 # Usage:
 #   UBUNTU_ISO=ubuntu-24.04.2-live-server-amd64.iso ./build-live.sh
@@ -23,7 +29,18 @@
 # ============================================================================
 set -euo pipefail
 
-UBUNTU_ISO="${UBUNTU_ISO:?set UBUNTU_ISO=/path/to/ubuntu-24.04-live-server-amd64.iso}"
+# Auto-detect ISO source if not set
+if [ -z "${UBUNTU_ISO:-}" ] && [ -z "${KALI_ISO:-}" ] && [ -z "${NIXOS_ISO:-}" ]; then
+  UBUNTU_ISO="${UBUNTU_ISO:?set UBUNTU_ISO=/path/to/ubuntu-24.04-live-server-amd64.iso}"
+elif [ -n "${KALI_ISO:-}" ]; then
+  UBUNTU_ISO="$KALI_ISO"
+  ISO_TYPE="kali"
+elif [ -n "${NIXOS_ISO:-}" ]; then
+  UBUNTU_ISO="$NIXOS_ISO"
+  ISO_TYPE="nixos"
+else
+  UBUNTU_ISO="${UBUNTU_ISO:?set UBUNTU_ISO=/path/to/ubuntu-24.04-live-server-amd64.iso}"
+fi
 REPO_TARBALL="${REPO_TARBALL:-}"
 OUT="${OUT:-$(pwd)/freeaios-amd64.iso}"
 LIVE_ENCRYPT="${LIVE_ENCRYPT:-0}"
@@ -58,6 +75,118 @@ else
       --exclude='./llama.cpp' --exclude='./models/*.gguf' \
       --exclude='./workspaces' --exclude='./backups' \
       -czf "$NEW/freeai/repo.tar.gz" -C "$HERE/.." .
+fi
+
+# ---------------------------------------------------------------- Kali-specific payload
+# Bundle Kali security tooling for live session
+if [ "${ISO_TYPE:-}" = "kali" ] || [ -n "${KALI_TOOLS:-}" ]; then
+  echo "[iso] bundling Kali security tooling..."
+  mkdir -p "$NEW/freeai/kali-tools"
+  cat > "$NEW/freeai/kali-tools/kali-security-tools.list" <<'EOF'
+# Kali Linux security tools included in FreeAIOS
+nmap
+metasploit-framework
+wireshark
+burpsuite-community
+john
+hashcat
+aircrack-ng
+sqlmap
+ffuf
+gobuster
+dirb
+hydra
+netcat-traditional
+socat
+tcpdump
+tshark
+airgeddon
+fern-wifi-cracker
+wifite
+chntpw
+volatility
+autopsy
+sleuthkit
+responder
+crackmapexec
+bloodhound
+empire
+cobalt-strike-agent
+veil
+beef
+skipfish
+w3af
+arachni
+zaproxy
+EOF
+fi
+
+# ---------------------------------------------------------------- NixOS-specific payload
+# Bundle NixOS security/development profile
+if [ "${ISO_TYPE:-}" = "nixos" ] || [ -n "${NIXOS_PROFILE:-}" ]; then
+  echo "[iso] bundling NixOS security profile..."
+  mkdir -p "$NEW/freeai/nixos-profile"
+  cat > "$NEW/freeai/nixos-profile/security.nix" <<'EOF'
+# NixOS security tools for FreeAIOS
+{ pkgs, ... }:
+{
+  environment.systemPackages = with pkgs; [
+    # Network security
+    nmap
+    wireshark
+    tcpdump
+    ssldump
+    # Password cracking
+    john
+    hashcat
+    crunch
+    # Web app testing
+    burpsuite
+    zap
+    sqlmap
+    ffuf
+    gobuster
+    dirb
+    # Exploitation
+    metasploit
+    # Forensics
+    volatility
+    autsplay
+    sleuthkit
+    # Cryptography
+    gpg
+    age
+    scdoc
+    # OSINT
+    theHarvester
+    dnsrecon
+    amass
+    # Wireless
+    aircrack-ng
+    wifite
+    # Cloud security
+    cloudquery
+    # AI security
+    llm-guard
+    garak
+    # Misc
+    strings
+    binwalk
+    testdisk
+    photorec
+  ];
+}
+EOF
+  cat > "$NEW/freeai/nixos-profile/default.nix" <<'EOF'
+{ stdenv, fetchFromGitHub, nix, git, python3, nodejs, go, rustup }:
+stdenv.mkDerivation {
+  pname = "freeai-nixos-security";
+  version = "1.0.0";
+  src = ./.;
+  buildPhase = "echo 'NixOS security profile'";
+  installPhase = "mkdir -p $out";
+}
+EOF
 fi
 
 # ---------------------------------------------------------------- remote-access script

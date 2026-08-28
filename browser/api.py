@@ -272,6 +272,19 @@ if HAS_FASTAPI:
             return {"rotated": eng._anonymity.rotate_tor_circuit()}
         return {"rotated": False, "note": "No anonymity stack configured"}
 
+    class HeadlessToggleReq(BaseModel):
+        headless: bool
+
+    @app.post("/browser/toggle-headless")
+    def toggle_headless(req: HeadlessToggleReq):
+        eng = get_engine()
+        return _run(eng.toggle_headless(req.headless))
+
+    @app.get("/browser/headless")
+    def get_headless():
+        eng = get_engine()
+        return {"headless": eng.get_headless(), "session": eng.session_id}
+
     # ── Army ────────────────────────────────────────────────────
     @app.get("/army/roster")
     def army_roster(rank=None, division=None, status=None):

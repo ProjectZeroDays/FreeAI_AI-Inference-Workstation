@@ -787,6 +787,24 @@ class BrowserEngine:
             await self._start_playwright(hl, extra_args)
         return self
 
+    async def toggle_headless(self, headless: bool) -> dict:
+        """Toggle headless mode — restarts browser with new setting."""
+        self.config["headless"] = headless
+        old_state = await self.get_state()
+        await self.close()
+        await self.start(headless=headless)
+        new_state = await self.get_state()
+        return {
+            "ok": True,
+            "headless": headless,
+            "previous_url": old_state.get("url", ""),
+            "current_url": new_state.get("url", ""),
+            "session_id": self.session_id,
+        }
+
+    def get_headless(self) -> bool:
+        return self.config.get("headless", True)
+
     async def _start_playwright(self, headless, extra_args=None):
         from playwright.async_api import async_playwright
         self._playwright = await async_playwright().start()

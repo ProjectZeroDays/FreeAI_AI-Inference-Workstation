@@ -1,0 +1,39 @@
+{
+  "_comment": "Provider key references — store actual secrets in .env or per-provider config files",
+  "_keys": {
+    "sendgrid": "SENDGRID_API_KEY",
+    "twilio": "TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN",
+    "telegram": "TELEGRAM_BOT_TOKEN",
+    "whatsapp": "WHATSAPP_ACCESS_TOKEN",
+    "gmail": "GMAIL_EMAIL / GMAIL_APP_PASSWORD",
+    "signal": "no key required (signal-cli)"
+  },
+  "per_provider_configs": {
+    "sendgrid": "config/sendgrid.json",
+    "twilio": "config/twilio.json",
+    "telegram": "config/telegram.json",
+    "whatsapp": "config/whatsapp.json",
+    "gmail": "config/gmail.json"
+  },
+  "example_sendgrid_json": {
+    "api_key": "SG.your_sendgrid_key_here"
+  },
+  "example_twilio_json": {
+    "account_sid": "ACxxxxxxxxxxxxxxxx",
+    "auth_token": "your_auth_token",
+    "api_key": "",
+    "api_secret": ""
+  },
+  "example_telegram_json": {
+    "bot_token": "123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+  },
+  "example_whatsapp_json": {
+    "access_token": "EAABwzLixnjYBO...",
+    "phone_number_id": "1234567890",
+    "business_account_id": "0987654321"
+  },
+  "example_gmail_json": {
+    "email": "you@gmail.com",
+    "app_password": "abcd efgh ijkl mnop"
+  }
+}

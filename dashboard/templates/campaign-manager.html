@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Campaign Manager</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .camp-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .camp-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .camp-topbar { display:flex; align-items:center; justify-content:space-between;
+                   padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                   margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .camp-topbar h1 { margin:0; font-size:22px; }
+    .camp-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .camp-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:18px; }
+    .camp-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .camp-stat .cs-val { font-size:22px; font-weight:700; }
+    .camp-stat .cs-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .camp-stat.active .cs-val { color:var(--accent); }
+    .camp-stat.paused .cs-val { color:var(--warn); }
+    .camp-stat.done .cs-val { color:var(--accent-2); }
+    .camp-stat.failed .cs-val { color:var(--danger); }
+
+    .camp-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .camp-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                     border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .camp-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .camp-table tr:hover td { background:rgba(255,255,255,.02); }
+    .camp-name { font-weight:600; }
+    .camp-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .btn-success { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.3); color:#BBF7D0; }
+
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                  border-radius:10px; padding:7px 12px; font-size:13px; width:220px;
+                  font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,.7);
+                     backdrop-filter:blur(4px); z-index:100; place-items:center; }
+    .modal-overlay.open { display:grid; }
+    .modal { background:var(--panel); border:1px solid var(--border); border-radius:16px;
+             padding:24px; width:min(520px,90vw); box-shadow:var(--shadow); }
+    .modal h2 { margin:0 0 16px; font-size:16px; }
+    .modal-field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    .modal-field label { font-size:12px; color:var(--muted); font-weight:500; }
+    .modal-field input, .modal-field textarea, .modal-field select {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:8px 12px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif; }
+    .modal-field textarea { min-height:80px; resize:vertical; font-family:'Fira Code',monospace; }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    .settings-panel { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:18px; }
+    .settings-panel h3 { margin:0 0 14px; font-size:14px; }
+    .setting-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-label { font-size:13px; font-weight:500; }
+    .setting-desc  { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .setting-control select, .setting-control input { background:var(--bg-soft); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="camp-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Campaigns</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item active"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/campaign-settings" class="nav-item"><span class="nav-dot"></span> Campaign Settings</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="camp-main">
+      <header class="camp-topbar">
+        <div>
+          <h1>Campaign Manager</h1>
+          <p>Orchestrate multi-agent security campaigns and operations</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="openNewCampaign()">+ New Campaign</button>
+        </div>
+      </header>
+
+      <div class="camp-stats" id="camp-stats">
+        <div class="camp-stat active"><div class="cs-val" id="cs-active">—</div><div class="cs-lbl">Active</div></div>
+        <div class="camp-stat paused"><div class="cs-val" id="cs-paused">—</div><div class="cs-lbl">Paused</div></div>
+        <div class="camp-stat done"><div class="cs-val" id="cs-completed">—</div><div class="cs-lbl">Completed</div></div>
+        <div class="camp-stat failed"><div class="cs-val" id="cs-failed">—</div><div class="cs-lbl">Failed</div></div>
+        <div class="camp-stat active"><div class="cs-val" id="cs-agents">—</div><div class="cs-lbl">Agents</div></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+        <input type="text" class="search-box" id="camp-search" placeholder="Search campaigns…" oninput="filterCampaigns()" />
+        <select id="camp-status-filter" onchange="filterCampaigns()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+          <option value="completed">Completed</option>
+          <option value="failed">Failed</option>
+        </select>
+      </div>
+
+      <table class="camp-table">
+        <thead><tr><th>Campaign</th><th>Description</th><th>Status</th><th>Agents</th><th>Last Run</th><th>Actions</th></tr></thead>
+        <tbody id="camp-tbody">
+          <tr><td colspan="6" class="empty-state">Loading campaigns…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- New Campaign Modal -->
+  <div class="modal-overlay" id="camp-modal">
+    <div class="modal">
+      <h2>New Campaign</h2>
+      <div class="modal-field">
+        <label>Campaign Name</label>
+        <input type="text" id="camp-name" placeholder="operation-nightfall" />
+      </div>
+      <div class="modal-field">
+        <label>Description</label>
+        <textarea id="camp-desc" placeholder="Describe the campaign objectives…"></textarea>
+      </div>
+      <div class="modal-field">
+        <label>Campaign Type</label>
+        <select id="camp-type">
+          <option value="recon">Reconnaissance</option>
+          <option value="exploitation">Exploitation</option>
+          <option value="defense">Defense / Hardening</option>
+          <option value="red-team">Red Team Exercise</option>
+          <option value="blue-team">Blue Team Exercise</option>
+          <option value="purple-team">Purple Team Exercise</option>
+          <option value="ai-attack">AI-Specific Attack</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Target Agents</label>
+        <select id="camp-agents" multiple style="min-height:80px">
+          <option value="recon">Recon Agent</option>
+          <option value="exploit">Exploit Agent</option>
+          <option value="defense">Defense Agent</option>
+          <option value="inference">Inference Agent</option>
+          <option value="social">Social Eng Agent</option>
+          <option value="postex">Post-Exploitation Agent</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeNewCampaign()">Cancel</button>
+        <button class="btn btn-primary" onclick="createCampaign()">Create Campaign</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const toast = (msg, type='success') => {
+      const t = $('toast');
+      t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    let campaigns = [
+      {id:'c1', name:'operation-nightfall', desc:'Full-spectrum red team exercise against internal infrastructure', type:'red-team', status:'active', agents:['recon','exploit','postex'], last_run:'2025-07-15 14:32', created:'2025-07-10'},
+      {id:'c2', name:'defensive-hardening', desc:'Harden production servers against identified threats', type:'defense', status:'active', agents:['defense','recon'], last_run:'2025-07-15 12:00', created:'2025-07-08'},
+      {id:'c3', name:'ai-safety-eval', desc:'Evaluate LLM safety boundaries with automated testing', type:'ai-attack', status:'paused', agents:['exploit','inference'], last_run:'2025-07-14 09:15', created:'2025-07-05'},
+      {id:'c4', name:'vuln-scan-q2', desc:'Quarterly vulnerability scan across all external-facing assets', type:'recon', status:'completed', agents:['recon'], last_run:'2025-07-01 06:00', created:'2025-06-28'},
+      {id:'c5', name:'brute-force-drill', desc:'Password strength testing against internal auth systems', type:'exploitation', status:'failed', agents:['exploit'], last_run:'2025-07-13 22:00', created:'2025-07-12'},
+    ];
+
+    function renderCampaigns(list) {
+      const tbody = $('camp-tbody');
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No campaigns found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(c => `<tr>
+        <td><div class="camp-name">${esc(c.name)}</div><div class="camp-desc">${esc(c.type)}</div></td>
+        <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)">${esc(c.desc)}</td>
+        <td><span class="badge badge-${c.status==='active'?'green':c.status==='paused'?'yellow':c.status==='completed'?'blue':'red'}">${esc(c.status)}</span></td>
+        <td>${c.agents.length} agents</td>
+        <td class="mono" style="font-size:11px;color:var(--muted)">${esc(c.last_run)}</td>
+        <td>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm" onclick="toggleCampaign('${c.id}')" title="${c.status==='active'?'Pause':'Start'}">${c.status==='active'?'⏸':'▶'}</button>
+            <button class="btn btn-sm" onclick="editCampaign('${c.id}')" title="Edit">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCampaign('${c.id}')" title="Delete">🗑</button>
+          </div>
+        </td>
+      </tr>`).join('');
+    }
+
+    function filterCampaigns() {
+      const search = $('camp-search').value.toLowerCase();
+      const status = $('camp-status-filter').value;
+      const filtered = campaigns.filter(c => {
+        const matchSearch = !search || c.name.toLowerCase().includes(search) || c.desc.toLowerCase().includes(search);
+        const matchStatus = status === 'all' || c.status === status;
+        return matchSearch && matchStatus;
+      });
+      renderCampaigns(filtered);
+      updateStats();
+    }
+
+    function updateStats() {
+      $('cs-active').textContent    = campaigns.filter(c => c.status === 'active').length;
+      $('cs-paused').textContent    = campaigns.filter(c => c.status === 'paused').length;
+      $('cs-completed').textContent = campaigns.filter(c => c.status === 'completed').length;
+      $('cs-failed').textContent    = campaigns.filter(c => c.status === 'failed').length;
+      const allAgents = new Set();
+      campaigns.filter(c => c.status === 'active').forEach(c => c.agents.forEach(a => allAgents.add(a)));
+      $('cs-agents').textContent = allAgents.size;
+    }
+
+    function openNewCampaign() { $('camp-modal').classList.add('open'); }
+    function closeNewCampaign() { $('camp-modal').classList.remove('open'); }
+
+    function createCampaign() {
+      const name = $('camp-name').value.trim();
+      const desc = $('camp-desc').value.trim();
+      const type = $('camp-type').value;
+      if (!name) { toast('Please enter a campaign name', 'error'); return; }
+      const agents = Array.from($('camp-agents').selectedOptions).map(o => o.value);
+      const newCamp = {
+        id: 'c' + Date.now(),
+        name, desc, type,
+        status: 'active',
+        agents,
+        last_run: 'Never',
+        created: new Date().toISOString().slice(0,10)
+      };
+      campaigns.unshift(newCamp);
+      closeNewCampaign();
+      filterCampaigns();
+      toast('Campaign created: ' + name);
+      $('camp-name').value = '';
+      $('camp-desc').value = '';
+    }
+
+    function toggleCampaign(id) {
+      const c = campaigns.find(x => x.id === id);
+      if (!c) return;
+      c.status = c.status === 'active' ? 'paused' : 'active';
+      filterCampaigns();
+      toast(c.status === 'active' ? 'Campaign started: ' + c.name : 'Campaign paused: ' + c.name);
+    }
+
+    function editCampaign(id) {
+      const c = campaigns.find(x => x.id === id);
+      if (!c) return;
+      $('camp-name').value = c.name;
+      $('camp-desc').value = c.desc;
+      openNewCampaign();
+    }
+
+    function deleteCampaign(id) {
+      const c = campaigns.find(x => x.id === id);
+      if (!c || !confirm('Delete campaign "' + c.name + '"?')) return;
+      campaigns = campaigns.filter(x => x.id !== id);
+      filterCampaigns();
+      toast('Campaign deleted: ' + c.name);
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function refreshAll() { filterCampaigns(); }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    filterCampaigns();
+  </script>
+</body>
+</html>

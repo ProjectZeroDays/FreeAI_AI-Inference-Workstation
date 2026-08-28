@@ -1,4 +1,4 @@
-﻿# Binary Patching Guide for Codex CLI
+# Binary Patching Guide for Codex CLI
 
 ## Overview
 This guide details how to reverse engineer and patch the Codex CLI binary to use OpenRouter natively without environment variables.
@@ -23,12 +23,12 @@ cp /usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x6
 ```
 
 ### 2. Load Binary in Ghidra
-- File â†’ New Project â†’ Non-shared project
+- File → New Project → Non-shared project
 - Import the codex binary
 - Accept default analysis options
 - Wait for auto-analysis to complete
 
-### 3. Locate API Endpoint String\n**Method A: String Search**\n- Search â†’ For Strings...\n- Minimum length: 10\n- Search for: `api.openai.com`\n- Double-click result\n\n**Method B: Known Offset (Verified from session)**\n- Press G (Go To)\n- Enter: `0xa46bd4c` (confirmed location from successful patching)\n- You should see: `https://api.openai.com/v1`
+### 3. Locate API Endpoint String\n**Method A: String Search**\n- Search → For Strings...\n- Minimum length: 10\n- Search for: `api.openai.com`\n- Double-click result\n\n**Method B: Known Offset (Verified from session)**\n- Press G (Go To)\n- Enter: `0xa46bd4c` (confirmed location from successful patching)\n- You should see: `https://api.openai.com/v1`
 
 ### 4. Analyze String Context
 Check what comes before and after the string:
@@ -41,7 +41,7 @@ Check what comes before and after the string:
 1. Navigate to the string address
 2. Switch to Listing view
 3. Click on first byte of the string
-4. Right-click â†’ Patch Instruction (or Ctrl+Shift+G)
+4. Right-click → Patch Instruction (or Ctrl+Shift+G)
 5. In Bytes view:
    - Click the lock icon to enable editing
    - Overwrite hex values with replacement string
@@ -77,7 +77,7 @@ Replace with target model (ensure length compatibility):
 - More complex but cleanest
 
 ### 9. Export Patched Binary
-- File â†’ Export Program...
+- File → Export Program...
 - Format: Binary (creates new file)
 - Save as: `codex-patched`
 - OR: Original File (overwrites - BE CAREFUL)

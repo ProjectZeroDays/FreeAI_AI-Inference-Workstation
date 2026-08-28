@@ -12,12 +12,14 @@ function Check($ok, $msg) {
 
 Write-Host "== structure =="
 foreach ($d in @("router","agents","workflow","autonomous","dashboard","ui",
-                 "models","registry","manifest","hardware","k8s","docs","tests")) {
+                  "models","registry","manifest","hardware","k8s","docs","tests",
+                  "skills","plugins","browser","memory","rag","brain","pipeline")) {
   Check (Test-Path $d) "dir $d/"
 }
-foreach ($f in @("install.sh","start.sh","validate.sh","supervisor.sh",
-                 "docker-compose.yml","freeai.py","requirements.txt",
-                 "config\config.json","registry\registry.json","VERSION")) {
+foreach ($f in @("install.sh","start.sh","validate.sh","supervisor.sh","launch.py",
+                  "docker-compose.yml","freeai.py","requirements.txt",
+                  "config\config.json","registry\registry.json","VERSION",
+                  "start_autonomous.py","start_browser.py")) {
   Check (Test-Path $f) "file $f"
 }
 

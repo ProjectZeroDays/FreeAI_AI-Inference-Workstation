@@ -5,8 +5,8 @@
   "version_tag": "latest",
   "disk": 250,
   "env": {
-    "PROVISIONING_SCRIPT": "https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases/latest/download/unified-ai-stack-v1.2.0.tar.gz",
-    "ONSTART_SCRIPT": "https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/main/vastai/onstart.sh",
+    "PROVISIONING_SCRIPT": "https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/releases/latest/download/unified-ai-stack-v1.2.0.tar.gz",
+    "ONSTART_SCRIPT": "https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/main/vastai/onstart.sh",
 
     "OPEN_BUTTON_TOKEN": "1",
     "OPEN_BUTTON_PORT": "1111",

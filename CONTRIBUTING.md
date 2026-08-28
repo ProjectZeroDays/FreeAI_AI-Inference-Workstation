@@ -5,8 +5,8 @@ Thanks for helping make this the most complete self-hosted AI workstation on Git
 ## Quick Start
 
 ```bash
-git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
 pip install -r requirements-dev.txt
 make test   # 88 tests, fully offline with MOCK_LLM=1
 make lint   # bash -n + py_compile + json lint

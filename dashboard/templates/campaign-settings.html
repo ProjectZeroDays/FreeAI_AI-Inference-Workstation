@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Campaign Settings</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .cs-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .cs-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .cs-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .cs-topbar h1 { margin:0; font-size:22px; }
+    .cs-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .settings-panel { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                      border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:18px; }
+    .settings-panel h3 { margin:0 0 14px; font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; }
+    .settings-panel h3 .panel-icon { width:28px; height:28px; border-radius:7px; display:grid; place-items:center;
+                                     font-size:13px; background:rgba(92,139,255,.12); }
+    .setting-row { display:flex; align-items:flex-start; justify-content:space-between;
+                   padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); gap:16px; }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-info { flex:1; }
+    .setting-label { font-size:13px; font-weight:600; }
+    .setting-desc  { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .setting-control { flex-shrink:0; display:flex; align-items:center; gap:8px; }
+    .setting-control select, .setting-control input { background:var(--bg-soft); color:var(--text);
+                                                      border:1px solid var(--border); border-radius:8px;
+                                                      padding:6px 10px; font-size:12px; }
+    .setting-control input[type="number"] { width:80px; }
+
+    .toggle { position:relative; width:40px; height:22px; cursor:pointer; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:rgba(148,163,184,.15); border-radius:999px; transition:.2s; }
+    .toggle-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px;
+                             background:var(--muted); border-radius:50%; transition:.2s; }
+    .toggle input:checked + .toggle-slider { background:rgba(34,197,94,.3); }
+    .toggle input:checked + .toggle-slider::before { transform:translateX(18px); background:var(--accent); }
+
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    .tag-list { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+    .tag { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px;
+          font-size:11px; font-weight:600; background:rgba(92,139,255,.1); color:#93C5FD; border:1px solid rgba(92,139,255,.2); }
+    .tag .tag-remove { cursor:pointer; opacity:0.6; }
+    .tag .tag-remove:hover { opacity:1; }
+
+    .rule-item { display:flex; align-items:center; gap:10px; padding:10px 12px;
+                 background:rgba(255,255,255,.02); border:1px solid var(--border);
+                 border-radius:10px; margin-bottom:8px; }
+    .rule-item .rule-num { width:24px; height:24px; border-radius:50%; display:grid; place-items:center;
+                          font-size:11px; font-weight:700; background:rgba(92,139,255,.15); color:#93C5FD; flex-shrink:0; }
+    .rule-item .rule-content { flex:1; }
+    .rule-item .rule-label { font-size:13px; font-weight:600; }
+    .rule-item .rule-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+  </style>
+</head>
+<body>
+  <div class="cs-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Campaign Settings</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+        <a href="/campaign-settings" class="nav-item active"><span class="nav-dot"></span> Campaign Settings</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="cs-main">
+      <header class="cs-topbar">
+        <div>
+          <h1>Campaign Settings</h1>
+          <p>Configure campaign behavior, agent coordination, and safety boundaries</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="resetDefaults()">↺ Reset Defaults</button>
+          <button class="btn btn-sm btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+      </header>
+
+      <!-- General Settings -->
+      <div class="settings-panel">
+        <h3><span class="panel-icon">⚙️</span> General</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Auto-start Campaigns</div>
+            <div class="setting-desc">Automatically launch campaigns when all required agents are available</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-auto-start"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Default Campaign Timeout</div>
+            <div class="setting-desc">Maximum duration before a campaign is auto-terminated (minutes)</div>
+          </div>
+          <div class="setting-control">
+            <input type="number" id="setting-timeout" value="480" min="60" max="1440" />
+            <span style="font-size:12px;color:var(--muted)">min</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Parallel Campaigns</div>
+            <div class="setting-desc">Maximum number of campaigns running simultaneously</div>
+          </div>
+          <div class="setting-control">
+            <input type="number" id="setting-parallel" value="3" min="1" max="10" />
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Auto-report Generation</div>
+            <div class="setting-desc">Generate summary reports when campaigns complete</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-reports"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Coordination -->
+      <div class="settings-panel">
+        <h3><span class="panel-icon">🤖</span> Agent Coordination</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Shared Memory</div>
+            <div class="setting-desc">Allow agents to share findings via a common memory buffer during campaigns</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-shared-memory"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Handoff Protocol</div>
+            <div class="setting-desc">Automatically pass control between agents when their phase completes</div>
+          </div>
+          <div class="setting-control">
+            <select id="setting-handoff">
+              <option value="auto">Auto</option>
+              <option value="manual">Manual</option>
+              <option value="disabled">Disabled</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Inter-Agent Communication</div>
+            <div class="setting-desc">Enable real-time messaging between campaign agents</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-intercom"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Agent Conflict Resolution</div>
+            <div class="setting-desc">When agents produce conflicting findings, use majority vote</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" id="setting-conflict-resolve"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Safety & Compliance -->
+      <div class="settings-panel">
+        <h3><span class="panel-icon">🛡️</span> Safety &amp; Compliance</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Hard Kill Switch</div>
+            <div class="setting-desc">Immediately stop all campaigns when any agent exceeds resource limits</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-kill-switch"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Max GPU VRAM per Campaign</div>
+            <div class="setting-desc">Hard limit on GPU memory usage per campaign (GB)</div>
+          </div>
+          <div class="setting-control">
+            <input type="number" id="setting-gpu-limit" value="20" min="2" max="80" />
+            <span style="font-size:12px;color:var(--muted)">GB</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Network Isolation</div>
+            <div class="setting-desc">Enforce network namespace isolation for all campaign agents</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-net-iso"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Audit Log</div>
+            <div class="setting-desc">Log all campaign actions for compliance and review</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-audit"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Allow Self-Modification</div>
+            <div class="setting-desc">Permit agents to modify their own skill configurations during campaigns</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" id="setting-self-mod"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign Rules -->
+      <div class="settings-panel">
+        <h3><span class="panel-icon">📋</span> Campaign Rules</h3>
+        <div class="rule-item">
+          <div class="rule-num">1</div>
+          <div class="rule-content">
+            <div class="rule-label">Reconnaissance Phase Timeout</div>
+            <div class="rule-desc">Maximum time allowed for network discovery (60 min default)</div>
+          </div>
+          <div class="setting-control">
+            <input type="number" value="60" min="10" max="480" style="width:60px" />
+            <span style="font-size:12px;color:var(--muted)">min</span>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">2</div>
+          <div class="rule-content">
+            <div class="rule-label">Exploitation Phase Timeout</div>
+            <div class="rule-desc">Maximum time allowed for exploitation attempts (120 min default)</div>
+          </div>
+          <div class="setting-control">
+            <input type="number" value="120" min="10" max="720" style="width:60px" />
+            <span style="font-size:12px;color:var(--muted)">min</span>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">3</div>
+          <div class="rule-content">
+            <div class="rule-label">Post-Exploitation Timeout</div>
+            <div class="rule-desc">Maximum time for lateral movement and data staging (90 min default)</div>
+          </div>
+          <div class="setting-control">
+            <input type="number" value="90" min="10" max="480" style="width:60px" />
+            <span style="font-size:12px;color:var(--muted)">min</span>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">4</div>
+          <div class="rule-content">
+            <div class="rule-label">Auto-pause on Failure</div>
+            <div class="rule-desc">Pause campaign when 3 consecutive agent failures occur</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="setting-auto-pause"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification Settings -->
+      <div class="settings-panel">
+        <h3><span class="panel-icon">🔔</span> Notifications</h3>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Campaign Start Notifications</div>
+            <div class="setting-desc">Notify when a campaign begins execution</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="notif-start"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Campaign Complete Notifications</div>
+            <div class="setting-desc">Notify on campaign completion (success or failure)</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="notif-complete"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Critical Alert Notifications</div>
+            <div class="setting-desc">Immediate notification on critical security events</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle"><input type="checkbox" checked id="notif-critical"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Notification Channel</div>
+            <div class="setting-desc">Where to send campaign notifications</div>
+          </div>
+          <div class="setting-control">
+            <select id="notif-channel">
+              <option value="dashboard">Dashboard Only</option>
+              <option value="webhook">Webhook</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const toast = (msg, type='success') => {
+      const t = $('toast');
+      t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    function saveSettings() {
+      const settings = {
+        auto_start: $('setting-auto-start').checked,
+        timeout: parseInt($('setting-timeout').value),
+        parallel: parseInt($('setting-parallel').value),
+        reports: $('setting-reports').checked,
+        shared_memory: $('setting-shared-memory').checked,
+        handoff: $('setting-handoff').value,
+        intercom: $('setting-intercom').checked,
+        conflict_resolve: $('setting-conflict-resolve').checked,
+        kill_switch: $('setting-kill-switch').checked,
+        gpu_limit: parseInt($('setting-gpu-limit').value),
+        net_iso: $('setting-net-iso').checked,
+        audit: $('setting-audit').checked,
+        self_mod: $('setting-self-mod').checked,
+        auto_pause: $('setting-auto-pause').checked,
+        notif_start: $('notif-start').checked,
+        notif_complete: $('notif-complete').checked,
+        notif_critical: $('notif-critical').checked,
+        notif_channel: $('notif-channel').value,
+      };
+      toast('Settings saved successfully');
+      console.log('Campaign settings saved:', settings);
+    }
+
+    function resetDefaults() {
+      if (!confirm('Reset all settings to defaults? This cannot be undone.')) return;
+      $('setting-auto-start').checked = true;
+      $('setting-timeout').value = 480;
+      $('setting-parallel').value = 3;
+      $('setting-reports').checked = true;
+      $('setting-shared-memory').checked = true;
+      $('setting-handoff').value = 'auto';
+      $('setting-intercom').checked = true;
+      $('setting-conflict-resolve').checked = false;
+      $('setting-kill-switch').checked = true;
+      $('setting-gpu-limit').value = 20;
+      $('setting-net-iso').checked = true;
+      $('setting-audit').checked = true;
+      $('setting-self-mod').checked = false;
+      $('setting-auto-pause').checked = true;
+      $('notif-start').checked = true;
+      $('notif-complete').checked = true;
+      $('notif-critical').checked = true;
+      $('notif-channel').value = 'dashboard';
+      toast('Settings reset to defaults');
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+  </script>
+</body>
+</html>

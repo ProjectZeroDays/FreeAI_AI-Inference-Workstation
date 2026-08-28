@@ -4,14 +4,14 @@
 
 <div align="center">
 
-[![version](https://img.shields.io/badge/version-1.3.1-blue)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/releases)
+[![version](https://img.shields.io/badge/version-1.3.1-blue)](https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/releases)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](https://www.python.org/)
 [![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)](https://developer.nvidia.com/cuda)
 [![tests](https://img.shields.io/badge/tests-570_passing-brightgreen)](#15-testing-and-validation)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/pkgs/container/freeai)
+[![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/pkgs/container/freeai)
 
-**Docs:** [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation) · **Dashboard:** `http://localhost:8030`
+**Docs:** [projectzerodays.github.io/FreeAI_AI_Inference_Workstation](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation) · **Dashboard:** `http://localhost:8030`
 
 </div>
 
@@ -21,7 +21,7 @@
 
 ```bash
 # Install (auto-detects GPU, configures everything)
-curl -fsSL https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/main/hardware/install-stack.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/main/hardware/install-stack.sh | bash
 
 # Or Docker (any host with NVIDIA Docker)
 docker compose --profile allinone up -d
@@ -277,7 +277,7 @@ curl -X POST localhost:8010/route -H "Content-Type: application/json" \
 
 ## Documentation
 
-- **Full docs**: [projectzerodays.github.io/FreeAI_AI-Inference-Workstation](https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation)
+- **Full docs**: [projectzerodays.github.io/FreeAI_AI_Inference_Workstation](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation)
 - **API Reference**: [docs/api-reference.md](docs/api-reference.md) (complete REST endpoint catalog)
 - **Providers**: [docs/PROVIDERS.md](docs/PROVIDERS.md)
 - **Wiki**: http://localhost:8030/wiki-dashboard
@@ -293,7 +293,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 Built with ❤️‍🔥 by the FreeAI team.
 
 
-> **Full docs:** https://projectzerodays.github.io/FreeAI_AI-Inference-Workstation/  
+> **Full docs:** https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/  
 > **Try before you clone:** `MOCK_LLM=1` runs the entire stack without a GPU (`make test` is fully offline).
 
 Production-grade, self-hosted **AI inference workstation stack**: GGUF coder models on NVIDIA GPUs, a task-classifying model router with fallback chains, a multi-agent REST layer, a workflow engine, **autonomous SDLC agents** that turn a one-line spec into a packaged project, a presets/settings control plane, an AI power optimizer, self-healing watchdogs, and a full XFCE + VNC remote desktop. Deployable bare-metal, via Docker Compose, Kubernetes, cloud GPU providers, or as a Live ISO.
@@ -520,8 +520,8 @@ Fastest paths (details in [Section 8](#8-install-and-deploy-handbook)):
 
 **Bare metal (Ubuntu 24.04 + NVIDIA):**
 ```bash
-git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
-cd FreeAI_AI-Inference-Workstation
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
 sudo ./hardware/install-stack.sh          # drivers->CUDA->Docker->stack->systemd->UFW
 bash models/auto-download-models.sh       # ~15GB of GGUFs, resumable
 ```

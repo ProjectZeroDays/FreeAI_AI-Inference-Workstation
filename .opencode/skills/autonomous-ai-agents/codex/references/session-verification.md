@@ -1,4 +1,4 @@
-﻿# Session Verification: Codex Binary Analysis for OpenRouter Integration
+# Session Verification: Codex Binary Analysis for OpenRouter Integration
 
 ## Key Findings from Session
 

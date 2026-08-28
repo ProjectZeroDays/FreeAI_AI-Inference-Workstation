@@ -211,6 +211,24 @@
       "models": [],
       "auth": "env:UNKNOWN",
       "enabled": true
+    },
+    "opencode": {
+      "name": "OpenCode",
+      "type": "primary",
+      "base_url": "https://api.opencode.ai/v1",
+      "models": ["opencode-coder", "opencode-chat"],
+      "auth": "env:OPENCODE_API_KEY",
+      "key_set": true,
+      "enabled": true
+    },
+    "aikido": {
+      "name": "Aikido Security",
+      "type": "primary",
+      "base_url": "https://api.aikido.dev",
+      "models": [],
+      "auth": "env:AIKIDO_API_KEY",
+      "key_set": true,
+      "enabled": true
     }
   }
 }

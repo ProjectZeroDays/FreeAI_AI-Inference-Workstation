@@ -1,0 +1,27 @@
+{
+  "servers": [
+    {
+      "name": "test-srv",
+      "command": "python",
+      "args": [
+        "server.py"
+      ],
+      "env": {},
+      "url": "",
+      "enabled": true,
+      "health_check": true,
+      "timeout": 30,
+      "status": "unknown",
+      "last_check": null,
+      "last_error": null,
+      "tools_count": 0,
+      "tools": [],
+      "created_at": 1787920603.5912027
+    }
+  ],
+  "settings": {
+    "auto_start": false,
+    "health_check_interval": 60,
+    "default_timeout": 30
+  }
+}

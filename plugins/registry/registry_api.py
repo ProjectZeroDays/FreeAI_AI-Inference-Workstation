@@ -319,12 +319,67 @@ def stats():
         for c in p.get("categories", ["uncategorized"]):
             categories[c] = categories.get(c, 0) + 1
 
+    # Also count themes and agents
+    themes = _load_themes()
+    agents = _load_agents()
+
     return {
         "total_available": len(all_plugins),
         "installed": len(local),
         "categories": categories,
         "last_fetched": _REGISTRY.get("fetched_at", 0),
+        "themes": len(themes),
+        "agents": len(agents),
     }
+
+
+# ── Themes ───────────────────────────────────────────────────────
+_THEMES_PATH = ROOT / "config" / "themes.json"
+
+
+def _load_themes() -> list:
+    if _THEMES_PATH.exists():
+        try:
+            data = json.loads(_THEMES_PATH.read_text(encoding="utf-8"))
+            return data.get("themes", []) if isinstance(data, dict) else []
+        except (json.JSONDecodeError, OSError):
+            pass
+    return []
+
+
+# ── Agents ───────────────────────────────────────────────────────
+_AGENTS_PATH = ROOT / "agents" / "agent.json"
+
+
+def _load_agents() -> list:
+    if _AGENTS_PATH.exists():
+        try:
+            data = json.loads(_AGENTS_PATH.read_text(encoding="utf-8"))
+            agents = data.get("agents", []) if isinstance(data, dict) else []
+            return [{"id": k, **v} for k, v in (agents.items() if isinstance(agents, dict) else enumerate(agents))]
+        except (json.JSONDecodeError, OSError):
+            pass
+    return []
+
+
+@app.get("/themes")
+def list_themes():
+    """Get all available themes."""
+    return {"themes": _load_themes(), "total": len(_load_themes())}
+
+
+@app.get("/agents")
+def list_agents():
+    """Get all registered agents."""
+    return {"agents": _load_agents(), "total": len(_load_agents())}
+
+
+@app.post("/auto-install")
+def auto_install():
+    """Auto-install missing plugins/MCPs from catalog."""
+    from skills.catalog_api import auto_install as _catalog_auto_install
+    result = _catalog_auto_install(missing_only=True)
+    return result
 
 
 # ── CLI convenience ──────────────────────────────────────────────────

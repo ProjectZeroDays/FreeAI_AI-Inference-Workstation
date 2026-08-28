@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help install vllm test lint up down logs backup restore clean update-llama
+.PHONY: help install vllm test lint up down logs backup restore clean update-llama launch
 
 help:
 	@echo "install      - provision venv + build llama.cpp (CUDA if nvcc)"
@@ -11,7 +11,9 @@ help:
 	@echo "logs         - tail stack logs"
 	@echo "backup       - config/registry/manifest snapshot"
 	@echo "restore F=   - restore from backups/F"
+	@echo "clean        - remove pycache and pytest cache"
 	@echo "update-llama - pull latest llama.cpp + rebuild"
+	@echo "launch       - start all services via launch.py"
 
 install:
 	bash install.sh
@@ -48,6 +50,9 @@ restore:
 clean:
 	find . -name '__pycache__' -prune -exec rm -rf {} + 2>/dev/null || true
 	rm -rf .pytest_cache
+
+launch:
+	python launch.py
 
 update-llama:
 	bash install.sh --update-llama

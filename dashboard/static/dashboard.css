@@ -83,13 +83,22 @@ body{
   min-height:100vh;
 }
 .sidebar{
-  position:sticky; top:0; height:100vh;
+  position:sticky; top:0;
   background:linear-gradient(180deg, rgba(15,23,42,.96), rgba(11,18,34,.98));
   border-right:1px solid var(--border);
   backdrop-filter:blur(10px);
   display:flex; flex-direction:column;
   padding:18px 14px;
   gap:18px;
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+  max-height:100vh;
+}
+.sidebar:not(.collapsed) .scrollable-nav{
+  flex:1;
+  overflow-y:auto;
+  margin-bottom:8px;
 }
 .brand{display:flex; gap:12px; align-items:center; padding:6px 6px 14px; border-bottom:1px solid var(--border)}
 .brand-mark{
