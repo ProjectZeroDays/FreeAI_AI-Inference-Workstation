@@ -6788,3 +6788,160 @@ def api_exploit_cat_file_parse_payload_gen():
     payload_type = data.get("payload_type", "xxe")
     target = data.get("target", "xml_parser")
     return jsonify(agent.generate_payload(payload_type, target))
+
+
+# ── Memory Primitives ──
+_memory_primitives_lock = threading.Lock()
+_memory_primitives_state = {"simulations": []}
+
+
+@app.route("/api/exploit-cat/memory-primitives/describe")
+def api_exploit_cat_memory_primitives_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    return jsonify(agent.describe())
+
+
+@app.route("/api/exploit-cat/memory-primitives/list")
+def api_exploit_cat_memory_primitives_list():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    return jsonify(agent.list_primitives())
+
+
+@app.route("/api/exploit-cat/memory-primitives/<name>")
+def api_exploit_cat_memory_primitives_get(name):
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    return jsonify(agent.get_primitive(name))
+
+
+@app.route("/api/exploit-cat/memory-primitives/simulate", methods=["POST"])
+def api_exploit_cat_memory_primitives_simulate():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    primitive_name = data.get("primitive", "buffer_overflow")
+    target_info = data.get("target_info", {})
+    result = agent.simulate_primitive(primitive_name, target_info)
+    with _memory_primitives_lock:
+        _memory_primitives_state["simulations"].append(result)
+    return jsonify(result)
+
+
+@app.route("/api/exploit-cat/memory-primitives/map-to-exploit", methods=["POST"])
+def api_exploit_cat_memory_primitives_map_to_exploit():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    primitive_name = data.get("primitive", "buffer_overflow")
+    return jsonify(agent.map_to_exploit(primitive_name))
+
+
+@app.route("/api/exploit-cat/memory-primitives/mitigations/<name>")
+def api_exploit_cat_memory_primitives_mitigations(name):
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    return jsonify(agent.find_mitigations(name))
+
+
+@app.route("/api/exploit-cat/memory-primitives/cves")
+def api_exploit_cat_memory_primitives_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_primitives import MemoryPrimitivesAgent
+    agent = MemoryPrimitivesAgent()
+    return jsonify(agent.get_cves())
+
+
+# ── Chained Zero-Day Exploitation ─────────────────────────────────────
+
+_chained_zero_day_lock = threading.Lock()
+_chained_zero_day_state = {"simulations": []}
+
+
+@app.route("/api/exploit-cat/chained-zero-day/describe")
+def api_exploit_cat_chained_zero_day_describe():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    return jsonify(agent.describe())
+
+
+@app.route("/api/exploit-cat/chained-zero-day/build-chain", methods=["POST"])
+def api_exploit_cat_chained_zero_day_build_chain():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    stages = data.get("stages", [])
+    return jsonify(agent.build_chain(stages))
+
+
+@app.route("/api/exploit-cat/chained-zero-day/analyze-chain", methods=["POST"])
+def api_exploit_cat_chained_zero_day_analyze_chain():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    chain_id = data.get("chain_id", "")
+    return jsonify(agent.analyze_chain(chain_id))
+
+
+@app.route("/api/exploit-cat/chained-zero-day/simulate-chain", methods=["POST"])
+def api_exploit_cat_chained_zero_day_simulate_chain():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    chain_id = data.get("chain_id", "")
+    target = data.get("target", None)
+    result = agent.simulate_chain(chain_id, target)
+    with _chained_zero_day_lock:
+        _chained_zero_day_state["simulations"].append(result)
+    return jsonify(result)
+
+
+@app.route("/api/exploit-cat/chained-zero-day/list-chains")
+def api_exploit_cat_chained_zero_day_list_chains():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    return jsonify(agent.list_chains())
+
+
+@app.route("/api/exploit-cat/chained-zero-day/optimize-chain", methods=["POST"])
+def api_exploit_cat_chained_zero_day_optimize_chain():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    chain_id = data.get("chain_id", "")
+    return jsonify(agent.optimize_chain(chain_id))
+
+
+@app.route("/api/exploit-cat/chained-zero-day/cves")
+def api_exploit_cat_chained_zero_day_cves():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.chained_zero_day import ChainedZeroDayAgent
+    agent = ChainedZeroDayAgent()
+    return jsonify(agent.get_cves())
