@@ -10,11 +10,9 @@ import pytest
 flask = pytest.importorskip("flask")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Add ROOT so `import router.gpu_perf` works (router is a package)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "dashboard"))
-
-import router.gpu_perf as _gpu_perf_module
+sys.path.insert(0, os.path.join(ROOT, "router"))
 
 
 class TestGPUMonitor:
@@ -263,6 +261,8 @@ def test_gpu_metrics_available_on_linux(client, monkeypatch):
 def test_gpu_metrics_returns_mock_on_windows(client, monkeypatch):
     import platform
     monkeypatch.setattr(platform, "system", lambda: "Windows")
+    monkeypatch.setattr("gpu_perf._is_linux", lambda: False)
+    monkeypatch.setattr("gpu_perf._gpu_available", lambda: False)
     res = client.get("/api/gpu/metrics")
     assert res.status_code == 200
     body = res.get_json()
