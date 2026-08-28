@@ -563,12 +563,24 @@ function renderTemplatesList(){
     list.innerHTML = '<div style="font-size:12px;color:var(--muted-2);padding:8px">No templates saved yet</div>';
     return;
   }
-  list.innerHTML = templates.map((t,i) => `
-    <div class="wd-template-item" data-tmpl-idx="${i}">
-      <span>${esc(t.name)}</span>
-      <span class="tmpl-del" data-tmpl-del="${i}">✕</span>
-    </div>
-  `).join("");
+  // Build DOM elements directly to avoid innerHTML XSS
+  const frag = document.createDocumentFragment();
+  for (const t of templates) {
+    const div = document.createElement("div");
+    div.className = "wd-template-item";
+    div.dataset.tmplIdx = templates.indexOf(t);
+    const span = document.createElement("span");
+    span.textContent = t.name;
+    div.appendChild(span);
+    const del = document.createElement("span");
+    del.className = "tmpl-del";
+    del.dataset.tmplDel = templates.indexOf(t);
+    del.textContent = "✕";
+    div.appendChild(del);
+    frag.appendChild(div);
+  }
+  list.innerHTML = "";
+  list.appendChild(frag);
   list.querySelectorAll(".wd-template-item").forEach(el => {
     el.addEventListener("click", e => {
       if(e.target.classList.contains("tmpl-del")) return;
@@ -617,18 +629,32 @@ function applyTemplate(idx){
     // Open template modal for user to choose where to apply
     const modal = document.getElementById("template-modal");
     const list = document.getElementById("template-apply-list");
-    list.innerHTML = nodes.length ? nodes.map(n => `
-      <div class="wd-template-item" data-apply="${escAttr(n.id)}">
-        <span>${TYPE_ICONS[n.type]||"⚙"} ${esc(n.name)}</span>
-      </div>
-    `).join("") : '<div style="font-size:12px;color:var(--muted-2);padding:8px">No nodes on canvas</div>';
-    list.querySelectorAll(".wd-template-item").forEach(el => {
-      el.addEventListener("click", () => {
-        const nid = el.dataset.apply;
-        const node = nodes.find(x => x.id === nid);
-        if(node){
-          node.payload = node.payload || {};
-          node.payload.prompt = tmpl.prompt;
+    // Build DOM elements directly to avoid innerHTML XSS
+    if (!nodes.length) {
+      list.textContent = "No nodes on canvas";
+      list.style.fontSize = "12px";
+      list.style.color = "var(--muted-2)";
+      list.style.padding = "8px";
+    } else {
+      const frag = document.createDocumentFragment();
+      for (const n of nodes) {
+        const div = document.createElement("div");
+        div.className = "wd-template-item";
+        div.dataset.apply = n.id;
+        const span = document.createElement("span");
+        span.textContent = (TYPE_ICONS[n.type] || "⚙") + " " + n.name;
+        div.appendChild(span);
+        frag.appendChild(div);
+      }
+      list.innerHTML = "";
+      list.appendChild(frag);
+      list.querySelectorAll(".wd-template-item").forEach(el => {
+        el.addEventListener("click", () => {
+          const nid = el.dataset.apply;
+          const node = nodes.find(x => x.id === nid);
+          if(node){
+            node.payload = node.payload || {};
+            node.payload.prompt = tmpl.prompt;
           draw();
           if(nid === selectedId) renderSidebar();
           toast("Applied to " + (node.name || nid), "success");
@@ -1178,12 +1204,26 @@ document.getElementById("btn-load-workflows").addEventListener("click", async()=
     if(!list.length){
       listEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px">No workflows on server</div>';
     } else {
-      listEl.innerHTML = list.map(w => `
-        <div class="wd-template-item" data-wf="${escAttr(w.name||w.id)}">
-          <span>📄 ${esc(w.name||w.id)}</span>
-          <span style="font-size:11px;color:var(--muted-2);margin-left:auto">${(w.definition?.nodes?.length||0)} nodes</span>
-        </div>
-      `).join("");
+      // Build DOM elements directly to avoid innerHTML XSS
+      const frag = document.createDocumentFragment();
+      for (const w of list) {
+        const div = document.createElement("div");
+        div.className = "wd-template-item";
+        div.dataset.wf = w.name || w.id;
+        const span1 = document.createElement("span");
+        span1.textContent = "\ud83d\udcc4 " + (w.name || w.id);
+        div.appendChild(span1);
+        const count = (w.definition && w.definition.nodes ? w.definition.nodes.length : 0) || 0;
+        const span2 = document.createElement("span");
+        span2.style.fontSize = "11px";
+        span2.style.color = "var(--muted-2)";
+        span2.style.marginLeft = "auto";
+        span2.textContent = count + " nodes";
+        div.appendChild(span2);
+        frag.appendChild(div);
+      }
+      listEl.innerHTML = "";
+      listEl.appendChild(frag);
       listEl.querySelectorAll(".wd-template-item").forEach(el => {
         el.addEventListener("click", async()=>{
           const name = el.dataset.wf;
