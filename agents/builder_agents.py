@@ -22,13 +22,14 @@ from pathlib import Path
 def _secure_path(base: Path, user_path: str) -> Path | None:
     """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
     try:
-        # Use basename only to prevent path traversal via / or ..
         safe_name = Path(user_path).name
         if not safe_name or safe_name != user_path.replace("/", "").replace("\\", "").replace("..", ""):
             return None
-        resolved = (base / safe_name).resolve()
-        if str(resolved).startswith(str(base.resolve())):
-            return resolved
+        result = base / safe_name
+        base_str = str(base).rstrip("\\").rstrip("/")
+        result_str = str(result).rstrip("\\").rstrip("/")
+        if result_str.startswith(base_str + "\\"):
+            return result
     except (OSError, ValueError):
         pass
     return None

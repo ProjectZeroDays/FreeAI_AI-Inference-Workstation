@@ -136,7 +136,8 @@ class FridaInstrumentor:
             frida_script.load()
             return {"attached": target_name, "messages": results[:100]}
         except Exception as e:
-            return {"error": str(e)}
+            logging.getLogger(__name__).exception(str(e))
+            return {"error": "An error occurred"}
 
     def hook_browser_session(self, target_pid, script):
         """Hook a specific browser process by PID."""
@@ -150,7 +151,8 @@ class FridaInstrumentor:
             frida_script.load()
             return {"pid": target_pid, "attached": True, "results": results[:50]}
         except Exception as e:
-            return {"error": str(e)}
+            logging.getLogger(__name__).exception(str(e))
+            return {"error": "An error occurred"}
 
     def is_available(self):
         return self._frida_available
