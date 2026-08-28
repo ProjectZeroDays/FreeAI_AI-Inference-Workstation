@@ -1702,7 +1702,9 @@ def api_gpu_metrics():
             "gpu_available": False,
             "platform": __import__("platform").system(),
         })
-    except Exception as exc:
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("gpu status error")
         return jsonify({
             "devices": [],
             "total_vram_mb": 0,
@@ -1710,7 +1712,7 @@ def api_gpu_metrics():
             "utilization_pct": 0,
             "temperature_c": 0,
             "power_w": 0,
-            "error": str(exc),
+            "error": "gpu_status_error",
             "perf_enabled": any(_gpu_perf_state.values()),
         })
 
@@ -1768,11 +1770,10 @@ def api_gpu_perf_enable():
             "mock": True,
             "reason": "gpu_perf module not available",
         })
-    except Exception as exc:
-        return jsonify({"status": "error", "message": str(exc)}), 500
-
-
-@app.route("/api/gpu/perf/disable", methods=["POST"])
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("gpu perf enable error")
+        return jsonify({"status": "error", "message": "gpu_perf_error"}), 500
 def api_gpu_perf_disable():
     """Disable GPU optimizations."""
     data = request.get_json(silent=True) or {}
@@ -1804,11 +1805,10 @@ def api_gpu_perf_disable():
             "perf_state": _gpu_perf_state,
             "mock": True,
         })
-    except Exception as exc:
-        return jsonify({"status": "error", "message": str(exc)}), 500
-
-
-@app.route("/api/gpu/perf/status")
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("gpu perf disable error")
+        return jsonify({"status": "error", "message": "gpu_perf_error"}), 500
 def api_gpu_perf_status():
     """Check which GPU optimizations are active."""
     try:
@@ -1910,12 +1910,14 @@ def api_gpu_perf_recommend():
             "recommendations": recs,
             "mock": False,
         })
-    except Exception as exc:
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("gpu scan error")
         return jsonify({
-            "platform": __import__("platform").system(),
+            "platform": platform,
             "gpu_available": False,
             "recommendations": [],
-            "error": str(exc),
+            "error": "gpu_scan_error",
             "mock": True,
         })
 
@@ -4153,6 +4155,11 @@ def api_workflow_designer_workflows_get(name):
     if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
         return jsonify({'error': 'invalid workflow name'}), 400
     path = _designer_wf_dir / f'{safe_name}.json'
+    # Validate path stays within designer-workflows directory
+    full = path.resolve()
+    base = _designer_wf_dir.resolve()
+    if not str(full).startswith(str(base) + os.sep) and full != base:
+        return jsonify({'error': 'invalid workflow name'}), 400
     if not path.exists():
         return jsonify({'error': 'not found'}), 404
     try:
@@ -4169,7 +4176,12 @@ def api_workflow_designer_workflows_delete(name):
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
     if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
         return jsonify({'error': 'invalid workflow name'}), 400
-    path = _designer_wf_dir / f'{safe_name}.json'  # nosec B108
+    path = _designer_wf_dir / f'{safe_name}.json'
+    # Validate path stays within designer-workflows directory
+    full = path.resolve()
+    base = _designer_wf_dir.resolve()
+    if not str(full).startswith(str(base) + os.sep) and full != base:
+        return jsonify({'error': 'invalid workflow name'}), 400
     if path.exists():
         with _workflow_saves_lock:
             path.unlink()

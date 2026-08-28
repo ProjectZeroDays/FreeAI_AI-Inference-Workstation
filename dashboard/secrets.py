@@ -95,11 +95,11 @@ def _save_metadata(meta: dict):
 
 def _encrypted_path(name: str) -> Path:
     safe = "".join(c if c.isalnum() else "_" for c in name)
-    path = SECRETS_DIR / os.path.normpath(f"{safe}.enc")
-    resolved = path.resolve(strict=False)
-    if not str(resolved).startswith(str(SECRETS_DIR.resolve()) + os.sep) and resolved != SECRETS_DIR.resolve():
+    full = os.path.normpath(str(SECRETS_DIR / f"{safe}.enc"))
+    base = os.path.normpath(str(SECRETS_DIR))
+    if not full.startswith(base + os.sep):
         raise ValueError(f"Secret name '{name}' resolves outside secrets directory")
-    return path
+    return Path(full)
 
 
 def store_secret(name: str, value: str) -> bool:
@@ -110,9 +110,9 @@ def store_secret(name: str, value: str) -> bool:
     value = str(value)
     key = _derive_key(name)
     enc = _encrypt_value(value, key)
-    path = _encrypted_path(name)  # nosec B108
+    path = _encrypted_path(name)
     SECRETS_DIR.mkdir(parents=True, exist_ok=True)
-    path.write_text(enc, encoding="utf-8")  # nosec B108
+    path.write_text(enc, encoding="utf-8")
     with _LOCK:
         _IN_MEMORY[name] = value
     meta = _load_metadata()
@@ -146,9 +146,9 @@ def delete_secret(name: str) -> bool:
     name = name.strip()
     with _LOCK:
         _IN_MEMORY.pop(name, None)
-    path = _encrypted_path(name)  # nosec B108
+    path = _encrypted_path(name)
     if path.exists():
-        path.unlink()  # nosec B108
+        path.unlink()
         meta = _load_metadata()
         meta["secrets"].pop(name, None)
         _save_metadata(meta)

@@ -50,6 +50,11 @@ def _safe_write(path: Path, content: str) -> None:
     safe_name = path.name
     if safe_name != str(path).replace("/", "").replace("\\", ""):
         raise ValueError(f"Invalid path: {path}")
+    # Validate path stays within parent directory using string-based check
+    norm = os.path.normpath(str(path))
+    parent_norm = os.path.normpath(str(path.parent))
+    if not norm.startswith(parent_norm + os.sep):
+        raise ValueError(f"Path escapes parent directory: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)  # nosec B108
     path.write_text(content, encoding="utf-8")  # nosec B108
 
