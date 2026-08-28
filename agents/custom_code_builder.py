@@ -17,7 +17,11 @@ from pathlib import Path
 def _secure_path(base: Path, user_path: str) -> Path | None:
     """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
     try:
-        resolved = (base / user_path).resolve()  # nosec B108
+        # Use basename only to prevent path traversal via / or ..
+        safe_name = Path(user_path).name
+        if not safe_name or safe_name != user_path.replace("/", "").replace("\\", "").replace("..", ""):
+            return None
+        resolved = (base / safe_name).resolve()
         if str(resolved).startswith(str(base.resolve())):
             return resolved
     except (OSError, ValueError):

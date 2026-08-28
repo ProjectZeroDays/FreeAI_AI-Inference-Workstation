@@ -23,7 +23,11 @@ from pathlib import Path
 def _secure_path(base: Path, user_path: str) -> Path | None:
     """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
     try:
-        resolved = (base / user_path).resolve()  # nosec B108
+        # Use basename only to prevent path traversal via / or ..
+        safe_name = Path(user_path).name
+        if not safe_name or safe_name != user_path.replace("/", "").replace("\\", "").replace("..", ""):
+            return None
+        resolved = (base / safe_name).resolve()
         if str(resolved).startswith(str(base.resolve())):
             return resolved
     except (OSError, ValueError):
@@ -41,6 +45,10 @@ def _sanitize_run_id(run_id: str) -> str:
 
 def _safe_write(path: Path, content: str) -> None:
     """Safely write content to a known-fixed path (no user-controlled path component)."""
+    # Ensure path is a basename only — no directory traversal
+    safe_name = path.name
+    if safe_name != str(path).replace("/", "").replace("\\", ""):
+        raise ValueError(f"Invalid path: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
 

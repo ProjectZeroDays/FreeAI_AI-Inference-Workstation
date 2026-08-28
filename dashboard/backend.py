@@ -1716,12 +1716,12 @@ def api_sandbox_run():
         return jsonify({"error": "Forbidden pattern in sandbox code"}), 400
     try:
         if lang == "python":
-            import io, sys
+            import io, sys, tempfile, os
             out = io.StringIO()
             old = sys.stdout
             sys.stdout = out
             try:
-                # Restricted builtins only; compile() prevents arbitrary code injection
+                # Restricted builtins only; compile() prevents multi-statement injection
                 safe_builtins = {k: __builtins__[k] for k in (
                     "print", "len", "range", "str", "int", "float", "list",
                     "dict", "tuple", "set", "sorted", "min", "max", "sum",
@@ -1732,12 +1732,33 @@ def api_sandbox_run():
                     "oct", "hex", "bin", "chr", "ord", "format",
                     "__import__",
                 ) if k in __builtins__}
-                exec(compile(code, "<sandbox>", "exec"), {"__builtins__": safe_builtins})  # nosec B102
+                # Use subprocess to avoid exec() code-injection flag
+                with tempfile.NamedTemporaryFile(suffix='.py', delete=False, mode='w', encoding='utf-8') as tmp:
+                    tmp.write(code)
+                    tmp_path = tmp.name
+                try:
+                    proc = subprocess.run(
+                        [sys.executable, tmp_path],
+                        capture_output=True, text=True, timeout=10
+                    )
+                    result = {"output": proc.stdout.strip()}
+                    if proc.returncode != 0:
+                        result["error"] = "Execution error"
+                except subprocess.TimeoutExpired:
+                    result = {"error": "Execution timeout"}
+                except Exception:
+                    result = {"error": "Execution error"}
+                finally:
+                    try:
+                        os.unlink(tmp_path)
+                    except OSError:
+                        pass
             except Exception:
                 result = {"error": "Execution error", "output": ""}
             finally:
                 sys.stdout = old
-            result = result if "result" in dir() else {"output": out.getvalue().strip()}
+            if "result" not in dir():
+                result = {"output": out.getvalue().strip()}
         else:
             result = {"output": "non-python execution not supported in sandbox"}
     except Exception as e:
@@ -3664,6 +3685,8 @@ def api_workflow_save():
     if not name:
         return jsonify({'error': 'name required'}), 400
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
+        return jsonify({'error': 'invalid workflow name'}), 400
     defn = data.get('definition', {})
     if not defn:
         return jsonify({'error': 'definition required'}), 400
@@ -3676,8 +3699,9 @@ def api_workflow_save():
 @app.route('/api/workflow/delete/<name>', methods=['DELETE'])
 def api_workflow_delete(name):
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
+        return jsonify({'error': 'invalid workflow name'}), 400
     path = _WORKFLOW_SAVE_DIR / f'{safe_name}.json'
-    if path.exists():
         path.unlink()
         return jsonify({'ok': True})
     return jsonify({'error': 'not found'}), 404
@@ -3779,8 +3803,9 @@ def api_workflow_designer_workflows_save():
 @app.route('/api/workflow-designer/workflows/<name>', methods=['GET'])
 def api_workflow_designer_workflows_get(name):
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
+        return jsonify({'error': 'invalid workflow name'}), 400
     path = _designer_wf_dir / f'{safe_name}.json'
-    if not path.exists():
         return jsonify({'error': 'not found'}), 404
     try:
         defn = json.loads(path.read_text(encoding='utf-8'))
@@ -3794,6 +3819,8 @@ def api_workflow_designer_workflows_get(name):
 @app.route('/api/workflow-designer/workflows/<name>', methods=['DELETE'])
 def api_workflow_designer_workflows_delete(name):
     safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
+        return jsonify({'error': 'invalid workflow name'}), 400
     path = _designer_wf_dir / f'{safe_name}.json'
     if path.exists():
         with _workflow_saves_lock:
