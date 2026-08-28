@@ -791,7 +791,7 @@ class BrowserEngine:
         from playwright.async_api import async_playwright
         self._playwright = await async_playwright().start()
         launch_opts = {
-            "headless": "new" if headless else False,
+            "headless": bool(headless),
             "args": [
                 "--disable-blink-features=AutomationControlled",
                 "--disable-automation",
