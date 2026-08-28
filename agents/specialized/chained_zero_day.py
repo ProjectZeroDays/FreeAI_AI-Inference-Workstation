@@ -1,12 +1,80 @@
 import json
+import os
 import time
 import uuid
 import threading
+import requests
 from pathlib import Path
 
 # Module-level shared state so chains persist across agent instances
 _chain_lock = threading.Lock()
 _chains = {}
+
+# CVE API integration
+SHODAN_API_KEY = os.getenv("SHODAN_API_KEY", "")
+
+# Cache for API results with TTL (10 minutes)
+_CVE_API_CACHE = {}
+_CACHE_TTL = 600
+
+
+def fetch_cve_from_shodan(cve_id):
+    """Fetch CVE details from Shodan API.
+    
+    Args:
+        cve_id: CVE identifier (e.g., "CVE-2019-8641")
+    
+    Returns:
+        Dict with CVE details or None if not found
+    """
+    if not SHODAN_API_KEY:
+        return None
+    
+    # Check cache
+    cache_key = f"shodan:{cve_id}"
+    if cache_key in _CVE_API_CACHE:
+        cached_entry = _CVE_API_CACHE[cache_key]
+        if time.time() - cached_entry["timestamp"] < _CACHE_TTL:
+            return cached_entry["data"]
+    
+    try:
+        # Query Shodan for CVE details
+        url = f"https://api.shodan.io/v2/cve/{cve_id}?key={SHODAN_API_KEY}"
+        response = requests.get(url, timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            vulns = data.get("vulns", {})
+            if cve_id in vulns:
+                cve_data = vulns[cve_id]
+                
+                # Extract relevant CVE information
+                result = {
+                    "title": cve_data.get("title", "Not Available"),
+                    "source": cve_data.get("source", "shodan"),
+                    "references": cve_data.get("references", []),
+                    "stats": cve_data.get("stats", {}),
+                    "published": cve_data.get("published", ""),
+                    "modified": cve_data.get("modified", "")
+                }
+                
+                # Store in cache
+                _CVE_API_CACHE[cache_key] = {
+                    "timestamp": time.time(),
+                    "data": result
+                }
+                
+                return result
+        else:
+            print(f"Shodan API error for {cve_id}: HTTP {response.status_code}")
+            return None
+    
+    except requests.RequestException as e:
+        print(f"Shodan API request failed for {cve_id}: {str(e)}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error fetching CVE from Shodan: {str(e)}")
+        return None
 
 
 class ChainedZeroDayAgent:
@@ -292,5 +360,43 @@ class ChainedZeroDayAgent:
         }
 
     def get_cves(self):
-        """Return CVE database for chain building."""
-        return {"status": "simulated", "cves": self._cve_database}
+        """Return CVE database for chain building.
+        
+        Queries real CVE APIs (Shodan) when available, merging with 
+        simulated database. Fallback to simulated data if API fails.
+        
+        Returns:
+            Dict with merged CVE database including real API data
+        """
+        enhanced_cves = {}
+
+        # Start with simulated database
+        for cve_id, data in self._cve_database.items():
+            enhanced_cves[cve_id] = data.copy()
+
+        # Use only CVEs from our simulated database for API queries
+        cve_ids_to_query = list(self._cve_database.keys())
+
+        # Fetch real CVE data from Shodan API
+        real_cves_found = 0
+        for cve_id in cve_ids_to_query:
+            cve_data = fetch_cve_from_shodan(cve_id)
+            if cve_data:
+                # Enrich the entry with real data
+                enhanced_cves[cve_id].update({
+                    "source": "api_enriched",
+                    "api_title": cve_data.get("title"),
+                    "api_published": cve_data.get("published", ""),
+                    "api_modified": cve_data.get("modified", ""),
+                    "api_references": cve_data.get("references", []),
+                    "api_stats": cve_data.get("stats", {}),
+                    "data_source": "Mixed (simulated + Shodan API)"
+                })
+                real_cves_found += 1
+
+        return {
+            "status": "simulated",  # Maintain backward compatibility
+            "data_source": f"Mixed (simulated base {len(self._cve_database)} + {real_cves_found} real API enrichments)",
+            "cves": enhanced_cves,
+            "api_enrichments_applied": real_cves_found
+        }
