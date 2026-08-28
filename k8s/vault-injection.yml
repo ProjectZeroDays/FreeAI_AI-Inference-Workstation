@@ -1,0 +1,211 @@
+# FreeAI — Vault Secret Injection Job
+#
+# This Job pulls secrets from HashiCorp Vault and creates K8s Secrets.
+# It is designed to run once during deployment or on a schedule via CronJob.
+#
+# Prerequisites:
+#   1. Vault is installed and unsealed in the cluster
+#   2. A Vault role "freeai-app-role" exists with access to secret/freeai/*
+#   3. The Vault Agent Injector webhook is active (or use the initContainer approach below)
+#
+# Usage:
+#   kubectl apply -f k8s/vault-injection.yml -n freeai-stack
+#
+# To use as a CronJob for periodic sync, wrap this Job in a CronJob manifest.
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: freeai-vault-injector
+  namespace: freeai-stack
+  labels:
+    app: freeai
+---
+# Vault auth role binding (JWT token method)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: freeai-vault-token
+  namespace: freeai-stack
+  labels:
+    app: freeai
+type: Opaque
+stringData:
+  # Replace with actual Vault token or use Kubernetes auth instead
+  vault-token: "VAULT_TOKEN_PLACEHOLDER"
+---
+# Job that pulls secrets from Vault and creates/updates K8s Secrets
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: freeai-vault-sync
+  namespace: freeai-stack
+  labels:
+    app: freeai
+    job-group: vault-sync
+  annotations:
+    description: "Sync secrets from HashiCorp Vault to K8s Secrets"
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: freeai
+        job-group: vault-sync
+      annotations:
+        # Vault Agent Injector annotations (if using the webhook)
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-db-creds: "secret/freeai/database"
+        vault.hashicorp.com/agent-inject-secret-api-keys: "secret/freeai/api-keys"
+        vault.hashicorp.com/agent-inject-template-db-creds: |
+          {{- with secret "secret/freeai/database" -}}
+          POSTGRES_PASSWORD={{ .Data.data.password }}
+          POSTGRES_USER={{ .Data.data.username }}
+          POSTGRES_HOST={{ .Data.data.host | default "postgres.freeai.svc.cluster.local" }}
+          POSTGRES_PORT={{ .Data.data.port | default "5432" }}
+          {{- end }}
+        vault.hashicorp.com/agent-inject-template-api-keys: |
+          {{- with secret "secret/freeai/api-keys" -}}
+          OPENAI_API_KEY={{ .Data.data.openai }}
+          ANTHROPIC_API_KEY={{ .Data.data.anthropic }}
+          HF_TOKEN={{ .Data.data.hf_token }}
+          JWT_SIGNING_KEY={{ .Data.data.jwt_key }}
+          DASHBOARD_AUTH_TOKEN={{ .Data.data.dashboard_token }}
+          {{- end }}
+        vault.hashicorp.com/role: "freeai-app-role"
+        vault.hashicorp.com/agent-request-timeout: "10s"
+    spec:
+      serviceAccountName: freeai-vault-injector
+      restartPolicy: Never
+      # InitContainer approach as fallback when webhook is not available
+      initContainers:
+      - name: vault-init
+        image: hashicorp/vault:1.15
+        env:
+        - name: VAULT_ADDR
+          value: "http://vault.vault.svc.cluster.local:8200"
+        - name: VAULT_ROLE
+          value: "freeai-app-role"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          # Wait for Vault to be ready
+          for i in $(seq 1 30); do
+            if vault status -address=$VAULT_ADDR > /dev/null 2>&1; then
+              echo "Vault is ready"
+              break
+            fi
+            echo "Waiting for Vault... ($i/30)"
+            sleep 2
+          done
+          # Auth with Kubernetes method
+          JWT_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+          VAULT_NS=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+          vault write -address=$VAULT_ADDR auth/kubernetes/login \
+            role=$VAULT_ROLE \
+            jwt=$JWT_TOKEN \
+            namespace=$VAULT_NS
+          # Fetch secrets and create K8s Secret
+          DB_CREDS=$(vault read -field=password -address=$VAULT_ADDR secret/freeai/database 2>/dev/null || echo "")
+          OPENAI_KEY=$(vault read -field=openai -address=$VAULT_ADDR secret/freeai/api-keys 2>/dev/null || echo "")
+          ANTHROPIC_KEY=$(vault read -field=anthropic -address=$VAULT_ADDR secret/freeai/api-keys 2>/dev/null || echo "")
+          HF_TOKEN=$(vault read -field=hf_token -address=$VAULT_ADDR secret/freeai/api-keys 2>/dev/null || echo "")
+          JWT_KEY=$(vault read -field=jwt_key -address=$VAULT_ADDR secret/freeai/api-keys 2>/dev/null || echo "")
+          DASH_TOKEN=$(vault read -field=dashboard_token -address=$VAULT_ADDR secret/freeai/api-keys 2>/dev/null || echo "")
+          # Create or update the K8s secret
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: freeai-vault-synced
+            namespace: $NAMESPACE
+            labels:
+              app: freeai
+              managed-by: vault-sync
+          type: Opaque
+          stringData:
+            db-password: "$DB_CREDS"
+            openai-api-key: "$OPENAI_KEY"
+            anthropic-api-key: "$ANTHROPIC_KEY"
+            hf-token: "$HF_TOKEN"
+            jwt-signing-key: "$JWT_KEY"
+            dashboard-auth-token: "$DASH_TOKEN"
+          EOF
+          echo "Vault secrets synced successfully"
+        volumeMounts:
+        - name: vault-certs
+          mountPath: /vault/certs
+          readOnly: true
+        - name: kube-token
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          readOnly: true
+      containers:
+      - name: wait-for-sync
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - |
+          echo "Vault sync complete. Secrets are available as environment variables or mounted files."
+          echo "Check /vault/secrets/ for injected values."
+          ls -la /vault/secrets/ 2>/dev/null || true
+        volumeMounts:
+        - name: vault-agent-tmp
+          mountPath: /vault/secrets
+      volumes:
+      - name: vault-certs
+        secret:
+          secretName: vault-tls
+          optional: true
+      - name: kube-token
+        projected:
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+      - name: vault-agent-tmp
+        emptyDir: {}
+---
+# Optional: CronJob for periodic vault sync
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: freeai-vault-sync-cron
+#   namespace: freeai-stack
+# spec:
+#   schedule: "0 * * * *"  # Every hour
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           serviceAccountName: freeai-vault-injector
+#           restartPolicy: Never
+#           initContainers:
+#           - name: vault-init
+#             # Same spec as the Job above
+# ---
+# # ConfigMap referencing Vault for documentation
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: freeai-vault-config
+#   namespace: freeai-stack
+# data:
+#   VAULT_ADDR: "https://vault.freeai.svc.cluster.local:8200"
+#   VAULT_CACERT: "/vault/certs/ca.crt"
+#   VAULT_ROLE: "freeai-app-role"
+#   SECRET_PATHS: |
+#     secret/freeai/database
+#     secret/freeai/api-keys
+#     secret/freeai/jwt
+#     secret/freeai/tls
+#   README: |
+#     This cluster uses HashiCorp Vault for secrets management.
+#     Secrets are injected via the Vault Agent Injector webhook.
+#     For manual sync, run: kubectl apply -f k8s/vault-injection.yml

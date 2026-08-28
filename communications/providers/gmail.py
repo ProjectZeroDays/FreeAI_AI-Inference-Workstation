@@ -1,5 +1,6 @@
 """Gmail / OAuth2 provider for FreeAI communications."""
 import json
+import logging
 import os
 import time
 import urllib.request
@@ -80,7 +81,8 @@ class GmailProvider(BaseProvider):
             return {"ok": True, "recipient": recipient, "subject": subject}
         except Exception as e:
             self._last_error = str(e)
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Gmail error")
+            return {"ok": False, "error": "An error occurred"}
 
     def receive(self, limit: int = 20) -> List[Dict[str, Any]]:
         if not self._connected:

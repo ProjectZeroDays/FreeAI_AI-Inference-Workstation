@@ -1,5 +1,6 @@
 """Hermes native messaging provider — bridges FreeAI with Hermes agent platform."""
 import json
+import logging
 import os
 import time
 import urllib.request
@@ -70,7 +71,8 @@ class HermesProvider(BaseProvider):
             return {"ok": False, "error": self._last_error}
         except Exception as e:
             self._last_error = str(e)
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Hermes error")
+            return {"ok": False, "error": "An error occurred"}
 
     def receive(self, limit: int = 20) -> List[Dict[str, Any]]:
         if not self._connected:

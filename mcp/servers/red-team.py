@@ -57,7 +57,7 @@ def handle(req):
             else: return error(id, -32601, f"unknown tool {name}")
             reply(id, {"content":[{"type":"text","text": json.dumps(res, indent=2)}]})
         except Exception as e:
-            error(id, -32603, str(e))
+            error(id, -32603, "An error occurred")
     elif method == "notifications/initialized":
         pass
     else:

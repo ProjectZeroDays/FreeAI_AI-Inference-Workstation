@@ -189,10 +189,10 @@ class JobManager:
         except Exception as e:
             with self._lock:
                 job.status = "failed"
-                job.error = str(e)
+                job.error = "An error occurred"
                 job.completed_at = time.time()
             self._save()
-            return {"error": str(e)}
+            return {"error": "An error occurred"}
 
     def _run_background(self, job: ManagedJob) -> dict:
         handler = self._handlers.get(job.handler_name)

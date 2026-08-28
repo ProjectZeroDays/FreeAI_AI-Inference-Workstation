@@ -1,5 +1,6 @@
 """Twilio SMS / Voice / WhatsApp provider for FreeAI communications."""
 import json
+import logging
 import os
 import time
 import urllib.request
@@ -98,8 +99,9 @@ class TwilioProvider(BaseProvider):
             self._last_error = f"Send failed: {e.code}"
             return {"ok": False, "error": self._last_error}
         except Exception as e:
-            self._last_error = str(e)
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Twilio send error")
+            self._last_error = "An error occurred"
+            return {"ok": False, "error": "An error occurred"}
 
     def receive(self, limit: int = 20) -> List[Dict[str, Any]]:
         if not self._connected:
@@ -165,4 +167,5 @@ class TwilioProvider(BaseProvider):
                 self._messages_sent += 1
                 return {"ok": True, "call_sid": json.loads(resp.read().decode()).get("sid")}
         except Exception as e:
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Twilio call error")
+            return {"ok": False, "error": "An error occurred"}

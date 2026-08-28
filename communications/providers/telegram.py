@@ -1,5 +1,6 @@
 """Telegram Bot API provider for FreeAI communications."""
 import json
+import logging
 import os
 import time
 import urllib.request
@@ -84,7 +85,8 @@ class TelegramProvider(BaseProvider):
             return {"ok": False, "error": self._last_error}
         except Exception as e:
             self._last_error = str(e)
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Telegram error")
+            return {"ok": False, "error": "An error occurred"}
 
     def receive(self, limit: int = 20) -> List[Dict[str, Any]]:
         if not self._connected:
@@ -147,7 +149,8 @@ class TelegramProvider(BaseProvider):
                 result = json.loads(resp.read().decode())
                 return {"ok": result.get("ok"), "result": result.get("result")}
         except Exception as e:
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Telegram error")
+            return {"ok": False, "error": "An error occurred"}
 
     def delete_webhook(self) -> Dict:
         try:
@@ -162,4 +165,5 @@ class TelegramProvider(BaseProvider):
                 self._webhook_url = ""
                 return {"ok": result.get("ok")}
         except Exception as e:
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Telegram error")
+            return {"ok": False, "error": "An error occurred"}

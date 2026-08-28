@@ -1,5 +1,6 @@
 """Signal Messenger provider (via signal-cli) for FreeAI communications."""
 import json
+import logging
 import os
 import time
 import subprocess
@@ -70,7 +71,8 @@ class SignalProvider(BaseProvider):
             return {"ok": False, "error": "signal-cli not found"}
         except Exception as e:
             self._last_error = str(e)
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Signal error")
+            return {"ok": False, "error": "An error occurred"}
 
     def receive(self, limit: int = 20) -> List[Dict[str, Any]]:
         if not self._registered:
@@ -124,4 +126,5 @@ class SignalProvider(BaseProvider):
             self._username = phone_number
             return {"ok": result.returncode == 0, "output": result.stdout, "error": result.stderr}
         except Exception as e:
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("Signal error")
+            return {"ok": False, "error": "An error occurred"}

@@ -129,7 +129,7 @@ def restore_backup(filename: str, backup_name: str) -> dict:
         target.write_text(content, encoding="utf-8")
         return {"ok": True, "content": content}
     except Exception as e:
-        return {"ok": False, "error": str(e)}
+        return {"ok": False, "error": "An error occurred"}
 
 
 def export_all_as_tar() -> Path:

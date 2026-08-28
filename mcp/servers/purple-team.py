@@ -28,7 +28,7 @@ def handle(req):
             elif n=="purple_score": res=call_purple("score", findings=a["exercise_log"])
             else: return error(id,-32601,f"unknown {n}")
             reply(id, {"content":[{"type":"text","text": json.dumps(res, indent=2)}]})
-        except Exception as e: error(id,-32603,str(e))
+        except Exception as e: error(id,-32603,"An error occurred")
     elif m=="notifications/initialized": pass
     else: error(id,-32601,f"unknown {m}")
 def main():

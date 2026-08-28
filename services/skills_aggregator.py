@@ -300,7 +300,7 @@ class SkillsAggregator:
             self._cache = None
             return {"ok": True, "imported": imported, "total": len(self._skills)}
         except (json.JSONDecodeError, OSError) as e:
-            return {"error": str(e)}
+            return {"error": "An error occurred while importing skills"}
 
 
 _aggregator: Optional[SkillsAggregator] = None

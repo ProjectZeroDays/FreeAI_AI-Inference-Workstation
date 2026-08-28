@@ -1,5 +1,6 @@
 """SendGrid email provider for FreeAI communications."""
 import json
+import logging
 import os
 import time
 import urllib.request
@@ -83,7 +84,8 @@ class SendGridProvider(BaseProvider):
             return {"ok": False, "error": self._last_error}
         except Exception as e:
             self._last_error = str(e)
-            return {"ok": False, "error": str(e)}
+            logging.getLogger(__name__).exception("SendGrid error")
+            return {"ok": False, "error": "An error occurred"}
 
     def receive(self, limit: int = 20) -> List[Dict[str, Any]]:
         return []

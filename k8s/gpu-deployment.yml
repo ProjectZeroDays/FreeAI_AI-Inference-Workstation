@@ -1,0 +1,286 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: freeai-stack
+  labels:
+    app: freeai
+---
+# ── NVIDIA Device Plugin DaemonSet ──────────────────────────────
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nvidia-device-plugin-daemonset
+  namespace: freeai-stack
+  labels:
+    app: nvidia-device-plugin
+spec:
+  selector:
+    matchLabels:
+      name: nvidia-device-plugin-ds
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: nvidia-device-plugin-ds
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: nvidia.com/gpu.present
+                    operator: In
+                    values:
+                      - "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: nvidia-device-plugin-ctr
+          image: nvidia/k8s-device-plugin:v0.15.0
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+            - name: nvidia-ucsm
+              mountPath: /usr/local/nvidia
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
+        - name: nvidia-ucsm
+          hostPath:
+            path: /usr/local/nvidia
+---
+# ── GPU-enabled inference Deployment ────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-inference
+  namespace: freeai-stack
+  labels:
+    app: gpu-inference
+    tier: inference
+    gpu: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gpu-inference
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gpu-inference
+        tier: inference
+        gpu: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9001"
+        nvidia.com/mig.strategy: single
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      # Gracefully terminate to allow CUDA graph cleanup
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: inference
+          image: your-registry/inference:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export CUDA_VISIBLE_DEVICES=${GPU_DEVICE:-all}
+              export NVIDIA_DRIVER_CAPABILITIES=compute,utility
+              python -m router
+          ports:
+            - name: http
+              containerPort: 8010
+              protocol: TCP
+            - name: ws
+              containerPort: 8011
+              protocol: TCP
+          env:
+            - name: CUDA_VISIBLE_DEVICES
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['nvidia.com/cuda-visible-devices']
+              value: "all"
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: "compute,utility"
+            - name: GPU_PERF_ENABLED
+              value: "1"
+            - name: CUDA_GRAPH_ENABLED
+              value: "1"
+            - name: KV_CACHE_QUANT_BITS
+              value: "8"
+            - name: SPECULATIVE_DECODING_ENABLED
+              value: "0"
+          resources:
+            requests:
+              cpu: "4000m"
+              memory: "16Gi"
+              nvidia.com/gpu: 1
+            limits:
+              cpu: "8000m"
+              memory: "32Gi"
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: shm
+              mountPath: /dev/shm
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8010
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8010
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: freeai-models
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+---
+# ── GPU Monitoring Sidecar (nvidia-dcgm-exporter) ───────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-inference
+  namespace: freeai-stack
+spec:
+  template:
+    spec:
+      containers:
+        - name: dcgm-exporter
+          image: nvcr.io/nvidia/k8s/dcgm-exporter:2.3.2-2.6-ubuntu20.04
+          ports:
+            - name: metrics
+              containerPort: 9400
+              protocol: TCP
+          env:
+            - name: DCGM_EXPORTER_LISTEN
+              value: ":9400"
+            - name: DCGM_EXPORTER_KUBERNETES
+              value: "true"
+            - name: DCGM_EXPORTER_COLLECTION_PERIOD
+              value: "5"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: dcgm-exporter
+              mountPath: /etc/dcgm-exporter
+        - name: inference
+          # Add sidecar for DCGM metrics scraping
+          ports:
+            - name: dcgm
+              containerPort: 9400
+              protocol: TCP
+      volumes:
+        - name: dcgm-exporter
+          configMap:
+            name: dcgm-exporter-config
+            items:
+              - key: dcgm-metrics.conf
+                path: dcgm-metrics.conf
+---
+# ── DCGM Exporter ConfigMap ─────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dcgm-exporter-config
+  namespace: freeai-stack
+data:
+  dcgm-metrics.conf: |
+    fields:
+      - DCGM_FI_DEV_GPU_UTIL
+      - DCGM_FI_DEV_MEM_COPY_UTIL
+      - DCGM_FI_DEV_ENC_UTIL
+      - DCGM_FI_DEV_DEC_UTIL
+      - DCGM_FI_DEV_MEMORY_TEMP
+      - DCGM_FI_DEV_MEMORY_USAGE
+      - DCGM_FI_DEV_MEMORY_TOTAL
+      - DCGM_FI_DEV_POWER_USAGE
+      - DCGM_FI_DEV_POWER_MGMT
+      - DCGM_FI_DEV_GPU_TEMP
+      - DCGM_FI_DEV_XID_ERRORS
+      - DCGM_FI_DEV_RETIRED_SBE
+      - DCGM_FI_DEV_RETIRED_DBE
+      - DCGM_FI_DEV_RETIRED_PENDING
+---
+# ── Service for GPU Inference ───────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-inference
+  namespace: freeai-stack
+  labels:
+    app: gpu-inference
+spec:
+  selector:
+    app: gpu-inference
+  ports:
+    - name: http
+      port: 8010
+      targetPort: 8010
+      protocol: TCP
+    - name: ws
+      port: 8011
+      targetPort: 8011
+      protocol: TCP
+    - name: dcgm
+      port: 9400
+      targetPort: 9400
+      protocol: TCP
+  type: ClusterIP
+---
+# ── Prometheus ServiceMonitor for DCGM ─────────────────────────
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: gpu-inference
+  namespace: freeai-stack
+  labels:
+    app: gpu-inference
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: gpu-inference
+  endpoints:
+    - port: dcgm
+      interval: 15s
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - freeai-stack

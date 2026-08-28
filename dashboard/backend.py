@@ -1727,7 +1727,7 @@ def api_gpu_perf_enable():
         sys_path = str(Path(__file__).parent.parent / "router")
         if sys_path not in sys.path:
             sys.path.insert(0, sys_path)
-        from gpu_perf import get_graph_manager, get_kv_cache, get_speculative_decoding, get_perf_metrics
+        from gpu_perf import get_graph_manager, get_kv_cache, get_speculative_decoding, get_perf_metrics, is_gpu_available
         graph_mgr = get_graph_manager()
         kv = get_kv_cache()
         sd = get_speculative_decoding()
