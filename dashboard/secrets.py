@@ -13,6 +13,7 @@ import json
 import os
 import time
 import threading
+import uuid
 from pathlib import Path
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -41,7 +42,7 @@ def _get_master_key() -> bytes:
         h = hashlib.sha256(raw.encode("utf-8")).digest()
         return h
     # Fallback: derive from a fixed project salt so tests work without env var
-    salt = os.environ.get("SECRETS_SALT", "freeai-dashboard-secrets-salt-2024")
+    salt = os.environ.get("SECRETS_SALT", uuid.uuid4().hex)
     return hashlib.pbkdf2_hmac("sha256", b"default-master-key", salt.encode(), 100000)
 
 

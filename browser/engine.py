@@ -1105,7 +1105,11 @@ class BrowserEngine:
 
     async def set_download_path(self, path):
         """Set the download directory for the browser context."""
-        self._download_path = str(Path(path).expanduser().resolve())
+        resolved = Path(path).expanduser().resolve()
+        home = Path.home().resolve()
+        if not str(resolved).startswith(str(home) + os.sep) and resolved != home:
+            resolved = home / "Downloads"
+        self._download_path = str(resolved)
         Path(self._download_path).mkdir(parents=True, exist_ok=True)
         if self._ctx:
             await self._ctx.set_storage_state({"cookies": [], "origins": []})

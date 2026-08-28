@@ -3,6 +3,7 @@
 Provides REST API endpoints and serves static HTML pages.
 """
 import json
+import logging
 import os
 import random
 import threading
@@ -1030,7 +1031,8 @@ def api_hermes_proxy(subpath):
         with urllib.request.urlopen(req, timeout=30) as resp:
             return resp.read(), resp.status
     except Exception as e:
-        return jsonify({"error": str(e), "port": port}), 502
+        logging.getLogger(__name__).exception("Hermes proxy error")
+        return jsonify({"error": "Hermes proxy request failed"}), 502
 
 
 # â”€â”€ API: Providers (merged) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1151,14 +1153,16 @@ def api_sandbox_run():
             try:
                 exec(code, {"__builtins__": __builtins__})
             except Exception as e:
-                result = {"error": str(e)}
+                logging.getLogger(__name__).exception("Sandbox exec error")
+                result = {"error": "Code execution failed"}
             finally:
                 sys.stdout = old
             result = result if "result" in dir() else {"output": out.getvalue().strip()}
         else:
             result = {"output": "non-python execution not supported in sandbox"}
     except Exception as e:
-        result = {"error": str(e)}
+        logging.getLogger(__name__).exception("Sandbox error")
+        result = {"error": "Sandbox execution failed"}
     _SANDBOX["output"] = result
     _SANDBOX["last_run"] = time.time()
     return jsonify({"ok": True, "result": result})
@@ -1389,7 +1393,8 @@ def api_salad():
             data = json.loads(resp.read().decode())
         return jsonify({"configured": True, "data": data})
     except Exception as e:
-        return jsonify({"configured": True, "error": str(e), "earnings": {"total_usd": 0, "gpu_hours": 0}})
+        logging.getLogger(__name__).exception("Salad earnings error")
+        return jsonify({"configured": True, "error": "Salad earnings request failed", "earnings": {"total_usd": 0, "gpu_hours": 0}})
 
 
 @app.route("/api/salad/gpu")
@@ -1403,7 +1408,8 @@ def api_salad_gpu():
             data = json.loads(resp.read().decode())
         return jsonify({"configured": True, "gpus": data})
     except Exception as e:
-        return jsonify({"configured": True, "error": str(e), "gpus": []})
+        logging.getLogger(__name__).exception("Salad GPU error")
+        return jsonify({"configured": True, "error": "Salad GPU request failed", "gpus": []})
 
 
 # â”€â”€ API: Aikido Integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

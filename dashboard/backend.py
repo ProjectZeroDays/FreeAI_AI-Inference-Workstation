@@ -92,7 +92,7 @@ ROOT_DIR = CONFIG_DIR.parent
 app = Flask(__name__,
             static_folder=str(STATIC_DIR),
             template_folder=str(TEMPLATES_DIR))
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "freeai-dev-secret-key-2024")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", uuid.uuid4().hex)
 
 # ── i18n Jinja2 extensions ────────────────────────────────────────
 add_jinja_extensions(app)
@@ -1774,6 +1774,9 @@ def api_gpu_perf_enable():
         import logging
         logging.getLogger(__name__).exception("gpu perf enable error")
         return jsonify({"status": "error", "message": "gpu_perf_error"}), 500
+
+
+@app.route("/api/gpu/perf/disable", methods=["POST"])
 def api_gpu_perf_disable():
     """Disable GPU optimizations."""
     data = request.get_json(silent=True) or {}
@@ -1809,6 +1812,9 @@ def api_gpu_perf_disable():
         import logging
         logging.getLogger(__name__).exception("gpu perf disable error")
         return jsonify({"status": "error", "message": "gpu_perf_error"}), 500
+
+
+@app.route("/api/gpu/perf/status")
 def api_gpu_perf_status():
     """Check which GPU optimizations are active."""
     try:
