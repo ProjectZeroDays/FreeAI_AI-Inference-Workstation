@@ -9,7 +9,7 @@
     .logs-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
     .logs-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .logs-header h2 { font-size: 16px; font-weight: 700; margin: 0; }
-    .logs-header-actions { display: flex; gap: 8px; align-items: center; }
+    .logs-header-actions { display: flex; gap: 8px; aligin-items: center; }
     .conn-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
     .conn-status.connected { background: rgba(34,197,94,.12); color: var(--accent); }
     .conn-status.disconnected { background: rgba(239,68,68,.12); color: var(--danger); }
@@ -21,6 +21,7 @@
     .filter-bar input { flex: 1; min-width: 160px; }
     .filter-bar label { font-size: 12px; color: var(--muted-2); display: flex; align-items: center; gap: 6px; }
     .filter-bar input[type="checkbox"] { accent-color: var(--accent); }
+    .logs-main { display: flex; flex: 1; overflow: hidden; }
     .logs-display { flex: 1; overflow-y: auto; padding: 16px 24px; background: #0a0e1a; font-family: 'JetBrains Mono', 'Cascadia Code', monospace; }
     .logs-display::-webkit-scrollbar { width: 6px; }
     .logs-display::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -44,6 +45,26 @@
     .logs-bottom .lb-actions button.export:hover { border-color: var(--accent); color: var(--accent); }
     .logs-bottom .lb-actions button.clear:hover { border-color: var(--danger); color: var(--danger); }
     .auto-scroll-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); cursor: pointer; }
+
+    /* Tab navigation */
+    .tab-nav { display: flex; gap: 0; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); }
+    .tab-btn { padding: 8px 20px; font-size: 13px; font-weight: 600; color: var(--muted-2); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all .15s; }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+    .tab-panel.active { display: flex; }
+
+    /* Loki search bar */
+    .loki-search-bar { display: flex; gap: 8px; padding: 10px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--panel); flex-wrap: wrap; align-items: center; }
+    .loki-search-bar input[type="text"] { flex: 1; min-width: 280px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--text); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+    .loki-search-bar button { padding: 6px 16px; border-radius: 8px; border: 1px solid var(--accent-2); background: rgba(99,102,241,.12); color: var(--accent-2); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .loki-search-bar button:hover { background: rgba(99,102,241,.22); }
+    .loki-search-bar .loki-status { font-size: 11px; color: var(--muted-2); display: flex; align-items: center; gap: 4px; }
+    .loki-search-bar .loki-status.ok { color: var(--accent); }
+    .loki-search-bar .loki-status.err { color: var(--danger); }
+    .loki-meta { display: flex; gap: 12px; padding: 6px 24px; font-size: 11px; color: var(--muted-2); border-bottom: 1px solid rgba(148,163,184,.06); flex-shrink: 0; background: rgba(0,0,0,.2); }
+    .loki-meta span { color: var(--accent-2); }
+    .log-entry-json { padding: 4px 8px; font-size: 11px; color: #94A3B8; background: rgba(99,102,241,.05); border-radius: 4px; margin-top: 2px; word-break: break-all; }
   </style>
 </head>
 <body>
@@ -73,7 +94,7 @@
       </div>
     </nav>
 
-    <div class="main" style="padding:0;overflow:hidden">
+    <div class="main" style="padding:0;overflow:hidden;display:flex;flex-direction:column;">
       <header class="logs-header">
         <h2>Live Logs</h2>
         <div class="logs-header-actions">
@@ -87,35 +108,68 @@
         </div>
       </header>
 
-      <div class="filter-bar">
-        <input type="text" id="keyword-filter" placeholder="Search logs…" oninput="applyFilters()" />
-        <select id="level-filter" onchange="applyFilters()">
-          <option value="all">All Levels</option>
-          <option value="info">Info</option>
-          <option value="warn">Warn</option>
-          <option value="error">Error</option>
-          <option value="debug">Debug</option>
-        </select>
-        <select id="service-filter" onchange="applyFilters()">
-          <option value="all">All Services</option>
-        </select>
-        <label><input type="checkbox" id="follow-live" checked onchange="applyFilters()" /> Follow live</label>
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="live" onclick="switchTab('live')">Live Stream</button>
+        <button class="tab-btn" data-tab="loki" onclick="switchTab('loki')">Loki Search</button>
       </div>
 
-      <div class="logs-main">
-        <div class="logs-display" id="logs-display"></div>
+      <!-- Live Stream Panel -->
+      <div class="tab-panel active" id="panel-live">
+        <div class="filter-bar">
+          <input type="text" id="keyword-filter" placeholder="Search logs…" oninput="applyFilters()" />
+          <select id="level-filter" onchange="applyFilters()">
+            <option value="all">All Levels</option>
+            <option value="info">Info</option>
+            <option value="warn">Warn</option>
+            <option value="error">Error</option>
+            <option value="debug">Debug</option>
+          </select>
+          <select id="service-filter" onchange="applyFilters()">
+            <option value="all">All Services</option>
+          </select>
+          <label><input type="checkbox" id="follow-live" checked onchange="applyFilters()" /> Follow live</label>
+        </div>
+        <div class="logs-main">
+          <div class="logs-display" id="logs-display"></div>
+        </div>
+        <div class="logs-bottom">
+          <span class="lb-label">Entries:</span>
+          <span class="lb-count" id="log-count">0</span>
+          <span class="lb-spacer"></span>
+          <span class="lb-label">Level:</span>
+          <span class="lb-count" id="level-count">0</span>
+          <div class="lb-actions">
+            <button class="export" onclick="exportLogs('txt')">Export TXT</button>
+            <button class="export" onclick="exportLogs('json')">Export JSON</button>
+            <button class="clear" onclick="clearLogs()">Clear</button>
+          </div>
+        </div>
       </div>
 
-      <div class="logs-bottom">
-        <span class="lb-label">Entries:</span>
-        <span class="lb-count" id="log-count">0</span>
-        <span class="lb-spacer"></span>
-        <span class="lb-label">Level:</span>
-        <span class="lb-count" id="level-count">0</span>
-        <div class="lb-actions">
-          <button class="export" onclick="exportLogs('txt')">Export TXT</button>
-          <button class="export" onclick="exportLogs('json')">Export JSON</button>
-          <button class="clear" onclick="clearLogs()">Clear</button>
+      <!-- Loki Search Panel -->
+      <div class="tab-panel" id="panel-loki">
+        <div class="loki-search-bar">
+          <input type="text" id="loki-query" placeholder='{service_name="freeai-router"}' value='{service_name="freeai-router"}' />
+          <input type="text" id="loki-limit" placeholder="Limit" value="100" style="width:80px;flex:none;" />
+          <input type="text" id="loki-start" placeholder="Start (now-1h)" value="now-1h" style="width:130px;flex:none;" />
+          <input type="text" id="loki-end" placeholder="End (now)" value="now" style="width:100px;flex:none;" />
+          <button onclick="queryLoki()">Query</button>
+          <div id="loki-status" class="loki-status"></div>
+        </div>
+        <div class="loki-meta" id="loki-meta" style="display:none;">
+          <div>Found: <span id="loki-total">0</span></div>
+          <div>Available: <span id="loki-avail">—</span></div>
+        </div>
+        <div class="logs-display" id="loki-display"></div>
+        <div class="logs-bottom">
+          <span class="lb-label">Showing:</span>
+          <span class="lb-count" id="loki-count">0</span>
+          <span class="lb-spacer"></span>
+          <div class="lb-actions">
+            <button class="export" onclick="exportLoki('txt')">Export TXT</button>
+            <button class="export" onclick="exportLoki('json')">Export JSON</button>
+            <button class="clear" onclick="clearLoki()">Clear</button>
+          </div>
         </div>
       </div>
     </div>
@@ -130,6 +184,14 @@
     let filters = { service: 'all', level: 'all', keyword: '' };
     let levelCounts = {};
     let wsFilters = {};
+
+    // ── Loki state ──────────────────────────────────────────────────
+    let lokiLogs = [];
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab}`));
+    }
 
     function connectWS() {
       const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -258,6 +320,102 @@
         }).join('\n');
         const blob = new Blob([text], { type: 'text/plain' });
         downloadBlob(blob, `live-logs-${Date.now()}.txt`);
+      }
+    }
+
+    // ── Loki Search ─────────────────────────────────────────────────
+    async function queryLoki() {
+      const query = document.getElementById('loki-query').value.trim();
+      const limit = document.getElementById('loki-limit').value.trim() || '100';
+      const start = document.getElementById('loki-start').value.trim() || 'now-1h';
+      const end = document.getElementById('loki-end').value.trim() || 'now';
+      const statusEl = document.getElementById('loki-status');
+      const display = document.getElementById('loki-display');
+      const metaEl = document.getElementById('loki-meta');
+
+      statusEl.textContent = 'Querying…';
+      statusEl.className = 'loki-status';
+
+      try {
+        const qs = new URLSearchParams({ query, limit, start, end });
+        const res = await fetch(`/api/logs/loki/query?${qs}`);
+        const data = await res.json();
+        lokiLogs = data.logs || [];
+
+        if (data.loki_available) {
+          statusEl.textContent = 'Loki OK';
+          statusEl.className = 'loki-status ok';
+          metaEl.style.display = 'flex';
+          document.getElementById('loki-total').textContent = data.total;
+          document.getElementById('loki-avail').textContent = 'yes';
+        } else {
+          statusEl.textContent = 'Loki unavailable — showing buffered logs';
+          statusEl.className = 'loki-status err';
+          metaEl.style.display = 'flex';
+          document.getElementById('loki-total').textContent = lokiLogs.length;
+          document.getElementById('loki-avail').textContent = 'no';
+          // Fallback to in-memory logs
+          lokiLogs = [];
+          getLogBufferFallback();
+        }
+        renderLokiLogs();
+      } catch (e) {
+        statusEl.textContent = 'Query failed';
+        statusEl.className = 'loki-status err';
+        metaEl.style.display = 'none';
+        display.innerHTML = `<div class="log-entry"><span class="log-msg" style="color:var(--danger)">Connection error: ${escHtml(e.message)}</span></div>`;
+      }
+    }
+
+    async function getLogBufferFallback() {
+      try {
+        const res = await fetch('/api/logs?limit=200');
+        const data = await res.json();
+        lokiLogs = (data.logs || []).map(l => ({
+          ...l,
+          message: l.message || JSON.stringify(l),
+          ts: l.ts || Date.now(),
+        }));
+      } catch {}
+    }
+
+    function renderLokiLogs() {
+      const display = document.getElementById('loki-display');
+      document.getElementById('loki-count').textContent = lokiLogs.length;
+      const html = lokiLogs.slice(-800).map(l => {
+        const ts = l.ts ? new Date(l.ts * 1000).toLocaleTimeString() : '';
+        const msg = escHtml(l.message || '');
+        const svc = escHtml(l.service || l.service_name || '');
+        const level = l.level || 'info';
+        return `<div class="log-entry">
+          <span class="log-time">${ts}</span>
+          <span class="log-level ${level}">${level.toUpperCase()}</span>
+          <span class="log-service">${svc}</span>
+          <span class="log-msg">${msg}</span>
+        </div>`;
+      }).join('');
+      display.innerHTML = html;
+    }
+
+    function clearLoki() {
+      lokiLogs = [];
+      document.getElementById('loki-count').textContent = '0';
+      document.getElementById('loki-display').innerHTML = '';
+      document.getElementById('loki-meta').style.display = 'none';
+    }
+
+    function exportLoki(format) {
+      if (!lokiLogs.length) return;
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(lokiLogs, null, 2)], { type: 'application/json' });
+        downloadBlob(blob, `loki-logs-${Date.now()}.json`);
+      } else {
+        const text = lokiLogs.map(l => {
+          const ts = l.ts ? new Date(l.ts * 1000).toISOString() : '';
+          return `[${ts}] ${(l.level||'info').toUpperCase().padEnd(5)} [${l.service||''}] ${l.message||''}`;
+        }).join('\n');
+        const blob = new Blob([text], { type: 'text/plain' });
+        downloadBlob(blob, `loki-logs-${Date.now()}.txt`);
       }
     }
 

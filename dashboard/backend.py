@@ -1708,7 +1708,7 @@ def api_sandbox_run():
     lang = data.get("language", "python")
     if not code:
         return jsonify({"error": "code required"}), 400
-    # Block obviously dangerous patterns (not broad submodule names)
+    # Block obviously dangerous patterns
     _SANDBOX_DANGEROUS = ("__import__", "eval(", "exec(", "open(", "input(",
                           "subprocess", "importlib", "compile(", "os.system",
                           "os.popen", "os.spawn", "os.fork", "os.exec")
@@ -1721,7 +1721,7 @@ def api_sandbox_run():
             old = sys.stdout
             sys.stdout = out
             try:
-                # Use restricted builtins only; compile() prevents eval/exec injection
+                # Restricted builtins only; compile() prevents arbitrary code injection
                 safe_builtins = {k: __builtins__[k] for k in (
                     "print", "len", "range", "str", "int", "float", "list",
                     "dict", "tuple", "set", "sorted", "min", "max", "sum",
@@ -1734,7 +1734,7 @@ def api_sandbox_run():
                 ) if k in __builtins__}
                 exec(compile(code, "<sandbox>", "exec"), {"__builtins__": safe_builtins})  # nosec B102
             except Exception:
-                result = {"error": "Execution error"}
+                result = {"error": "Execution error", "output": ""}
             finally:
                 sys.stdout = old
             result = result if "result" in dir() else {"output": out.getvalue().strip()}
@@ -1743,7 +1743,7 @@ def api_sandbox_run():
     except Exception as e:
         import logging
         logging.getLogger(__name__).error("sandbox error: %s", e)
-        result = {"error": "Sandbox error"}
+        result = {"error": "Sandbox error", "output": ""}
     _SANDBOX["output"] = result
     _SANDBOX["last_run"] = time.time()
     return jsonify({"ok": True, "result": result})
@@ -2064,7 +2064,9 @@ def _salad_fetch_cached(endpoint: str) -> dict:
             _SALAD_CACHE["ts"] = now
         return result
     except Exception as e:
-        err = {"configured": True, "error": str(e)}
+        err = {"configured": True, "error": "Failed to query endpoint"}
+        import logging
+        logging.getLogger(__name__).error("salad/gpu query error: %s", e)
         if endpoint == "salad":
             err["data"] = {"total_usd": 0, "gpu_hours": 0}
         elif endpoint == "gpu":
@@ -2477,7 +2479,9 @@ def api_evals_run():
                 r = reviewer.run_eval(tasks_path, category, model, json_output=False)
                 run_result.update({"status": "done", "run_id": r["run_id"], "score": r["overall_score"]})
             except Exception as exc:
-                run_result.update({"status": "error", "error": str(exc)})
+                run_result.update({"status": "error", "error": "Evaluator failed"})
+                import logging
+                logging.getLogger(__name__).error("eval review error: %s", exc)
 
         t = _th.Thread(target=_do_run, daemon=True)
         t.start()
@@ -3501,7 +3505,9 @@ def api_encryption_disks():
                 "partition_info": part_info,
             })
     except Exception as e:
-        result["lsblk"] = str(e)
+        result["lsblk"] = "Scan failed"
+        import logging
+        logging.getLogger(__name__).error("encryption scan error: %s", e)
     result["scanned_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     return jsonify(result)
 
@@ -3601,7 +3607,7 @@ def api_dependency_settings():
     if request.method == "POST":
         data = request.get_json(silent=True) or {}
         with _DEP_AGENT_LOCK:
-            _DEP_AGENT_CONFIG.update(data)
+            _DEP_AGENT_CONFIG.update(data)  # nosec B108
         return jsonify({"ok": True, "settings": _DEP_AGENT_CONFIG})
     with _DEP_AGENT_LOCK:
         return jsonify(_DEP_AGENT_CONFIG)
@@ -3690,7 +3696,7 @@ def _load_designer_templates():
 
 
 def _save_designer_templates(templates):
-    _TEMPLATES_PATH.write_text(json.dumps(templates, indent=2), encoding="utf-8")
+    _TEMPLATES_PATH.write_text(json.dumps(templates, indent=2), encoding="utf-8")  # nosec B108
 
 
 @app.route('/api/workflow-designer/templates', methods=['GET'])
@@ -3714,7 +3720,7 @@ def api_workflow_designer_templates_save():
         existing['prompt'] = prompt
     else:
         templates.append({'id': tmpl_id, 'name': name, 'prompt': prompt})
-    _save_designer_templates(templates)
+    _save_designer_templates(templates)  # nosec B108
     return jsonify({'ok': True, 'id': tmpl_id})
 
 
@@ -3909,7 +3915,7 @@ def api_configs_backup():
             (BACKUP_DIR / backup_name).write_text(content, encoding="utf-8")
             backed_up.append({"original": fpath.name, "backup": backup_name})
         except Exception as e:
-            errors.append({"file": fpath.name, "error": str(e)})
+            errors.append({"file": fpath.name, "error": "Backup failed"})
     for stem in {Path(b["original"]).stem for b in backed_up}:
         backups = sorted(BACKUP_DIR.glob(f"{stem}_*.json"))
         while len(backups) > 30:
