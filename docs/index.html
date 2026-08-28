@@ -1027,6 +1027,63 @@
       .glow-panel { animation: none; }
       .marquee, .logo-marquee, .integration-marquee { animation-duration: 200s; }
     }
+
+    /* ── Polish: Animated Hero Orbs ── */
+    .hero-orb { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; opacity:.45; }
+    .hero-orb--1 { width:500px; height:500px; top:-120px; left:-100px; background:radial-gradient(circle,#5c8bff 0%,transparent 70%); animation:orbFloat1 8s ease-in-out infinite; }
+    .hero-orb--2 { width:400px; height:400px; top:40px; right:-80px; background:radial-gradient(circle,#8a70f6 0%,transparent 70%); animation:orbFloat2 10s ease-in-out infinite; }
+    .hero-orb--3 { width:280px; height:280px; bottom:-60px; left:30%; background:radial-gradient(circle,#6bd5ff 0%,transparent 70%); animation:orbFloat3 12s ease-in-out infinite; }
+    @keyframes orbFloat1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,20px)} }
+    @keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,25px)} }
+    @keyframes orbFloat3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(15px,-15px)} }
+
+    /* ── Polish: Dot Grid Background ── */
+    .dot-grid { background-image:radial-gradient(rgba(150,170,255,.07) 1px,transparent 1px); background-size:24px 24px; }
+    [data-theme="light"] .dot-grid { background-image:radial-gradient(rgba(2,65,227,.06) 1px,transparent 1px); }
+
+    /* ── Polish: Enhanced Feature Card Glow ── */
+    .feature-card { position:relative; overflow:visible; }
+    .feature-card::after { content:''; position:absolute; inset:-1px; border-radius:inherit; background:linear-gradient(135deg,rgba(92,139,255,.25),rgba(138,112,246,.15),transparent 60%); opacity:0; transition:opacity .3s; z-index:-1; }
+    .feature-card:hover::after { opacity:1; }
+    .feature-card:hover { border-color:rgba(92,139,255,.35); box-shadow:0 8px 32px rgba(92,139,255,.12),0 2px 8px rgba(0,0,0,.08); }
+    [data-theme="light"] .feature-card:hover { box-shadow:0 8px 32px rgba(2,65,227,.1),0 2px 8px rgba(0,0,0,.06); }
+
+    /* ── Polish: macOS-style Code Blocks ── */
+    .code-chrome { background:#1e1e2e; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,.08); margin:12px 0; }
+    .code-chrome-bar { display:flex; align-items:center; gap:6px; padding:10px 14px; background:rgba(255,255,255,.04); border-bottom:1px solid rgba(255,255,255,.06); }
+    .code-dot { width:10px; height:10px; border-radius:50%; }
+    .code-dot--red { background:#ff5f57; }
+    .code-dot--yellow { background:#febc2e; }
+    .code-dot--green { background:#28c840; }
+    .code-chrome-title { margin-left:8px; font-size:12px; color:rgba(255,255,255,.35); font-family:var(--font-mono); }
+    .code-chrome pre { margin:0; padding:16px; background:transparent; border:none; border-radius:0; }
+    .code-chrome code { font-family:var(--font-mono); font-size:13px; line-height:1.6; color:#cdd6f4; background:transparent; padding:0; }
+
+    /* ── Polish: Enhanced Pillar Numbers ── */
+    .pillar-num { font-size:56px; font-weight:800; background:var(--ai-grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:12px; }
+    [data-theme="light"] .pillar-num { background:linear-gradient(135deg,#0241e3 0%,#7c5cf0 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+    /* ── Polish: Stat Counter Pulse ── */
+    .hero-stat .num { position:relative; display:inline-block; }
+    .hero-stat .num::after { content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); width:0; height:2px; background:var(--ai-grad); border-radius:1px; transition:width .3s; }
+    .hero-stat:hover .num::after { width:80%; }
+
+    /* ── Polish: Active Nav Link ── */
+    .nav-link.active { color:var(--primary); font-weight:600; }
+
+    /* ── Polish: Button Glow ── */
+    [data-theme="dark"] .btn--primary { box-shadow:0 0 20px rgba(92,139,255,.25),0 4px 12px rgba(0,0,0,.3); }
+    [data-theme="dark"] .btn--primary:hover { box-shadow:0 0 32px rgba(92,139,255,.4),0 6px 20px rgba(0,0,0,.4); }
+
+    /* ── Polish: SDLC Diagram Connection Line ── */
+    .sdlc-agents { position:relative; }
+    .sdlc-agents::before { content:''; position:absolute; top:24px; left:10%; right:10%; height:2px; background:linear-gradient(90deg,transparent,rgba(92,139,255,.3),rgba(138,112,246,.3),transparent); z-index:0; }
+    [data-theme="light"] .sdlc-agents::before { background:linear-gradient(90deg,transparent,rgba(2,65,227,.15),rgba(124,92,240,.15),transparent); }
+    .agent-node { position:relative; z-index:1; }
+
+    /* ── Polish: CTA Section Gradient Overlay ── */
+    .cta-section::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 50% 80% at 20% 50%,rgba(92,139,255,.12) 0%,transparent 60%),radial-gradient(ellipse 50% 80% at 80% 50%,rgba(138,112,246,.10) 0%,transparent 60%); pointer-events:none; }
+    .cta-section > * { position:relative; z-index:1; }
   </style>
 </head>
 <body>
@@ -1129,11 +1186,14 @@
   </div>
 
   <!-- ── Hero ── -->
-  <section class="hero">
+  <section class="hero" style="position:relative;overflow:hidden;">
+    <div class="hero-orb hero-orb--1"></div>
+    <div class="hero-orb hero-orb--2"></div>
+    <div class="hero-orb hero-orb--3"></div>
     <div class="container">
       <div class="eyebrow">
         <span class="dot" style="background:var(--success)"></span>
-        v1.3.0 — Autonomous SDLC Agents &amp; Aikido Security
+        v1.2.0 — Autonomous SDLC Agents &amp; Aikido Security
       </div>
       <h1 class="reveal is-visible" data-i18n="hero-tagline">The AI workstation<br><span class="grad">that thinks ahead.</span></h1>
       <p class="reveal is-visible" style="transition-delay:.1s" data-i18n="hero-sub">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
@@ -1185,7 +1245,7 @@
   </div>
 
   <!-- ── Dashboards ── -->
-  <section class="section" id="dashboards">
+  <section class="section dot-grid" id="dashboards">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Dashboards</div>
       <h2 class="section-title">Every operational view,<br><span class="grad">one dashboard.</span></h2>
@@ -1226,7 +1286,7 @@
   </section>
 
   <!-- ── Skills ── -->
-  <section class="section" id="skills" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <section class="section dot-grid" id="skills" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Skills</div>
       <h2 class="section-title">55+ expert skills,<br><span class="grad">one click to install.</span></h2>
@@ -1267,7 +1327,7 @@
   </section>
 
   <!-- ── Plugins ── -->
-  <section class="section" id="plugins">
+  <section class="section dot-grid" id="plugins">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Plugins</div>
       <h2 class="section-title">Plug in what you need.<br><span class="grad">Remove what you don't.</span></h2>
@@ -1308,7 +1368,7 @@
   </section>
 
   <!-- ── MCPs with moving integration marquee ── -->
-  <section class="section" id="mcps" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <section class="section dot-grid" id="mcps" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">MCP Servers</div>
       <h2 class="section-title">40+ MCP servers,<br><span class="grad">zero config hassle.</span></h2>
@@ -1321,7 +1381,7 @@
   </section>
 
   <!-- ── Extensions ── -->
-  <section class="section" id="extensions">
+  <section class="section dot-grid" id="extensions">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Extensions</div>
       <h2 class="section-title">Extend the workstation<br><span class="grad">without limits.</span></h2>
@@ -1362,7 +1422,7 @@
   </section>
 
   <!-- ── Workflows ── -->
-  <section class="section" id="workflows" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <section class="section dot-grid" id="workflows" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Workflows</div>
       <h2 class="section-title">Chain agents into<br><span class="grad">production pipelines.</span></h2>
@@ -1461,7 +1521,7 @@
   </section>
 
   <!-- ── Deploy Methods ── -->
-  <section class="section" id="deploy-methods" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <section class="section dot-grid" id="deploy-methods" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Deploy</div>
       <h2 class="section-title">Choose your path.</h2>
@@ -1471,33 +1531,33 @@
       <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:var(--primary-soft)">🐧</div>
         <h3>Bare Metal</h3>
-        <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
+        <div class="code-chrome"><div class="code-chrome-bar"><span class="code-dot code-dot--red"></span><span class="code-dot code-dot--yellow"></span><span class="code-dot code-dot--green"></span><span class="code-chrome-title">install.sh</span></div><pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
 cd FreeAI_AI-Inference-Workstation
 sudo ./hardware/install-stack.sh
-bash models/auto-download-models.sh</code></pre>
+bash models/auto-download-models.sh</code></pre></div>
         <p style="margin-top:12px">Drivers → CUDA → Docker → stack → systemd → UFW. Auto-detects GPU and configures everything.</p>
       </div>
       <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">🐳</div>
         <h3>Docker Compose</h3>
-        <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
+        <div class="code-chrome"><div class="code-chrome-bar"><span class="code-dot code-dot--red"></span><span class="code-dot code-dot--yellow"></span><span class="code-dot code-dot--green"></span><span class="code-chrome-title">docker-compose.yml</span></div><pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
 cd FreeAI_AI-Inference-Workstation
 docker compose --profile allinone up -d
-# Open http://localhost:8030</code></pre>
+# Open http://localhost:8030</code></pre></div>
         <p style="margin-top:12px">Any host with NVIDIA Docker. Split or all-in-one profiles.</p>
       </div>
       <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">☁️</div>
         <h3>Cloud &amp; Live ISO</h3>
         <p>Kubernetes manifests, Vast.ai templates, RunPod kits, Hetzner bare-metal. Also bootable as a Live ISO — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes.</p>
-        <pre style="margin-top:12px"><code>docker pull ghcr.io/freeai/freeai:latest
-# or boot freeaios-amd64.iso</code></pre>
+        <div class="code-chrome" style="margin-top:12px"><div class="code-chrome-bar"><span class="code-dot code-dot--red"></span><span class="code-dot code-dot--yellow"></span><span class="code-dot code-dot--green"></span><span class="code-chrome-title">cloud.sh</span></div><pre><code>docker pull ghcr.io/freeai/freeai:latest
+# or boot freeaios-amd64.iso</code></pre></div>
       </div>
     </div>
   </section>
 
   <!-- ── Builder Agents ── -->
-  <section class="section" id="agents">
+  <section class="section dot-grid" id="agents">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Builder Agents</div>
       <h2 class="section-title">Generate complete projects</h2>
@@ -1516,7 +1576,7 @@ docker compose --profile allinone up -d
   </section>
 
   <!-- ── Security ── -->
-  <section class="section" id="security" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <section class="section dot-grid" id="security" style="background:var(--bg-elev-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Security</div>
       <h2 class="section-title">Secure by default.</h2>
@@ -1533,7 +1593,7 @@ docker compose --profile allinone up -d
   </section>
 
   <!-- ── FAQ ── -->
-  <section class="section" id="faq">
+  <section class="section dot-grid" id="faq">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">FAQ</div>
       <h2 class="section-title">Frequently asked questions</h2>
@@ -2096,6 +2156,52 @@ docker compose --profile allinone up -d
     chatLauncher.addEventListener('click', openChat);
     chatPanelClose.addEventListener('click', closeChat);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && chatOpen) closeChat(); });
+
+    // ── Scroll-spy: highlight active nav link ──
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    function updateActiveNav() {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.getAttribute('id'); });
+      navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+    }
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    updateActiveNav();
+
+    // ── Stat counter animation ──
+    const statEls = document.querySelectorAll('.hero-stat .num');
+    const statTargets = [...statEls].map(el => {
+      const text = el.textContent.replace(/[^0-9]/g, '');
+      const suffix = el.textContent.replace(/[0-9]/g, '');
+      return { el, target: parseInt(text) || 0, suffix };
+    });
+    let statCounted = false;
+    function animateStats() {
+      if (statCounted) return;
+      statCounted = true;
+      statTargets.forEach(({ el, target, suffix }) => {
+        const duration = 1200;
+        const start = performance.now();
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(ease * target) + suffix;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+    const statsObserver = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) animateStats();
+    }, { threshold: 0.5 });
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) statsObserver.observe(heroStats);
+
+    // ── Nav shadow on scroll ──
+    const nav = document.querySelector('.nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 10 ? '0 1px 0 var(--border), 0 4px 24px rgba(0,0,0,.12)' : 'none';
+    }, { passive: true });
   </script>
 
 </body></html>
