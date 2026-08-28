@@ -9,7 +9,35 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 
-from ._infos import MITRE_TECHNIQUES, KNOWN_CVES
+MITRE_TECHNIQUES = {
+    "memory_corruption": {
+        "id": "T1203",
+        "name": "Exploitation for Client Execution",
+        "tactic": "Execution",
+        "description": "Attackers exploit memory corruption vulnerabilities to execute arbitrary code by corrupting memory management structures, redirecting execution flow to attacker-controlled memory.",
+        "mechanisms": [
+            "Stack buffer overflow: Overwrite return addresses on the call stack",
+            "Heap corruption: Manipulate heap metadata to redirect allocations",
+            "Use-after-free: Reuse freed memory to overwrite vtable/function pointers",
+            "Format string: Craft format specifiers to read/write arbitrary memory",
+            "ROP/JOP chains: Chain existing code snippets to bypass DEP/ASLR"
+        ],
+        "mitigations": [
+            "Enable DEP/NX bit on executable memory pages",
+            "Deploy ASLR to randomize memory layout",
+            "Use stack canaries to detect buffer overflows",
+            "Enable CFG (Control Flow Guard) on modern Windows",
+            "Use safe memory management libraries (e.g., Rust)"
+        ]
+    }
+}
+
+KNOWN_CVES = {
+    "memory_corruption": [
+        "CVE-2023-21991", "CVE-2022-22543", "CVE-2021-4034",
+        "CVE-2021-22555", "CVE-2020-12344", "CVE-2019-3568"
+    ]
+}
 
 # Cache for NVD API results
 _cve_cache = {}

@@ -578,7 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
       status.textContent = d.total + " results";
       if (!d.results.length) { results.textContent = "no results found."; return; }
       results.innerHTML = d.results.slice(0, 10).map(h =>
-        `<div style="padding:4px 0;border-bottom:1px solid var(--border)">${h.ip_str} <span class="muted">— ${h.hostname || "(no hostname)")} <span class="muted">[${(h.tags||[]).join(",")||"no tags"}]</span></div>`
+        `<div style="padding:4px 0;border-bottom:1px solid var(--border)">${h.ip_str} <span class="muted">- ${h.hostname || "(no hostname)"} <span class="muted">[${(h.tags||[]).join(",")||"no tags"}]</span></div>`
       ).join("");
     } catch (e) { status.textContent = "error: " + e.message; }
   };

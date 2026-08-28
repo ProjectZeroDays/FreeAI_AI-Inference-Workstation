@@ -8,7 +8,35 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
 
-from ._infos import MITRE_TECHNIQUES, KNOWN_CVES
+MITRE_TECHNIQUES = {
+    "messaging_rce": {
+        "id": "T1203",
+        "name": "Exploitation for Client Execution",
+        "tactic": "Execution",
+        "description": "Attackers exploit vulnerabilities in messaging protocols and media processing to achieve remote code execution on target devices.",
+        "mechanisms": [
+            "iMessage: crafted media triggering WebKit or ImageIO vulnerabilities",
+            "WhatsApp: video processing exploits in FFmpeg or libav codecs",
+            "Signal: message parsing vulnerabilities in cryptographic libraries",
+            "Telegram: document parsing exploits in MTProto handling",
+            "Steganographic payloads: embedding shellcode in image/audio files"
+        ],
+        "mitigations": [
+            "Keep messaging apps updated to latest versions",
+            "Disable automatic media download from unknown contacts",
+            "Use sandboxed media processing engines",
+            "Implement content-type validation and sanitization",
+            "Deploy application whitelisting on mobile devices"
+        ]
+    }
+}
+
+KNOWN_CVES = {
+    "messaging_rce": [
+        "CVE-2019-8641", "CVE-2019-8646", "CVE-2019-8647",
+        "CVE-2021-30860", "CVE-2022-2051"
+    ]
+}
 
 # Cache for NVD API results
 _cve_cache = {}
