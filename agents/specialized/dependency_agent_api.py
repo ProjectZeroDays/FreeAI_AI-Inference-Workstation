@@ -72,6 +72,10 @@ class DependencyAgentAPI:
                 from agents.specialized.dependency_agent import DependencyAgent
                 agent = DependencyAgent(preset=preset)
                 result = agent.auto_patch(backup=True)
+                # Sanitize: never return raw error/traceback fields from agent
+                if isinstance(result, dict):
+                    result = {k: v for k, v in result.items()
+                              if k not in ("error", "traceback", "stack_trace", "exception")}
                 import flask
                 return flask.jsonify(result)
             except Exception as e:
@@ -119,6 +123,10 @@ class DependencyAgentAPI:
                 from agents.specialized.intelligent_plugins import get_plugins
                 plugins = get_plugins()
                 import flask
+                # Sanitize: never return raw error/traceback fields
+                if isinstance(plugins, dict):
+                    plugins = {k: v for k, v in plugins.items()
+                               if k not in ("error", "traceback", "stack_trace", "exception")}
                 return flask.jsonify(plugins)
             except Exception as e:
                 import flask, logging

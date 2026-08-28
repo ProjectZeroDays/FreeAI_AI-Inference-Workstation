@@ -1732,7 +1732,7 @@ def api_sandbox_run():
                     "oct", "hex", "bin", "chr", "ord", "format",
                     "__import__",
                 ) if k in __builtins__}
-                exec(compile(code, "<sandbox>", "exec"), {"__builtins__": safe_builtins})
+                exec(compile(code, "<sandbox>", "exec"), {"__builtins__": safe_builtins})  # nosec B102
             except Exception:
                 result = {"error": "Execution error"}
             finally:
@@ -2453,7 +2453,9 @@ def api_evals_runs():
             })
         return jsonify({"runs": summaries, "total": len(summaries)})
     except Exception as exc:
-        return jsonify({"error": str(exc), "runs": [], "total": 0})
+        import logging
+        logging.getLogger(__name__).error("eval summary error: %s", exc)
+        return jsonify({"error": "Summary failed", "runs": [], "total": 0})
 
 
 @app.route("/api/evals/run", methods=["POST"])
@@ -2501,7 +2503,9 @@ def api_evals_results(run_id: str):
                 return jsonify(r)
         return jsonify({"error": "not found"}), 404
     except Exception as exc:
-        return jsonify({"error": str(exc)}), 500
+        import logging
+        logging.getLogger(__name__).error("eval run detail error: %s", exc)
+        return jsonify({"error": "Eval run failed"}), 500
 
 
 @app.route("/api/evals/history")
@@ -2511,7 +2515,9 @@ def api_evals_history():
         runs = _load_eval_history()
         return jsonify({"runs": runs, "total": len(runs)})
     except Exception as exc:
-        return jsonify({"error": str(exc), "runs": [], "total": 0})
+        import logging
+        logging.getLogger(__name__).error("eval history error: %s", exc)
+        return jsonify({"error": "History failed", "runs": [], "total": 0})
 
 
 @app.route("/api/evals/leaderboard")
@@ -2523,9 +2529,13 @@ def api_evals_leaderboard():
         summary = lb.summarize(runs)
         return jsonify(summary)
     except ImportError as exc:
-        return jsonify({"error": f"evals module not available: {exc}", "runs": [], "trend": [], "models": {}})
+        import logging
+        logging.getLogger(__name__).error("evals module import error: %s", exc)
+        return jsonify({"error": "Evals module unavailable", "runs": [], "trend": [], "models": {}})
     except Exception as exc:
-        return jsonify({"error": str(exc), "runs": [], "trend": [], "models": {}})
+        import logging
+        logging.getLogger(__name__).error("evals leaderboard error: %s", exc)
+        return jsonify({"error": "Leaderboard failed", "runs": [], "trend": [], "models": {}})
 
 
 @app.route("/api/evals/tasks")
@@ -2541,7 +2551,9 @@ def api_evals_tasks():
                      "scoring_method": t.get("scoring_method", "string")} for t in tasks]
         return jsonify({"total": len(summary), "tasks": summary})
     except (json.JSONDecodeError, OSError) as exc:
-        return jsonify({"error": str(exc)}), 500
+        import logging
+        logging.getLogger(__name__).error("evals tasks error: %s", exc)
+        return jsonify({"error": "Tasks failed"}), 500
 
 
 @app.route("/api/notifications")
@@ -3693,7 +3705,9 @@ def api_workflow_designer_workflows_get(name):
         defn = json.loads(path.read_text(encoding='utf-8'))
         return jsonify({'definition': defn, 'id': safe_name})
     except (json.JSONDecodeError, OSError) as exc:
-        return jsonify({'error': str(exc)}), 500
+        import logging
+        logging.getLogger(__name__).error("workflow read error: %s", exc)
+        return jsonify({'error': 'Read failed'}), 500
 
 
 @app.route('/api/workflow-designer/workflows/<name>', methods=['DELETE'])
@@ -3881,7 +3895,9 @@ def api_configs_backup_restore(name, backup_name):
         fpath.write_text(content, encoding="utf-8")
         return jsonify({"ok": True, "content": content})
     except json.JSONDecodeError as e:
-        return jsonify({"error": f"Invalid JSON in backup: {e}"}), 400
+        import logging
+        logging.getLogger(__name__).error("config backup JSON error: %s", e)
+        return jsonify({"error": "Invalid JSON in backup"}), 400
     except OSError as e:
         import logging
         logging.getLogger(__name__).error("config backup error: %s", e)

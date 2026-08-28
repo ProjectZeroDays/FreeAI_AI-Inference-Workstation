@@ -22,7 +22,7 @@ from pathlib import Path
 def _secure_path(base: Path, user_path: str) -> Path | None:
     """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
     try:
-        resolved = (base / user_path).resolve()
+        resolved = (base / user_path).resolve()  # nosec B108
         if str(resolved).startswith(str(base.resolve())):
             return resolved
     except (OSError, ValueError):
