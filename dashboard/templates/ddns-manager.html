@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — DDNS Manager</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .ddns-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .ddns-main { padding:22px 24px 32px; min-width:0; }
+    .ddns-topbar { display:flex; align-items:center; justify-content:space-between;
+                   padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                   margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .ddns-topbar h1 { margin:0; font-size:22px; }
+    .ddns-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .ddns-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px; }
+    .ddns-stat { background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .ddns-stat .ds-val { font-size:22px;font-weight:700;color:var(--accent); }
+    .ddns-stat .ds-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .ddns-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .ddns-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+                border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .ddns-tab.active { background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3);color:#BBF7D0; }
+    .ddns-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .ddns-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                      border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .ddns-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .ddns-table tr:hover td { background:rgba(255,255,255,.02); }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-primary { background:rgba(92,139,255,.15);border-color:rgba(92,139,255,.3);color:#93B4FF; }
+    .btn-danger { background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .badge { display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600; }
+    .badge-ok { background:rgba(34,197,94,.15);color:#BBF7D0; }
+    .badge-warn { background:rgba(245,158,11,.15);color:#FDE68A; }
+    .badge-err { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .modal-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;width:420px;max-width:90vw; }
+    .modal-box h3 { margin:0 0 16px;font-size:16px; }
+    .modal-box label { display:block;font-size:12px;color:var(--muted);margin:8px 0 4px; }
+    .modal-box input,.modal-box select { width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px; }
+    .modal-box .modal-actions { display:flex;gap:8px;justify-content:flex-end;margin-top:16px; }
+  </style>
+</head>
+<body>
+  <div class="ddns-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>DDNS</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/ddns-manager" class="nav-item active"><span class="nav-dot"></span> DDNS Manager</a>
+        <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> Network Auto</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="ddns-main">
+      <header class="ddns-topbar">
+        <div><h1>DDNS Manager</h1><p>No-IP configuration, DNS records, and auto-refresh</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="openProvisionModal()">+ Add Record</button>
+          <button class="btn btn-sm" onclick="syncDDNS()">Sync</button>
+        </div>
+      </header>
+      <div class="ddns-stats">
+        <div class="ddns-stat"><div class="ds-val" id="ds-provider">—</div><div class="ds-lbl">Provider</div></div>
+        <div class="ddns-stat"><div class="ds-val" id="ds-hostname">—</div><div class="ds-lbl">Hostname</div></div>
+        <div class="ddns-stat"><div class="ds-val" id="ds-records">0</div><div class="ds-lbl">Records</div></div>
+        <div class="ddns-stat"><div class="ds-val" id="ds-autorefresh">—</div><div class="ds-lbl">Auto Refresh</div></div>
+      </div>
+      <div class="ddns-tabs">
+        <button class="ddns-tab active" data-tab="all" onclick="switchTab(this)">All Records</button>
+        <button class="ddns-tab" data-tab="A" onclick="switchTab(this)">A</button>
+        <button class="ddns-tab" data-tab="AAAA" onclick="switchTab(this)">AAAA</button>
+        <button class="ddns-tab" data-tab="CNAME" onclick="switchTab(this)">CNAME</button>
+        <button class="ddns-tab" data-tab="MX" onclick="switchTab(this)">MX</button>
+        <button class="ddns-tab" data-tab="TXT" onclick="switchTab(this)">TXT</button>
+      </div>
+      <table class="ddns-table">
+        <thead><tr><th>Type</th><th>Hostname</th><th>Value</th><th>TTL</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="ddns-tbody"><tr><td colspan="6" class="empty-state">No DNS records configured.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="provision-modal">
+    <div class="modal-box">
+      <h3>Add DNS Record</h3>
+      <label>Record Type</label>
+      <select id="rec-type"><option>A</option><option>AAAA</option><option>CNAME</option><option>MX</option><option>TXT</option></select>
+      <label>Hostname</label>
+      <input id="rec-hostname" placeholder="example.ddns.net" />
+      <label>Value</label>
+      <input id="rec-value" placeholder="192.168.1.100" />
+      <label>TTL (seconds)</label>
+      <input id="rec-ttl" type="number" value="300" />
+      <div class="modal-actions">
+        <button class="btn btn-sm" onclick="closeProvisionModal()">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="provisionRecord()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let ddnsRecords = [];
+    let currentTab = 'all';
+
+    async function loadStatus() {
+      try {
+        const r = await fetch('/api/ddns/status');
+        const d = await r.json();
+        $('ds-provider').textContent = d.provider || '—';
+        $('ds-hostname').textContent = d.hostname || '—';
+        $('ds-records').textContent = d.records_count || 0;
+        $('ds-autorefresh').textContent = d.auto_refresh ? 'ON' : 'OFF';
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadRecords() {
+      try {
+        const r = await fetch('/api/ddns/records');
+        ddnsRecords = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+
+    function switchTab(btn) {
+      document.querySelectorAll('.ddns-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+
+    function render() {
+      const filtered = currentTab === 'all' ? ddnsRecords : ddnsRecords.filter(r=>r.type===currentTab);
+      $('ds-records').textContent = ddnsRecords.length;
+      const tb = $('ddns-tbody');
+      if (!filtered.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No records.</td></tr>'; return; }
+      tb.innerHTML = filtered.map(r=>{
+        const badge = r.status==='active'?'badge-ok':r.status==='pending'?'badge-warn':'badge-err';
+        return `<tr>
+          <td><strong>${r.type}</strong></td>
+          <td style="font-family:monospace;font-size:12px">${r.hostname}</td>
+          <td style="font-family:monospace;font-size:12px">${r.value}</td>
+          <td>${r.ttl}s</td>
+          <td><span class="badge ${badge}">${r.status}</span></td>
+          <td><button class="btn btn-sm" onclick="editRecord('${r.id}')">Edit</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function editRecord(id) {
+      const rec = ddnsRecords.find(r=>r.id===id);
+      if (!rec) return;
+      const newVal = prompt('New value:', rec.value);
+      if (newVal === null) return;
+      try {
+        await fetch(`/api/ddns/records/${id}`, {
+          method:'PUT', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({value: newVal})
+        });
+        loadRecords();
+      } catch(e) { console.error(e); }
+    }
+
+    function openProvisionModal() { $('provision-modal').classList.add('open'); }
+    function closeProvisionModal() { $('provision-modal').classList.remove('open'); }
+
+    async function provisionRecord() {
+      const data = {
+        type: $('rec-type').value,
+        hostname: $('rec-hostname').value,
+        value: $('rec-value').value,
+        ttl: parseInt($('rec-ttl').value) || 300,
+      };
+      try {
+        await fetch('/api/ddns/provision', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        closeProvisionModal();
+        loadRecords();
+        loadStatus();
+      } catch(e) { console.error(e); }
+    }
+
+    async function syncDDNS() {
+      try {
+        const r = await fetch('/api/ddns/sync');
+        const d = await r.json();
+        ddnsRecords = d.records || [];
+        render();
+      } catch(e) { console.error(e); }
+    }
+
+    loadStatus();
+    loadRecords();
+    setInterval(loadStatus, 30000);
+  </script>
+</body>
+</html>

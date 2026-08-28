@@ -59,6 +59,7 @@
       <header class="loot-topbar">
         <div><h1>Loot</h1><p>Harvested credentials, cookies, sessions, and files</p></div>
         <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="openSettingsModal('loot')" title="Settings">⚙</button>
           <button class="btn btn-sm btn-export" onclick="exportLoot('netscape')">Export Netscape</button>
           <button class="btn btn-sm btn-export" onclick="exportLoot('csv')">Export CSV</button>
           <button class="btn btn-sm btn-danger" onclick="clearLoot()">Clear All</button>
@@ -85,6 +86,7 @@
     </div>
   </div>
   <script>
+    const $ = id => document.getElementById(id);
     let lootData = { cookies:[], creds:[], hashes:[], sessions:[], files:[] };
     let currentTab = 'cookies';
     async function loadLoot() {
@@ -130,6 +132,54 @@
       try { await fetch('/api/loot/clear', {method:'POST'}); loadLoot(); } catch(e) {}
     }
     loadLoot();
+  </script>
+  <div class="modal-overlay" id="settings-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;width:400px;max-width:90vw;">
+      <h3 style="margin:0 0 16px;font-size:16px;">⚙ Card Settings</h3>
+      <label style="display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;">Title</label>
+      <input id="set-title" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+      <label style="display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;">Icon</label>
+      <input id="set-icon" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+      <label style="display:flex;align-items:center;gap:8px;margin:12px 0 4px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="set-autorefresh" /> Auto Refresh
+      </label>
+      <label style="display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;">Refresh Interval (s)</label>
+      <input id="set-interval" type="number" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-sm" onclick="closeSettingsModal()">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let currentCardName = 'loot';
+    async function openSettingsModal(cardName) {
+      currentCardName = cardName;
+      try {
+        const r = await fetch(`/api/cards/settings/${cardName}`);
+        const d = await r.json();
+        $('set-title').value = d.title || '';
+        $('set-icon').value = d.icon || '';
+        $('set-autorefresh').checked = !!d.auto_refresh;
+        $('set-interval').value = d.refresh_interval || 30;
+      } catch(e) {}
+      $('settings-modal').style.display = 'flex';
+    }
+    function closeSettingsModal() { $('settings-modal').style.display = 'none'; }
+    async function saveSettings() {
+      const data = {
+        title: $('set-title').value,
+        icon: $('set-icon').value,
+        auto_refresh: $('set-autorefresh').checked,
+        refresh_interval: parseInt($('set-interval').value) || 30,
+      };
+      try {
+        await fetch(`/api/cards/settings/${currentCardName}`, {
+          method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        closeSettingsModal();
+      } catch(e) { console.error(e); }
+    }
   </script>
 </body>
 </html>

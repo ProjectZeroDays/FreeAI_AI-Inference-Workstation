@@ -110,7 +110,10 @@
           <h1>Subagent Orchestration</h1>
           <p>Launch parallel AI agents to decompose and execute complex tasks</p>
         </div>
-        <button class="btn" id="btn-refresh">↻ Refresh</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="openSettingsModal('subagents')" title="Settings">⚙</button>
+          <button class="btn" id="btn-refresh">↻ Refresh</button>
+        </div>
       </header>
 
       <div class="sa-stats" id="stats">
@@ -299,6 +302,54 @@
 
     load();
     setInterval(load, 10000);
+  </script>
+  <div id="settings-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;width:400px;max-width:90vw;">
+      <h3 style="margin:0 0 16px;font-size:16px;">⚙ Card Settings</h3>
+      <label style="display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;">Title</label>
+      <input id="set-title" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+      <label style="display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;">Icon</label>
+      <input id="set-icon" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+      <label style="display:flex;align-items:center;gap:8px;margin:12px 0 4px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="set-autorefresh" /> Auto Refresh
+      </label>
+      <label style="display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;">Refresh Interval (s)</label>
+      <input id="set-interval" type="number" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
+        <button class="btn btn-sm" onclick="closeSettingsModal()">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let currentCardName = 'subagents';
+    async function openSettingsModal(cardName) {
+      currentCardName = cardName;
+      try {
+        const r = await fetch(`/api/cards/settings/${cardName}`);
+        const d = await r.json();
+        document.getElementById('set-title').value = d.title || '';
+        document.getElementById('set-icon').value = d.icon || '';
+        document.getElementById('set-autorefresh').checked = !!d.auto_refresh;
+        document.getElementById('set-interval').value = d.refresh_interval || 10;
+      } catch(e) {}
+      document.getElementById('settings-modal').style.display = 'flex';
+    }
+    function closeSettingsModal() { document.getElementById('settings-modal').style.display = 'none'; }
+    async function saveSettings() {
+      const data = {
+        title: document.getElementById('set-title').value,
+        icon: document.getElementById('set-icon').value,
+        auto_refresh: document.getElementById('set-autorefresh').checked,
+        refresh_interval: parseInt(document.getElementById('set-interval').value) || 10,
+      };
+      try {
+        await fetch(`/api/cards/settings/${currentCardName}`, {
+          method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        closeSettingsModal();
+      } catch(e) { console.error(e); }
+    }
   </script>
 </body>
 </html>

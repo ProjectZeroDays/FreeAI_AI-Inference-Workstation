@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Network Auto</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .net-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .net-main { padding:22px 24px 32px; min-width:0; }
+    .net-topbar { display:flex; align-items:center; justify-content:space-between;
+                  padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                  margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .net-topbar h1 { margin:0; font-size:22px; }
+    .net-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .net-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px; }
+    .net-stat { background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .net-stat .ns-val { font-size:22px;font-weight:700;color:var(--accent); }
+    .net-stat .ns-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .net-cards { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:18px; }
+    .net-card { background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px; }
+    .net-card h3 { margin:0 0 12px;font-size:15px;display:flex;align-items:center;gap:8px; }
+    .net-card .nc-row { display:flex;align-items:center;justify-content:space-between;margin:8px 0; }
+    .net-card .nc-label { font-size:13px;color:var(--muted); }
+    .net-card .nc-value { font-size:13px;font-weight:600; }
+    .toggle { position:relative;width:44px;height:24px;background:rgba(255,255,255,.1);border-radius:12px;cursor:pointer;transition:background .2s; }
+    .toggle.on { background:rgba(34,197,94,.4); }
+    .toggle::after { content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s; }
+    .toggle.on::after { transform:translateX(20px); }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-primary { background:rgba(92,139,255,.15);border-color:rgba(92,139,255,.3);color:#93B4FF; }
+    .badge { display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600; }
+    .badge-ok { background:rgba(34,197,94,.15);color:#BBF7D0; }
+    .badge-err { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .chart-container { background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px; }
+    .chart-container h3 { margin:0 0 12px;font-size:15px; }
+    .chart-bars { display:flex;align-items:flex-end;gap:4px;height:80px; }
+    .chart-bar { flex:1;background:var(--accent);border-radius:4px 4px 0 0;min-width:8px;transition:height .3s; }
+  </script>
+</head>
+<body>
+  <div class="net-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Network</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS Manager</a>
+        <a href="/network-auto" class="nav-item active"><span class="nav-dot"></span> Network Auto</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="net-main">
+      <header class="net-topbar">
+        <div><h1>Network Auto-Management</h1><p>VPN, Tor, DNSCrypt proxy with automatic failover</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="optimizeNetwork()">Optimize Route</button>
+        </div>
+      </header>
+      <div class="net-stats">
+        <div class="net-stat"><div class="ns-val" id="ns-latency">—</div><div class="ns-lbl">Latency (ms)</div></div>
+        <div class="net-stat"><div class="ns-val" id="ns-up">—</div><div class="ns-lbl">Upload (Mbps)</div></div>
+        <div class="net-stat"><div class="ns-val" id="ns-down">—</div><div class="ns-lbl">Download (Mbps)</div></div>
+        <div class="net-stat"><div class="ns-val" id="ns-loss">—</div><div class="ns-lbl">Packet Loss (%)</div></div>
+      </div>
+      <div class="net-cards">
+        <div class="net-card">
+          <h3>VPN <span class="badge badge-err" id="vpn-badge">OFF</span></h3>
+          <div class="nc-row"><span class="nc-label">Status</span><span class="nc-value" id="vpn-status">Disconnected</span></div>
+          <div class="nc-row"><span class="nc-label">Provider</span><span class="nc-value" id="vpn-provider">Auto</span></div>
+          <div class="nc-row"><span class="nc-label">Toggle</span><div class="toggle" id="vpn-toggle" onclick="toggleVPN()"></div></div>
+        </div>
+        <div class="net-card">
+          <h3>Tor <span class="badge badge-err" id="tor-badge">OFF</span></h3>
+          <div class="nc-row"><span class="nc-label">Status</span><span class="nc-value" id="tor-status">Stopped</span></div>
+          <div class="nc-row"><span class="nc-label">Circuit</span><span class="nc-value" id="tor-circuit">Auto</span></div>
+          <div class="nc-row"><span class="nc-label">Toggle</span><div class="toggle" id="tor-toggle" onclick="toggleTor()"></div></div>
+        </div>
+        <div class="net-card">
+          <h3>DNSCrypt <span class="badge badge-err" id="dns-badge">OFF</span></h3>
+          <div class="nc-row"><span class="nc-label">Status</span><span class="nc-value" id="dns-status">Stopped</span></div>
+          <div class="nc-row"><span class="nc-label">Resolver</span><span class="nc-value" id="dns-resolver">Cloudflare</span></div>
+          <div class="nc-row"><span class="nc-label">Toggle</span><div class="toggle" id="dns-toggle" onclick="toggleDNSCrypt()"></div></div>
+        </div>
+      </div>
+      <div class="chart-container">
+        <h3>Connection Quality — Latency History</h3>
+        <div class="chart-bars" id="latency-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let netState = {};
+    let latencyHistory = [];
+
+    async function loadStatus() {
+      try {
+        const r = await fetch('/api/network/status');
+        netState = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadQuality() {
+      try {
+        const r = await fetch('/api/network/quality');
+        const q = await r.json();
+        $('ns-latency').textContent = q.latency_ms;
+        $('ns-up').textContent = q.bandwidth_up;
+        $('ns-down').textContent = q.bandwidth_down;
+        $('ns-loss').textContent = q.packet_loss;
+        latencyHistory.push(q.latency_ms);
+        if (latencyHistory.length > 30) latencyHistory.shift();
+        renderChart();
+      } catch(e) { console.error(e); }
+    }
+
+    function render() {
+      const vpn = netState.vpn || {};
+      const tor = netState.tor || {};
+      const dns = netState.dnscrypt || {};
+
+      $('vpn-status').textContent = vpn.status || 'Disconnected';
+      $('vpn-provider').textContent = vpn.provider || 'Auto';
+      $('vpn-toggle').classList.toggle('on', !!vpn.enabled);
+      $('vpn-badge').textContent = vpn.enabled ? 'ON' : 'OFF';
+      $('vpn-badge').className = 'badge ' + (vpn.enabled ? 'badge-ok' : 'badge-err');
+
+      $('tor-status').textContent = tor.status || 'Stopped';
+      $('tor-circuit').textContent = tor.circuit || 'Auto';
+      $('tor-toggle').classList.toggle('on', !!tor.enabled);
+      $('tor-badge').textContent = tor.enabled ? 'ON' : 'OFF';
+      $('tor-badge').className = 'badge ' + (tor.enabled ? 'badge-ok' : 'badge-err');
+
+      $('dns-status').textContent = dns.status || 'Stopped';
+      $('dns-resolver').textContent = dns.resolver || 'Cloudflare';
+      $('dns-toggle').classList.toggle('on', !!dns.enabled);
+      $('dns-badge').textContent = dns.enabled ? 'ON' : 'OFF';
+      $('dns-badge').className = 'badge ' + (dns.enabled ? 'badge-ok' : 'badge-err');
+    }
+
+    function renderChart() {
+      const max = Math.max(...latencyHistory, 1);
+      $('latency-chart').innerHTML = latencyHistory.map(v => {
+        const h = Math.max(4, (v / max) * 80);
+        return `<div class="chart-bar" style="height:${h}px" title="${v}ms"></div>`;
+      }).join('');
+    }
+
+    async function toggleVPN() {
+      try {
+        const r = await fetch('/api/network/vpn/toggle', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+        netState = await r.json();
+        netState = netState.vpn ? {...netState, vpn: netState.vpn} : netState;
+        loadStatus();
+      } catch(e) { console.error(e); }
+    }
+
+    async function toggleTor() {
+      const enabled = !(netState.tor && netState.tor.enabled);
+      try {
+        await fetch('/api/network/tor/circuit', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({enabled})});
+        loadStatus();
+      } catch(e) { console.error(e); }
+    }
+
+    async function toggleDNSCrypt() {
+      try {
+        const r = await fetch('/api/network/status');
+        const s = await r.json();
+        const enabled = !(s.dnscrypt && s.dnscrypt.enabled);
+        await fetch('/api/network/tor/circuit', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({enabled, circuit: 'dnscrypt'})});
+        loadStatus();
+      } catch(e) { console.error(e); }
+    }
+
+    async function optimizeNetwork() {
+      try {
+        await fetch('/api/network/optimize', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+        loadQuality();
+      } catch(e) { console.error(e); }
+    }
+
+    loadStatus();
+    loadQuality();
+    setInterval(loadQuality, 10000);
+  </script>
+</body>
+</html>

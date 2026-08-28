@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — AI Training</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .training-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .training-main { padding:22px 24px 32px; min-width:0; }
+    .training-topbar { display:flex; align-items:center; justify-content:space-between;
+                       padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                       margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .training-topbar h1 { margin:0; font-size:22px; }
+    .training-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .training-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .training-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+                    border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .training-tab.active { background:rgba(92,139,255,.15);border-color:rgba(92,139,255,.3);color:var(--accent); }
+    .training-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .training-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                          border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .training-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .training-table tr:hover td { background:rgba(255,255,255,.02); }
+    .training-item { font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-primary { background:rgba(92,139,255,.15);border-color:rgba(92,139,255,.3);color:var(--accent); }
+    .btn-danger { background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .btn-success { background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:#BBF7D0; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .training-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px; }
+    .training-stat { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:12px 14px; }
+    .training-stat .ts-val { font-size:22px;font-weight:700;color:var(--accent); }
+    .training-stat .ts-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .status-badge { display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600; }
+    .status-pending { background:rgba(250,204,21,.12);color:#FDE68A; }
+    .status-running { background:rgba(92,139,255,.15);color:var(--accent); }
+    .status-completed { background:rgba(34,197,94,.12);color:#BBF7D0; }
+    .status-failed { background:rgba(239,68,68,.12);color:#FCA5A5; }
+    .progress-bar { width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden; }
+    .progress-fill { height:100%;background:var(--accent);border-radius:3px;transition:width .3s; }
+    .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100; }
+    .modal-overlay.open { display:flex; }
+    .modal { background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:480px;width:90%; }
+    .modal h2 { margin:0 0 16px;font-size:18px; }
+    .modal label { display:block;font-size:12px;color:var(--muted);margin-bottom:4px; }
+    .modal input,.modal select { width:100%;padding:8px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);
+      border-radius:8px;color:var(--text);font-size:13px;margin-bottom:12px; }
+    .modal-actions { display:flex;gap:8px;justify-content:flex-end;margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="training-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>AI Training</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/ai-training" class="nav-item active"><span class="nav-dot"></span> AI Training</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="training-main">
+      <header class="training-topbar">
+        <div><h1>AI Training</h1><p>Model training pipeline — SFT, DPO, RFT jobs and datasets</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="openNewJobModal()">+ New Job</button>
+          <button class="btn btn-sm btn-primary" onclick="openNewDatasetModal()">+ Dataset</button>
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+        </div>
+      </header>
+      <div class="training-stats">
+        <div class="training-stat"><div class="ts-val" id="ts-jobs">0</div><div class="ts-lbl">Total Jobs</div></div>
+        <div class="training-stat"><div class="ts-val" id="ts-running">0</div><div class="ts-lbl">Running</div></div>
+        <div class="training-stat"><div class="ts-val" id="ts-completed">0</div><div class="ts-lbl">Completed</div></div>
+        <div class="training-stat"><div class="ts-val" id="ts-datasets">0</div><div class="ts-lbl">Datasets</div></div>
+        <div class="training-stat"><div class="ts-val" id="ts-models">0</div><div class="ts-lbl">Models</div></div>
+        <div class="training-stat"><div class="ts-val" id="ts-gpus">0</div><div class="ts-lbl">GPUs Active</div></div>
+      </div>
+      <div class="training-tabs">
+        <button class="training-tab active" data-tab="jobs" onclick="switchTab(this)">Training Jobs</button>
+        <button class="training-tab" data-tab="datasets" onclick="switchTab(this)">Datasets</button>
+        <button class="training-tab" data-tab="models" onclick="switchTab(this)">Model Registry</button>
+        <button class="training-tab" data-tab="gpu" onclick="switchTab(this)">GPU Utilization</button>
+      </div>
+      <table class="training-table" id="training-table">
+        <thead id="training-thead"><tr><th>Name</th><th>Type</th><th>Status</th><th>Progress</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody id="training-tbody"><tr><td colspan="6" class="empty-state">No training jobs yet. Create one to get started.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- New Job Modal -->
+  <div class="modal-overlay" id="job-modal">
+    <div class="modal">
+      <h2>Create Training Job</h2>
+      <label>Job Name</label>
+      <input type="text" id="job-name" placeholder="my-fine-tune" />
+      <label>Training Type</label>
+      <select id="job-type">
+        <option value="sft">SFT (Supervised Fine-Tuning)</option>
+        <option value="dpo">DPO (Direct Preference Optimization)</option>
+        <option value="abr">Abliterate (Safety Removal)</option>
+      </select>
+      <label>Base Model</label>
+      <input type="text" id="job-base-model" placeholder="qwen3.6-12b" />
+      <label>Dataset ID (optional)</label>
+      <input type="text" id="job-dataset" placeholder="dataset id" />
+      <div class="modal-actions">
+        <button class="btn btn-sm" onclick="closeJobModal()">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="createJob()">Create Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Dataset Modal -->
+  <div class="modal-overlay" id="dataset-modal">
+    <div class="modal">
+      <h2>Upload Dataset</h2>
+      <label>Dataset Name</label>
+      <input type="text" id="ds-name" placeholder="my-dataset" />
+      <label>Format</label>
+      <select id="ds-format">
+        <option value="jsonl">JSONL</option>
+        <option value="parquet">Parquet</option>
+        <option value="csv">CSV</option>
+      </select>
+      <label>File</label>
+      <input type="file" id="ds-file" />
+      <div class="modal-actions">
+        <button class="btn btn-sm" onclick="closeDatasetModal()">Cancel</button>
+        <button class="btn btn-sm btn-primary" onclick="uploadDataset()">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let data = { jobs:[], datasets:[], models:[], gpu:[] };
+    let currentTab = 'jobs';
+
+    async function refreshAll() {
+      await Promise.all([loadJobs(), loadDatasets(), loadModels(), loadGpu()]);
+      render();
+    }
+
+    async function loadJobs() {
+      try {
+        const r = await fetch('/api/training');
+        const body = await r.json();
+        data.jobs = [];
+        const jobsObj = body.jobs || {};
+        for (const type of ['sft','dpo','abr']) {
+          const list = jobsObj[type] || [];
+          data.jobs = data.jobs.concat(list.map(j => ({...j, jobType: type})));
+        }
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadDatasets() {
+      try {
+        const r = await fetch('/api/training/datasets');
+        data.datasets = await r.json();
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadModels() {
+      try {
+        const r = await fetch('/api/training/models');
+        data.models = await r.json();
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadGpu() {
+      try {
+        const r = await fetch('/api/training/gpu-status');
+        const body = await r.json();
+        data.gpu = body.devices || [];
+      } catch(e) { console.error(e); }
+    }
+
+    function switchTab(btn) {
+      document.querySelectorAll('.training-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+
+    function statusClass(s) {
+      if (s==='queued'||s==='pending') return 'status-pending';
+      if (s==='running') return 'status-running';
+      if (s==='done'||s==='completed'||s==='deployed') return 'status-completed';
+      return 'status-failed';
+    }
+
+    function render() {
+      const running = data.jobs.filter(j=>j.status==='running').length;
+      const completed = data.jobs.filter(j=>j.status==='done'||j.status==='completed').length;
+      $('ts-jobs').textContent = data.jobs.length;
+      $('ts-running').textContent = running;
+      $('ts-completed').textContent = completed;
+      $('ts-datasets').textContent = data.datasets.length;
+      $('ts-models').textContent = data.models.length;
+      $('ts-gpus').textContent = data.gpu.filter(g=>g.utilization>0).length;
+
+      const thead = $('training-thead');
+      const tb = $('training-tbody');
+
+      if (currentTab === 'jobs') {
+        thead.innerHTML = '<tr><th>Name</th><th>Type</th><th>Status</th><th>Progress</th><th>Created</th><th>Actions</th></tr>';
+        if (!data.jobs.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No training jobs yet.</td></tr>'; return; }
+        tb.innerHTML = data.jobs.map(j => {
+          const pct = j.progress || 0;
+          return `<tr>
+            <td class="training-item">${j.name||j.id}</td>
+            <td>${(j.jobType||j.type||'sft').toUpperCase()}</td>
+            <td><span class="status-badge ${statusClass(j.status)}">${j.status}</span></td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--muted)">${pct}%</span></td>
+            <td style="font-size:12px;color:var(--muted)">${new Date((j.created_at||0)*1000).toLocaleString()}</td>
+            <td><button class="btn btn-sm btn-danger" onclick="deleteJob('${j.id}','${j.jobType||j.type}')">Del</button></td>
+          </tr>`;
+        }).join('');
+      } else if (currentTab === 'datasets') {
+        thead.innerHTML = '<tr><th>Name</th><th>Format</th><th>Samples</th><th>Created</th><th>Actions</th></tr>';
+        if (!data.datasets.length) { tb.innerHTML='<tr><td colspan="5" class="empty-state">No datasets uploaded.</td></tr>'; return; }
+        tb.innerHTML = data.datasets.map(d => {
+          return `<tr>
+            <td class="training-item">${d.name}</td>
+            <td>${d.format}</td>
+            <td>${d.samples||'—'}</td>
+            <td style="font-size:12px;color:var(--muted)">${new Date((d.created_at||0)*1000).toLocaleString()}</td>
+            <td><button class="btn btn-sm btn-danger" onclick="deleteDataset('${d.id}')">Del</button></td>
+          </tr>`;
+        }).join('');
+      } else if (currentTab === 'models') {
+        thead.innerHTML = '<tr><th>Name</th><th>Base Model</th><th>Method</th><th>Samples</th><th>Status</th><th>Actions</th></tr>';
+        if (!data.models.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No trained models yet.</td></tr>'; return; }
+        tb.innerHTML = data.models.map(m => {
+          return `<tr>
+            <td class="training-item">${m.name}</td>
+            <td>${m.base_model||'—'}</td>
+            <td>${(m.method||'sft').toUpperCase()}</td>
+            <td>${m.samples||'—'}</td>
+            <td><span class="status-badge ${statusClass(m.deployed?'deployed':'completed')}">${m.deployed?'Deployed':'Ready'}</span></td>
+            <td>
+              ${!m.deployed?`<button class="btn btn-sm btn-success" onclick="deployModel('${m.id}')">Deploy</button>`:''}
+              <button class="btn btn-sm btn-danger" onclick="deleteModel('${m.id}')">Del</button>
+            </td>
+          </tr>`;
+        }).join('');
+      } else if (currentTab === 'gpu') {
+        thead.innerHTML = '<tr><th>GPU</th><th>Memory</th><th>Utilization</th><th>Temp</th><th>Job</th></tr>';
+        if (!data.gpu.length) { tb.innerHTML='<tr><td colspan="5" class="empty-state">No GPU devices detected.</td></tr>'; return; }
+        tb.innerHTML = data.gpu.map(g => {
+          return `<tr>
+            <td class="training-item">${g.name||'GPU '+g.id}</td>
+            <td>${g.memory_used||0}MB / ${g.memory_total||0}MB</td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:${g.utilization||0}%"></div></div> ${g.utilization||0}%</td>
+            <td>${g.temperature||'—'}°C</td>
+            <td class="training-item">${g.current_job||'—'}</td>
+          </tr>`;
+        }).join('');
+      }
+    }
+
+    function openNewJobModal() { $('job-modal').classList.add('open'); }
+    function closeJobModal() { $('job-modal').classList.remove('open'); }
+    function openNewDatasetModal() { $('dataset-modal').classList.add('open'); }
+    function closeDatasetModal() { $('dataset-modal').classList.remove('open'); }
+
+    async function createJob() {
+      const name = $('job-name').value || ('job-' + Date.now());
+      const type = $('job-type').value;
+      const baseModel = $('job-base-model').value || 'unknown';
+      const dataset = $('job-dataset').value || '';
+      try {
+        const r = await fetch('/api/training/jobs', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({name, type, base_model: baseModel, dataset_id: dataset})
+        });
+        const body = await r.json();
+        closeJobModal();
+        refreshAll();
+      } catch(e) { console.error(e); }
+    }
+
+    async function uploadDataset() {
+      const name = $('ds-name').value || ('ds-' + Date.now());
+      const format = $('ds-format').value;
+      const fileInput = $('ds-file');
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('format', format);
+      if (fileInput.files.length) formData.append('file', fileInput.files[0]);
+      else {
+        const blob = new Blob(['{"prompt":"test","completion":"test"}'], {type:'application/json'});
+        formData.append('file', blob, 'dummy.jsonl');
+      }
+      try {
+        await fetch('/api/training/datasets', {method:'POST', body: formData});
+        closeDatasetModal();
+        refreshAll();
+      } catch(e) { console.error(e); }
+    }
+
+    async function deleteJob(id, type) {
+      try { await fetch(`/api/training/jobs/${type}/${id}`, {method:'DELETE'}); refreshAll(); } catch(e) {}
+    }
+    async function deleteDataset(id) {
+      try { await fetch(`/api/training/datasets/${id}`, {method:'DELETE'}); refreshAll(); } catch(e) {}
+    }
+    async function deleteModel(id) {
+      try { await fetch(`/api/training/models/${id}`, {method:'DELETE'}); refreshAll(); } catch(e) {}
+    }
+    async function deployModel(id) {
+      try {
+        const r = await fetch(`/api/training/models/${id}/deploy`, {method:'POST'});
+        const body = await r.json();
+        if (body.ok) alert('Model deployed to: ' + (body.endpoint||'unknown'));
+        refreshAll();
+      } catch(e) { console.error(e); }
+    }
+
+    refreshAll();
+    setInterval(refreshAll, 30000);
+  </script>
+</body>
+</html>
