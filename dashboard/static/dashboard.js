@@ -538,6 +538,88 @@ document.addEventListener("DOMContentLoaded", () => {
   $("delete-preset").onclick = deleteSelectedPreset;
   $("start-idle").onclick = startIdleWindow;
   $("skills-scan-btn").onclick = () => scanSkills();
+
+  /* ---------------- Shodan card ---------------- */
+  async function refreshShodanBadge() {
+    try {
+      const r = await fetch("/api/shodan/key");
+      const d = await r.json();
+      const badge = $("shodan-status-badge");
+      if (badge) badge.textContent = d.configured ? d.key_prefix || "key set" : "no key";
+    } catch (_) { /* ignore */ }
+  }
+
+  $("shodan-search-btn").onclick = async () => {
+    const q = $("shodan-query").value.trim();
+    const status = $("shodan-search-status");
+    const results = $("shodan-results");
+    if (!q) { status.textContent = "enter a query"; return; }
+    status.textContent = "searching...";
+    results.textContent = "";
+    try {
+      const r = await fetch("/api/shodan/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q, limit: 10 })
+      });
+      const d = await r.json();
+      if (!r.ok) { status.textContent = "error: " + (d.error || r.status); return; }
+      status.textContent = d.total + " results";
+      if (!d.results.length) { results.textContent = "no results found."; return; }
+      results.innerHTML = d.results.slice(0, 10).map(h =>
+        `<div style="padding:4px 0;border-bottom:1px solid var(--border)">${h.ip_str} <span class="muted">— ${h.hostname || "(no hostname)")} <span class="muted">[${(h.tags||[]).join(",")||"no tags"}]</span></div>`
+      ).join("");
+    } catch (e) { status.textContent = "error: " + e.message; }
+  };
+
+  $("shodan-host-btn").onclick = async () => {
+    const ip = $("shodan-host-ip").value.trim();
+    const status = $("shodan-host-status");
+    const results = $("shodan-host-results");
+    if (!ip) { status.textContent = "enter an IP"; return; }
+    status.textContent = "looking up...";
+    results.textContent = "";
+    try {
+      const r = await fetch(`/api/shodan/host/${encodeURIComponent(ip)}`);
+      const d = await r.json();
+      if (!r.ok) { status.textContent = "error: " + (d.error || r.status); return; }
+      const h = d.data || {};
+      status.textContent = "found";
+      results.innerHTML = [
+        `<div><b>IP:</b> ${h.ip_str || ip}</div>
+         <div><b>Hostnames:</b> ${(h.hostnames||[]).join(", ") || "—"}</div>
+         <div><b>Organization:</b> ${h.organization || "—"}</div>
+         <div><b>Operating System:</b> ${h.os || "—"}</div>
+         <div><b>Ports:</b> ${(h.ports||[]).join(", ") || "—"}</div>
+         <div><b>Tags:</b> ${(h.tags||[]).join(", ") || "—"}</div>
+         <div><b>Country:</b> ${h.country_name || "—"}</div>
+         <div><b>City:</b> ${h.city || "—"}</div>`,
+      ].join("");
+    } catch (e) { status.textContent = "error: " + e.message; }
+  };
+
+  $("shodan-save-key").onclick = async () => {
+    const key = $("shodan-api-key").value.trim();
+    const status = $("shodan-key-status");
+    status.textContent = "saving...";
+    try {
+      const r = await fetch("/api/shodan/key", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key })
+      });
+      const d = await r.json();
+      if (d.ok) {
+        status.textContent = "saved — restart dashboard to apply";
+        $("shodan-api-key").value = "";
+        refreshShodanBadge();
+      } else {
+        status.textContent = "save failed";
+      }
+    } catch (e) { status.textContent = "error: " + e.message; }
+  };
+
+  refreshShodanBadge();
 });
 
 /* ---------------- model shelf ---------------- */

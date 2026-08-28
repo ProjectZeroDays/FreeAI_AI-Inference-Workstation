@@ -174,17 +174,33 @@
             <ul id="runs-list" class="muted">loading autonomous runs...</ul>
           </section>
 
-          <section class="card">
-            <div class="card-head"><h2>Files</h2></div>
-            <div class="row">
-              <input type="file" id="up-file" />
-              <button id="up-send">Upload</button>
-              <span id="up-status" class="muted"></span>
-            </div>
-            <ul id="uploads-list" class="muted"></ul>
-          </section>
-        </div>
-      </div>
+           <section class="card">
+             <div class="card-head"><h2>Files</h2></div>
+             <div class="row">
+               <input type="file" id="up-file" />
+               <button id="up-send">Upload</button>
+               <span id="up-status" class="muted"></span>
+             </div>
+             <ul id="uploads-list" class="muted"></ul>
+           </section>
+
+           <section class="card">
+             <div class="card-head"><h2>Shodan</h2><span id="shodan-status-badge" class="pill muted">no key</span></div>
+             <div class="row">
+               <input type="text" id="shodan-query" placeholder="Search Shodan (e.g. apache, port:443)..." style="flex:1" />
+               <button id="shodan-search-btn">Search</button>
+               <span id="shodan-search-status" class="muted"></span>
+             </div>
+             <div id="shodan-results" class="muted" style="font-size:12px;max-height:200px;overflow-y:auto;margin-top:8px">Search for hosts or enter an IP below.</div>
+             <div class="row" style="margin-top:8px">
+               <input type="text" id="shodan-host-ip" placeholder="Host IP (e.g. 8.8.8.8)" style="flex:1" />
+               <button id="shodan-host-btn">Lookup</button>
+               <span id="shodan-host-status" class="muted"></span>
+             </div>
+             <div id="shodan-host-results" class="muted" style="font-size:12px;max-height:200px;overflow-y:auto;margin-top:8px"></div>
+           </section>
+         </div>
+       </div>
 
       <!-- Tab: Agents -->
       <div class="tab-content" id="tab-agents">
@@ -423,9 +439,19 @@
               <input type="number" id="br-port" min="1024" max="65535" value="8180" />
               <span class="muted">(restart required for port change)</span>
             </div>
-          </fieldset>
+           </fieldset>
 
-          <div class="btn-row">
+           <fieldset>
+             <legend>Shodan <span class="muted">(set API key — requires restart to take effect)</span></legend>
+             <div class="row">
+               <label for="shodan-api-key">API Key</label>
+               <input type="password" id="shodan-api-key" placeholder="Enter Shodan API key..." style="flex:1" />
+               <button id="shodan-save-key">Save</button>
+               <span id="shodan-key-status" class="muted"></span>
+             </div>
+           </fieldset>
+
+           <div class="btn-row">
             <button id="save-settings">Save settings</button>
             <button id="apply-llama">Save + restart llama</button>
             <span id="settings-status" class="muted"></span>

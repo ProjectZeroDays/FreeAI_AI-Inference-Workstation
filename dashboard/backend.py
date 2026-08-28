@@ -9,6 +9,8 @@ import re
 import threading
 import time
 import uuid
+import urllib.request
+import urllib.parse
 from pathlib import Path
 
 try:
@@ -130,6 +132,7 @@ _CARDS_CONFIG = {
     "browser-v2": {"title": "Browser", "icon": "🌐", "auto_refresh": False, "refresh_interval": 60},
     "security": {"title": "Security", "icon": "🛡", "auto_refresh": True, "refresh_interval": 30},
     "subagents": {"title": "Subagents", "icon": "🤖", "auto_refresh": True, "refresh_interval": 10},
+    "shodan": {"title": "Shodan", "icon": "◎", "auto_refresh": False, "refresh_interval": 60},
 }
 
 
@@ -2029,6 +2032,69 @@ def api_aikido():
 def api_aikido_test():
     data = request.get_json(silent=True) or {}
     return jsonify({"ok": True, "tested": data.get("test_type", "default"), "result": "passed"})
+
+
+# ── API: Shodan Integration ──────────────────────────────────────
+SHODAN_API_KEY = os.environ.get("SHODAN_API_KEY", "")
+_SHODAN_LOCK = threading.Lock()
+
+
+@app.route("/api/shodan/health")
+def api_shodan_health():
+    return jsonify({"configured": bool(SHODAN_API_KEY), "key_prefix": (SHODAN_API_KEY[:4] + "..." if SHODAN_API_KEY else None)})
+
+
+@app.route("/api/shodan/search", methods=["POST"])
+def api_shodan_search():
+    if not SHODAN_API_KEY:
+        return jsonify({"error": "SHODAN_API_KEY not set", "configured": False})
+    data = request.get_json(silent=True) or {}
+    query = data.get("query", "")
+    limit = min(int(data.get("limit", 10)), 100)
+    with _SHODAN_LOCK:
+        try:
+            url = f"https://api.shodan.io/shodan/host/search?key={SHODAN_API_KEY}&query={urllib.parse.quote(query)}&limit={limit}"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=10) as r:
+                result = json.loads(r.read())
+            return jsonify({"ok": True, "total": result.get("total", 0), "results": result.get("matches", [])})
+        except Exception as e:
+            return jsonify({"error": str(e), "configured": True}), 500
+
+
+@app.route("/api/shodan/host/<ip>")
+def api_shodan_host(ip):
+    if not SHODAN_API_KEY:
+        return jsonify({"error": "SHODAN_API_KEY not set", "configured": False})
+    with _SHODAN_LOCK:
+        try:
+            url = f"https://api.shodan.io/shodan/host/{ip}?key={SHODAN_API_KEY}"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=10) as r:
+                result = json.loads(r.read())
+            return jsonify({"ok": True, "data": result})
+        except Exception as e:
+            return jsonify({"error": str(e), "configured": True}), 500
+
+
+@app.route("/api/shodan/key", methods=["GET"])
+def api_shodan_key_status():
+    saved = _load_json(OPT_SETTINGS_PATH, {})
+    key = saved.get("shodan_api_key", "")
+    return jsonify({"configured": bool(key), "key_prefix": (key[:4] + "..." if key else None)})
+
+
+@app.route("/api/shodan/key", methods=["PUT"])
+def api_shodan_key_save():
+    data = request.get_json(silent=True) or {}
+    key = data.get("key", "").strip()
+    settings = _load_json(OPT_SETTINGS_PATH, {})
+    if key:
+        settings["shodan_api_key"] = key
+    elif "shodan_api_key" in settings:
+        del settings["shodan_api_key"]
+    _save_json(OPT_SETTINGS_PATH, settings)
+    return jsonify({"ok": True, "configured": bool(key)})
 
 
 # ── API: Metrics Aggregation ─────────────────────────────────────

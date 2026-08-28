@@ -34,3 +34,29 @@ _tmp/
 
 # Runtime PID files
 .runs/*.pid
+
+# Runtime audit/error logs
+config/audit.jsonl
+config/errors.jsonl
+config/notifications.json
+workflow/audit.jsonl
+
+# Crash dumps
+config/crashes/
+
+# Test staging
+_site-test/
+test_cve_api_demo.py
+
+# Agent submodule caches (managed separately)
+agents/specialized/*/LICENSE
+agents/specialized/*/WhitePaper.md
+agents/specialized/*/DEPLOYMENT.md
+agents/specialized/*/.git/
+agents/specialized/*/__pycache__/
+agents/specialized/*/.pytest_cache/
+agents/specialized/*/__pycache__/
+
+# Aggregate test caches
+aggregate_tests/__pycache__/
+aggregate_tests/.pytest_cache/

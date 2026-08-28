@@ -24,7 +24,7 @@ auto_generated: false
 enabled: true
 metadata:
   created_at: "2026-08-28"
-  agent: agents/specialized/memory_primitives.py
+  agent: agents/specialized/memory_primitives/memory_primitives.py
 ---
 
 # Memory Corruption Primitives Agent
