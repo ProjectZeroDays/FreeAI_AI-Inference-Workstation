@@ -12,7 +12,7 @@ sys.path.insert(0, PROJECT_ROOT)
 
 
 class TestMessagingRCE(unittest.TestCase):
-    """Test all 6 messaging RCE API routes return simulated responses."""
+    """Test all 6 messaging RCE API routes return active responses with MITRE mappings."""
 
     def setUp(self):
         """Set up Flask test client."""
@@ -29,6 +29,8 @@ class TestMessagingRCE(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], "messaging_rce")
         self.assertIn("imessage_exploit", data["capabilities"])
+        self.assertIn("mitre_technique", data)
+        self.assertEqual(data["mitre_technique"]["id"], "T1203")
 
     # ── iMessage ──
 
@@ -38,9 +40,11 @@ class TestMessagingRCE(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["target"], "iphone_user")
         self.assertEqual(data["vector"], "iMessage media processing")
+        self.assertEqual(data["mitre_id"], "T1203")
+        self.assertIn("exploitation_steps", data)
 
     # ── WhatsApp ──
 
@@ -50,8 +54,9 @@ class TestMessagingRCE(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["target"], "whatsapp_user")
+        self.assertEqual(data["mitre_id"], "T1203")
 
     # ── Signal ──
 
@@ -61,8 +66,9 @@ class TestMessagingRCE(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["target"], "signal_user")
+        self.assertEqual(data["mitre_id"], "T1203")
 
     # ── Generate Payload ──
 
@@ -72,9 +78,10 @@ class TestMessagingRCE(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["platform"], "imessage")
         self.assertEqual(data["format"], "crafted_media")
+        self.assertEqual(data["mitre_id"], "T1203")
 
     # ── Primitives ──
 

@@ -12,7 +12,7 @@ sys.path.insert(0, PROJECT_ROOT)
 
 
 class TestMemoryCorruption(unittest.TestCase):
-    """Test all 6 memory corruption API routes return simulated responses."""
+    """Test all 6 memory corruption API routes return active responses with MITRE mappings."""
 
     def setUp(self):
         """Set up Flask test client."""
@@ -29,6 +29,8 @@ class TestMemoryCorruption(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], "memory_corruption")
         self.assertIn("buffer_overflow", data["capabilities"])
+        self.assertIn("mitre_technique", data)
+        self.assertEqual(data["mitre_technique"]["id"], "T1203")
 
     # ── Buffer Overflow ──
 
@@ -38,9 +40,12 @@ class TestMemoryCorruption(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["target"], "192.168.1.100")
         self.assertEqual(data["type"], "stack")
+        self.assertEqual(data["mitre_id"], "T1203")
+        self.assertIn("exploitation_steps", data)
+        self.assertEqual(len(data["exploitation_steps"]), 6)
 
     # ── Heap Corruption ──
 
@@ -50,8 +55,10 @@ class TestMemoryCorruption(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["type"], "tcache_poisoning")
+        self.assertEqual(data["mitre_id"], "T1203")
+        self.assertIn("exploitation_steps", data)
 
     # ── Use-After-Free ──
 
@@ -61,8 +68,23 @@ class TestMemoryCorruption(unittest.TestCase):
                                 headers={"X-Auth-Token": "test-key"})
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "active")
         self.assertEqual(data["type"], "double_free")
+        self.assertEqual(data["mitre_id"], "T1203")
+        self.assertIn("exploitation_steps", data)
+
+    # ── Format String ──
+
+    def test_memory_corruption_simulate_format_string(self):
+        resp = self.client.post(f"{self.base}/simulate-format-string",
+                                json={"target": "192.168.1.100", "format_str": "%n"},
+                                headers={"X-Auth-Token": "test-key"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertEqual(data["status"], "active")
+        self.assertEqual(data["format_string"], "%n")
+        self.assertEqual(data["mitre_id"], "T1203")
+        self.assertIn("exploitation_steps", data)
 
     # ── Primitives ──
 
@@ -82,9 +104,21 @@ class TestMemoryCorruption(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertIsInstance(data, list)
-        self.assertEqual(len(data), 5)
-        self.assertEqual(data[0]["id"], "CVE-2019-3568")
-        self.assertEqual(data[0]["severity"], "critical")
+        self.assertEqual(len(data), 6)
+        self.assertEqual(data[0]["id"], "CVE-2023-21991")
+
+    # ── Generate Payload ──
+
+    def test_memory_corruption_generate_payload(self):
+        resp = self.client.post(f"{self.base}/generate-payload",
+                                json={"payload_type": "nop_sled", "arch": "x86_64"},
+                                headers={"X-Auth-Token": "test-key"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertEqual(data["status"], "active")
+        self.assertEqual(data["type"], "nop_sled")
+        self.assertEqual(data["architecture"], "x86_64")
+        self.assertEqual(data["mitre_id"], "T1203")
 
 
 if __name__ == "__main__":

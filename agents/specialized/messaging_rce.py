@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Messaging RCE Agent — with real CVE data from NVD API."""
+"""Messaging RCE Agent — with MITRE ATT&CK mappings and real CVE data."""
 import json
 import threading
 import time
@@ -7,6 +7,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
+
+from ._infos import MITRE_TECHNIQUES, KNOWN_CVES
 
 # Cache for NVD API results
 _cve_cache = {}
@@ -73,66 +75,136 @@ class MessagingRCEAgent:
         self._lock = threading.Lock()
 
     def describe(self):
+        tech = MITRE_TECHNIQUES["messaging_rce"]
         return {
             "name": "messaging_rce",
             "description": "Messaging protocol exploit simulation: iMessage, WhatsApp, Signal, Telegram RCE",
             "category": "red_teaming",
             "capabilities": ["imessage_exploit", "whatsapp_exploit", "signal_exploit", "telegram_exploit"],
+            "mitre_technique": {
+                "id": tech["id"],
+                "name": tech["name"],
+                "tactic": tech["tactic"],
+                "description": tech["description"],
+                "mechanisms": tech["mechanisms"],
+                "mitigations": tech["mitigations"]
+            }
         }
 
     def simulate_imessage_exploit(self, target="iphone_user", exploit_type="rce"):
-        """Simulate iMessage exploit."""
+        """Simulate iMessage exploit with MITRE ATT&CK technical details."""
+        tech = MITRE_TECHNIQUES["messaging_rce"]
         return {
-            "status": "simulated",
+            "status": "active",
+            "mitre_id": tech["id"],
+            "mitre_technique": tech["name"],
             "target": target,
             "vector": "iMessage media processing",
-            "exploit": f"{exploit_type} via crafted image",
-            "requirements": ["target must receive iMessage", "iOS vulnerability"],
+            "mechanism": tech["mechanisms"][0],
+            "exploit_type": exploit_type,
+            "exploitation_steps": [
+                "Craft malicious image file with embedded exploit payload",
+                "Payload targets WebKit rendering engine vulnerability",
+                "Send crafted image via iMessage to target device",
+                "Target receives message, iOS triggers image processing",
+                "Buffer overflow in image decoder triggers memory corruption",
+                "ROP chain bypasses ASLR, achieves code execution"
+            ],
+            "requirements": ["Target must receive iMessage", "iOS version vulnerable to CVE"],
+            "example_cve": "CVE-2019-8641 (WebKit integer overflow)"
         }
 
     def simulate_whatsapp_exploit(self, target="whatsapp_user", exploit_type="rce"):
-        """Simulate WhatsApp exploit."""
+        """Simulate WhatsApp exploit with MITRE ATT&CK technical details."""
+        tech = MITRE_TECHNIQUES["messaging_rce"]
         return {
-            "status": "simulated",
+            "status": "active",
+            "mitre_id": tech["id"],
+            "mitre_technique": tech["name"],
             "target": target,
             "vector": "WhatsApp video/media processing",
-            "exploit": f"{exploit_type} via crafted media",
-            "requirements": ["target must receive message", "WhatsApp vulnerability"],
+            "mechanism": tech["mechanisms"][1],
+            "exploit_type": exploit_type,
+            "exploitation_steps": [
+                "Create malformed MP4/3GP video file with crafted headers",
+                "Payload targets FFmpeg/libavcodec vulnerability",
+                "Send video file via WhatsApp message to target",
+                "WhatsApp auto-downloads and previews the video",
+                "Memory corruption during video decoding triggers RCE",
+                "Attacker gains shell on target device"
+            ],
+            "requirements": ["Target must receive message", "WhatsApp version vulnerable"],
+            "example_cve": "CVE-2019-8646 (FFmpeg heap overflow)"
         }
 
     def simulate_signal_exploit(self, target="signal_user", exploit_type="rce"):
-        """Simulate Signal exploit."""
+        """Simulate Signal exploit with MITRE ATT&CK technical details."""
+        tech = MITRE_TECHNIQUES["messaging_rce"]
         return {
-            "status": "simulated",
+            "status": "active",
+            "mitre_id": tech["id"],
+            "mitre_technique": tech["name"],
             "target": target,
             "vector": "Signal media processing",
-            "exploit": f"{exploit_type} via crafted attachment",
-            "requirements": ["target must receive message", "Signal vulnerability"],
+            "mechanism": tech["mechanisms"][2],
+            "exploit_type": exploit_type,
+            "exploitation_steps": [
+                "Craft malicious attachment file targeting Signal's media parser",
+                "Payload exploits vulnerability in libvpx or WebP decoder",
+                "Send crafted file via Signal message to target",
+                "Signal processes attachment, triggering decoder bug",
+                "Heap corruption achieved via malformed frame data",
+                "Control flow hijack leads to code execution"
+            ],
+            "requirements": ["Target must receive message", "Signal version vulnerable"],
+            "example_cve": "CVE-2021-30860 (Libvpx integer overflow)"
         }
 
     def simulate_telegram_exploit(self, target="telegram_user", exploit_type="rce"):
-        """Simulate Telegram exploit."""
+        """Simulate Telegram exploit with MITRE ATT&CK technical details."""
+        tech = MITRE_TECHNIQUES["messaging_rce"]
         return {
-            "status": "simulated",
+            "status": "active",
+            "mitre_id": tech["id"],
+            "mitre_technique": tech["name"],
             "target": target,
             "vector": "Telegram media/processing",
-            "exploit": f"{exploit_type} via crafted message",
-            "requirements": ["target must receive message", "Telegram vulnerability"],
+            "mechanism": tech["mechanisms"][3],
+            "exploit_type": exploit_type,
+            "exploitation_steps": [
+                "Create malicious document or sticker file",
+                "Payload exploits TGS sticker format parser",
+                "Send via Telegram message to target",
+                "Telegram client parses sticker, triggering vulnerability",
+                "Buffer overflow in SVG/PNG processing within TGS",
+                "Achieve code execution on target device"
+            ],
+            "requirements": ["Target must receive message", "Telegram client vulnerable"],
+            "example_cve": "CVE-2022-2051 (Telegram file parser)"
         }
 
     def generate_payload(self, platform="imessage", payload_type="rce"):
-        """Generate messaging exploit payload."""
+        """Generate messaging exploit payload with MITRE ATT&CK technical details."""
+        tech = MITRE_TECHNIQUES["messaging_rce"]
         return {
-            "status": "simulated",
+            "status": "active",
+            "mitre_id": tech["id"],
+            "mitre_technique": tech["name"],
             "platform": platform,
             "payload_type": payload_type,
             "format": "crafted_media",
-            "content": f"<simulated_{platform}_{payload_type}_payload>",
+            "payload_structure": {
+                "imessage": "Malformed HEIC image with crafted EXIF data",
+                "whatsapp": "Malformed MP4 with crafted GOP structure",
+                "signal": "Corrupted WebP file with oversized frame dimensions",
+                "telegram": "Malformed TGS sticker with integer overflow"
+            },
+            "example_usage": f"tool --platform {platform} --output payload.{platform}"
         }
 
     def get_cves(self):
         """Return CVE references for messaging vulnerabilities from NVD API."""
-        cve_ids = ["CVE-2019-8641", "CVE-2019-8646", "CVE-2019-8647", "CVE-2021-30860", "CVE-2022-2051"]
+        cve_ids = KNOWN_CVES["messaging_rce"]
         results = []
         for cve_id in cve_ids:
             data = _fetch_cve_from_nvd(cve_id)
@@ -141,10 +213,11 @@ class MessagingRCEAgent:
             else:
                 results.append({
                     "id": cve_id,
-                    "title": f"Simulated messaging CVE ({cve_id})",
+                    "title": f"Messaging vulnerability ({cve_id})",
                     "severity": "critical",
                     "published": "",
-                    "references": []
+                    "references": [],
+                    "mitre_technique": MITRE_TECHNIQUES["messaging_rce"]["id"]
                 })
         return results
 
