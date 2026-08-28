@@ -2,7 +2,8 @@
 :root{
   --bg:#020617; --panel:#0F172A; --border:rgba(148,163,184,.14);
   --border-strong:rgba(148,163,184,.22); --text:#F1F5F9; --muted:#94A3B8;
-  --accent:#22C55E;
+  --muted-2:#64748B; --accent:#22C55E; --accent-2:#38BDF8;
+  --danger:#EF4444; --warn:#F59E0B;
 }
 *{box-sizing:border-box}
 body{
@@ -44,6 +45,8 @@ button:hover{border-color:var(--border-strong); transform:translateY(-1px)}
 }
 .step:hover{border-color:var(--border-strong)}
 .step.active{border-color:rgba(34,197,94,.35); background:rgba(34,197,94,.08); box-shadow:0 0 0 3px rgba(34,197,94,.10)}
+.step.dragging{opacity:.5; transform:scale(.97)}
+.step.drag-over{border-color:var(--accent); background:rgba(34,197,94,.12)}
 label{color:var(--muted); font-size:12px; display:block; margin-bottom:8px}
 input{
   width:100%; background:rgba(2,6,23,.55); color:var(--text);
@@ -51,3 +54,19 @@ input{
   padding:7px 10px; font-family:Fira Code, monospace; font-size:12.5px;
 }
 input:focus{outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+
+/* Light theme overrides */
+body.light-theme {
+  background: linear-gradient(180deg, #F8FAFC, #E2E8F0);
+}
+body.light-theme .step {
+  background: rgba(255,255,255,.7);
+  border-color: rgba(148,163,184,.3);
+}
+body.light-theme .step:hover {
+  border-color: rgba(148,163,184,.5);
+}
+body.light-theme .step.active {
+  border-color: rgba(34,197,94,.5);
+  background: rgba(34,197,94,.08);
+}

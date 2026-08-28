@@ -3753,6 +3753,123 @@ def api_workflow_delete(name):
     return jsonify({'error': 'not found'}), 404
 
 
+# ── API: Workflow Designer — Templates ──────────────────────────
+_TEMPLATES_PATH = CONFIG_DIR / "workflow-designer-templates.json"
+
+
+def _load_designer_templates():
+    try:
+        data = json.loads(_TEMPLATES_PATH.read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else []
+    except (OSError, json.JSONDecodeError):
+        return []
+
+
+def _save_designer_templates(templates):
+    _TEMPLATES_PATH.write_text(json.dumps(templates, indent=2), encoding="utf-8")
+
+
+@app.route('/api/workflow-designer/templates', methods=['GET'])
+def api_workflow_designer_templates():
+    templates = _load_designer_templates()
+    return jsonify({"templates": templates, "total": len(templates)})
+
+
+@app.route('/api/workflow-designer/templates', methods=['POST'])
+def api_workflow_designer_templates_save():
+    data = request.get_json(silent=True) or {}
+    name = data.get('name', '').strip()
+    prompt = data.get('prompt', '').strip()
+    if not name or not prompt:
+        return jsonify({'error': 'name and prompt required'}), 400
+    templates = _load_designer_templates()
+    tmpl_id = data.get('id') or f"tmpl_{len(templates) + 1}_{int(time.time())}"
+    existing = next((t for t in templates if t.get('id') == tmpl_id), None)
+    if existing:
+        existing['name'] = name
+        existing['prompt'] = prompt
+    else:
+        templates.append({'id': tmpl_id, 'name': name, 'prompt': prompt})
+    _save_designer_templates(templates)
+    return jsonify({'ok': True, 'id': tmpl_id})
+
+
+@app.route('/api/workflow-designer/templates/<template_id>', methods=['DELETE'])
+def api_workflow_designer_templates_delete(template_id):
+    templates = _load_designer_templates()
+    before = len(templates)
+    templates = [t for t in templates if t.get('id') != template_id]
+    if len(templates) == before:
+        return jsonify({'error': 'not found'}), 404
+    _save_designer_templates(templates)
+    return jsonify({'ok': True})
+
+
+# ── API: Workflow Designer — Workflows CRUD ─────────────────────
+_designer_wf_dir = ROOT.parent / 'workflow' / 'designer-workflows'
+_designer_wf_dir.mkdir(parents=True, exist_ok=True)
+
+
+@app.route('/api/workflow-designer/workflows', methods=['GET'])
+def api_workflow_designer_workflows_list():
+    workflows = []
+    if _designer_wf_dir.exists():
+        for f in sorted(_designer_wf_dir.glob("*.json")):
+            try:
+                defn = json.loads(f.read_text(encoding="utf-8"))
+                workflows.append({
+                    'id': f.stem,
+                    'name': defn.get('name', f.stem),
+                    'definition': defn,
+                    'node_count': len(defn.get('nodes', [])),
+                })
+            except (json.JSONDecodeError, OSError):
+                pass
+    return jsonify({"workflows": workflows, "total": len(workflows)})
+
+
+@app.route('/api/workflow-designer/workflows', methods=['POST'])
+def api_workflow_designer_workflows_save():
+    data = request.get_json(silent=True) or {}
+    name = data.get('name', '').strip()
+    defn = data.get('definition', {})
+    if not name:
+        return jsonify({'error': 'name required'}), 400
+    if not defn:
+        return jsonify({'error': 'definition required'}), 400
+    safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    path = _designer_wf_dir / f'{safe_name}.json'
+    defn['name'] = name
+    defn['updated_at'] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    with _workflow_saves_lock:
+        path.write_text(json.dumps(defn, indent=2), encoding='utf-8')
+    return jsonify({'ok': True, 'path': str(path), 'id': safe_name})
+
+
+@app.route('/api/workflow-designer/workflows/<name>', methods=['GET'])
+def api_workflow_designer_workflows_get(name):
+    safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    path = _designer_wf_dir / f'{safe_name}.json'
+    if not path.exists():
+        return jsonify({'error': 'not found'}), 404
+    try:
+        defn = json.loads(path.read_text(encoding='utf-8'))
+        return jsonify({'definition': defn, 'id': safe_name})
+    except (json.JSONDecodeError, OSError) as exc:
+        return jsonify({'error': str(exc)}), 500
+
+
+@app.route('/api/workflow-designer/workflows/<name>', methods=['DELETE'])
+def api_workflow_designer_workflows_delete(name):
+    safe_name = re.sub(r'[^\w\-]', '-', name).lower()
+    path = _designer_wf_dir / f'{safe_name}.json'
+    if path.exists():
+        with _workflow_saves_lock:
+            path.unlink()
+        return jsonify({'ok': True})
+    return jsonify({'error': 'not found'}), 404
+
+
 # ── API: Config Management ───────────────────────────────────────
 import gzip as _gzip
 import tarfile as _tarfile
@@ -7172,6 +7289,30 @@ def api_memory_corruption_cves():
     from agents.specialized.memory_corruption import MemoryCorruptionAgent
     agent = MemoryCorruptionAgent()
     return jsonify(agent.get_cves())
+
+@app.route("/api/exploit-cat/memory-corruption/simulate-format-string", methods=["POST"])
+def api_memory_corruption_simulate_format_string():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.simulate_format_string(
+        data.get("target", "localhost"),
+        data.get("format_str", "%n")
+    ))
+
+@app.route("/api/exploit-cat/memory-corruption/generate-payload", methods=["POST"])
+def api_memory_corruption_generate_payload():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    from agents.specialized.memory_corruption import MemoryCorruptionAgent
+    agent = MemoryCorruptionAgent()
+    data = request.get_json() or {}
+    return jsonify(agent.generate_payload(
+        data.get("payload_type", "nop_sled"),
+        data.get("arch", "x86_64")
+    ))
 
 # SSRF Exploitation
 @app.route("/api/exploit-cat/ssrf-exploit/describe", methods=["GET"])

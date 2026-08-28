@@ -98,6 +98,53 @@
                   font-family:'Fira Code',monospace;overflow:auto;max-height:400px;
                   white-space:pre-wrap;color:var(--muted)}
     .wd-modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+    /* Tab bar */
+    .wd-tabs{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);
+             background:rgba(2,6,23,.4);padding:0 16px}
+    .wd-tab{padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);
+            border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;
+            display:flex;align-items:center;gap:6px;white-space:nowrap}
+    .wd-tab:hover{color:var(--text)}
+    .wd-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .wd-tab-close{font-size:10px;opacity:.5;cursor:pointer;border-radius:4px;padding:1px 4px}
+    .wd-tab-close:hover{opacity:1;background:rgba(239,68,68,.2);color:var(--danger)}
+    .wd-tab-add{padding:8px 12px;font-size:16px;color:var(--muted);cursor:pointer;
+                border-bottom:2px solid transparent;transition:all .15s}
+    .wd-tab-add:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+    /* Theme toggle */
+    .wd-theme-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
+                  background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;
+                  display:grid;place-items:center;font-size:14px;transition:all .15s}
+    .wd-theme-btn:hover{border-color:var(--accent);background:rgba(34,197,94,.1)}
+
+    /* Keyboard hints */
+    .wd-kbd-hints{display:flex;align-items:center;gap:12px;padding:4px 16px;
+                  font-size:11px;color:var(--muted-2);border-bottom:1px solid var(--border);
+                  background:rgba(2,6,23,.3)}
+    .wd-kbd-hints kbd{background:rgba(255,255,255,.08);border:1px solid var(--border);
+                      border-radius:3px;padding:1px 5px;font-family:monospace;font-size:10px;
+                      color:var(--muted)}
+
+    /* Drag-over state */
+    .wd-canvas-wrap.drag-over{outline:2px dashed var(--accent);outline-offset:-2px}
+
+    /* Templates list in sidebar */
+    .wd-template-item{display:flex;align-items:center;gap:6px;padding:6px 8px;
+                      border-radius:8px;border:1px solid var(--border);margin-bottom:4px;
+                      cursor:pointer;font-size:12px;transition:all .15s}
+    .wd-template-item:hover{border-color:var(--border-strong);background:rgba(34,197,94,.05)}
+    .wd-template-item .tmpl-del{margin-left:auto;opacity:0;color:var(--danger);cursor:pointer;
+                                 font-size:11px;padding:2px 4px;border-radius:4px}
+    .wd-template-item:hover .tmpl-del{opacity:1}
+    .wd-template-item .tmpl-del:hover{background:rgba(239,68,68,.15)}
+
+    /* Save/undo status */
+    .wd-status{font-size:11px;color:var(--muted-2);margin-left:auto;display:flex;align-items:center;gap:6px}
+    .wd-status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+    .wd-status-dot.unsaved{background:var(--warn)}
+
     @media(max-width:900px){.wd-layout{grid-template-columns:1fr}.wd-palette{display:none}
                              .wd-sidebar{border-left:none;border-top:1px solid var(--border)}}
   </style>
@@ -152,15 +199,40 @@
   <div class="wd-canvas-wrap" id="canvas-wrap">
     <div class="wd-toolbar">
       <span class="wd-toolbar-title">Workflow Designer</span>
+
+      <div class="wd-tabs" id="tab-bar"></div>
+      <span class="wd-tab-add" id="tab-add" title="New Workflow Tab (+)">+</span>
+
       <input type="text" id="wf-name" placeholder="Workflow name…"
-             style="width:160px;background:rgba(2,6,23,.55);color:var(--text);
+             style="width:140px;background:rgba(2,6,23,.55);color:var(--text);
                     border:1px solid var(--border);border-radius:8px;padding:5px 10px;
                     font-size:13px" />
+
+      <div class="wd-status" id="status-indicator">
+        <span class="wd-status-dot" id="status-dot"></span>
+        <span id="status-text">Saved</span>
+      </div>
+
+      <button id="btn-undo" title="Undo (Ctrl+Z)" style="border-color:rgba(148,163,184,.3)">↩ Undo</button>
+      <button id="btn-redo" title="Redo (Ctrl+Y)" style="border-color:rgba(148,163,184,.3)">↪ Redo</button>
+
       <button id="btn-export">Export JSON</button>
       <button id="btn-import">Import JSON</button>
       <button id="btn-preview">Preview</button>
       <button id="btn-save" style="border-color:rgba(34,197,94,.4)">Save</button>
       <button id="btn-load" style="border-color:rgba(56,189,248,.4)">Load</button>
+
+      <button class="wd-theme-btn" id="btn-theme" title="Toggle Theme (Ctrl+T)">◐</button>
+    </div>
+    <div class="wd-kbd-hints">
+      <span><kbd>Del</kbd> remove node</span>
+      <span><kbd>Ctrl+N</kbd> new step</span>
+      <span><kbd>Ctrl+S</kbd> save</span>
+      <span><kbd>Ctrl+Z</kbd> undo</span>
+      <span><kbd>Ctrl+Y</kbd> redo</span>
+      <span><kbd>Ctrl+T</kbd> theme</span>
+      <span style="margin-left:auto"><kbd>Scroll</kbd> zoom</span>
+      <span><kbd>Middle-click</kbd> pan</span>
     </div>
     <canvas id="wd-canvas"></canvas>
     <input type="file" id="import-input" accept=".json" style="display:none" />
@@ -225,12 +297,41 @@
       </div>
       <div class="wd-list" id="connections-list"></div>
     </div>
+
+    <div id="sidebar-templates" style="display:none">
+      <div class="wd-preview-header">
+        <h3>Prompt Templates</h3>
+        <button id="btn-close-templates" style="font-size:11px;padding:3px 8px">✕</button>
+      </div>
+      <div id="templates-list"></div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+        <div class="wd-form-group">
+          <label>New Template Name</label>
+          <input id="tmpl-new-name" placeholder="e.g. code-review-prompt" />
+        </div>
+        <div class="wd-form-group">
+          <label>Prompt Template</label>
+          <textarea id="tmpl-new-prompt" rows="4" placeholder="Review this code for..."></textarea>
+        </div>
+        <button id="btn-save-template" style="width:100%;border-color:rgba(34,197,94,.4)">Save Template</button>
+      </div>
+    </div>
+
     <div id="sidebar-preview" style="display:none">
       <div class="wd-preview-header">
         <h3>Live Preview</h3>
         <button id="btn-close-preview" style="font-size:11px;padding:3px 8px">✕</button>
       </div>
       <pre class="wd-preview" id="preview-output"></pre>
+    </div>
+
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+      <button id="btn-templates" style="width:100%;margin-bottom:6px;border-color:rgba(168,85,247,.4)">
+        📋 Prompt Templates
+      </button>
+      <button id="btn-load-workflows" style="width:100%;border-color:rgba(56,189,248,.4)">
+        📁 Load from Server
+      </button>
     </div>
   </div>
 </div>
@@ -242,6 +343,25 @@
     <pre id="preview-modal-content"></pre>
     <div class="wd-modal-actions">
       <button id="btn-close-preview-modal">Close</button>
+    </div>
+  </div>
+</div>
+<div class="wd-modal-overlay" id="load-modal">
+  <div class="wd-modal">
+    <h3>Load Workflow</h3>
+    <div id="load-list" style="max-height:300px;overflow-y:auto"></div>
+    <div class="wd-modal-actions">
+      <button id="btn-close-load-modal">Close</button>
+    </div>
+  </div>
+</div>
+<div class="wd-modal-overlay" id="template-modal">
+  <div class="wd-modal">
+    <h3>Apply Template</h3>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px">Select a template to load into the current step:</p>
+    <div id="template-apply-list" style="max-height:300px;overflow-y:auto"></div>
+    <div class="wd-modal-actions">
+      <button id="btn-close-template-modal">Close</button>
     </div>
   </div>
 </div>
@@ -272,7 +392,240 @@ let zoom = 1;
 let isPanning = false;
 let panStart = {x:0,y:0};
 let nextId = 1;
+let darkMode = true;
 
+// ── Undo / Redo ─────────────────────────────────────────────────
+let history = [];
+let historyIdx = -1;
+const MAX_HISTORY = 50;
+
+function pushHistory(){
+  const snap = {nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))};
+  history = history.slice(0, historyIdx + 1);
+  history.push(snap);
+  if(history.length > MAX_HISTORY) history.shift();
+  historyIdx = history.length - 1;
+  markUnsaved();
+}
+
+function undo(){
+  if(historyIdx <= 0) return;
+  historyIdx--;
+  restoreHistory();
+  toast("Undo", "success");
+}
+
+function redo(){
+  if(historyIdx >= history.length - 1) return;
+  historyIdx++;
+  restoreHistory();
+  toast("Redo", "success");
+}
+
+function restoreHistory(){
+  const snap = history[historyIdx];
+  nodes = JSON.parse(JSON.stringify(snap.nodes));
+  edges = JSON.parse(JSON.stringify(snap.edges));
+  selectedId = null;
+  draw(); renderSidebar(); updateNodeCount();
+  clearUnsaved();
+}
+
+function markUnsaved(){
+  const dot = document.getElementById("status-dot");
+  const txt = document.getElementById("status-text");
+  if(dot) dot.classList.add("unsaved");
+  if(txt) txt.textContent = "Unsaved";
+}
+
+function clearUnsaved(){
+  const dot = document.getElementById("status-dot");
+  const txt = document.getElementById("status-text");
+  if(dot) dot.classList.remove("unsaved");
+  if(txt) txt.textContent = "Saved";
+}
+
+// ── Multi-tab workflows ─────────────────────────────────────────
+let tabs = [];
+let activeTabId = null;
+
+function generateTabId(){ return "tab_" + Date.now() + "_" + Math.random().toString(36).slice(2,6); }
+
+function saveTabState(){
+  const state = getCurrentState();
+  const idx = tabs.findIndex(t => t.id === activeTabId);
+  if(idx >= 0){
+    tabs[idx].state = state;
+    tabs[idx].name = document.getElementById("wf-name").value || tabs[idx].name;
+  }
+  localStorage.setItem("wd_tabs", JSON.stringify(tabs));
+}
+
+function loadTabState(tab){
+  nodes = JSON.parse(JSON.stringify(tab.state.nodes || []));
+  edges = JSON.parse(JSON.stringify(tab.state.edges || []));
+  selectedId = null;
+  document.getElementById("wf-name").value = tab.name || "";
+  nextId = nodes.length ? Math.max(...nodes.map(n=>parseInt(n.id)||0)) + 1 : 1;
+  history = [{nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))}];
+  historyIdx = 0;
+  draw(); renderSidebar(); updateNodeCount(); clearUnsaved();
+}
+
+function createTab(name){
+  const id = generateTabId();
+  const tab = {id, name: name || "Untitled", state: {nodes:[], edges:[]}};
+  tabs.push(tab);
+  activeTabId = id;
+  renderTabs();
+  saveTabState();
+  return tab;
+}
+
+function switchTab(id){
+  if(activeTabId && activeTabId !== id) saveTabState();
+  activeTabId = id;
+  const tab = tabs.find(t => t.id === id);
+  if(tab) loadTabState(tab);
+  renderTabs();
+}
+
+function closeTab(id, e){
+  if(e) e.stopPropagation();
+  if(tabs.length <= 1) return;
+  const idx = tabs.findIndex(t => t.id === id);
+  tabs.splice(idx, 1);
+  if(activeTabId === id){
+    const next = tabs[Math.min(idx, tabs.length - 1)];
+    switchTab(next.id);
+  } else {
+    renderTabs();
+    saveTabState();
+  }
+}
+
+function renderTabs(){
+  const bar = document.getElementById("tab-bar");
+  if(!bar) return;
+  bar.innerHTML = tabs.map(t => `
+    <div class="wd-tab ${t.id === activeTabId ? 'active' : ''}" data-id="${t.id}">
+      <span>${esc(t.name)}</span>
+      ${tabs.length > 1 ? `<span class="wd-tab-close" data-close="${t.id}">✕</span>` : ''}
+    </div>
+  `).join("");
+  bar.querySelectorAll(".wd-tab").forEach(el => {
+    el.addEventListener("click", e => {
+      if(e.target.classList.contains("wd-tab-close")) return;
+      switchTab(el.dataset.id);
+    });
+  });
+  bar.querySelectorAll(".wd-tab-close").forEach(el => {
+    el.addEventListener("click", e => closeTab(el.dataset.close, e));
+  });
+}
+
+function getCurrentState(){
+  return {nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))};
+}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// ── Prompt templates ────────────────────────────────────────────
+let templates = [];
+
+function loadTemplates(){
+  try { templates = JSON.parse(localStorage.getItem("wd_templates") || "[]"); } catch(e){ templates = []; }
+}
+
+function saveTemplates(){
+  localStorage.setItem("wd_templates", JSON.stringify(templates));
+}
+
+function renderTemplatesList(){
+  const list = document.getElementById("templates-list");
+  if(!list) return;
+  if(!templates.length){
+    list.innerHTML = '<div style="font-size:12px;color:var(--muted-2);padding:8px">No templates saved yet</div>';
+    return;
+  }
+  list.innerHTML = templates.map((t,i) => `
+    <div class="wd-template-item" data-tmpl-idx="${i}">
+      <span>${esc(t.name)}</span>
+      <span class="tmpl-del" data-tmpl-del="${i}">✕</span>
+    </div>
+  `).join("");
+  list.querySelectorAll(".wd-template-item").forEach(el => {
+    el.addEventListener("click", e => {
+      if(e.target.classList.contains("tmpl-del")) return;
+      applyTemplate(parseInt(el.dataset.tmplIdx));
+    });
+  });
+  list.querySelectorAll(".tmpl-del").forEach(el => {
+    el.addEventListener("click", e => {
+      e.stopPropagation();
+      deleteTemplate(parseInt(el.dataset.tmplDel));
+    });
+  });
+}
+
+function saveTemplate(){
+  const name = document.getElementById("tmpl-new-name").value.trim();
+  const prompt = document.getElementById("tmpl-new-prompt").value.trim();
+  if(!name || !prompt){ toast("Name and prompt required", "error"); return; }
+  templates.push({id: Date.now().toString(), name, prompt});
+  saveTemplates();
+  renderTemplatesList();
+  document.getElementById("tmpl-new-name").value = "";
+  document.getElementById("tmpl-new-prompt").value = "";
+  toast("Template saved", "success");
+}
+
+function deleteTemplate(idx){
+  templates.splice(idx, 1);
+  saveTemplates();
+  renderTemplatesList();
+}
+
+function applyTemplate(idx){
+  const tmpl = templates[idx];
+  if(!tmpl) return;
+  if(selectedId){
+    const n = nodes.find(x => x.id === selectedId);
+    if(n){
+      n.payload = n.payload || {};
+      n.payload.prompt = tmpl.prompt;
+      renderSidebar();
+      draw();
+      toast("Template applied: " + tmpl.name, "success");
+    }
+  } else {
+    // Open template modal for user to choose where to apply
+    const modal = document.getElementById("template-modal");
+    const list = document.getElementById("template-apply-list");
+    list.innerHTML = nodes.length ? nodes.map(n => `
+      <div class="wd-template-item" data-apply="${n.id}">
+        <span>${TYPE_ICONS[n.type]||"⚙"} ${esc(n.name)}</span>
+      </div>
+    `).join("") : '<div style="font-size:12px;color:var(--muted-2);padding:8px">No nodes on canvas</div>';
+    list.querySelectorAll(".wd-template-item").forEach(el => {
+      el.addEventListener("click", () => {
+        const nid = el.dataset.apply;
+        const node = nodes.find(x => x.id === nid);
+        if(node){
+          node.payload = node.payload || {};
+          node.payload.prompt = tmpl.prompt;
+          draw();
+          if(nid === selectedId) renderSidebar();
+          toast("Applied to " + (node.name || nid), "success");
+        }
+        modal.classList.remove("open");
+      });
+    });
+    modal.classList.add("open");
+  }
+}
+
+// ── Canvas setup ─────────────────────────────────────────────────
 const canvas = document.getElementById("wd-canvas");
 const ctx = canvas.getContext("2d");
 const wrap = document.getElementById("canvas-wrap");
@@ -285,16 +638,10 @@ function resize(){
 window.addEventListener("resize", resize);
 
 function screenToCanvas(sx, sy){
-  return {
-    x: (sx - pan.x) / zoom,
-    y: (sy - pan.y) / zoom
-  };
+  return { x: (sx - pan.x) / zoom, y: (sy - pan.y) / zoom };
 }
 function canvasToScreen(cx, cy){
-  return {
-    x: cx * zoom + pan.x,
-    y: cy * zoom + pan.y
-  };
+  return { x: cx * zoom + pan.x, y: cy * zoom + pan.y };
 }
 
 function getNodeAt(cx, cy){
@@ -471,6 +818,7 @@ function addNode(type, x, y){
   nodes.push(node);
   draw();
   updateNodeCount();
+  markUnsaved();
   return node;
 }
 
@@ -488,6 +836,8 @@ function renderSidebar(){
   const empty = document.getElementById("sidebar-empty");
   const content = document.getElementById("sidebar-content");
   const preview = document.getElementById("sidebar-preview");
+  const templatesPanel = document.getElementById("sidebar-templates");
+  if(templatesPanel) templatesPanel.style.display = "none";
   preview.style.display = "none";
   if(!selectedId){
     empty.style.display = "grid";
@@ -549,8 +899,10 @@ function saveNodeProps(){
   try { n.config = JSON.parse(document.getElementById("prop-config").value) || {}; } catch(e){}
   draw();
   renderSidebar();
+  markUnsaved();
 }
 
+// ── Canvas events ───────────────────────────────────────────────
 canvas.addEventListener("mousedown", e=>{
   const rect = canvas.getBoundingClientRect();
   const cx = screenToCanvas(e.clientX-rect.left, e.clientY-rect.top);
@@ -588,6 +940,7 @@ canvas.addEventListener("mousemove", e=>{
     dragging.x = Math.max(0, Math.min(cx.x - dragOffset.x, CANVAS_W - NODE_W));
     dragging.y = Math.max(0, Math.min(cx.y - dragOffset.y, CANVAS_H - NODE_H));
     draw();
+    markUnsaved();
     return;
   }
   if(isPanning){
@@ -605,11 +958,16 @@ canvas.addEventListener("mouseup", e=>{
       if(!exists){
         edges.push({from:connecting.fromNode.id, to:portHit.node.id});
         renderSidebar();
+        markUnsaved();
       }
     }
     connecting = null;
     draw();
     return;
+  }
+  if(dragging){
+    pushHistory();
+    saveTabState();
   }
   dragging = null;
   isPanning = false;
@@ -634,39 +992,49 @@ canvas.addEventListener("wheel", e=>{
   draw();
 }, {passive:false});
 
+// ── Palette buttons ──────────────────────────────────────────────
 document.querySelectorAll(".wd-pal-btn[data-type]").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     const type = btn.dataset.type;
     const rect = canvas.getBoundingClientRect();
     const cx = screenToCanvas(rect.width/2, rect.height/2);
+    pushHistory();
     const n = addNode(type, cx.x, cx.y);
     selectNode(n.id);
     toast("Added " + type + " node", "success");
   });
 });
 
+// ── Clear ────────────────────────────────────────────────────────
 document.getElementById("btn-clear").addEventListener("click", ()=>{
   if(nodes.length && !confirm("Clear all nodes?")) return;
+  pushHistory();
   nodes = []; edges = []; selectedId = null;
-  draw(); renderSidebar(); updateNodeCount();
+  draw(); renderSidebar(); updateNodeCount(); clearUnsaved();
+  saveTabState();
 });
 
+// ── Property inputs ──────────────────────────────────────────────
 ["prop-name","prop-agent","prop-condition","prop-loop-iterations",
  "prop-consumes","prop-produces","prop-payload","prop-config"
 ].forEach(id=>{
   document.getElementById(id).addEventListener("input", saveNodeProps);
 });
 
+// ── Delete node ──────────────────────────────────────────────────
 document.getElementById("btn-delete-node").addEventListener("click", ()=>{
   if(!selectedId) return;
   if(!confirm("Delete this node?")) return;
+  pushHistory();
   nodes = nodes.filter(n=>n.id!==selectedId);
   edges = edges.filter(e=>e.from!==selectedId && e.to!==selectedId);
   selectedId = null;
-  draw(); renderSidebar(); updateNodeCount();
+  draw(); renderSidebar(); updateNodeCount(); clearUnsaved();
+  saveTabState();
   toast("Node deleted", "success");
 });
 
+// ── Export ───────────────────────────────────────────────────────
 function exportWorkflow(){
   const name = document.getElementById("wf-name").value || "untitled-workflow";
   const steps = nodes.map(n=>({
@@ -702,11 +1070,14 @@ document.getElementById("import-input").addEventListener("change", e=>{
   reader.onload = ev=>{
     try{
       const def = JSON.parse(ev.target.result);
+      pushHistory();
       nodes = def.nodes || [];
       edges = def.edges || [];
       selectedId = null;
       if(def.name) document.getElementById("wf-name").value = def.name;
-      draw(); renderSidebar(); updateNodeCount();
+      nextId = nodes.length ? Math.max(...nodes.map(n=>parseInt(n.id)||0)) + 1 : 1;
+      draw(); renderSidebar(); updateNodeCount(); clearUnsaved();
+      saveTabState();
       toast("Imported " + (nodes.length||0) + " nodes", "success");
     }catch(err){
       toast("Invalid JSON: " + err.message, "error");
@@ -716,6 +1087,7 @@ document.getElementById("import-input").addEventListener("change", e=>{
   e.target.value = "";
 });
 
+// ── Preview ──────────────────────────────────────────────────────
 document.getElementById("btn-preview").addEventListener("click", ()=>{
   const def = exportWorkflow();
   const modal = document.getElementById("preview-modal");
@@ -731,24 +1103,26 @@ document.getElementById("preview-modal").addEventListener("click", e=>{
   if(e.target===e.currentTarget) e.currentTarget.classList.remove("open");
 });
 
+// ── Save to server ───────────────────────────────────────────────
 document.getElementById("btn-save").addEventListener("click", async()=>{
   const def = exportWorkflow();
   try{
-    const res = await fetch("/api/workflow/save", {
+    const res = await fetch("/api/workflow-designer/workflows", {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({name:def.name, definition:def})
     });
     const json = await res.json();
-    if(json.ok) toast("Saved to /workflows (" + (def.name||"untitled") + ")", "success");
+    if(json.ok) { toast("Saved to server (" + (def.name||"untitled") + ")", "success"); clearUnsaved(); }
     else toast("Save failed: " + (json.error||"unknown"), "error");
   }catch(err){
     toast("Save failed: " + err.message, "error");
   }
 });
 
+// ── Load from server ─────────────────────────────────────────────
 document.getElementById("btn-load").addEventListener("click", async()=>{
   try{
-    const res = await fetch("/api/workflows");
+    const res = await fetch("/api/workflow-designer/workflows");
     const json = await res.json();
     const list = json.workflows || [];
     if(!list.length){ toast("No saved workflows found", "error"); return; }
@@ -767,13 +1141,184 @@ document.getElementById("btn-load").addEventListener("click", async()=>{
     edges = def.edges || [];
     selectedId = null;
     if(def.name) document.getElementById("wf-name").value = def.name;
-    draw(); renderSidebar(); updateNodeCount();
+    nextId = nodes.length ? Math.max(...nodes.map(n=>parseInt(n.id)||0)) + 1 : 1;
+    history = [{nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))}];
+    historyIdx = 0;
+    draw(); renderSidebar(); updateNodeCount(); clearUnsaved();
+    saveTabState();
     toast("Loaded: " + chosen, "success");
   }catch(err){
     toast("Load failed: " + err.message, "error");
   }
 });
 
+// ── Load from server modal ───────────────────────────────────────
+document.getElementById("btn-load-workflows").addEventListener("click", async()=>{
+  try{
+    const res = await fetch("/api/workflow-designer/workflows");
+    const json = await res.json();
+    const list = json.workflows || [];
+    const modal = document.getElementById("load-modal");
+    const listEl = document.getElementById("load-list");
+    if(!list.length){
+      listEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:12px">No workflows on server</div>';
+    } else {
+      listEl.innerHTML = list.map(w => `
+        <div class="wd-template-item" data-wf="${esc(w.name||w.id)}">
+          <span>📄 ${esc(w.name||w.id)}</span>
+          <span style="font-size:11px;color:var(--muted-2);margin-left:auto">${(w.definition?.nodes?.length||0)} nodes</span>
+        </div>
+      `).join("");
+      listEl.querySelectorAll(".wd-template-item").forEach(el => {
+        el.addEventListener("click", async()=>{
+          const name = el.dataset.wf;
+          modal.classList.remove("open");
+          await loadWorkflowFromServer(name);
+        });
+      });
+    }
+    modal.classList.add("open");
+  }catch(err){
+    toast("Load failed: " + err.message, "error");
+  }
+});
+
+async function loadWorkflowFromServer(name){
+  try{
+    const res = await fetch(`/api/workflow-designer/workflows/${encodeURIComponent(name)}`);
+    const json = await res.json();
+    if(json.error){ toast("Not found: "+name, "error"); return; }
+    const def = json.definition || json;
+    pushHistory();
+    nodes = def.nodes || [];
+    edges = def.edges || [];
+    selectedId = null;
+    if(def.name) document.getElementById("wf-name").value = def.name;
+    nextId = nodes.length ? Math.max(...nodes.map(n=>parseInt(n.id)||0)) + 1 : 1;
+    history = [{nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))}];
+    historyIdx = 0;
+    draw(); renderSidebar(); updateNodeCount(); clearUnsaved();
+    saveTabState();
+    toast("Loaded: " + (def.name||name), "success");
+  }catch(err){
+    toast("Load failed: " + err.message, "error");
+  }
+}
+
+document.getElementById("btn-close-load-modal").addEventListener("click", ()=>{
+  document.getElementById("load-modal").classList.remove("open");
+});
+document.getElementById("load-modal").addEventListener("click", e=>{
+  if(e.target===e.currentTarget) e.currentTarget.classList.remove("open");
+});
+document.getElementById("btn-close-template-modal").addEventListener("click", ()=>{
+  document.getElementById("template-modal").classList.remove("open");
+});
+document.getElementById("template-modal").addEventListener("click", e=>{
+  if(e.target===e.currentTarget) e.currentTarget.classList.remove("open");
+});
+
+// ── Undo / Redo buttons ──────────────────────────────────────────
+document.getElementById("btn-undo").addEventListener("click", undo);
+document.getElementById("btn-redo").addEventListener("click", redo);
+
+// ── Theme toggle ─────────────────────────────────────────────────
+function setTheme(dark){
+  darkMode = dark;
+  const root = document.documentElement;
+  if(dark){
+    root.style.setProperty("--bg","#020617");
+    root.style.setProperty("--panel","#0F172A");
+    root.style.setProperty("--border","rgba(148,163,184,.14)");
+    root.style.setProperty("--border-strong","rgba(148,163,184,.22)");
+    root.style.setProperty("--text","#F1F5F9");
+    root.style.setProperty("--muted","#94A3B8");
+    root.style.setProperty("--muted-2","#64748B");
+  } else {
+    root.style.setProperty("--bg","#F8FAFC");
+    root.style.setProperty("--panel","#FFFFFF");
+    root.style.setProperty("--border","rgba(148,163,184,.25)");
+    root.style.setProperty("--border-strong","rgba(148,163,184,.40)");
+    root.style.setProperty("--text","#0F172A");
+    root.style.setProperty("--muted","#475569");
+    root.style.setProperty("--muted-2","#94A3B8");
+  }
+  localStorage.setItem("wd_dark", String(dark));
+  draw();
+}
+
+document.getElementById("btn-theme").addEventListener("click", ()=>{
+  setTheme(!darkMode);
+});
+
+// ── Tab bar ──────────────────────────────────────────────────────
+document.getElementById("tab-add").addEventListener("click", ()=>{
+  if(activeTabId) saveTabState();
+  const tab = createTab("Untitled");
+  switchTab(tab.id);
+  toast("New workflow tab", "success");
+});
+
+// ── Templates sidebar panel ──────────────────────────────────────
+document.getElementById("btn-templates").addEventListener("click", ()=>{
+  const content = document.getElementById("sidebar-content");
+  const preview = document.getElementById("sidebar-preview");
+  const tpl = document.getElementById("sidebar-templates");
+  if(tpl && tpl.style.display !== "none"){
+    tpl.style.display = "none";
+    if(selectedId){ content.style.display = "block"; } else { document.getElementById("sidebar-empty").style.display = "grid"; }
+    return;
+  }
+  content.style.display = "none";
+  preview.style.display = "none";
+  document.getElementById("sidebar-empty").style.display = "none";
+  if(tpl) tpl.style.display = "block";
+  renderTemplatesList();
+});
+
+document.getElementById("btn-close-templates").addEventListener("click", ()=>{
+  document.getElementById("sidebar-templates").style.display = "none";
+  if(selectedId) document.getElementById("sidebar-content").style.display = "block";
+  else document.getElementById("sidebar-empty").style.display = "grid";
+});
+
+document.getElementById("btn-save-template").addEventListener("click", saveTemplate);
+
+// ── Keyboard shortcuts ───────────────────────────────────────────
+document.addEventListener("keydown", e=>{
+  const ctrl = e.ctrlKey || e.metaKey;
+
+  if(ctrl && e.key === "z"){
+    e.preventDefault();
+    undo();
+  } else if(ctrl && e.key === "y"){
+    e.preventDefault();
+    redo();
+  } else if(ctrl && e.key === "s"){
+    e.preventDefault();
+    document.getElementById("btn-save").click();
+  } else if(ctrl && e.key === "n"){
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const cx = screenToCanvas(rect.width/2, rect.height/2);
+    pushHistory();
+    const n = addNode("step", cx.x, cx.y);
+    selectNode(n.id);
+    toast("New step (Ctrl+N)", "success");
+  } else if(ctrl && e.key === "t"){
+    e.preventDefault();
+    setTheme(!darkMode);
+  } else if(e.key === "Delete" || e.key === "Backspace"){
+    if(selectedId && document.activeElement.tagName !== "INPUT" &&
+       document.activeElement.tagName !== "TEXTAREA" &&
+       document.activeElement.tagName !== "SELECT"){
+      e.preventDefault();
+      document.getElementById("btn-delete-node").click();
+    }
+  }
+});
+
+// ── Toast ────────────────────────────────────────────────────────
 function toast(msg, type="success"){
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -781,7 +1326,32 @@ function toast(msg, type="success"){
   setTimeout(()=>t.classList.remove("show"), 3000);
 }
 
+// ── Init ─────────────────────────────────────────────────────────
 function init(){
+  loadTemplates();
+
+  // Restore theme
+  const savedDark = localStorage.getItem("wd_dark");
+  if(savedDark !== null) setTheme(savedDark !== "false");
+
+  // Restore or create tabs
+  try { tabs = JSON.parse(localStorage.getItem("wd_tabs") || "null"); } catch(e){ tabs = []; }
+  if(!tabs || !tabs.length){
+    tabs = [];
+  }
+
+  if(tabs.length){
+    const lastId = tabs.reduce((best, t) => t.lastUsed > (best||{lastUsed:0}).lastUsed ? t : best, null);
+    if(lastId) {
+      activeTabId = lastId.id;
+      loadTabState(lastId);
+      renderTabs();
+      return;
+    }
+  }
+
+  // Fresh start: create one tab with demo
+  const tab = createTab("Demo Workflow");
   nodes = [
     {id:"1",type:"start",name:"Start",agent:"",consumes:[],produces:[],x:40,y:350,
      payload:{},config:{},condition:"",loopIterations:10},
@@ -801,6 +1371,12 @@ function init(){
     {from:"3",to:"5"},{from:"4",to:"5"},{from:"5",to:"6"},
   ];
   selectedId = null;
+  nextId = 7;
+  history = [{nodes: JSON.parse(JSON.stringify(nodes)), edges: JSON.parse(JSON.stringify(edges))}];
+  historyIdx = 0;
+  tabs[0].state = history[0];
+  tabs[0].name = "Demo Workflow";
+  renderTabs();
   resize();
   updateNodeCount();
   renderSidebar();
