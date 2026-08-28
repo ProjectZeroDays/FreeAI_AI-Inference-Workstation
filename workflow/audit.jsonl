@@ -555,3 +555,11 @@
 {"ts": "2026-08-28T12:58:43.251419+00:00", "workflow": null, "workflow_id": "test", "status": "retry", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 2}
 {"ts": "2026-08-28T12:58:45.252394+00:00", "workflow": null, "workflow_id": "test", "status": "failed", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 3}
 {"ts": "2026-08-28T12:58:45.255201+00:00", "workflow": null, "workflow_id": "t", "status": "ok", "step": "probe", "agent": "debug", "attempt": 1}
+{"ts": "2026-08-28T13:03:14.882701+00:00", "workflow": null, "workflow_id": "test", "status": "retry", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 1}
+{"ts": "2026-08-28T13:03:16.883638+00:00", "workflow": null, "workflow_id": "test", "status": "retry", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 2}
+{"ts": "2026-08-28T13:03:18.884715+00:00", "workflow": null, "workflow_id": "test", "status": "failed", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 3}
+{"ts": "2026-08-28T13:03:18.887050+00:00", "workflow": null, "workflow_id": "t", "status": "ok", "step": "probe", "agent": "debug", "attempt": 1}
+{"ts": "2026-08-28T13:37:06.646960+00:00", "workflow": null, "workflow_id": "test", "status": "retry", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 1}
+{"ts": "2026-08-28T13:37:08.648787+00:00", "workflow": null, "workflow_id": "test", "status": "retry", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 2}
+{"ts": "2026-08-28T13:37:10.649888+00:00", "workflow": null, "workflow_id": "test", "status": "failed", "error": "no backend", "step": "s", "agent": "orchestrate", "attempt": 3}
+{"ts": "2026-08-28T13:37:10.653386+00:00", "workflow": null, "workflow_id": "t", "status": "ok", "step": "probe", "agent": "debug", "attempt": 1}
