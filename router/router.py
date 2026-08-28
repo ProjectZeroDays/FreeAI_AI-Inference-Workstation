@@ -27,7 +27,8 @@ from providers import (load_providers, is_keyed, keyed_providers,
                        fallback_models, call_provider, parse_response,
                        build_request)
 from middleware import (RateLimiter, AuthMiddleware, CacheMiddleware,
-                         rate_limiter, auth_middleware, cache_middleware)
+                          rate_limiter, auth_middleware, cache_middleware,
+                          get_client_api_key)
 from load_balancer import (pick_backend, record_success, record_failure,
                            connection_start, connection_end,
                            all_state, get_state, FAILURE_THRESHOLD,
@@ -132,7 +133,7 @@ def guard():
     result = auth_middleware.check()
     if result is not None:
         return result
-    if not allow_request(request.remote_addr or "unknown"):
+    if not rate_limiter.allow_client(get_client_api_key()):
         return jsonify({"error": "rate limited"}), 429
     return None
 

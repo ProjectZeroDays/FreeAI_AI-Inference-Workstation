@@ -44,25 +44,66 @@ KNOWN_KEYS = {"workflow", "workflow_id", "status", "steps", "error"}
 # ---------------------------
 # Pause / Resume state
 # ---------------------------
-_paused: set = set()
-_paused_lock = threading.Lock()
+_PAUSED: set = set()
+_PAUSED_LOCK = threading.Lock()
 
 
 def pause_workflow(name: str) -> bool:
-    with _paused_lock:
-        _paused.add(name)
+    with _PAUSED_LOCK:
+        _PAUSED.add(name)
     return True
 
 
 def resume_workflow(name: str) -> bool:
-    with _paused_lock:
-        _paused.discard(name)
+    with _PAUSED_LOCK:
+        _PAUSED.discard(name)
     return True
 
 
 def is_paused(name: str) -> bool:
-    with _paused_lock:
-        return name in _paused
+    with _PAUSED_LOCK:
+        return name in _PAUSED
+
+
+def get_pause_status(name: str) -> Dict[str, Any]:
+    with _PAUSED_LOCK:
+        return {"name": name, "paused": name in _PAUSED}
+
+
+# ---------------------------
+# Version cache (in-memory)
+# ---------------------------
+_VERSIONS: Dict[str, List[Dict[str, Any]]] = {}
+_VERSIONS_LOCK = threading.Lock()
+
+
+def version_workflow(name: str, definition: Dict[str, Any]) -> Dict[str, Any]:
+    """Create an in-memory version snapshot and persist via versioning module."""
+    try:
+        from workflow.versioning import create_version as _cv
+    except ImportError:
+        from versioning import create_version as _cv
+    result = _cv(name, definition)
+    ver = result.get("version")
+    if ver:
+        with _VERSIONS_LOCK:
+            _VERSIONS.setdefault(name, []).append({
+                "version": ver,
+                "timestamp": time.time(),
+                "definition": definition,
+            })
+    return result
+
+
+def get_versions(name: str) -> List[Dict[str, Any]]:
+    """Return in-memory version list for a workflow."""
+    with _VERSIONS_LOCK:
+        return list(_VERSIONS.get(name, []))
+
+
+def clear_versions(name: str) -> None:
+    with _VERSIONS_LOCK:
+        _VERSIONS.pop(name, None)
 
 
 # ---------------------------
@@ -269,7 +310,7 @@ class Workflow:
 
         warnings = validate_workflow(
             self.steps, [k for k in initial_context
-                         if not k.startswith("_")])
+                          if not k.startswith("_")])
         if strict_validation and warnings:
             raise ValueError("validation failed: " + "; ".join(warnings))
 
@@ -298,6 +339,21 @@ class Workflow:
             "warnings": warnings,
             "outputs": outputs,
         }
+
+    def version_workflow(self, definition: Dict[str, Any]) -> Dict[str, Any]:
+        return version_workflow(self.name, definition)
+
+    def pause_workflow(self) -> bool:
+        return pause_workflow(self.name)
+
+    def resume_workflow(self) -> bool:
+        return resume_workflow(self.name)
+
+    def get_versions(self) -> List[Dict[str, Any]]:
+        return get_versions(self.name)
+
+    def get_pause_status(self) -> Dict[str, Any]:
+        return get_pause_status(self.name)
 
 
 def to_definition(workflow: Workflow) -> Dict[str, Any]:

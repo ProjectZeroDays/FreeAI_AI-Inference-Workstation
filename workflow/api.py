@@ -7,23 +7,27 @@ from pydantic import BaseModel, Field
 
 try:
     from workflow.engine import (from_definition, to_definition,
-                                 pause_workflow, resume_workflow,
-                                 is_paused, get_schedule,
-                                 set_schedule, clear_schedule,
-                                 save_workflow_with_version,
-                                 running_count, start_scheduler_thread)
+                                  pause_workflow, resume_workflow,
+                                  is_paused, get_schedule,
+                                  set_schedule, clear_schedule,
+                                  save_workflow_with_version,
+                                  running_count, start_scheduler_thread,
+                                  version_workflow, get_versions,
+                                  get_pause_status, clear_versions)
     from workflow.registry import get_workflow, list_workflows
     from workflow.validator import validate_workflow
     from workflow.audit import read_audit
     from workflow.versioning import (list_versions, get_version,
-                                      diff_versions, restore_version)
+                                       diff_versions, restore_version)
 except ImportError:
     from engine import (from_definition, to_definition,
                         pause_workflow, resume_workflow,
                         is_paused, get_schedule,
                         set_schedule, clear_schedule,
                         save_workflow_with_version,
-                        running_count, start_scheduler_thread)
+                        running_count, start_scheduler_thread,
+                        version_workflow, get_versions,
+                        get_pause_status, clear_versions)
     from registry import get_workflow, list_workflows
     from validator import validate_workflow
     from audit import read_audit
@@ -252,7 +256,47 @@ def health():
     return {"status": "ok"}
 
 
+# ── New API Routes: /api/workflows/<id>/ ──────────────────────
+
+@app.post("/api/workflows/{id}/version")
+def create_workflow_version(id: str):
+    """Create a version snapshot for a workflow."""
+    result = version_workflow(id, {"workflow_id": id, "timestamp": time.time()})
+    if "error" in result:
+        raise HTTPException(status_code=500, detail=result["error"])
+    return result
+
+
+@app.post("/api/workflows/{id}/pause")
+def api_pause_workflow(id: str):
+    """Pause a workflow via the /api/workflows/ prefix route."""
+    pause_workflow(id)
+    return {"ok": True, "id": id, "status": "paused"}
+
+
+@app.post("/api/workflows/{id}/resume")
+def api_resume_workflow(id: str):
+    """Resume a paused workflow via the /api/workflows/ prefix route."""
+    resume_workflow(id)
+    return {"ok": True, "id": id, "status": "resumed"}
+
+
+@app.get("/api/workflows/{id}/versions")
+def api_list_workflow_versions(id: str):
+    """List in-memory version records for a workflow."""
+    mem_versions = get_versions(id)
+    disk_versions = list_versions(id)
+    return {"memory_versions": mem_versions, "disk_versions": disk_versions}
+
+
+@app.get("/api/workflows/{id}/pause-status")
+def api_get_pause_status(id: str):
+    """Return pause status for a workflow via the /api/workflows/ prefix route."""
+    return get_pause_status(id)
+
+
 if __name__ == "__main__":
+    import time
     import uvicorn
     uvicorn.run(app, host="0.0.0.0",
                 port=int(os.environ.get("WORKFLOW_PORT",

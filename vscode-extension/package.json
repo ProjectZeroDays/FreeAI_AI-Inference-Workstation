@@ -1,7 +1,68 @@
 {
   "name": "freeai",
   "displayName": "FreeAI",
+  "description": "VSCode extension for FreeAI AI-Inference-Workstation — health status, prompt routing, agent management, and log browsing.",
   "version": "0.1.0",
   "engines": { "vscode": "^1.85.0" },
-  "contributes": { "commands": [{ "command": "freeai.route", "title": "FreeAI: Route Prompt" }] }
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:freeai.status",
+    "onCommand:freeai.route",
+    "onCommand:freeai.agents",
+    "onCommand:freeai.logs"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "freeai.status",
+        "title": "FreeAI: Show Service Status",
+        "icon": "$(pulse)",
+        "category": "FreeAI"
+      },
+      {
+        "command": "freeai.route",
+        "title": "FreeAI: Route Prompt",
+        "icon": "$(send)",
+        "category": "FreeAI"
+      },
+      {
+        "command": "freeai.agents",
+        "title": "FreeAI: List Agents",
+        "icon": "$(robot)",
+        "category": "FreeAI"
+      },
+      {
+        "command": "freeai.logs",
+        "title": "FreeAI: Show Logs",
+        "icon": "$(output)",
+        "category": "FreeAI"
+      }
+    ],
+    "configuration": {
+      "title": "FreeAI",
+      "properties": {
+        "freeai.apiBaseUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "FreeAI API base URL"
+        },
+        "freeai.refreshIntervalMs": {
+          "type": "number",
+          "default": 10000,
+          "description": "Status bar health-check interval in ms"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
 }

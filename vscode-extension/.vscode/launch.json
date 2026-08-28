@@ -1,0 +1,39 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "Launch VSCode Extension",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "build"
+    },
+    {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "Launch VSCode Extension (Mock API)",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "env": {
+        "FREEAI_API_BASE": "http://localhost:8000"
+      },
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "build"
+    }
+  ],
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "typescript",
+        "tsconfig": "tsconfig.json",
+        "problemMatcher": ["$tsc"],
+        "label": "build"
+      }
+    ]
+  }
+}
