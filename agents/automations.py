@@ -46,17 +46,19 @@ def _sanitize_run_id(run_id: str) -> str:
 
 def _safe_write(path: Path, content: str) -> None:
     """Safely write content to a known-fixed path (no user-controlled path component)."""
+    p = str(path)
     # Ensure path is a basename only — no directory traversal
-    safe_name = path.name
-    if safe_name != str(path).replace("/", "").replace("\\", ""):
+    safe_name = os.path.basename(p)
+    if safe_name != p.replace("/", "").replace("\\", ""):
         raise ValueError(f"Invalid path: {path}")
     # Validate path stays within parent directory using string-based check
-    norm = os.path.normpath(str(path))
-    parent_norm = os.path.normpath(str(path.parent))
+    norm = os.path.normpath(p)
+    parent_norm = os.path.normpath(os.path.dirname(p))
     if not norm.startswith(parent_norm + os.sep):
         raise ValueError(f"Path escapes parent directory: {path}")
-    path.parent.mkdir(parents=True, exist_ok=True)  # nosec B108
-    path.write_text(content, encoding="utf-8")  # nosec B108
+    os.makedirs(parent_norm, parents=True, exist_ok=True)  # nosec B108
+    with open(norm, "w", encoding="utf-8") as f:  # nosec B108
+        f.write(content)
 
 
 from typing import Optional
