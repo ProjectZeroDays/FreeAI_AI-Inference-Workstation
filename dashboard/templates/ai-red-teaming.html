@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — AI Red Teaming</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .redteam-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .redteam-main { padding:22px 24px 32px; min-width:0; }
+    .redteam-topbar { display:flex; align-items:center; justify-content:space-between;
+                      padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                      margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .redteam-topbar h1 { margin:0; font-size:22px; }
+    .redteam-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .redteam-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .redteam-kpi { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .redteam-kpi .kpi-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .redteam-kpi .kpi-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .redteam-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .redteam-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+                   border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .redteam-tab.active { background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .redteam-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .redteam-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                        border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .redteam-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .redteam-table tr:hover td { background:rgba(255,255,255,.02); }
+    .mono { font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#EF4444,#EC4899);color:#020617;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-success { background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:#BBF7D0; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .campaign-card { padding:12px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.02); }
+    .campaign-card .camp-name { font-size:14px;font-weight:600; }
+    .campaign-card .camp-desc { font-size:12px;color:var(--muted);margin-top:4px; }
+    .campaign-card .camp-meta { font-size:11px;color:var(--muted-2);margin-top:6px; }
+    .campaign-status { display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600; }
+    .campaign-status.running { background:rgba(34,197,94,.15);color:#BBF7D0; }
+    .campaign-status.completed { background:rgba(56,189,248,.15);color:#BAE6FD; }
+    .campaign-status.failed { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .campaign-status.planned { background:rgba(255,255,255,.08);color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="redteam-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Red Team</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploitation</a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploitation</a>
+        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intelligence</a>
+        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+        <a href="/ai-red-teaming" class="nav-item active"><span class="nav-dot"></span> AI Red Teaming</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="redteam-main">
+      <header class="redteam-topbar">
+        <div><h1>AI Red Teaming</h1><p>AI-driven attack simulation, vuln discovery, and adversarial ML testing</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="startCampaign()">New Campaign</button>
+          <button class="btn btn-sm" onclick="loadResults()">Results</button>
+        </div>
+      </header>
+      <div class="redteam-kpis">
+        <div class="redteam-kpi"><div class="kpi-val" id="kpi-campaigns">0</div><div class="kpi-lbl">Campaigns</div></div>
+        <div class="redteam-kpi"><div class="kpi-val" id="kpi-vulns-found">0</div><div class="kpi-lbl">Vulns Found</div></div>
+        <div class="redteam-kpi"><div class="kpi-val" id="kpi-remediated">0</div><div class="kpi-lbl">Remediated</div></div>
+        <div class="redteam-kpi"><div class="kpi-val" id="kpi-success-rate">0%</div><div class="kpi-lbl">Success Rate</div></div>
+      </div>
+      <div class="redteam-tabs">
+        <button class="redteam-tab active" data-tab="campaigns" onclick="switchTab(this)">Campaigns</button>
+        <button class="redteam-tab" data-tab="results" onclick="switchTab(this)">Results</button>
+        <button class="redteam-tab" data-tab="comparison" onclick="switchTab(this)">Comparison</button>
+        <button class="redteam-tab" data-tab="remediation" onclick="switchTab(this)">Remediation</button>
+      </div>
+      <table class="redteam-table" id="redteam-table">
+        <thead id="redteam-thead"></thead>
+        <tbody id="redteam-tbody"><tr><td colspan="6" class="empty-state">No red team data yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    let data = { campaigns:[], results:[], comparison:[], remediation:[] };
+    let currentTab = 'campaigns';
+    async function loadAll() {
+      try {
+        const [c, r] = await Promise.all([
+          fetch('/api/ai-redteam/campaigns').then(r=>r.json()).catch(()=>({campaigns:[]})),
+          fetch('/api/ai-redteam/results').then(r=>r.json()).catch(()=>({results:[]}))
+        ]);
+        data.campaigns = c.campaigns || [];
+        data.results = r.results || [];
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.redteam-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      $('kpi-campaigns').textContent = data.campaigns.length;
+      const vulnsFound = data.results.filter(r=>r.vulnerability).length;
+      $('kpi-vulns-found').textContent = vulnsFound;
+      $('kpi-remediated').textContent = data.remediation.length;
+      const total = data.results.length;
+      $('kpi-success-rate').textContent = total > 0 ? Math.round((vulnsFound/total)*100)+'%' : '0%';
+      const thead = $('redteam-thead');
+      const tbody = $('redteam-tbody');
+      if (currentTab === 'campaigns') {
+        thead.style.display = 'none'; tbody.style.display = 'block';
+        if (!data.campaigns.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No campaigns. Start one to begin.</td></tr>'; return; }
+        tbody.innerHTML = data.campaigns.map((c,i)=>{
+          const cls = c.status||'planned';
+          return `<tr><td colspan="6"><div class="campaign-card">
+            <div class="camp-name">${c.name||'Campaign '+(i+1)}</div>
+            <div class="camp-desc">${c.description||''}</div>
+            <div class="camp-meta">
+              <span class="campaign-status ${cls}">${cls}</span> ·
+              Target: ${c.target||'—'} ·
+              Vulns: ${c.vulns_found||0} ·
+              Started: ${c.started?new Date(c.started).toLocaleString():'—'}
+            </div>
+            <div style="margin-top:8px">
+              ${cls==='planned'?`<button class="btn btn-sm btn-primary" onclick="launchCampaign(${i})">Launch</button>`:''}
+              ${cls==='running'?`<button class="btn btn-sm" onclick="viewProgress(${i})">Monitor</button>`:''}
+              ${cls==='completed'?`<button class="btn btn-sm btn-success" onclick="remediateFromCampaign(${i})">Remediate</button>`:''}
+            </div>
+          </div></td></tr>`;
+        }).join('');
+      } else if (currentTab === 'results') {
+        thead.style.display = ''; tbody.style.display = '';
+        thead.innerHTML = '<tr><th>Campaign</th><th>Vulnerability</th><th>Severity</th><th>Method</th><th>Found</th><th>Actions</th></tr>';
+        if (!data.results.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No results yet.</td></tr>'; return; }
+        tbody.innerHTML = data.results.map((r,i)=>`<tr><td class="mono">${r.campaign||'—'}</td>
+          <td>${r.vulnerability||r.name||'—'}</td><td>${r.severity||'—'}</td>
+          <td class="mono">${r.method||'—'}</td><td>${new Date(r.found_at||Date.now()).toLocaleString()}</td>
+          <td><button class="btn btn-sm" onclick="viewResult(${i})">Details</button></td></tr>`).join('');
+      } else if (currentTab === 'comparison') {
+        thead.innerHTML = '<tr><th>Campaign A</th><th>Campaign B</th><th>Metric</th><th>A Value</th><th>B Value</th><th>Delta</th></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Select two campaigns to compare.</td></tr>';
+      } else {
+        thead.innerHTML = '<tr><th>Vulnerability</th><th>Remediation</th><th>Status</th><th>Applied</th><th>Verified</th><th>Actions</th></tr>';
+        if (!data.remediation.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No remediations pending.</td></tr>'; return; }
+        tbody.innerHTML = data.remediation.map((rem,i)=>`<tr><td class="mono">${rem.vulnerability}</td>
+          <td>${rem.remediation}</td><td>${rem.status}</td>
+          <td>${rem.applied?new Date(rem.applied).toLocaleDateString():'—'}</td>
+          <td>${rem.verified?'Yes':'No'}</td>
+          <td><button class="btn btn-sm btn-success" onclick="verifyRemediation(${i})">Verify</button></td></tr>`).join('');
+      }
+    }
+    async function startCampaign() {
+      try {
+        const r = await fetch('/api/ai-redteam/start', {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({name:'Auto Campaign', target:'auto', type:'vulnerability_discovery'})});
+        loadAll();
+      } catch(e) {}
+    }
+    async function loadResults() { loadAll(); }
+    function launchCampaign(i) {}
+    function viewProgress(i) {}
+    function remediateFromCampaign(i) {}
+    function viewResult(i) {}
+    function verifyRemediation(i) {}
+    loadAll();
+    setInterval(loadAll, 20000);
+  </script>
+</body>
+</html>

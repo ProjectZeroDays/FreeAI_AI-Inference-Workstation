@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Social Engineering</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .se-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .se-main { padding:22px 24px 32px; min-width:0; }
+    .se-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .se-topbar h1 { margin:0; font-size:22px; }
+    .se-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .se-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-bottom:18px; }
+    .se-card { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .se-card .se-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .se-card .se-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .se-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .se-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                    border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .se-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .se-table tr:hover td { background:rgba(255,255,255,.02); }
+    .se-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .se-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+              border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .se-tab.active { background:rgba(168,85,247,.15);border-color:rgba(168,85,247,.3);color:#D8B4FE; }
+    .se-template { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;
+                   padding:14px;margin-bottom:10px; }
+    .se-template h4 { margin:0 0 6px;font-size:14px;color:var(--text); }
+    .se-template p { margin:0;font-size:12px;color:var(--muted);line-height:1.5; }
+    .se-badge { display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600; }
+    .se-badge.phishing { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .se-badge.vishing { background:rgba(245,158,11,.15);color:#FCD34D; }
+    .se-badge.pretext { background:rgba(56,189,248,.15);color:#BAE6FD; }
+    .se-badge.baiting { background:rgba(34,197,94,.15);color:#BBF7D0; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#A855F7,#6366F1);color:#fff;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .mono { font-family:monospace; }
+  </style>
+</head>
+<body>
+  <div class="se-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Social Eng</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+        <a href="/social-engineering" class="nav-item active"><span class="nav-dot"></span> Social Engineering</a>
+        <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero-Day</a>
+        <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+        <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+        <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="se-main">
+      <header class="se-topbar">
+        <div><h1>Social Engineering</h1><p>Phishing templates, vishing scripts, OSINT recon, and awareness training</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="loadTemplates()">Load Templates</button>
+          <button class="btn btn-sm btn-primary" onclick="generateTemplate()">Generate</button>
+          <button class="btn btn-sm" onclick="loadQuiz()">Quiz</button>
+        </div>
+      </header>
+      <div class="se-grid">
+        <div class="se-card"><div class="se-val" id="se-templates">0</div><div class="se-lbl">Templates</div></div>
+        <div class="se-card"><div class="se-val" id="se-phishing">0</div><div class="se-lbl">Phishing</div></div>
+        <div class="se-card"><div class="se-val" id="se-vishing">0</div><div class="se-lbl">Vishing</div></div>
+        <div class="se-card"><div class="se-val" id="se-osint">0</div><div class="se-lbl">OSINT Tools</div></div>
+      </div>
+      <div class="se-tabs">
+        <button class="se-tab active" data-tab="templates" onclick="switchTab(this)">Template Gallery</button>
+        <button class="se-tab" data-tab="generate" onclick="switchTab(this)">Generator</button>
+        <button class="se-tab" data-tab="quiz" onclick="switchTab(this)">Awareness Quiz</button>
+      </div>
+      <div id="se-content">
+        <div id="se-templates-list"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let seData = { templates:[], categories:[], quiz:[] };
+    let currentTab = 'templates';
+    const $ = id => document.getElementById(id);
+    async function loadTemplates() {
+      try {
+        const r = await fetch('/api/social-eng/templates');
+        seData = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.se-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      const templates = seData.templates || [];
+      $('se-templates').textContent = templates.length;
+      $('se-phishing').textContent = templates.filter(t=>t.category==='phishing').length;
+      $('se-vishing').textContent = templates.filter(t=>t.category==='vishing').length;
+      $('se-osint').textContent = templates.filter(t=>t.category==='osint').length;
+      const content = $('se-content');
+      if (currentTab==='templates') {
+        if (!templates.length) { content.innerHTML='<div class="empty-state">No templates loaded. Click "Load Templates".</div>'; return; }
+        content.innerHTML = templates.map(t=>`<div class="se-template">
+          <h4>${t.name} <span class="se-badge ${t.category}">${t.category}</span></h4>
+          <p>${t.description||'No description.'}</p>
+          <p style="margin-top:6px;color:var(--accent);font-size:11px">Difficulty: ${t.difficulty||'—'} | Success Rate: ${t.success_rate||'—'}</p>
+        </div>`).join('');
+      } else if (currentTab==='generate') {
+        content.innerHTML='<div class="se-template"><h4>Template Generator</h4><p>Select category and target to generate a social engineering template.</p><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" onclick="generateTemplate(\'phishing\')">Phishing</button><button class="btn btn-sm" onclick="generateTemplate(\'vishing\')">Vishing</button><button class="btn btn-sm" onclick="generateTemplate(\'pretexting\')">Pretexting</button><button class="btn btn-sm" onclick="generateTemplate(\'baiting\')">Baiting</button></div><div id="gen-output" style="margin-top:12px"></div></div>';
+      } else {
+        const quiz = seData.quiz || [];
+        if (!quiz.length) { content.innerHTML='<div class="empty-state">Click "Quiz" to load awareness questions.</div>'; return; }
+        content.innerHTML = quiz.map((q,i)=>`<div class="se-template"><h4>Q${i+1}: ${q.question}</h4><p>${q.options?q.options.join(' | '):'Open-ended'}</p></div>`).join('');
+      }
+    }
+    async function generateTemplate(cat) {
+      try {
+        const r = await fetch('/api/social-eng/generate', {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({category:cat||'phishing', target:'general'})});
+        const d = await r.json();
+        const out = $('gen-output');
+        if (out) out.innerHTML = '<div class="se-template"><h4>Generated Template</h4><p class="mono">'+(d.template||d.content||JSON.stringify(d))+'</p></div>';
+      } catch(e) { console.error(e); }
+    }
+    async function loadQuiz() {
+      try {
+        const r = await fetch('/api/social-eng/quiz');
+        const d = await r.json();
+        seData.quiz = d.questions || d.quiz || [];
+        currentTab = 'quiz';
+        render();
+      } catch(e) { console.error(e); }
+    }
+  </script>
+</body>
+</html>

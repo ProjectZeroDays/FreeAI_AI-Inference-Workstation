@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Identity Management</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .id-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .id-main { padding:22px 24px 32px; min-width:0; }
+    .id-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .id-topbar h1 { margin:0; font-size:22px; }
+    .id-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .id-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .id-kpi { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .id-kpi .kpi-val { font-size:24px; font-weight:700; color:var(--accent); }
+    .id-kpi .kpi-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .id-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .id-tab { padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600;
+              border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; }
+    .id-tab.active { background:rgba(56,189,248,.15); border-color:rgba(56,189,248,.3); color:#BAE6FD; }
+    .id-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .id-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                   border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; }
+    .id-table td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .id-table tr:hover td { background:rgba(255,255,255,.02); }
+    .role-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+    .role-admin { background:rgba(239,68,68,.2); color:#FCA5A5; }
+    .role-user  { background:rgba(34,197,94,.2); color:#BBF7D0; }
+    .role-viewer{ background:rgba(148,163,184,.2); color:#94A3B8; }
+    .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+    .status-dot.online  { background:#22C55E; box-shadow:0 0 6px rgba(34,197,94,.5); }
+    .status-dot.offline { background:#64748B; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text); border:1px solid var(--border);
+           border-radius:10px; padding:7px 14px; font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-primary { background:linear-gradient(135deg,#0EA5E9,#22C55E); color:#020617; border:none; font-weight:700; }
+    .empty-state { text-align:center; padding:40px; color:var(--muted); }
+    .mono { font-family:monospace; font-size:12px; color:var(--muted); word-break:break-all; }
+  </style>
+</head>
+<body>
+  <div class="id-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Identity</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+        <a href="/identity-mgmt" class="nav-item active"><span class="nav-dot"></span> Identity</a>
+        <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
+        <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime</a>
+        <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="id-main">
+      <header class="id-topbar">
+        <div><h1>Identity Management</h1><p>User identities, credentials, access control, and session monitoring</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="loadData()">Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="addUser()">Add User</button>
+        </div>
+      </header>
+      <div class="id-kpis">
+        <div class="id-kpi"><div class="kpi-val" id="kpi-users">0</div><div class="kpi-lbl">Total Users</div></div>
+        <div class="id-kpi"><div class="kpi-val" id="kpi-sessions">0</div><div class="kpi-lbl">Active Sessions</div></div>
+        <div class="id-kpi"><div class="kpi-val" id="kpi-events">0</div><div class="kpi-lbl">Auth Events (24h)</div></div>
+        <div class="id-kpi"><div class="kpi-val" id="kpi-roles">0</div><div class="kpi-lbl">Roles</div></div>
+      </div>
+      <div class="id-tabs">
+        <button class="id-tab active" data-tab="users" onclick="switchTab(this)">Users</button>
+        <button class="id-tab" data-tab="sessions" onclick="switchTab(this)">Sessions</button>
+        <button class="id-tab" data-tab="events" onclick="switchTab(this)">Auth Events</button>
+      </div>
+      <table class="id-table" id="id-table">
+        <thead id="id-thead"><tr><th>User</th><th>Role</th><th>Status</th><th>Last Active</th><th>Actions</th></tr></thead>
+        <tbody id="id-tbody"><tr><td colspan="5" class="empty-state">No users found.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let idData = { users:[], sessions:[], events:[] };
+    let currentTab = 'users';
+    async function loadData() {
+      try {
+        const [uRes, sRes, mRes] = await Promise.all([
+          fetch('/api/identity/users'),
+          fetch('/api/identity/sessions'),
+          fetch('/api/identity/monitor')
+        ]);
+        idData.users = (await uRes.json()).users || [];
+        idData.sessions = (await sRes.json()).sessions || [];
+        const mon = await mRes.json();
+        idData.events = mon.events || [];
+        $('kpi-users').textContent = idData.users.length;
+        $('kpi-sessions').textContent = idData.sessions.filter(s=>s.active).length;
+        $('kpi-events').textContent = idData.events.length;
+        $('kpi-roles').textContent = [...new Set(idData.users.map(u=>u.role))].length;
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.id-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      const tb = $('id-tbody');
+      const items = currentTab==='sessions' ? idData.sessions :
+                    currentTab==='events' ? idData.events : idData.users;
+      if (!items.length) { tb.innerHTML='<tr><td colspan="5" class="empty-state">No data.</td></tr>'; return; }
+      if (currentTab==='users') {
+        tb.innerHTML = items.map((u,i)=>{
+          const rc = 'role-'+(u.role||'viewer');
+          return `<tr>
+            <td><strong>${u.username||u.name||'—'}</strong><br><span class="mono">${u.email||''}</span></td>
+            <td><span class="role-badge ${rc}">${(u.role||'viewer').toUpperCase()}</span></td>
+            <td><span class="status-dot ${u.active?'online':'offline'}"></span>${u.active?'Active':'Inactive'}</td>
+            <td class="mono">${u.last_active?new Date(u.last_active).toLocaleString():'—'}</td>
+            <td><button class="btn btn-sm" onclick="editRole(${i})">Edit Role</button></td>
+          </tr>`;
+        }).join('');
+      } else if (currentTab==='sessions') {
+        tb.innerHTML = items.map((s,i)=>`<tr>
+          <td class="mono">${s.user||'—'}</td>
+          <td class="mono">${s.ip||'—'}</td>
+          <td><span class="status-dot ${s.active?'online':'offline'}"></span>${s.active?'Active':'Expired'}</td>
+          <td class="mono">${s.created?new Date(s.created).toLocaleString():'—'}</td>
+          <td><button class="btn btn-sm" onclick="revokeSession(${i})">Revoke</button></td>
+        </tr>`).join('');
+      } else {
+        tb.innerHTML = items.map((e,i)=>`<tr>
+          <td class="mono">${e.user||'—'}</td>
+          <td>${e.event_type||e.type||'—'}</td>
+          <td class="mono">${e.ip||'—'}</td>
+          <td class="mono">${e.timestamp?new Date(e.timestamp).toLocaleString():'—'}</td>
+          <td class="mono">${e.status||'—'}</td>
+        </tr>`).join('');
+      }
+    }
+    async function addUser() {
+      try {
+        await fetch('/api/identity/monitor', {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'add_user', username:'new-user', role:'viewer'})});
+        loadData();
+      } catch(e) { console.error(e); }
+    }
+    function editRole(i) { alert('Edit role for '+idData.users[i].username); }
+    function revokeSession(i) { idData.sessions[i].active=false; render(); }
+    loadData();
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>

@@ -4891,3 +4891,1274 @@ def api_automobile_exploit_cves():
         return jsonify(AutoExploitAgent().list_cves())
     except ImportError:
         return jsonify({}), 200
+
+
+# ── Wireless Exploitation Routes ────────────────────────────────────
+_wireless_lock = threading.Lock()
+_wifi_scan_results = []
+_bt_devices = []
+_crack_results = []
+_evil_twin_detections = []
+
+
+@app.route("/api/wifi-scan/status")
+def api_wifi_scan_status():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _wireless_lock:
+        return jsonify({"networks": _wifi_scan_results, "scanning": False})
+
+
+@app.route("/api/wifi-scan/start", methods=["POST"])
+def api_wifi_scan_start():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _wireless_lock:
+        _wifi_scan_results = [
+            {"ssid": "FreeAI-Lab", "bssid": "AA:BB:CC:DD:EE:01", "channel": 6, "signal": -45, "encryption": "WPA2"},
+            {"ssid": "CorpNet-5G", "bssid": "AA:BB:CC:DD:EE:02", "channel": 36, "signal": -62, "encryption": "WPA3"},
+            {"ssid": "IoT-Gateway", "bssid": "AA:BB:CC:DD:EE:03", "channel": 11, "signal": -71, "encryption": "WPA2"},
+            {"ssid": "OpenGuest", "bssid": "AA:BB:CC:DD:EE:04", "channel": 1, "signal": -55, "encryption": "Open"},
+        ]
+    return jsonify({"ok": True, "networks_found": len(_wifi_scan_results)})
+
+
+@app.route("/api/bt-scan/devices")
+def api_bt_scan_devices():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _wireless_lock:
+        if not _bt_devices:
+            _bt_devices.clear()
+            _bt_devices.extend([
+                {"name": "JBL Flip 6", "mac": "00:1A:7D:DA:71:11", "type": "BLE", "rssi": -58, "services": ["audio_sink", "avrcp"]},
+                {"name": "Logitech MX Master", "mac": "00:1A:7D:DA:71:12", "type": "BR/EDR", "rssi": -42, "services": ["hid"]},
+                {"name": "Unknown BLE Tag", "mac": "00:1A:7D:DA:71:13", "type": "BLE", "rssi": -73, "services": ["battery", "device_info"]},
+            ])
+        return jsonify({"devices": list(_bt_devices)})
+
+
+@app.route("/api/wireless/evil-twin", methods=["POST"])
+def api_wireless_evil_twin():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _wireless_lock:
+        detection = {
+            "target_ssid": data.get("target_ssid", "FreeAI-Lab"),
+            "rogue_bssid": "DE:AD:BE:EF:00:01",
+            "channel": 6,
+            "confidence": 0.87,
+            "timestamp": time.time(),
+        }
+        _evil_twin_detections.append(detection)
+    return jsonify({"ok": True, "detection": detection})
+
+
+# ── IoT Exploitation Dashboard Routes ───────────────────────────────
+_iot_lock = threading.Lock()
+_iot_devices = []
+_iot_firmwares = []
+_iot_vulns = []
+
+
+@app.route("/api/iot-scan/devices")
+def api_iot_scan_devices():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _iot_lock:
+        return jsonify({"devices": _iot_devices})
+
+
+@app.route("/api/iot-scan/start", methods=["POST"])
+def api_iot_scan_start():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _iot_lock:
+        _iot_devices = [
+            {"name": "Hikvision Camera", "ip": "192.168.1.101", "type": "camera", "protocol": "RTSP", "firmware": "V5.6.3", "default_creds": True, "risk_score": 8},
+            {"name": "TP-Link Smart Plug", "ip": "192.168.1.102", "type": "smart_plug", "protocol": "Kasa", "firmware": "1.2.8", "default_creds": False, "risk_score": 4},
+            {"name": "Shelly 2.5 Relay", "ip": "192.168.1.103", "type": "relay", "protocol": "MQTT", "firmware": "20230913", "default_creds": True, "risk_score": 6},
+            {"name": "Xiaomi Gateway", "ip": "192.168.1.104", "type": "gateway", "protocol": "Zigbee", "firmware": "3.1.0", "default_creds": False, "risk_score": 5},
+        ]
+    return jsonify({"ok": True, "devices_found": len(_iot_devices)})
+
+
+@app.route("/api/iot/firmware")
+def api_iot_firmware():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _iot_lock:
+        if not _iot_firmwares:
+            _iot_firmwares.clear()
+            _iot_firmwares.extend([
+                {"name": "Hikvision IPC", "version": "V5.6.3", "arch": "arm32", "size": "32MB", "vuln_count": 3},
+                {"name": "TP-Link Kasa", "version": "1.2.8", "arch": "mips", "size": "8MB", "vuln_count": 1},
+            ])
+        return jsonify({"firmwares": list(_iot_firmwares)})
+
+
+@app.route("/api/iot/assess", methods=["POST"])
+def api_iot_assess():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _iot_lock:
+        _iot_vulns = [
+            {"cve": "CVE-2021-36260", "device": "Hikvision Camera", "severity": "critical", "desc": "Command injection in web server", "exploit": True},
+            {"cve": "CVE-2023-29358", "device": "TP-Link Smart Plug", "severity": "medium", "desc": "Auth bypass in Kasa protocol", "exploit": False},
+        ]
+    return jsonify({"ok": True, "vulns_found": len(_iot_vulns)})
+
+
+# ── APT Threat Intelligence Routes ──────────────────────────────────
+_apt_lock = threading.Lock()
+_apt_threats = []
+_apt_groups = []
+_apt_ttps = []
+_apt_iocs = []
+
+
+@app.route("/api/apt/threats")
+def api_apt_threats():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _apt_lock:
+        if not _apt_threats:
+            _apt_threats.clear()
+            _apt_threats.extend([
+                {"title": "APT29 Spear Phishing Campaign", "description": "Targeted phishing emails with malicious ISO attachments", "severity": "critical", "timestamp": time.time() - 3600},
+                {"title": "Lazarus Group Cryptojacking", "description": "Supply chain compromise of dev tooling for crypto mining", "severity": "high", "timestamp": time.time() - 7200},
+                {"title": "APT41 Ransomware Deployment", "description": "Double extortion ransomware targeting healthcare", "severity": "high", "timestamp": time.time() - 14400},
+            ])
+            _apt_iocs.clear()
+            _apt_iocs.extend([
+                {"type": "hash", "value": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4", "apt": "APT29", "first_seen": time.time() - 86400, "confidence": 92},
+                {"type": "domain", "value": "evil-update-cdn.com", "apt": "Lazarus", "first_seen": time.time() - 172800, "confidence": 88},
+                {"type": "ip", "value": "185.220.101.42", "apt": "APT41", "first_seen": time.time() - 259200, "confidence": 95},
+            ])
+            _apt_ttps.clear()
+            _apt_ttps.extend([
+                {"technique_id": "T1566.001", "name": "Spearphishing Attachment", "tactic": "Initial Access", "groups": ["APT29", "APT41"], "platforms": ["Windows", "macOS"]},
+                {"technique_id": "T1059.001", "name": "PowerShell", "tactic": "Execution", "groups": ["APT29", "Lazarus"], "platforms": ["Windows"]},
+                {"technique_id": "T1071.001", "name": "Web Protocols", "tactic": "Command and Control", "groups": ["APT41", "Lazarus"], "platforms": ["Windows", "Linux", "macOS"]},
+            ])
+        return jsonify({"threats": list(_apt_threats), "iocs": list(_apt_iocs), "ttps": list(_apt_ttps)})
+
+
+@app.route("/api/apt/groups")
+def api_apt_groups():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _apt_lock:
+        if not _apt_groups:
+            _apt_groups.clear()
+            _apt_groups.extend([
+                {"name": "APT28", "aliases": "Fancy Bear, Sofacy", "origin": "Russia", "targets": ["Government", "Military", "Media"], "threat_level": "critical"},
+                {"name": "APT29", "aliases": "Cozy Bear, The Dukes", "origin": "Russia", "targets": ["Government", "Think Tanks", "Healthcare"], "threat_level": "critical"},
+                {"name": "Lazarus Group", "aliases": "Hidden Cobra, ZINC", "origin": "North Korea", "targets": ["Finance", "Crypto", "Defense"], "threat_level": "high"},
+                {"name": "APT41", "aliases": "Winnti, Barium", "origin": "China", "targets": ["Healthcare", "Gaming", "Telecom"], "threat_level": "high"},
+            ])
+        return jsonify({"groups": list(_apt_groups)})
+
+
+@app.route("/api/apt/ttps")
+def api_apt_ttps():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _apt_lock:
+        return jsonify({"ttps": _apt_ttps})
+
+
+@app.route("/api/apt/feed/refresh", methods=["POST"])
+def api_apt_feed_refresh():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _apt_lock:
+        _apt_threats = []
+        _apt_iocs = []
+        _apt_ttps = []
+    return api_apt_threats()
+
+
+# ── Predictive Analytics Routes ─────────────────────────────────────
+_analytics_lock = threading.Lock()
+_analytics_alerts = []
+_analytics_trends = []
+_analytics_forecast = []
+
+
+@app.route("/api/analytics/alerts")
+def api_analytics_alerts():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _analytics_lock:
+        if not _analytics_alerts:
+            _analytics_alerts.clear()
+            _analytics_alerts.extend([
+                {"message": "Unusual outbound traffic spike detected from 10.0.1.50", "severity": "high", "source": "Network Monitor", "confidence": 87, "is_anomaly": True, "timestamp": time.time() - 1800},
+                {"message": "Failed login attempts exceeded threshold on admin panel", "severity": "medium", "source": "Auth Service", "confidence": 92, "is_anomaly": False, "timestamp": time.time() - 3600},
+                {"message": "New process spawned by www-data with network access", "severity": "high", "source": "EDR", "confidence": 78, "is_anomaly": True, "timestamp": time.time() - 5400},
+            ])
+        return jsonify({"alerts": list(_analytics_alerts)})
+
+
+@app.route("/api/analytics/predict", methods=["POST"])
+def api_analytics_predict():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _analytics_lock:
+        _analytics_forecast = [
+            {"period": "Next 24h", "metric": "Attack Volume", "current": 142, "predicted": 189, "delta": 33},
+            {"period": "Next 24h", "metric": "Phishing Attempts", "current": 38, "predicted": 52, "delta": 37},
+            {"period": "Next 7d", "metric": "Vulnerability Exploits", "current": 12, "predicted": 19, "delta": 58},
+            {"period": "Next 7d", "metric": "Brute Force Attacks", "current": 284, "predicted": 310, "delta": 9},
+        ]
+        _analytics_trends = [
+            {"label": "Mon", "value": 42}, {"label": "Tue", "value": 55},
+            {"label": "Wed", "value": 38}, {"label": "Thu", "value": 67},
+            {"label": "Fri", "value": 72}, {"label": "Sat", "value": 51},
+            {"label": "Sun", "value": 89},
+        ]
+    return jsonify({"forecast": _analytics_forecast, "trends": _analytics_trends})
+
+
+@app.route("/api/analytics/trends")
+def api_analytics_trends():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _analytics_lock:
+        if not _analytics_trends:
+            _analytics_trends.clear()
+            _analytics_trends.extend([
+                {"label": "Mon", "value": 42}, {"label": "Tue", "value": 55},
+                {"label": "Wed", "value": 38}, {"label": "Thu", "value": 67},
+                {"label": "Fri", "value": 72}, {"label": "Sat", "value": 51},
+                {"label": "Sun", "value": 89},
+            ])
+        return jsonify({"trends": list(_analytics_trends)})
+
+
+@app.route("/api/analytics/risk-score")
+def api_analytics_risk_score():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _analytics_lock:
+        score = 67
+        return jsonify({"score": score, "level": "medium", "factors": ["traffic_anomaly", "auth_failures", "process_anomaly"]})
+
+
+# ── Incident Response Routes ────────────────────────────────────────
+_ir_lock = threading.Lock()
+_ir_incidents = []
+_ir_playbooks = []
+_ir_next_id = 1
+
+
+@app.route("/api/incidents/list")
+def api_incidents_list():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ir_lock:
+        if not _ir_incidents:
+            _ir_incidents.clear()
+            _ir_incidents.extend([
+                {"id": "INC-001", "title": "Phishing Email Campaign", "severity": "high", "status": "investigating", "created": time.time() - 86400},
+                {"id": "INC-002", "title": "Unauthorized SSH Access", "severity": "critical", "status": "contained", "created": time.time() - 43200},
+                {"id": "INC-003", "title": "Malware on Workstation-42", "severity": "medium", "status": "resolved", "created": time.time() - 172800},
+            ])
+        return jsonify({"incidents": list(_ir_incidents)})
+
+
+@app.route("/api/incidents/create", methods=["POST"])
+def api_incidents_create():
+    global _ir_next_id
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _ir_lock:
+        inc_id = f"INC-{_ir_next_id:03d}"
+        _ir_next_id += 1
+        incident = {
+            "id": inc_id,
+            "title": data.get("title", "Untitled Incident"),
+            "severity": data.get("severity", "medium"),
+            "status": "open",
+            "description": data.get("description", ""),
+            "created": time.time(),
+        }
+        _ir_incidents.append(incident)
+    return jsonify({"ok": True, "incident": incident})
+
+
+@app.route("/api/incidents/<incident_id>/status", methods=["PUT"])
+def api_incidents_update_status(incident_id):
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _ir_lock:
+        for inc in _ir_incidents:
+            if inc["id"] == incident_id or str(_ir_incidents.index(inc)) == incident_id:
+                inc["status"] = data.get("status", inc["status"])
+                return jsonify({"ok": True, "incident": inc})
+    return jsonify({"error": "incident not found"}), 404
+
+
+@app.route("/api/incidents/playbooks")
+def api_incidents_playbooks():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ir_lock:
+        if not _ir_playbooks:
+            _ir_playbooks.clear()
+            _ir_playbooks.extend([
+                {"name": "Phishing Response", "description": "Automated response for phishing email incidents", "steps": 8, "trigger": "email_alert"},
+                {"name": "Malware Containment", "description": "Isolate infected host and collect forensic evidence", "steps": 12, "trigger": "edr_alert"},
+                {"name": "Data Breach Protocol", "description": "Full incident response for confirmed data exfiltration", "steps": 15, "trigger": "dlp_alert"},
+                {"name": "Ransomware Response", "description": "Contain, decrypt if possible, restore from backup", "steps": 10, "trigger": "file_encryption_detected"},
+            ])
+        return jsonify({"playbooks": list(_ir_playbooks)})
+
+
+# ── AI Red Teaming Routes ───────────────────────────────────────────
+_redteam_lock = threading.Lock()
+_redteam_campaigns = []
+_redteam_results = []
+_redteam_next_id = 1
+
+
+@app.route("/api/ai-redteam/campaigns")
+def api_ai_redteam_campaigns():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _redteam_lock:
+        if not _redteam_campaigns:
+            _redteam_campaigns.clear()
+            _redteam_campaigns.extend([
+                {"name": "Web App Penetration", "description": "AI-driven web application vulnerability discovery", "status": "completed", "target": "webapp.internal", "vulns_found": 5, "started": time.time() - 86400},
+                {"name": "Network Lateral Movement", "description": "Automated lateral movement simulation across network segments", "status": "running", "target": "10.0.0.0/16", "vulns_found": 2, "started": time.time() - 3600},
+                {"name": "Social Engineering Test", "description": "AI-generated phishing campaign against test group", "status": "planned", "target": "employees@test.company", "vulns_found": 0, "started": None},
+            ])
+        return jsonify({"campaigns": list(_redteam_campaigns)})
+
+
+@app.route("/api/ai-redteam/start", methods=["POST"])
+def api_ai_redteam_start():
+    global _redteam_next_id
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _redteam_lock:
+        camp_id = _redteam_next_id
+        _redteam_next_id += 1
+        campaign = {
+            "id": camp_id,
+            "name": data.get("name", f"Red Team Campaign {_redteam_next_id}"),
+            "description": data.get("description", "AI-driven attack simulation"),
+            "status": "running",
+            "target": data.get("target", "auto"),
+            "type": data.get("type", "vulnerability_discovery"),
+            "vulns_found": 0,
+            "started": time.time(),
+        }
+        _redteam_campaigns.append(campaign)
+    return jsonify({"ok": True, "campaign": campaign})
+
+
+@app.route("/api/ai-redteam/results")
+def api_ai_redteam_results():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _redteam_lock:
+        if not _redteam_results:
+            _redteam_results.clear()
+            _redteam_results.extend([
+                {"campaign": "Web App Penetration", "vulnerability": "SQL Injection in /api/users", "severity": "critical", "method": "ai_fuzzing", "found_at": time.time() - 7200},
+                {"campaign": "Web App Penetration", "vulnerability": "Stored XSS in comments", "severity": "high", "method": "payload_generation", "found_at": time.time() - 5400},
+                {"campaign": "Network Lateral Movement", "vulnerability": "SMB Relay on DC-02", "severity": "critical", "method": "protocol_abuse", "found_at": time.time() - 1800},
+            ])
+        return jsonify({"results": list(_redteam_results)})
+
+
+@app.route("/api/ai-redteam/remediate", methods=["POST"])
+def api_ai_redteam_remediate():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    remediation = {
+        "vulnerability": data.get("vulnerability", "Unknown"),
+        "remediation": data.get("remediation", "Apply patch and validate"),
+        "status": "pending",
+        "applied": None,
+        "verified": False,
+    }
+    with _redteam_lock:
+        pass
+    return jsonify({"ok": True, "remediation": remediation})
+
+
+# ── New Dashboard Page Routes ───────────────────────────────────────
+
+@app.route("/wireless-exploitation")
+def page_wireless_exploitation():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return render_template("wireless-exploitation.html")
+
+
+@app.route("/iot-exploitation")
+def page_iot_exploitation():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return render_template("iot-exploitation.html")
+
+
+@app.route("/apt-intelligence")
+def page_apt_intelligence():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return render_template("apt-intelligence.html")
+
+
+@app.route("/predictive-analytics")
+def page_predictive_analytics():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return render_template("predictive-analytics.html")
+
+
+@app.route("/incident-response")
+def page_incident_response():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return render_template("incident-response.html")
+
+
+@app.route("/ai-red-teaming")
+def page_ai_red_teaming():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return render_template("ai-red-teaming.html")
+
+
+# ── New Dashboard Pages ──────────────────────────────────────────
+
+@app.route("/vuln-scanner")
+def vuln_scanner_page():
+    return render_template("vuln-scanner.html")
+
+@app.route("/identity-mgmt")
+def identity_mgmt_page():
+    return render_template("identity-mgmt.html")
+
+@app.route("/proxy-chain")
+def proxy_chain_page():
+    return render_template("proxy-chain.html")
+
+@app.route("/realtime-monitor")
+def realtime_monitor_page():
+    return render_template("realtime-monitor.html")
+
+@app.route("/threat-intel")
+def threat_intel_page():
+    return render_template("threat-intel.html")
+
+
+# ── Vulnerability Scanner API ────────────────────────────────────
+
+_vuln_lock = threading.Lock()
+_vuln_state = {
+    "results": [],
+    "schedule": [],
+    "total_scans": 0,
+    "running": False,
+}
+
+@app.route("/api/vuln-scan/status")
+def api_vuln_scan_status():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _vuln_lock:
+        return jsonify({
+            "total_scans": _vuln_state["total_scans"],
+            "running": _vuln_state["running"],
+            "scheduled": len(_vuln_state["schedule"]),
+        })
+
+@app.route("/api/vuln-scan/start", methods=["POST"])
+def api_vuln_scan_start():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _vuln_lock:
+        _vuln_state["running"] = True
+        _vuln_state["total_scans"] += 1
+    import random as _random
+    cves = ["CVE-2024-1234", "CVE-2023-5678", "CVE-2024-9012", "CVE-2023-3456"]
+    risks = ["critical", "high", "medium", "low"]
+    new_results = []
+    for _ in range(_random.randint(2, 5)):
+        new_results.append({
+            "target": data.get("target", "0.0.0.0/0"),
+            "cve": _random.choice(cves),
+            "risk": _random.choice(risks),
+            "score": round(_random.uniform(3.0, 10.0), 1),
+            "discovered": time.time(),
+            "remediated": False,
+        })
+    with _vuln_lock:
+        _vuln_state["results"].extend(new_results)
+        _vuln_state["running"] = False
+    return jsonify({"ok": True, "found": len(new_results), "total_scans": _vuln_state["total_scans"]})
+
+@app.route("/api/vuln-scan/results")
+def api_vuln_scan_results():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _vuln_lock:
+        return jsonify({"results": _vuln_state["results"], "total": len(_vuln_state["results"])})
+
+@app.route("/api/vuln-scan/schedule", methods=["POST"])
+def api_vuln_scan_schedule():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    entry = {
+        "target": data.get("target", ""),
+        "cron": data.get("cron", "0 2 * * *"),
+        "profile": data.get("profile", "quick"),
+        "created": time.time(),
+    }
+    with _vuln_lock:
+        _vuln_state["schedule"].append(entry)
+    return jsonify({"ok": True, "schedule": entry})
+
+
+# ── Identity Management API ──────────────────────────────────────
+
+_identity_lock = threading.Lock()
+_identity_state = {
+    "users": [],
+    "sessions": [],
+    "events": [],
+    "next_id": 1,
+}
+
+@app.route("/api/identity/users")
+def api_identity_users():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _identity_lock:
+        return jsonify({"users": _identity_state["users"], "total": len(_identity_state["users"])})
+
+@app.route("/api/identity/monitor", methods=["POST"])
+def api_identity_monitor():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    action = data.get("action", "log_event")
+    with _identity_lock:
+        if action == "add_user":
+            user = {
+                "id": _identity_state["next_id"],
+                "username": data.get("username", "new-user"),
+                "email": data.get("email", ""),
+                "role": data.get("role", "viewer"),
+                "active": True,
+                "last_active": time.time(),
+                "created": time.time(),
+            }
+            _identity_state["users"].append(user)
+            _identity_state["next_id"] += 1
+            return jsonify({"ok": True, "user": user, "total": len(_identity_state["users"])})
+        _identity_state["events"].append({
+            "user": data.get("username", "system"),
+            "event_type": data.get("event_type", "login"),
+            "ip": data.get("ip", "127.0.0.1"),
+            "timestamp": time.time(),
+            "status": data.get("status", "success"),
+        })
+    return jsonify({"ok": True, "events": len(_identity_state["events"])})
+
+@app.route("/api/identity/sessions")
+def api_identity_sessions():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _identity_lock:
+        return jsonify({"sessions": _identity_state["sessions"], "total": len(_identity_state["sessions"])})
+
+@app.route("/api/identity/roles", methods=["PUT"])
+def api_identity_roles():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    user_id = data.get("user_id")
+    new_role = data.get("role", "viewer")
+    with _identity_lock:
+        for u in _identity_state["users"]:
+            if u["id"] == user_id:
+                u["role"] = new_role
+                return jsonify({"ok": True, "user": u})
+    return jsonify({"error": "user not found"}), 404
+
+
+# ── Proxy Chain API ──────────────────────────────────────────────
+
+_proxy_lock = threading.Lock()
+_proxy_state = {
+    "chain": [],
+    "proxies": [],
+    "rotations": 0,
+    "anonymity_level": "high",
+    "total_latency_ms": 0,
+}
+
+@app.route("/api/proxy-chain/status")
+def api_proxy_chain_status():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _proxy_lock:
+        return jsonify({
+            "chain": _proxy_state["chain"],
+            "proxies": _proxy_state["proxies"],
+            "rotations": _proxy_state["rotations"],
+            "anonymity_level": _proxy_state["anonymity_level"],
+        })
+
+@app.route("/api/proxy-chain/configure", methods=["POST"])
+def api_proxy_chain_configure():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    proxies = data.get("proxies", [])
+    with _proxy_lock:
+        _proxy_state["proxies"] = proxies
+        if len(proxies) >= 3:
+            _proxy_state["chain"] = proxies[:3]
+            _proxy_state["anonymity_level"] = "high"
+        elif len(proxies) >= 2:
+            _proxy_state["chain"] = proxies[:2]
+            _proxy_state["anonymity_level"] = "medium"
+        else:
+            _proxy_state["chain"] = proxies
+            _proxy_state["anonymity_level"] = "low"
+        _proxy_state["total_latency_ms"] = sum(p.get("latency_ms", 0) for p in _proxy_state["chain"])
+    return jsonify({"ok": True, "chain": _proxy_state["chain"]})
+
+@app.route("/api/proxy-chain/rotate", methods=["GET", "POST"])
+def api_proxy_chain_rotate():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    import random as _random
+    sample_proxies = [
+        {"address": "10.0.1.1:9050", "type": "tor", "location": "DE", "latency_ms": 120, "health": "good"},
+        {"address": "10.0.2.2:3128", "type": "http", "location": "NL", "latency_ms": 85, "health": "good"},
+        {"address": "10.0.3.3:1080", "type": "socks5", "location": "SE", "latency_ms": 200, "health": "degraded"},
+        {"address": "10.0.4.4:443", "type": "https", "location": "CH", "latency_ms": 60, "health": "good"},
+        {"address": "10.0.5.5:9150", "type": "tor", "location": "FR", "latency_ms": 150, "health": "good"},
+    ]
+    with _proxy_lock:
+        if not _proxy_state["proxies"]:
+            _proxy_state["proxies"] = sample_proxies
+        elif len(_proxy_state["proxies"]) < 3:
+            _proxy_state["proxies"].extend(sample_proxies)
+        _random.shuffle(_proxy_state["proxies"])
+        _proxy_state["chain"] = _proxy_state["proxies"][:3]
+        _proxy_state["rotations"] += 1
+        _proxy_state["total_latency_ms"] = sum(p.get("latency_ms", 0) for p in _proxy_state["chain"])
+    return jsonify({"ok": True, "rotations": _proxy_state["rotations"], "chain": _proxy_state["chain"]})
+
+@app.route("/api/proxy-chain/health")
+def api_proxy_chain_health():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _proxy_lock:
+        return jsonify({
+            "total_latency_ms": _proxy_state["total_latency_ms"],
+            "chain_length": len(_proxy_state["chain"]),
+            "healthy": sum(1 for p in _proxy_state["chain"] if p.get("health") == "good"),
+            "degraded": sum(1 for p in _proxy_state["chain"] if p.get("health") == "degraded"),
+        })
+
+
+# ── Real-Time Monitoring API ─────────────────────────────────────
+
+_monitor_lock = threading.Lock()
+_monitor_state = {
+    "metrics": {},
+    "alerts": [],
+    "anomalies": [],
+    "config": {"cpu_threshold": 90, "mem_threshold": 85, "notify": True},
+}
+
+@app.route("/api/monitor/metrics")
+def api_monitor_metrics():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    import random as _random
+    metrics = {
+        "cpu_percent": round(_random.uniform(10, 80), 1),
+        "memory_percent": round(_random.uniform(30, 75), 1),
+        "bytes_sent": _random.randint(10000, 500000),
+        "bytes_recv": _random.randint(50000, 1000000),
+        "disk_read": _random.randint(0, 10000),
+        "disk_write": _random.randint(0, 10000),
+        "timestamp": time.time(),
+    }
+    with _monitor_lock:
+        _monitor_state["metrics"] = metrics
+    return jsonify(metrics)
+
+@app.route("/api/monitor/alerts")
+def api_monitor_alerts():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _monitor_lock:
+        return jsonify({"alerts": _monitor_state["alerts"], "total": len(_monitor_state["alerts"])})
+
+@app.route("/api/monitor/configure", methods=["POST"])
+def api_monitor_configure():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _monitor_lock:
+        _monitor_state["config"].update(data)
+    return jsonify({"ok": True, "config": _monitor_state["config"]})
+
+@app.route("/api/monitor/anomalies")
+def api_monitor_anomalies():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _monitor_lock:
+        return jsonify({"anomalies": _monitor_state["anomalies"], "total": len(_monitor_state["anomalies"])})
+
+
+# ── Threat Intelligence API ──────────────────────────────────────
+
+_threat_lock = threading.Lock()
+_threat_state = {
+    "feeds": [],
+    "iocs": [],
+    "actors": [],
+    "last_refresh": 0,
+}
+
+@app.route("/api/threat-intel/feeds")
+def api_threat_intel_feeds():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _threat_state["feeds"]:
+        _threat_state["feeds"] = [
+            {"name": "AlienVault OTX", "feed_type": "aggregated", "score": 92, "last_updated": time.time() - 3600},
+            {"name": "Abuse.ch", "feed_type": "malware", "score": 88, "last_updated": time.time() - 7200},
+            {"name": "Emerging Threats", "feed_type": "ids_rules", "score": 85, "last_updated": time.time() - 1800},
+        ]
+    with _threat_lock:
+        return jsonify({"feeds": _threat_state["feeds"], "total": len(_threat_state["feeds"])})
+
+@app.route("/api/threat-intel/iocs")
+def api_threat_intel_iocs():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _threat_state["iocs"]:
+        _threat_state["iocs"] = [
+            {"ioc_value": "192.168.1.100", "ioc_type": "ip", "score": 75, "updated": time.time() - 600},
+            {"ioc_value": "evil.example.com", "ioc_type": "domain", "score": 90, "updated": time.time() - 1200},
+            {"ioc_value": "a1b2c3d4e5f6", "ioc_type": "hash_md5", "score": 95, "updated": time.time() - 300},
+            {"ioc_value": "10.0.0.50", "ioc_type": "ip", "score": 40, "updated": time.time() - 3600},
+        ]
+    with _threat_lock:
+        return jsonify({"iocs": _threat_state["iocs"], "total": len(_threat_state["iocs"])})
+
+@app.route("/api/threat-intel/refresh", methods=["POST"])
+def api_threat_intel_refresh():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    import random as _random
+    with _threat_lock:
+        _threat_state["last_refresh"] = time.time()
+        new_iocs = [
+            {"ioc_value": f"10.{_random.randint(0,255)}.{_random.randint(0,255)}.{_random.randint(1,254)}",
+             "ioc_type": "ip", "score": _random.randint(20, 99), "updated": time.time()},
+            {"ioc_value": f"malware-{_random.randint(1000,9999)}.example.com",
+             "ioc_type": "domain", "score": _random.randint(50, 99), "updated": time.time()},
+        ]
+        _threat_state["iocs"].extend(new_iocs)
+    return jsonify({"ok": True, "new_iocs": len(new_iocs), "last_refresh": _threat_state["last_refresh"]})
+
+@app.route("/api/threat-intel/actors")
+def api_threat_intel_actors():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    if not _threat_state["actors"]:
+        _threat_state["actors"] = [
+            {"actor_name": "APT-28", "threat_level": "high", "score": 95, "first_seen": time.time() - 86400*30},
+            {"actor_name": "Lazarus Group", "threat_level": "critical", "score": 98, "first_seen": time.time() - 86400*60},
+            {"actor_name": "FIN7", "threat_level": "high", "score": 87, "first_seen": time.time() - 86400*15},
+        ]
+    with _threat_lock:
+        return jsonify({"actors": _threat_state["actors"], "total": len(_threat_state["actors"])})
+
+
+# ── Device Fingerprinting Routes ────────────────────────────────────
+_fp_lock = threading.Lock()
+_fp_state = {"tips": []}
+
+
+@app.route("/device-fingerprint")
+def page_device_fingerprint():
+    return render_template("device-fingerprint.html")
+
+
+@app.route("/api/fingerprint/detect")
+def api_fingerprint_detect():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    import hashlib as _hashlib
+    ts = str(time.time())
+    canvas_hash = _hashlib.sha256(f"canvas_{ts}".encode()).hexdigest()[:16]
+    webgl_renderer = "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 Direct3D11 vs_5_0 ps_5_0)"
+    fonts = ["Arial", "Times New Roman", "Courier New", "Verdana", "Georgia", "Segoe UI", "Roboto", "Consolas"]
+    screen_res = "2560x1440"
+    tz = "America/New_York"
+    lang = "en-US"
+    components = [
+        {"component": "Canvas", "value": canvas_hash, "entropy": "5.7", "status": "detected"},
+        {"component": "WebGL", "value": webgl_renderer[:40], "entropy": "8.2", "status": "detected"},
+        {"component": "Fonts", "value": f"{len(fonts)} detected", "entropy": "4.1", "status": "detected"},
+        {"component": "Screen", "value": screen_res, "entropy": "3.5", "status": "detected"},
+        {"component": "Timezone", "value": tz, "entropy": "2.8", "status": "detected"},
+        {"component": "Language", "value": lang, "entropy": "1.2", "status": "detected"},
+        {"component": "Hardware Concurrency", "value": "16 cores", "entropy": "3.0", "status": "detected"},
+        {"component": "Device Memory", "value": "8 GB", "entropy": "2.5", "status": "detected"},
+        {"component": "Audio Context", "value": "44100Hz", "entropy": "2.1", "status": "detected"},
+        {"component": "Plugins", "value": "PDF Viewer, Native Client", "entropy": "1.8", "status": "detected"},
+    ]
+    fp_str = "|".join([c["value"] for c in components])
+    fp_hash = _hashlib.sha256(fp_str.encode()).hexdigest()
+    return jsonify({
+        "hash": fp_hash,
+        "canvas_hash": canvas_hash,
+        "webgl_renderer": webgl_renderer,
+        "font_count": len(fonts),
+        "screen": screen_res,
+        "timezone": tz,
+        "language": lang,
+        "components": components,
+    })
+
+
+@app.route("/api/fingerprint/compare", methods=["POST"])
+def api_fingerprint_compare():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    hash_a = data.get("hash_a", "")
+    hash_b = data.get("hash_b", "")
+    match = hash_a == hash_b and len(hash_a) > 0
+    similarity = 1.0 if match else (0.3 if (hash_a[:8] == hash_b[:8] and len(hash_a) > 0 and len(hash_b) > 0) else 0.0)
+    return jsonify({
+        "hash_a": hash_a,
+        "hash_b": hash_b,
+        "match": match,
+        "similarity": round(similarity, 2),
+    })
+
+
+@app.route("/api/fingerprint/tips")
+def api_fingerprint_tips():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _fp_lock:
+        if not _fp_state["tips"]:
+            _fp_state["tips"] = [
+                {"title": "Canvas Fingerprinting Defense", "description": "Use browser extensions that add noise to canvas rendering, or use a browser with canvas randomization built-in."},
+                {"title": "WebGL Spoofing", "description": "Override WebGL renderer strings via browser extensions or use a VM with generic GPU passthrough."},
+                {"title": "Font Fingerprinting Mitigation", "description": "Use browsers that ship with a standard font set and block detection of system fonts."},
+                {"title": "Timezone Obfuscation", "description": "Set your browser timezone to UTC or use a timezone spoofing extension to avoid location leaks."},
+                {"title": "User-Agent Rotation", "description": "Rotate User-Agent strings periodically to prevent long-term tracking based on browser fingerprint."},
+                {"title": "Hardware Concurrency Masking", "description": "Use browser privacy settings that report a generic core count (e.g., 2 or 4) instead of actual hardware."},
+            ]
+        return jsonify({"tips": _fp_state["tips"]})
+
+
+# ── Social Engineering Routes ───────────────────────────────────────
+_se_lock = threading.Lock()
+_se_state = {"templates": []}
+
+
+@app.route("/social-engineering")
+def page_social_engineering():
+    return render_template("social-engineering.html")
+
+
+@app.route("/api/social-eng/templates")
+def api_social_eng_templates():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _se_lock:
+        if not _se_state["templates"]:
+            _se_state["templates"] = [
+                {"name": "Password Reset Phish", "category": "phishing", "description": "Mimics corporate password reset portal to harvest credentials", "difficulty": "easy", "success_rate": "34%"},
+                {"name": "CEO Fraud Email", "category": "phishing", "description": "Whaling template impersonating CEO requesting urgent wire transfer", "difficulty": "hard", "success_rate": "12%"},
+                {"name": "IT Support Vishing", "category": "vishing", "description": "Phone script posing as IT support requesting remote access", "difficulty": "medium", "success_rate": "28%"},
+                {"name": "Vendor Pretext", "category": "pretexting", "description": "Poses as new vendor onboarding to gain internal system access", "difficulty": "hard", "success_rate": "18%"},
+                {"name": "USB Drop Bait", "category": "baiting", "description": "Labeled USB drives left in parking lot with autorun payload", "difficulty": "medium", "success_rate": "45%"},
+                {"name": "LinkedIn Recon", "category": "osint", "description": "Automated OSINT collection from LinkedIn for spear-phishing prep", "difficulty": "easy", "success_rate": "62%"},
+                {"name": "QR Code Phish", "category": "phishing", "description": "QR codes placed in public areas redirecting to credential harvester", "difficulty": "easy", "success_rate": "22%"},
+                {"name": "Tailgating Script", "category": "pretexting", "description": "Physical social engineering script for unauthorized building access", "difficulty": "medium", "success_rate": "38%"},
+            ]
+        return jsonify({"templates": _se_state["templates"], "categories": ["phishing", "vishing", "pretexting", "baiting", "osint"]})
+
+
+@app.route("/api/social-eng/generate", methods=["POST"])
+def api_social_eng_generate():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    category = data.get("category", "phishing")
+    target = data.get("target", "general")
+    templates = {
+        "phishing": {"template": f"Subject: Urgent Action Required — {target}\n\nDear {target},\n\nWe have detected unusual activity on your account. Please verify your identity immediately by clicking the link below.\n\n[Simulated phishing link]\n\nThis is a simulated template for awareness training.", "category": "phishing"},
+        "vishing": {"template": f"Vishing Script for {target}:\n\n'Hello, this is [Name] from IT Support. We're seeing unusual activity on your account and need to verify your credentials. Could you please confirm your username and current password so we can secure your account?'\n\n[Simulated vishing script for training purposes]", "category": "vishing"},
+        "pretexting": {"template": f"Pretext Scenario for {target}:\n\nYou are a new vendor representative calling to set up billing integration. You need the target's internal system credentials to 'complete the setup.'\n\n[Simulated pretexting scenario for training]", "category": "pretexting"},
+        "baiting": {"template": f"Baiting Scenario for {target}:\n\nLeave labeled USB drives ('Q3 Financial Report', 'Confidential - HR') in the target's parking lot. The USB contains a simulated payload that logs connection attempts.\n\n[Simulated baiting scenario for training]", "category": "baiting"},
+    }
+    return jsonify({"ok": True, "template": templates.get(category, templates["phishing"])["template"], "category": category})
+
+
+@app.route("/api/social-eng/quiz")
+def api_social_eng_quiz():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    questions = [
+        {"question": "What is the most common social engineering attack vector?", "options": ["Email phishing", "Phone vishing", "Physical tailgating", "USB baiting"], "answer": "Email phishing"},
+        {"question": "Which MITRE ATT&CK technique covers spearphishing attachments?", "options": ["T1566.001", "T1059.001", "T1071.001", "T1055"], "answer": "T1566.001"},
+        {"question": "What is 'whaling' in social engineering?", "options": ["Targeting C-level executives", "Mass phishing campaigns", "USB drop attacks", "QR code phishing"], "answer": "Targeting C-level executives"},
+        {"question": "Which defense is most effective against phishing?", "options": ["Email filtering + user training", "Firewall rules", "Antivirus software", "VPN usage"], "answer": "Email filtering + user training"},
+    ]
+    return jsonify({"questions": questions, "total": len(questions)})
+
+
+# ── Zero-Day Exploits Routes ────────────────────────────────────────
+_zd_lock = threading.Lock()
+_zd_state = {"cves": [], "exploits": [], "poc": [], "chains": []}
+
+
+@app.route("/zero-day")
+def page_zero_day():
+    return render_template("zero-day.html")
+
+
+@app.route("/api/exploits/cve/search")
+def api_exploits_cve_search():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    q = request.args.get("q", "")
+    with _zd_lock:
+        if not _zd_state["cves"]:
+            _zd_state["cves"] = [
+                {"cve_id": "CVE-2024-3094", "severity": "critical", "cvss": 10.0, "product": "XZ Utils (liblzma)", "exploit_available": True, "description": "Backdoor in XZ Utils affecting SSH authentication"},
+                {"cve_id": "CVE-2024-21762", "severity": "critical", "cvss": 9.8, "product": "FortiOS", "exploit_available": True, "description": "Out-of-bounds write in FortiOS SSL-VPN"},
+                {"cve_id": "CVE-2024-1709", "severity": "high", "cvss": 8.8, "product": "ConnectWise ScreenConnect", "exploit_available": True, "description": "Authentication bypass in ScreenConnect"},
+                {"cve_id": "CVE-2023-46805", "severity": "medium", "cvss": 6.5, "product": "Ivanti Connect Secure", "exploit_available": True, "description": "Authentication bypass via path traversal"},
+                {"cve_id": "CVE-2024-21887", "severity": "high", "cvss": 9.1, "product": "Ivanti Connect Secure", "exploit_available": True, "description": "Server-side request forgery in Ivanti CS"},
+            ]
+        results = [c for c in _zd_state["cves"] if not q or q.lower() in c["cve_id"].lower() or q.lower() in c["product"].lower()]
+    return jsonify(results)
+
+
+@app.route("/api/exploits/db")
+def api_exploits_db():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _zd_lock:
+        if not _zd_state["exploits"]:
+            _zd_state["exploits"] = [
+                {"title": "XZ Utils Backdoor (CVE-2024-3094)", "severity": "critical", "cvss": 10.0, "author": "A. Backdoor", "type": "remote_code_execution"},
+                {"title": "FortiOS SSL-VPN OOB Write", "severity": "critical", "cvss": 9.8, "author": "FortiGuard Research", "type": "buffer_overflow"},
+                {"title": "ScreenConnect Auth Bypass", "severity": "high", "cvss": 8.8, "author": "Huntress Labs", "type": "authentication_bypass"},
+            ]
+        return jsonify(_zd_state["exploits"])
+
+
+@app.route("/api/exploits/poc", methods=["POST"])
+def api_exploits_poc():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _zd_lock:
+        poc = {
+            "cve_id": data.get("cve_id", "CVE-XXXX-XXXX"),
+            "status": "registered",
+            "language": data.get("language", "python"),
+            "created": time.time(),
+        }
+        _zd_state["poc"].append(poc)
+    return jsonify({"ok": True, "poc": poc})
+
+
+@app.route("/api/exploits/chains")
+def api_exploits_chains():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _zd_lock:
+        if not _zd_state["chains"]:
+            _zd_state["chains"] = [
+                {"name": "Ivanti Full Chain", "cves": ["CVE-2023-46805", "CVE-2024-21887"], "impact": "Full system compromise", "status": "active"},
+                {"name": "Fortinet RCE Chain", "cves": ["CVE-2024-21762"], "impact": "Remote code execution on firewall", "status": "active"},
+            ]
+        return jsonify(_zd_state["chains"])
+
+
+# ── Malware Analysis Routes ─────────────────────────────────────────
+_ma_lock = threading.Lock()
+_ma_state = {"yara": [], "classes": []}
+
+
+@app.route("/malware-analysis")
+def page_malware_analysis():
+    return render_template("malware-analysis.html")
+
+
+@app.route("/api/malware/hash/<sample_hash>")
+def api_malware_hash(sample_hash):
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return jsonify({
+        "hash": sample_hash,
+        "file_type": "PE32",
+        "entropy": 6.42,
+        "is_malicious": True,
+        "detections": 42,
+        "first_seen": time.time() - 86400,
+        "static_analysis": [
+            {"property": "File Type", "value": "PE32 Executable", "risk": "info", "details": "Windows Portable Executable"},
+            {"property": "Entropy", "value": "6.42", "risk": "low", "details": "Below packing threshold (7.0)"},
+            {"property": "Sections", "value": "5 sections", "risk": "info", "details": ".text, .rdata, .data, .rsrc, .reloc"},
+            {"property": "Imports", "value": "3 DLLs", "risk": "low", "details": "kernel32.dll, user32.dll, ws2_32.dll"},
+            {"property": "Strings", "value": "128 found", "risk": "info", "details": "URLs, IP addresses, registry keys"},
+        ],
+        "behavior": [
+            {"action": "Registry Write", "detail": "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", "severity": "high", "mitigation": "Monitor autorun keys"},
+            {"action": "Network Connection", "detail": "Outbound to 185.220.101.42:443", "severity": "critical", "mitigation": "Block IP at firewall"},
+            {"action": "Process Injection", "detail": "Injected into explorer.exe", "severity": "critical", "mitigation": "Enable DEP and ASLR"},
+        ],
+    })
+
+
+@app.route("/api/malware/analyze", methods=["POST"])
+def api_malware_analyze():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({
+        "hash": data.get("hash", "simulated"),
+        "filename": data.get("filename", "unknown"),
+        "file_type": "PE32",
+        "entropy": 6.42,
+        "is_malicious": True,
+        "sections": [{"name": ".text"}, {"name": ".rdata"}, {"name": ".data"}, {"name": ".rsrc"}, {"name": ".reloc"}],
+        "imports": ["kernel32.dll", "user32.dll", "ws2_32.dll", "advapi32.dll"],
+        "strings": ["http://evil.example.com/payload", "185.220.101.42", "HKLM\\SOFTWARE\\Microsoft"],
+        "static_analysis": [
+            {"property": "File Type", "value": "PE32 Executable", "risk": "info", "details": "Windows Portable Executable"},
+            {"property": "Entropy", "value": "6.42", "risk": "low", "details": "Below packing threshold (7.0)"},
+            {"property": "Sections", "value": "5 sections", "risk": "info", "details": ".text, .rdata, .data, .rsrc, .reloc"},
+            {"property": "Imports", "value": "4 DLLs", "risk": "medium", "details": "kernel32.dll, user32.dll, ws2_32.dll, advapi32.dll"},
+        ],
+        "behavior": [
+            {"action": "Registry Write", "detail": "HKLM\\...\\Run", "severity": "high", "mitigation": "Monitor autorun keys"},
+            {"action": "Network Connection", "detail": "Outbound C2", "severity": "critical", "mitigation": "Block IP at firewall"},
+        ],
+    })
+
+
+@app.route("/api/malware/yara")
+def api_malware_yara():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ma_lock:
+        if not _ma_state["yara"]:
+            _ma_state["yara"] = [
+                {"name": "Trojan_Generic_Dropper", "description": "Detects generic trojan dropper behavior patterns", "severity": "high"},
+                {"name": "Ransomware_WannaCry", "description": "Matches WannaCry ransomware string and encryption patterns", "severity": "critical"},
+                {"name": "Backdoor_CobaltStrike", "description": "Detects Cobalt Strike beacon artifacts and Malleable C2 profiles", "severity": "critical"},
+                {"name": "Packer_UPX", "description": "Identifies UPX-packed binaries for further analysis", "severity": "medium"},
+                {"name": "ExploitKit_Nuclear", "description": "Detects Nuclear Exploit Kit landing page patterns", "severity": "high"},
+            ]
+        return jsonify(_ma_state["yara"])
+
+
+@app.route("/api/malware/classes")
+def api_malware_classes():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ma_lock:
+        if not _ma_state["classes"]:
+            _ma_state["classes"] = [
+                {"name": "Trojan", "category": "Malware", "severity": "high", "description": "Malicious software disguised as legitimate"},
+                {"name": "Ransomware", "category": "Malware", "severity": "critical", "description": "Encrypts files and demands payment for decryption"},
+                {"name": "Rootkit", "category": "Stealth", "severity": "critical", "description": "Hides presence on infected system"},
+                {"name": "Worm", "category": "Malware", "severity": "high", "description": "Self-replicating malware spreading across networks"},
+                {"name": "Spyware", "category": "Surveillance", "severity": "medium", "description": "Collects user data without consent"},
+                {"name": "Adware", "category": "Nuisance", "severity": "low", "description": "Displays unwanted advertisements"},
+                {"name": "Backdoor", "category": "Access", "severity": "critical", "description": "Provides unauthorized remote access"},
+                {"name": "Botnet", "category": "Network", "severity": "high", "description": "Network of compromised devices under attacker control"},
+            ]
+        return jsonify(_ma_state["classes"])
+
+
+# ── Network Exploitation Routes ─────────────────────────────────────
+_ne_lock = threading.Lock()
+_ne_state = {"running": False, "hosts": [], "mitm": []}
+
+
+@app.route("/network-exploitation")
+def page_network_exploitation():
+    return render_template("network-exploitation.html")
+
+
+@app.route("/api/net-scan/status")
+def api_net_scan_status():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ne_lock:
+        return jsonify({
+            "running": _ne_state["running"],
+            "hosts": _ne_state["hosts"],
+            "mitm": _ne_state["mitm"],
+            "threats": [],
+        })
+
+
+@app.route("/api/net-scan/start", methods=["POST"])
+def api_net_scan_start():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    with _ne_lock:
+        _ne_state["running"] = True
+        _ne_state["hosts"] = [
+            {"name": "Gateway", "ip": "192.168.1.1", "open_ports": [80, 443], "state": "open", "hostname": "router.local"},
+            {"name": "Web Server", "ip": "192.168.1.10", "open_ports": [80, 443, 8080], "state": "open", "hostname": "webserver.local"},
+            {"name": "Database", "ip": "192.168.1.20", "open_ports": [3306, 5432], "state": "open", "hostname": "db.local"},
+            {"name": "Workstation", "ip": "192.168.1.50", "open_ports": [22, 3389], "state": "filtered", "hostname": "ws-01.local"},
+            {"name": "File Server", "ip": "192.168.1.30", "open_ports": [445, 139], "state": "open", "hostname": "fileserver.local"},
+        ]
+        _ne_state["running"] = False
+    return jsonify({"ok": True, "hosts": _ne_state["hosts"], "hosts_found": len(_ne_state["hosts"])})
+
+
+@app.route("/api/wireless/handshakes")
+def api_wireless_handshakes():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    return jsonify({
+        "handshakes": [
+            {"ssid": "FreeAI-Lab", "bssid": "AA:BB:CC:DD:EE:01", "signal": -45, "cracked": False},
+            {"ssid": "CorpNet-5G", "bssid": "AA:BB:CC:DD:EE:02", "signal": -62, "cracked": False},
+            {"ssid": "OpenGuest", "bssid": "AA:BB:CC:DD:EE:04", "signal": -55, "cracked": True},
+        ],
+        "total": 3,
+    })
+
+
+@app.route("/api/wireless/analyze", methods=["POST"])
+def api_wireless_analyze():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({
+        "ok": True,
+        "ssid": data.get("ssid", "unknown"),
+        "analysis": {
+            "encryption": data.get("encryption", "WPA2"),
+            "channel": data.get("channel", 6),
+            "vulnerabilities": ["WPS enabled", "Weak passphrase detected"],
+            "recommendation": "Disable WPS and enforce WPA3",
+        },
+    })
+
+
+# ── Cloud Exploitation Routes ───────────────────────────────────────
+_ce_lock = threading.Lock()
+_ce_state = {"configs": [], "iam": [], "metadata": [], "containers": []}
+
+
+@app.route("/cloud-exploitation")
+def page_cloud_exploitation():
+    return render_template("cloud-exploitation.html")
+
+
+@app.route("/api/cloud/configs")
+def api_cloud_configs():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ce_lock:
+        if not _ce_state["configs"]:
+            _ce_state["configs"] = [
+                {"resource": "s3://company-data-backup", "cloud": "AWS", "issue": "Public read access on sensitive bucket", "severity": "critical", "remediation": "Remove public read ACL and enable bucket policy"},
+                {"resource": "blob://prod-logs", "cloud": "Azure", "issue": "Anonymous blob read access enabled", "severity": "high", "remediation": "Disable anonymous access in storage account settings"},
+                {"resource": "gs://ml-training-data", "cloud": "GCP", "issue": "allUsers reader permission on bucket", "severity": "high", "remediation": "Remove allUsers IAM binding"},
+                {"resource": "s3://public-website-assets", "cloud": "AWS", "issue": "No encryption at rest", "severity": "medium", "remediation": "Enable SSE-S3 or SSE-KMS encryption"},
+                {"resource": "EC2 i-0abc123", "cloud": "AWS", "issue": "Security group allows 0.0.0.0/0 on port 22", "severity": "critical", "remediation": "Restrict SSH access to known IP ranges"},
+            ]
+        return jsonify(_ce_state["configs"])
+
+
+@app.route("/api/cloud/scan", methods=["POST"])
+def api_cloud_scan():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    providers = data.get("providers", ["aws", "azure", "gcp"])
+    findings = []
+    if "aws" in providers:
+        findings.extend([
+            {"resource": "s3://company-data-backup", "cloud": "AWS", "issue": "Public read access", "severity": "critical", "remediation": "Remove public ACL"},
+            {"resource": "EC2 i-0abc123", "cloud": "AWS", "issue": "Open SSH to world", "severity": "critical", "remediation": "Restrict SG"},
+        ])
+    if "azure" in providers:
+        findings.append({"resource": "blob://prod-logs", "cloud": "Azure", "issue": "Anonymous read", "severity": "high", "remediation": "Disable anon access"})
+    if "gcp" in providers:
+        findings.append({"resource": "gs://ml-training-data", "cloud": "GCP", "issue": "allUsers reader", "severity": "high", "remediation": "Remove IAM binding"})
+    with _ce_lock:
+        _ce_state["configs"] = findings
+    return jsonify({"ok": True, "findings": findings, "total": len(findings)})
+
+
+@app.route("/api/cloud/iam")
+def api_cloud_iam():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    with _ce_lock:
+        if not _ce_state["iam"]:
+            _ce_state["iam"] = [
+                {"role": "LambdaBasicExecution", "cloud": "AWS", "path": "lambda:InvokeFunction → sts:AssumeRole → AdministratorAccess", "severity": "critical"},
+                {"role": "StorageBlobDataReader", "cloud": "Azure", "path": "Microsoft.Storage/storageAccounts/listKeys → Key Vault read", "severity": "high"},
+                {"role": "compute.viewer", "cloud": "GCP", "path": "compute.instances.getSerialPortOutput → metadata server → service account keys", "severity": "high"},
+            ]
+        return jsonify(_ce_state["iam"])
+
+
+@app.route("/api/cloud/exploit-sim", methods=["POST"])
+def api_cloud_exploit_sim():
+    if AUTH_TOKEN and request.headers.get("X-Auth-Token") != AUTH_TOKEN:
+        return jsonify({"error": "unauthorized"}), 401
+    data = request.get_json(silent=True) or {}
+    return jsonify({
+        "ok": True,
+        "scenario": data.get("scenario", "metadata_abuse"),
+        "steps": [
+            "Access IMDS at 169.254.169.254",
+            "Retrieve instance identity document",
+            "Extract IAM role credentials",
+            "Assume role with elevated permissions",
+            "Access S3 buckets with assumed role",
+        ],
+        "mitigation": "Use IMDSv2 with session tokens, restrict metadata access via IAM",
+    })

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Proxy Chain</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .pc-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .pc-main { padding:22px 24px 32px; min-width:0; }
+    .pc-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .pc-topbar h1 { margin:0; font-size:22px; }
+    .pc-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .pc-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .pc-kpi { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .pc-kpi .kpi-val { font-size:24px; font-weight:700; color:var(--accent); }
+    .pc-kpi .kpi-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .pc-chain { display:flex; gap:8px; align-items:center; margin-bottom:18px; flex-wrap:wrap; }
+    .pc-node { background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:10px; padding:10px 16px; text-align:center; min-width:100px; }
+    .pc-node .node-type { font-size:11px; color:var(--muted-2); text-transform:uppercase; }
+    .pc-node .node-addr { font-family:monospace; font-size:12px; color:var(--accent); margin-top:4px; }
+    .pc-node .node-latency { font-size:11px; color:var(--muted); margin-top:2px; }
+    .pc-arrow { color:var(--muted); font-size:18px; }
+    .pc-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .pc-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                   border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; }
+    .pc-table td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .pc-table tr:hover td { background:rgba(255,255,255,.02); }
+    .health-ok { color:#22C55E; }
+    .health-warn { color:#F59E0B; }
+    .health-bad { color:#EF4444; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text); border:1px solid var(--border);
+           border-radius:10px; padding:7px 14px; font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-primary { background:linear-gradient(135deg,#8B5CF6,#0EA5E9); color:#020617; border:none; font-weight:700; }
+    .empty-state { text-align:center; padding:40px; color:var(--muted); }
+    .mono { font-family:monospace; font-size:12px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="pc-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Proxy Chain</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+        <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity</a>
+        <a href="/proxy-chain" class="nav-item active"><span class="nav-dot"></span> Proxy Chain</a>
+        <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime</a>
+        <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="pc-main">
+      <header class="pc-topbar">
+        <div><h1>Proxy Chain Manager</h1><p>Proxy configuration, rotation, and anonymity tracking</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="loadData()">Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="rotateChain()">Rotate</button>
+        </div>
+      </header>
+      <div class="pc-kpis">
+        <div class="pc-kpi"><div class="kpi-val" id="kpi-nodes">0</div><div class="kpi-lbl">Chain Nodes</div></div>
+        <div class="pc-kpi"><div class="kpi-val" id="kpi-latency">—</div><div class="kpi-lbl">Total Latency</div></div>
+        <div class="pc-kpi"><div class="kpi-val" id="kpi-anon">—</div><div class="kpi-lbl">Anonymity</div></div>
+        <div class="pc-kpi"><div class="kpi-val" id="kpi-rotations">0</div><div class="kpi-lbl">Rotations</div></div>
+      </div>
+      <div class="pc-chain" id="pc-chain">
+        <div class="pc-node"><div class="node-type">Entry</div><div class="node-addr">—</div><div class="node-latency">—</div></div>
+        <span class="pc-arrow">→</span>
+        <div class="pc-node"><div class="node-type">Middle</div><div class="node-addr">—</div><div class="node-latency">—</div></div>
+        <span class="pc-arrow">→</span>
+        <div class="pc-node"><div class="node-type">Exit</div><div class="node-addr">—</div><div class="node-latency">—</div></div>
+      </div>
+      <table class="pc-table">
+        <thead><tr><th>Proxy</th><th>Type</th><th>Location</th><th>Latency</th><th>Health</th><th>Actions</th></tr></thead>
+        <tbody id="pc-tbody"><tr><td colspan="6" class="empty-state">No proxies configured.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let pcData = { chain:[], proxies:[], health:{} };
+    async function loadData() {
+      try {
+        const [stRes, hRes, rotRes] = await Promise.all([
+          fetch('/api/proxy-chain/status'),
+          fetch('/api/proxy-chain/health'),
+          fetch('/api/proxy-chain/rotate')
+        ]);
+        const st = await stRes.json();
+        const h = await hRes.json();
+        const rot = await rotRes.json();
+        pcData.chain = st.chain || [];
+        pcData.proxies = st.proxies || [];
+        pcData.health = h;
+        $('kpi-nodes').textContent = pcData.chain.length;
+        $('kpi-latency').textContent = (h.total_latency_ms||0)+'ms';
+        $('kpi-anon').textContent = st.anonymity_level||'—';
+        $('kpi-rotations').textContent = rot.rotations||0;
+        renderChain();
+        renderTable();
+      } catch(e) { console.error(e); }
+    }
+    function renderChain() {
+      const el = $('pc-chain');
+      if (!pcData.chain.length) return;
+      const labels = ['Entry','Middle','Exit'];
+      el.innerHTML = pcData.chain.map((n,i)=>`
+        <div class="pc-node"><div class="node-type">${labels[i]||'Node'}</div><div class="node-addr">${n.address||n.host||'—'}</div><div class="node-latency">${n.latency_ms||'—'}ms</div></div>
+        ${i<pcData.chain.length-1?'<span class="pc-arrow">→</span>':''}`).join('');
+    }
+    function renderTable() {
+      const tb = $('pc-tbody');
+      if (!pcData.proxies.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No proxies.</td></tr>'; return; }
+      tb.innerHTML = pcData.proxies.map((p,i)=>{
+        const hc = p.health==='good'?'health-ok':p.health==='degraded'?'health-warn':'health-bad';
+        return `<tr>
+          <td class="mono">${p.address||p.host||'—'}</td>
+          <td>${p.type||'—'}</td>
+          <td>${p.location||'—'}</td>
+          <td class="mono">${p.latency_ms||'—'}ms</td>
+          <td class="${hc}">${p.health||'unknown'}</td>
+          <td><button class="btn btn-sm" onclick="testProxy(${i})">Test</button></td>
+        </tr>`;
+      }).join('');
+    }
+    async function rotateChain() {
+      try {
+        await fetch('/api/proxy-chain/rotate', {method:'POST'});
+        loadData();
+      } catch(e) { console.error(e); }
+    }
+    function testProxy(i) { alert('Testing '+pcData.proxies[i].address); }
+    loadData();
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>

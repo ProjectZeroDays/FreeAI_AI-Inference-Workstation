@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Predictive Analytics</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .analytics-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .analytics-main { padding:22px 24px 32px; min-width:0; }
+    .analytics-topbar { display:flex; align-items:center; justify-content:space-between;
+                        padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                        margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .analytics-topbar h1 { margin:0; font-size:22px; }
+    .analytics-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .analytics-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .analytics-kpi { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .analytics-kpi .kpi-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .analytics-kpi .kpi-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .analytics-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .analytics-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+                     border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .analytics-tab.active { background:rgba(168,85,247,.15);border-color:rgba(168,85,247,.3);color:#D8B4FE; }
+    .analytics-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .analytics-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                          border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .analytics-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .analytics-table tr:hover td { background:rgba(255,255,255,.02); }
+    .mono { font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#A855F7,#6366F1);color:#020617;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .chart-container { background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px; }
+    .risk-meter { display:flex;align-items:center;gap:8px; }
+    .risk-meter-bar { flex:1;height:12px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden; }
+    .risk-meter-fill { height:100%;border-radius:6px;transition:width .5s; }
+    .alert-card { padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.02); }
+    .alert-card .alert-time { font-size:11px;color:var(--muted-2); }
+    .alert-card .alert-msg { font-size:13px;margin:4px 0; }
+    .alert-card.high { border-left:3px solid #EF4444; }
+    .alert-card.medium { border-left:3px solid #F59E0B; }
+    .alert-card.low { border-left:3px solid #22C55E; }
+  </style>
+</head>
+<body>
+  <div class="analytics-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Analytics</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploitation</a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploitation</a>
+        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intelligence</a>
+        <a href="/predictive-analytics" class="nav-item active"><span class="nav-dot"></span> Predictive Analytics</a>
+        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+        <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Teaming</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="analytics-main">
+      <header class="analytics-topbar">
+        <div><h1>Predictive Analytics</h1><p>Anomaly detection, risk scoring, and trend forecasting</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="runPrediction()">Run Prediction</button>
+          <button class="btn btn-sm" onclick="loadTrends()">Trends</button>
+        </div>
+      </header>
+      <div class="analytics-kpis">
+        <div class="analytics-kpi"><div class="kpi-val" id="kpi-alerts">0</div><div class="kpi-lbl">Active Alerts</div></div>
+        <div class="analytics-kpi"><div class="kpi-val" id="kpi-risk">0</div><div class="kpi-lbl">Risk Score</div></div>
+        <div class="analytics-kpi"><div class="kpi-val" id="kpi-anomalies">0</div><div class="kpi-lbl">Anomalies (24h)</div></div>
+        <div class="analytics-kpi"><div class="kpi-val" id="kpi-trends">0</div><div class="kpi-lbl">Trend Lines</div></div>
+      </div>
+      <div class="analytics-tabs">
+        <button class="analytics-tab active" data-tab="alerts" onclick="switchTab(this)">Alerts</button>
+        <button class="analytics-tab" data-tab="risk" onclick="switchTab(this)">Risk Score</button>
+        <button class="analytics-tab" data-tab="trends" onclick="switchTab(this)">Trends</button>
+        <button class="analytics-tab" data-tab="forecast" onclick="switchTab(this)">Forecast</button>
+      </div>
+      <div id="analytics-content">
+        <div id="alerts-view"></div>
+        <div id="chart-view" style="display:none">
+          <div class="chart-container"><canvas id="trend-chart" height="200"></canvas></div>
+        </div>
+        <table class="analytics-table" id="analytics-table" style="display:none">
+          <thead id="analytics-thead"></thead>
+          <tbody id="analytics-tbody"><tr><td colspan="5" class="empty-state">No data loaded.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    let data = { alerts:[], trends:[], forecast:[] };
+    let riskScore = 0;
+    let currentTab = 'alerts';
+    let trendChart = null;
+    async function loadAll() {
+      try {
+        const [a, r] = await Promise.all([
+          fetch('/api/analytics/alerts').then(r=>r.json()).catch(()=>({alerts:[]})),
+          fetch('/api/analytics/risk-score').then(r=>r.json()).catch(()=>({score:0}))
+        ]);
+        data.alerts = a.alerts || [];
+        riskScore = r.score || 0;
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.analytics-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      $('kpi-alerts').textContent = data.alerts.length;
+      $('kpi-risk').textContent = riskScore;
+      $('kpi-anomalies').textContent = data.alerts.filter(a=>a.is_anomaly).length;
+      $('kpi-trends').textContent = data.trends.length;
+      const alertsView = $('alerts-view');
+      const chartView = $('chart-view');
+      const table = $('analytics-table');
+      if (currentTab === 'alerts') {
+        alertsView.style.display = 'block'; chartView.style.display = 'none'; table.style.display = 'none';
+        if (!data.alerts.length) { alertsView.innerHTML='<div class="empty-state">No alerts. System is normal.</div>'; return; }
+        alertsView.innerHTML = data.alerts.map(a=>{
+          const cls = a.severity||'low';
+          return `<div class="alert-card ${cls}">
+            <div class="alert-time">${new Date(a.timestamp||Date.now()).toLocaleString()}</div>
+            <div class="alert-msg">${a.message||a.description||'Alert'}</div>
+            <div style="font-size:11px;color:var(--muted)">Source: ${a.source||'—'} | Confidence: ${a.confidence||'—'}%</div>
+          </div>`;
+        }).join('');
+      } else if (currentTab === 'risk') {
+        alertsView.style.display = 'block'; chartView.style.display = 'none'; table.style.display = 'none';
+        const color = riskScore>=80?'#EF4444':riskScore>=50?'#F59E0B':'#22C55E';
+        alertsView.innerHTML = `<div style="padding:24px;text-align:center">
+          <div style="font-size:48px;font-weight:700;color:${color}">${riskScore}</div>
+          <div style="font-size:14px;color:var(--muted);margin-top:8px">Overall Risk Score</div>
+          <div class="risk-meter" style="max-width:400px;margin:16px auto">
+            <span style="font-size:12px;color:var(--muted)">Low</span>
+            <div class="risk-meter-bar"><div class="risk-meter-fill" style="width:${riskScore}%;background:${color}"></div></div>
+            <span style="font-size:12px;color:var(--muted)">Critical</span>
+          </div>
+        </div>`;
+      } else if (currentTab === 'trends') {
+        alertsView.style.display = 'none'; chartView.style.display = 'block'; table.style.display = 'none';
+        renderChart();
+      } else {
+        alertsView.style.display = 'none'; chartView.style.display = 'none'; table.style.display = 'table';
+        $('analytics-thead').innerHTML = '<tr><th>Period</th><th>Metric</th><th>Current</th><th>Predicted</th><th>Delta</th></tr>';
+        if (!data.forecast.length) { $('analytics-tbody').innerHTML='<tr><td colspan="5" class="empty-state">No forecast data. Run prediction first.</td></tr>'; return; }
+        $('analytics-tbody').innerHTML = data.forecast.map(f=>`<tr><td>${f.period}</td><td>${f.metric}</td>
+          <td class="mono">${f.current}</td><td class="mono">${f.predicted}</td>
+          <td style="color:${f.delta>0?'#EF4444':'#22C55E'}">${f.delta>0?'+':''}${f.delta}%</td></tr>`).join('');
+      }
+    }
+    function renderChart() {
+      if (trendChart) trendChart.destroy();
+      const ctx = $('trend-chart').getContext('2d');
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.trends.map(t=>t.label||t.period),
+          datasets: [{
+            label: 'Risk Trend',
+            data: data.trends.map(t=>t.value),
+            borderColor: '#A855F7',
+            backgroundColor: 'rgba(168,85,247,.1)',
+            fill: true, tension: .3, pointRadius: 3
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } },
+          scales: { y: { grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B' } },
+                    x: { grid: { display: false }, ticks: { color: '#64748B' } } } }
+      });
+    }
+    async function runPrediction() {
+      try {
+        const r = await fetch('/api/analytics/predict', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({})});
+        const d = await r.json();
+        data.forecast = d.forecast || [];
+        data.trends = d.trends || [];
+        render();
+      } catch(e) {}
+    }
+    async function loadTrends() {
+      try {
+        const r = await fetch('/api/analytics/trends');
+        data.trends = (await r.json()).trends || [];
+        render();
+      } catch(e) {}
+    }
+    loadAll();
+    setInterval(loadAll, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — APT Threat Intelligence</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .apt-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .apt-main { padding:22px 24px 32px; min-width:0; }
+    .apt-topbar { display:flex; align-items:center; justify-content:space-between;
+                  padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                  margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .apt-topbar h1 { margin:0; font-size:22px; }
+    .apt-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .apt-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .apt-kpi { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .apt-kpi .kpi-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .apt-kpi .kpi-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .apt-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .apt-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+               border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .apt-tab.active { background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .apt-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .apt-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                    border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .apt-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .apt-table tr:hover td { background:rgba(255,255,255,.02); }
+    .mono { font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#EF4444,#F59E0B);color:#020617;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .threat-level { display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600; }
+    .threat-level.critical { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .threat-level.high { background:rgba(245,158,11,.15);color:#FCD34D; }
+    .threat-level.medium { background:rgba(56,189,248,.15);color:#BAE6FD; }
+    .feed-item { padding:10px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.02); }
+    .feed-item .feed-time { font-size:11px;color:var(--muted-2); }
+    .feed-item .feed-title { font-size:13px;font-weight:600;margin:4px 0; }
+    .feed-item .feed-desc { font-size:12px;color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="apt-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>APT Intel</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploitation</a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploitation</a>
+        <a href="/apt-intelligence" class="nav-item active"><span class="nav-dot"></span> APT Intelligence</a>
+        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+        <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Teaming</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="apt-main">
+      <header class="apt-topbar">
+        <div><h1>APT Threat Intelligence</h1><p>Threat feeds, APT group profiles, and MITRE ATT&CK mapping</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="refreshFeed()">Refresh Feed</button>
+          <button class="btn btn-sm" onclick="loadTTPs()">TTP Matrix</button>
+        </div>
+      </header>
+      <div class="apt-kpis">
+        <div class="apt-kpi"><div class="kpi-val" id="kpi-threats">0</div><div class="kpi-lbl">Active Threats</div></div>
+        <div class="apt-kpi"><div class="kpi-val" id="kpi-groups">0</div><div class="kpi-lbl">APT Groups</div></div>
+        <div class="apt-kpi"><div class="kpi-val" id="kpi-iocs">0</div><div class="kpi-lbl">IOCs</div></div>
+        <div class="apt-kpi"><div class="kpi-val" id="kpi-ttps">0</div><div class="kpi-lbl">TTPs Mapped</div></div>
+      </div>
+      <div class="apt-tabs">
+        <button class="apt-tab active" data-tab="feed" onclick="switchTab(this)">Threat Feed</button>
+        <button class="apt-tab" data-tab="groups" onclick="switchTab(this)">APT Groups</button>
+        <button class="apt-tab" data-tab="ttps" onclick="switchTab(this)">TTP Matrix</button>
+        <button class="apt-tab" data-tab="iocs" onclick="switchTab(this)">IOC Database</button>
+      </div>
+      <div id="apt-content">
+        <div id="feed-view"></div>
+        <table class="apt-table" id="apt-table" style="display:none">
+          <thead id="apt-thead"></thead>
+          <tbody id="apt-tbody"><tr><td colspan="6" class="empty-state">No data loaded.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    let data = { threats:[], groups:[], ttps:[], iocs:[] };
+    let currentTab = 'feed';
+    async function loadAll() {
+      try {
+        const [t, g] = await Promise.all([
+          fetch('/api/apt/threats').then(r=>r.json()).catch(()=>({threats:[]})),
+          fetch('/api/apt/groups').then(r=>r.json()).catch(()=>({groups:[]}))
+        ]);
+        data.threats = t.threats || [];
+        data.groups = g.groups || [];
+        data.iocs = t.iocs || [];
+        data.ttps = t.ttps || [];
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.apt-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      $('kpi-threats').textContent = data.threats.length;
+      $('kpi-groups').textContent = data.groups.length;
+      $('kpi-iocs').textContent = data.iocs.length;
+      $('kpi-ttps').textContent = data.ttps.length;
+      const feedView = $('feed-view');
+      const table = $('apt-table');
+      if (currentTab === 'feed') {
+        feedView.style.display = 'block'; table.style.display = 'none';
+        if (!data.threats.length) { feedView.innerHTML='<div class="empty-state">No threats in feed. Refresh to pull latest.</div>'; return; }
+        feedView.innerHTML = data.threats.map(t=>`
+          <div class="feed-item">
+            <div class="feed-time">${new Date(t.timestamp||Date.now()).toLocaleString()}</div>
+            <div class="feed-title">${t.title||'Unknown Threat'}</div>
+            <div class="feed-desc">${t.description||''}</div>
+            <div style="margin-top:6px"><span class="threat-level ${t.severity||'medium'}">${t.severity||'medium'}</span></div>
+          </div>`).join('');
+      } else if (currentTab === 'groups') {
+        feedView.style.display = 'none'; table.style.display = 'table';
+        $('apt-thead').innerHTML = '<tr><th>Group</th><th>Alias</th><th>Origin</th><th>Target Sectors</th><th>Threat Level</th><th>Actions</th></tr>';
+        if (!data.groups.length) { $('apt-tbody').innerHTML='<tr><td colspan="6" class="empty-state">No APT groups loaded.</td></tr>'; return; }
+        $('apt-tbody').innerHTML = data.groups.map((g,i)=>{
+          const cls = g.threat_level==='critical'?'critical':g.threat_level==='high'?'high':'medium';
+          return `<tr><td><strong>${g.name}</strong></td><td class="mono">${g.aliases||'—'}</td>
+            <td>${g.origin||'—'}</td><td class="mono">${(g.targets||[]).join(', ')||'—'}</td>
+            <td><span class="threat-level ${cls}">${g.threat_level||'medium'}</span></td>
+            <td><button class="btn btn-sm" onclick="viewGroup(${i})">Profile</button></td></tr>`;
+        }).join('');
+      } else if (currentTab === 'ttps') {
+        feedView.style.display = 'none'; table.style.display = 'table';
+        $('apt-thead').innerHTML = '<tr><th>Technique ID</th><th>Name</th><th>Tactic</th><th>APT Groups</th><th>Platforms</th><th>Actions</th></tr>';
+        if (!data.ttps.length) { $('apt-tbody').innerHTML='<tr><td colspan="6" class="empty-state">No TTPs mapped.</td></tr>'; return; }
+        $('apt-tbody').innerHTML = data.ttps.map((t,i)=>`<tr><td class="mono">${t.technique_id}</td><td>${t.name}</td>
+          <td>${t.tactic}</td><td class="mono">${(t.groups||[]).join(', ')||'—'}</td>
+          <td class="mono">${(t.platforms||[]).join(', ')||'—'}</td>
+          <td><button class="btn btn-sm" onclick="viewTTP(${i})">Details</button></td></tr>`).join('');
+      } else {
+        feedView.style.display = 'none'; table.style.display = 'table';
+        $('apt-thead').innerHTML = '<tr><th>IOC Type</th><th>Value</th><th>Associated APT</th><th>First Seen</th><th>Confidence</th><th>Actions</th></tr>';
+        if (!data.iocs.length) { $('apt-tbody').innerHTML='<tr><td colspan="6" class="empty-state">No IOCs in database.</td></tr>'; return; }
+        $('apt-tbody').innerHTML = data.iocs.map((ioc,i)=>`<tr><td>${ioc.type}</td><td class="mono">${ioc.value}</td>
+          <td>${ioc.apt||'—'}</td><td>${new Date(ioc.first_seen||Date.now()).toLocaleDateString()}</td>
+          <td>${ioc.confidence||'—'}%</td>
+          <td><button class="btn btn-sm" onclick="huntIOC(${i})">Hunt</button></td></tr>`).join('');
+      }
+    }
+    async function refreshFeed() {
+      try { await fetch('/api/apt/feed/refresh', {method:'POST'}); loadAll(); } catch(e) {}
+    }
+    function loadTTPs() { loadAll(); }
+    function viewGroup(i) {}
+    function viewTTP(i) {}
+    function huntIOC(i) {}
+    loadAll();
+    setInterval(loadAll, 30000);
+  </script>
+</body>
+</html>

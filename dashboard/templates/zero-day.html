@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Zero-Day Exploits</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .zd-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .zd-main { padding:22px 24px 32px; min-width:0; }
+    .zd-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .zd-topbar h1 { margin:0; font-size:22px; }
+    .zd-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .zd-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-bottom:18px; }
+    .zd-card { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .zd-card .zd-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .zd-card .zd-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .zd-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .zd-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                    border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .zd-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .zd-table tr:hover td { background:rgba(255,255,255,.02); }
+    .zd-severity { display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600; }
+    .zd-severity.critical { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .zd-severity.high { background:rgba(249,115,22,.15);color:#FDBA74; }
+    .zd-severity.medium { background:rgba(245,158,11,.15);color:#FCD34D; }
+    .zd-severity.low { background:rgba(34,197,94,.15);color:#BBF7D0; }
+    .zd-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .zd-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+              border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .zd-tab.active { background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#EF4444,#F97316);color:#fff;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .mono { font-family:monospace; }
+    .search-bar { display:flex;gap:8px;margin-bottom:16px; }
+    .search-input { flex:1;background:rgba(2,6,23,.55);color:var(--text);border:1px solid var(--border);
+                    border-radius:10px;padding:8px 12px;font-size:13px; }
+    .search-input:focus { outline:none;border-color:rgba(239,68,68,.4);box-shadow:0 0 0 3px rgba(239,68,68,.1); }
+  </style>
+</head>
+<body>
+  <div class="zd-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Zero-Day</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+        <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Engineering</a>
+        <a href="/zero-day" class="nav-item active"><span class="nav-dot"></span> Zero-Day</a>
+        <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+        <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+        <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="zd-main">
+      <header class="zd-topbar">
+        <div><h1>Zero-Day Exploits</h1><p>CVE database, exploit tracking, PoC management, and chain analysis</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="searchCVE()">Search CVE</button>
+          <button class="btn btn-sm" onclick="loadExploitDB()">Exploit DB</button>
+          <button class="btn btn-sm btn-primary" onclick="loadChains()">Chains</button>
+        </div>
+      </header>
+      <div class="zd-grid">
+        <div class="zd-card"><div class="zd-val" id="zd-cves">0</div><div class="zd-lbl">CVEs Tracked</div></div>
+        <div class="zd-card"><div class="zd-val" id="zd-exploits">0</div><div class="zd-lbl">Exploits Available</div></div>
+        <div class="zd-card"><div class="zd-val" id="zd-critical">0</div><div class="zd-lbl">Critical Severity</div></div>
+        <div class="zd-card"><div class="zd-val" id="zd-chains">0</div><div class="zd-lbl">Exploit Chains</div></div>
+      </div>
+      <div class="search-bar">
+        <input class="search-input" id="cve-search" placeholder="Search CVE (e.g. CVE-2024-XXXX)..." onkeydown="if(event.key==='Enter')searchCVEInput()" />
+        <button class="btn btn-sm btn-primary" onclick="searchCVEInput()">Search</button>
+      </div>
+      <div class="zd-tabs">
+        <button class="zd-tab active" data-tab="cves" onclick="switchTab(this)">CVE Database</button>
+        <button class="zd-tab" data-tab="exploits" onclick="switchTab(this)">Exploit DB</button>
+        <button class="zd-tab" data-tab="poc" onclick="switchTab(this)">PoC Manager</button>
+        <button class="zd-tab" data-tab="chains" onclick="switchTab(this)">Chaining Tracker</button>
+      </div>
+      <table class="zd-table">
+        <thead><tr><th>CVE ID</th><th>Severity</th><th>CVSS</th><th>Product</th><th>Exploit</th><th>Actions</th></tr></thead>
+        <tbody id="zd-tbody"><tr><td colspan="6" class="empty-state">No CVE data loaded. Search or load the database.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let zdData = { cves:[], exploits:[], poc:[], chains:[] };
+    let currentTab = 'cves';
+    const $ = id => document.getElementById(id);
+    async function searchCVE() {
+      try {
+        const r = await fetch('/api/exploits/cve/search?q=CVE-2024');
+        zdData.cves = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+    async function searchCVEInput() {
+      const q = $('cve-search').value.trim();
+      if (!q) return;
+      try {
+        const r = await fetch('/api/exploits/cve/search?q='+encodeURIComponent(q));
+        zdData.cves = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+    async function loadExploitDB() {
+      try {
+        const r = await fetch('/api/exploits/db');
+        zdData.exploits = await r.json();
+        currentTab = 'exploits';
+        render();
+      } catch(e) { console.error(e); }
+    }
+    async function loadChains() {
+      try {
+        const r = await fetch('/api/exploits/chains');
+        zdData.chains = await r.json();
+        currentTab = 'chains';
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.zd-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function sevClass(s) { return (s||'').toLowerCase(); }
+    function render() {
+      const tb = $('zd-tbody');
+      if (currentTab==='cves') {
+        const items = zdData.cves || [];
+        $('zd-cves').textContent = items.length;
+        $('zd-critical').textContent = items.filter(c=>(c.severity||'').toLowerCase()==='critical').length;
+        if (!items.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No CVE data. Search above.</td></tr>'; return; }
+        tb.innerHTML = items.map(c=>`<tr>
+          <td class="mono"><strong>${c.cve_id||c.id||'—'}</strong></td>
+          <td><span class="zd-severity ${sevClass(c.severity)}">${c.severity||'—'}</span></td>
+          <td>${c.cvss||'—'}</td>
+          <td>${c.product||'—'}</td>
+          <td>${c.exploit_available?'<span style="color:#22C55E">Yes</span>':'<span style="color:var(--muted)">No</span>'}</td>
+          <td><button class="btn btn-sm" onclick="alert('Details: '+JSON.stringify(${JSON.stringify(c).replace(/'/g,"\\'")}))">View</button></td>
+        </tr>`).join('');
+      } else if (currentTab==='exploits') {
+        const items = zdData.exploits || [];
+        $('zd-exploits').textContent = items.length;
+        if (!items.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No exploits loaded.</td></tr>'; return; }
+        tb.innerHTML = items.map(e=>`<tr>
+          <td class="mono">${e.title||'—'}</td>
+          <td><span class="zd-severity ${sevClass(e.severity)}">${e.severity||'—'}</span></td>
+          <td>${e.cvss||'—'}</td>
+          <td>${e.author||'—'}</td>
+          <td>${e.type||'—'}</td>
+          <td><button class="btn btn-sm">View</button></td>
+        </tr>`).join('');
+      } else if (currentTab==='poc') {
+        const items = zdData.poc || [];
+        if (!items.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No PoCs registered.</td></tr>'; return; }
+        tb.innerHTML = items.map(p=>`<tr>
+          <td class="mono">${p.cve_id||'—'}</td>
+          <td>${p.status||'—'}</td>
+          <td>${p.language||'—'}</td>
+          <td>${p.created||'—'}</td>
+          <td>—</td>
+          <td><button class="btn btn-sm">Run</button></td>
+        </tr>`).join('');
+      } else {
+        const items = zdData.chains || [];
+        $('zd-chains').textContent = items.length;
+        if (!items.length) { tb.innerHTML='<tr><td colspan="6" class="empty-state">No exploit chains tracked.</td></tr>'; return; }
+        tb.innerHTML = items.map(c=>`<tr>
+          <td class="mono">${c.name||'—'}</td>
+          <td>${c.cves?.join(', ')||'—'}</td>
+          <td>${c.impact||'—'}</td>
+          <td>${c.status||'—'}</td>
+          <td>—</td>
+          <td><button class="btn btn-sm">View</button></td>
+        </tr>`).join('');
+      }
+    }
+  </script>
+</body>
+</html>

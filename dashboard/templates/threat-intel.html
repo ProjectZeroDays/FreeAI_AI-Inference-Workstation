@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Threat Intelligence</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .ti-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .ti-main { padding:22px 24px 32px; min-width:0; }
+    .ti-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .ti-topbar h1 { margin:0; font-size:22px; }
+    .ti-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .ti-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .ti-kpi { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .ti-kpi .kpi-val { font-size:24px; font-weight:700; color:var(--accent); }
+    .ti-kpi .kpi-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .ti-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .ti-tab { padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600;
+              border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; }
+    .ti-tab.active { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .ti-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .ti-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                   border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; }
+    .ti-table td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .ti-table tr:hover td { background:rgba(255,255,255,.02); }
+    .score-high { color:#EF4444; font-weight:700; }
+    .score-med  { color:#F59E0B; }
+    .score-low  { color:#22C55E; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text); border:1px solid var(--border);
+           border-radius:10px; padding:7px 14px; font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-primary { background:linear-gradient(135deg,#EF4444,#8B5CF6); color:#020617; border:none; font-weight:700; }
+    .empty-state { text-align:center; padding:40px; color:var(--muted); }
+    .mono { font-family:monospace; font-size:12px; color:var(--muted); word-break:break-all; }
+  </style>
+</head>
+<body>
+  <div class="ti-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Threat Intel</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+        <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity</a>
+        <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
+        <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime</a>
+        <a href="/threat-intel" class="nav-item active"><span class="nav-dot"></span> Threat Intel</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="ti-main">
+      <header class="ti-topbar">
+        <div><h1>Threat Intelligence</h1><p>Threat feeds, IOC database, and actor tracking</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="loadData()">Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="refreshFeeds()">Refresh Feeds</button>
+        </div>
+      </header>
+      <div class="ti-kpis">
+        <div class="ti-kpi"><div class="kpi-val" id="kpi-feeds">0</div><div class="kpi-lbl">Active Feeds</div></div>
+        <div class="ti-kpi"><div class="kpi-val" id="kpi-iocs">0</div><div class="kpi-lbl">IOCs</div></div>
+        <div class="ti-kpi"><div class="kpi-val" id="kpi-actors">0</div><div class="kpi-lbl">Threat Actors</div></div>
+        <div class="ti-kpi"><div class="kpi-val" id="kpi-high">0</div><div class="kpi-lbl">High Score</div></div>
+      </div>
+      <div class="ti-tabs">
+        <button class="ti-tab active" data-tab="feeds" onclick="switchTab(this)">Feeds</button>
+        <button class="ti-tab" data-tab="iocs" onclick="switchTab(this)">IOCs</button>
+        <button class="ti-tab" data-tab="actors" onclick="switchTab(this)">Threat Actors</button>
+      </div>
+      <table class="ti-table" id="ti-table">
+        <thead id="ti-thead"><tr><th>Name</th><th>Type</th><th>Score</th><th>Updated</th><th>Actions</th></tr></thead>
+        <tbody id="ti-tbody"><tr><td colspan="5" class="empty-state">No threat data.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let tiData = { feeds:[], iocs:[], actors:[] };
+    let currentTab = 'feeds';
+    async function loadData() {
+      try {
+        const [fRes, iRes, aRes] = await Promise.all([
+          fetch('/api/threat-intel/feeds'),
+          fetch('/api/threat-intel/iocs'),
+          fetch('/api/threat-intel/actors')
+        ]);
+        tiData.feeds = (await fRes.json()).feeds || [];
+        tiData.iocs = (await iRes.json()).iocs || [];
+        tiData.actors = (await aRes.json()).actors || [];
+        $('kpi-feeds').textContent = tiData.feeds.length;
+        $('kpi-iocs').textContent = tiData.iocs.length;
+        $('kpi-actors').textContent = tiData.actors.length;
+        $('kpi-high').textContent = tiData.iocs.filter(i=>(i.score||0)>=80).length;
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.ti-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      const tb = $('ti-tbody');
+      const items = currentTab==='iocs' ? tiData.iocs :
+                    currentTab==='actors' ? tiData.actors : tiData.feeds;
+      if (!items.length) { tb.innerHTML='<tr><td colspan="5" class="empty-state">No data.</td></tr>'; return; }
+      tb.innerHTML = items.map((item,i)=>{
+        const sc = item.score||0;
+        const scl = sc>=80?'score-high':sc>=50?'score-med':'score-low';
+        const name = item.name||item.feed_name||item.ioc_value||item.actor_name||'—';
+        const type = item.type||item.feed_type||item.ioc_type||item.threat_level||'—';
+        const updated = item.last_updated||item.updated||item.first_seen||'';
+        return `<tr>
+          <td class="mono">${name}</td>
+          <td>${type}</td>
+          <td class="${scl}">${sc}</td>
+          <td class="mono">${updated?new Date(updated).toLocaleString():'—'}</td>
+          <td><button class="btn btn-sm" onclick="viewDetail(${i})">View</button></td>
+        </tr>`;
+      }).join('');
+    }
+    async function refreshFeeds() {
+      try {
+        await fetch('/api/threat-intel/refresh', {method:'POST'});
+        loadData();
+      } catch(e) { console.error(e); }
+    }
+    function viewDetail(i) {
+      const items = currentTab==='iocs'?tiData.iocs:currentTab==='actors'?tiData.actors:tiData.feeds;
+      alert(JSON.stringify(items[i],null,2));
+    }
+    loadData();
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>

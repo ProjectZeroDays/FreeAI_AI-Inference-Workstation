@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Device Fingerprinting</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .fp-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .fp-main { padding:22px 24px 32px; min-width:0; }
+    .fp-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .fp-topbar h1 { margin:0; font-size:22px; }
+    .fp-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .fp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-bottom:18px; }
+    .fp-card { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .fp-card .fp-val { font-size:20px;font-weight:700;color:var(--accent);word-break:break-all; }
+    .fp-card .fp-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .fp-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .fp-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                    border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .fp-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .fp-table tr:hover td { background:rgba(255,255,255,.02); }
+    .fp-hash { font-family:monospace;font-size:13px;color:#22C55E;background:rgba(0,0,0,.3);
+               border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:16px;
+               word-break:break-all; }
+    .fp-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .fp-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+              border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .fp-tab.active { background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3);color:#BBF7D0; }
+    .fp-tip { background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:10px;
+              padding:12px 14px;margin-bottom:8px;font-size:13px;color:#BAE6FD; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#0EA5E9,#22C55E);color:#020617;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-export { background:rgba(56,189,248,.12);border-color:rgba(56,189,248,.3);color:#BAE6FD; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .mono { font-family:monospace; }
+  </style>
+</head>
+<body>
+  <div class="fp-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Fingerprint</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+        <a href="/device-fingerprint" class="nav-item active"><span class="nav-dot"></span> Device Fingerprint</a>
+        <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Engineering</a>
+        <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero-Day</a>
+        <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+        <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+        <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="fp-main">
+      <header class="fp-topbar">
+        <div><h1>Device Fingerprinting</h1><p>Browser/device fingerprint detection, comparison, and anti-detection</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="detectFingerprint()">Detect Fingerprint</button>
+          <button class="btn btn-sm btn-export" onclick="loadTips()">Anti-Detection Tips</button>
+        </div>
+      </header>
+      <div class="fp-grid">
+        <div class="fp-card"><div class="fp-val" id="fp-canvas">—</div><div class="fp-lbl">Canvas Hash</div></div>
+        <div class="fp-card"><div class="fp-val" id="fp-webgl">—</div><div class="fp-lbl">WebGL Renderer</div></div>
+        <div class="fp-card"><div class="fp-val" id="fp-fonts">—</div><div class="fp-lbl">Detected Fonts</div></div>
+        <div class="fp-card"><div class="fp-val" id="fp-screen">—</div><div class="fp-lbl">Screen Resolution</div></div>
+        <div class="fp-card"><div class="fp-val" id="fp-tz">—</div><div class="fp-lbl">Timezone</div></div>
+        <div class="fp-card"><div class="fp-val" id="fp-lang">—</div><div class="fp-lbl">Language</div></div>
+      </div>
+      <div class="fp-hash" id="fp-hash-display">Click "Detect Fingerprint" to generate your browser fingerprint hash.</div>
+      <div class="fp-tabs">
+        <button class="fp-tab active" data-tab="details" onclick="switchTab(this)">Fingerprint Details</button>
+        <button class="fp-tab" data-tab="compare" onclick="switchTab(this)">Compare Tool</button>
+        <button class="fp-tab" data-tab="tips" onclick="switchTab(this)">Anti-Detection Tips</button>
+      </div>
+      <table class="fp-table" id="fp-table">
+        <thead><tr><th>Component</th><th>Value</th><th>Entropy (bits)</th><th>Status</th></tr></thead>
+        <tbody id="fp-tbody"><tr><td colspan="4" class="empty-state">No fingerprint data collected yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    let fpData = { components: [], hash: '', comparisons: [], tips: [] };
+    let currentTab = 'details';
+    const $ = id => document.getElementById(id);
+    async function detectFingerprint() {
+      try {
+        const r = await fetch('/api/fingerprint/detect');
+        fpData = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.fp-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      $('fp-hash-display').textContent = fpData.hash || 'No fingerprint detected.';
+      $('fp-canvas').textContent = (fpData.canvas_hash||'—').substring(0,12)+'…';
+      $('fp-webgl').textContent = (fpData.webgl_renderer||'—').substring(0,16)+'…';
+      $('fp-fonts').textContent = (fpData.font_count||0)+' fonts';
+      $('fp-screen').textContent = fpData.screen||'—';
+      $('fp-tz').textContent = fpData.timezone||'—';
+      $('fp-lang').textContent = fpData.language||'—';
+      const tb = $('fp-tbody');
+      if (currentTab==='details') {
+        const items = fpData.components || [];
+        if (!items.length) { tb.innerHTML='<tr><td colspan="4" class="empty-state">No fingerprint data.</td></tr>'; return; }
+        tb.innerHTML = items.map(c=>`<tr>
+          <td><strong>${c.component}</strong></td>
+          <td class="mono">${c.value||'—'}</td>
+          <td>${c.entropy||'—'}</td>
+          <td>${c.status||'detected'}</td>
+        </tr>`).join('');
+      } else if (currentTab==='compare') {
+        const items = fpData.comparisons || [];
+        if (!items.length) { tb.innerHTML='<tr><td colspan="4" class="empty-state">No comparisons. Post two fingerprints to compare.</td></tr>'; return; }
+        tb.innerHTML = items.map(c=>`<tr>
+          <td class="mono">${c.hash_a?.substring(0,12)||'—'}</td>
+          <td class="mono">${c.hash_b?.substring(0,12)||'—'}</td>
+          <td>${c.similarity||'—'}</td>
+          <td>${c.match?'<span style="color:#22C55E">Match</span>':'<span style="color:#EF4444">Different</span>'}</td>
+        </tr>`).join('');
+      } else {
+        const items = fpData.tips || [];
+        if (!items.length) { tb.innerHTML='<tr><td colspan="4" class="empty-state">Click "Anti-Detection Tips" to load.</td></tr>'; return; }
+        tb.innerHTML = items.map(t=>`<tr><td colspan="4"><div class="fp-tip"><strong>${t.title}</strong><br/>${t.description}</div></td></tr>`).join('');
+      }
+    }
+    async function loadTips() {
+      try {
+        const r = await fetch('/api/fingerprint/tips');
+        const d = await r.json();
+        fpData.tips = d.tips || [];
+        render();
+      } catch(e) { console.error(e); }
+    }
+  </script>
+</body>
+</html>

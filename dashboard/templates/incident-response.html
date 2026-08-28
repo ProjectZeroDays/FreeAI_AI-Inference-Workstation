@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Incident Response</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .ir-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .ir-main { padding:22px 24px 32px; min-width:0; }
+    .ir-topbar { display:flex; align-items:center; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .ir-topbar h1 { margin:0; font-size:22px; }
+    .ir-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .ir-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .ir-kpi { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:14px; }
+    .ir-kpi .kpi-val { font-size:24px;font-weight:700;color:var(--accent); }
+    .ir-kpi .kpi-lbl { font-size:11px;color:var(--muted-2);margin-top:2px; }
+    .ir-tabs { display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap; }
+    .ir-tab { padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;
+              border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s; }
+    .ir-tab.active { background:rgba(251,146,60,.15);border-color:rgba(251,146,60,.3);color:#FED7AA; }
+    .ir-table { width:100%;border-collapse:collapse;font-size:13px; }
+    .ir-table th { text-align:left;padding:8px 12px;color:var(--muted);font-weight:500;
+                   border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase; }
+    .ir-table td { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04); }
+    .ir-table tr:hover td { background:rgba(255,255,255,.02); }
+    .mono { font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all; }
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A);color:var(--text);border:1px solid var(--border);
+           border-radius:10px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong);transform:translateY(-1px); }
+    .btn-primary { background:linear-gradient(135deg,#FB923C,#EF4444);color:#020617;border:none;font-weight:700; }
+    .btn-sm { padding:5px 10px;font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#FCA5A5; }
+    .empty-state { text-align:center;padding:40px;color:var(--muted); }
+    .status-badge { display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600; }
+    .status-badge.open { background:rgba(239,68,68,.15);color:#FCA5A5; }
+    .status-badge.investigating { background:rgba(245,158,11,.15);color:#FCD34D; }
+    .status-badge.contained { background:rgba(56,189,248,.15);color:#BAE6FD; }
+    .status-badge.resolved { background:rgba(34,197,94,.15);color:#BBF7D0; }
+    .playbook-card { padding:12px 14px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.02); }
+    .playbook-card .pb-name { font-size:14px;font-weight:600; }
+    .playbook-card .pb-desc { font-size:12px;color:var(--muted);margin-top:4px; }
+    .playbook-card .pb-steps { font-size:11px;color:var(--muted-2);margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="ir-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>IR</span></div></div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploitation</a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploitation</a>
+        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intelligence</a>
+        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+        <a href="/incident-response" class="nav-item active"><span class="nav-dot"></span> Incident Response</a>
+        <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Teaming</a>
+      </div>
+      <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
+    </nav>
+    <div class="ir-main">
+      <header class="ir-topbar">
+        <div><h1>Incident Response</h1><p>Automated playbooks, case management, and evidence collection</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-primary" onclick="createIncident()">New Incident</button>
+          <button class="btn btn-sm" onclick="loadPlaybooks()">Playbooks</button>
+        </div>
+      </header>
+      <div class="ir-kpis">
+        <div class="ir-kpi"><div class="kpi-val" id="kpi-open">0</div><div class="kpi-lbl">Open</div></div>
+        <div class="ir-kpi"><div class="kpi-val" id="kpi-investigating">0</div><div class="kpi-lbl">Investigating</div></div>
+        <div class="ir-kpi"><div class="kpi-val" id="kpi-contained">0</div><div class="kpi-lbl">Contained</div></div>
+        <div class="ir-kpi"><div class="kpi-val" id="kpi-resolved">0</div><div class="kpi-lbl">Resolved</div></div>
+      </div>
+      <div class="ir-tabs">
+        <button class="ir-tab active" data-tab="incidents" onclick="switchTab(this)">Incidents</button>
+        <button class="ir-tab" data-tab="playbooks" onclick="switchTab(this)">Playbooks</button>
+        <button class="ir-tab" data-tab="timeline" onclick="switchTab(this)">Timeline</button>
+        <button class="ir-tab" data-tab="evidence" onclick="switchTab(this)">Evidence</button>
+      </div>
+      <table class="ir-table" id="ir-table">
+        <thead id="ir-thead"></thead>
+        <tbody id="ir-tbody"><tr><td colspan="6" class="empty-state">No incident data yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    let data = { incidents:[], playbooks:[], timeline:[], evidence:[] };
+    let currentTab = 'incidents';
+    async function loadAll() {
+      try {
+        const [inc, pb] = await Promise.all([
+          fetch('/api/incidents/list').then(r=>r.json()).catch(()=>({incidents:[]})),
+          fetch('/api/incidents/playbooks').then(r=>r.json()).catch(()=>({playbooks:[]}))
+        ]);
+        data.incidents = inc.incidents || [];
+        data.playbooks = pb.playbooks || [];
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function switchTab(btn) {
+      document.querySelectorAll('.ir-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTab = btn.dataset.tab;
+      render();
+    }
+    function render() {
+      const byStatus = {};
+      data.incidents.forEach(i => { byStatus[i.status||'open'] = (byStatus[i.status||'open']||0)+1; });
+      $('kpi-open').textContent = byStatus.open||0;
+      $('kpi-investigating').textContent = byStatus.investigating||0;
+      $('kpi-contained').textContent = byStatus.contained||0;
+      $('kpi-resolved').textContent = byStatus.resolved||0;
+      const thead = $('ir-thead');
+      const tbody = $('ir-tbody');
+      if (currentTab === 'incidents') {
+        thead.innerHTML = '<tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Created</th><th>Actions</th></tr>';
+        if (!data.incidents.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No incidents. System is clean.</td></tr>'; return; }
+        tbody.innerHTML = data.incidents.map((inc,i)=>{
+          const cls = inc.status==='open'?'open':inc.status==='investigating'?'investigating':inc.status==='contained'?'contained':'resolved';
+          return `<tr><td class="mono">${inc.id||'INC-'+i}</td><td>${inc.title||'Untitled'}</td>
+            <td>${inc.severity||'—'}</td>
+            <td><span class="status-badge ${cls}">${inc.status||'open'}</span></td>
+            <td>${new Date(inc.created||Date.now()).toLocaleString()}</td>
+            <td>
+              <button class="btn btn-sm" onclick="updateStatus(${i},'investigating')">Investigate</button>
+              <button class="btn btn-sm" onclick="updateStatus(${i},'contained')">Contain</button>
+              <button class="btn btn-sm" onclick="updateStatus(${i},'resolved')">Resolve</button>
+            </td></tr>`;
+        }).join('');
+      } else if (currentTab === 'playbooks') {
+        thead.style.display = 'none'; tbody.style.display = 'block';
+        if (!data.playbooks.length) { tbody.innerHTML='<tr><td class="empty-state">No playbooks available.</td></tr>'; return; }
+        tbody.innerHTML = data.playbooks.map((pb,i)=>`
+          <tr><td colspan="6"><div class="playbook-card">
+            <div class="pb-name">${pb.name}</div>
+            <div class="pb-desc">${pb.description||''}</div>
+            <div class="pb-steps">${pb.steps||0} steps · Trigger: ${pb.trigger||'manual'}</div>
+            <div style="margin-top:8px"><button class="btn btn-sm btn-primary" onclick="executePlaybook(${i})">Execute</button></div>
+          </div></td></tr>`).join('');
+      } else if (currentTab === 'timeline') {
+        thead.innerHTML = '<tr><th>Time</th><th>Event</th><th>Actor</th><th>Details</th><th colspan="2"></th></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Timeline will populate as incidents are processed.</td></tr>';
+      } else {
+        thead.innerHTML = '<tr><th>Evidence ID</th><th>Type</th><th>Source</th><th>Collected</th><th>Chain of Custody</th><th>Actions</th></tr>';
+        if (!data.evidence.length) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No evidence collected yet.</td></tr>'; return; }
+        tbody.innerHTML = data.evidence.map((e,i)=>`<tr><td class="mono">${e.id}</td><td>${e.type}</td>
+          <td class="mono">${e.source}</td><td>${new Date(e.collected||Date.now()).toLocaleString()}</td>
+          <td>${e.custody||'—'}</td>
+          <td><button class="btn btn-sm" onclick="viewEvidence(${i})">View</button></td></tr>`).join('');
+      }
+    }
+    async function createIncident() {
+      try {
+        const r = await fetch('/api/incidents/create', {method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({title:'Manual Incident', severity:'medium', description:'Created from dashboard'})});
+        const d = await r.json();
+        loadAll();
+      } catch(e) {}
+    }
+    async function updateStatus(i, status) {
+      const inc = data.incidents[i];
+      try {
+        await fetch(`/api/incidents/${inc.id||i}/status`, {method:'PUT', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({status})});
+        loadAll();
+      } catch(e) {}
+    }
+    function loadPlaybooks() { loadAll(); }
+    function executePlaybook(i) {}
+    function viewEvidence(i) {}
+    loadAll();
+    setInterval(loadAll, 20000);
+  </script>
+</body>
+</html>
