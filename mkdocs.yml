@@ -20,28 +20,9 @@ nav:
   - Deployment: DEPLOYMENT.md
   - Deployment Plans: DEPLOYMENT-PLANS.md
   - Cloud Fallback: CLOUD-FALLBACK.md
-  - Security:
-      - Security Overview: SECURITY_ADVANCED.md
-      - Aikido Integration: AIKIDO-INTEGRATION.md
-      - Pentest Agent: PENTEST-AGENT.md
-      - Dependency Manager: DEPENDENCY-MANAGER.md
-      - Secrets Management: SECRETS.md
-      - Codex Integration: CODEX-INTEGRATION.md
-  - Builder Agents:
-      - Builders Overview: BUILDERS-OVERVIEW.md
-      - Fullstack App Builder: BUILDERS-FULLSTACK.md
-      - Website Builder: BUILDERS-WEBSITE.md
-      - CRM Builder: BUILDERS-CRM.md
-      - Chatbot Builders: BUILDERS-CHATBOTS.md
-      - Sales Pipeline: BUILDERS-SALES.md
-      - Marketing Agent: BUILDERS-MARKETING.md
-  - Communication:
-      - Comms Overview: COMMS-OVERVIEW.md
-      - Email (SendGrid/Twilio): COMMS-EMAIL.md
-      - Telegram: COMMS-TELEGRAM.md
-      - WhatsApp Business: COMMS-WHATSAPP.md
-      - Signal: COMMS-SIGNAL.md
-      - Gmail (Hermes): COMMS-GMAIL.md
+  - Security Overview: SECURITY_ADVANCED.md
+  - Secrets Management: SECRETS.md
+  - Codex Integration: CODEX-INTEGRATION.md
   - Performance:
       - Optimization Audit: OPTIMIZATION-AUDIT.md
       - Advanced Performance: PERFORMANCE_ADVANCED.md
@@ -55,7 +36,8 @@ nav:
   - Gap Analysis: GAP-ANALYSIS-CODEX.md
   - Troubleshooting: TROUBLESHOOTING.md
   - Roadmap: ROADMAP.md
-  - TODO: TODO.md
+  - Changelog: CHANGELOG.md
+  - Contributing: CONTRIBUTING.md
 
 theme:
   name: material
@@ -88,8 +70,6 @@ theme:
 extra_css:
   - stylesheets/extra.css
 
-extra_javascript:
-  - javascripts/ai-badge.js
 
 markdown_extensions:
   - toc:
