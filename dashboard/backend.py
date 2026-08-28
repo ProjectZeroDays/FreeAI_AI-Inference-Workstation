@@ -3702,6 +3702,7 @@ def api_workflow_delete(name):
     if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
         return jsonify({'error': 'invalid workflow name'}), 400
     path = _WORKFLOW_SAVE_DIR / f'{safe_name}.json'
+    if path.exists():
         path.unlink()
         return jsonify({'ok': True})
     return jsonify({'error': 'not found'}), 404
@@ -3720,7 +3721,7 @@ def _load_designer_templates():
 
 
 def _save_designer_templates(templates):
-    _TEMPLATES_PATH.write_text(json.dumps(templates, indent=2), encoding="utf-8")  # nosec B108
+    _TEMPLATES_PATH.write_text(json.dumps(templates, indent=2), encoding="utf-8")
 
 
 @app.route('/api/workflow-designer/templates', methods=['GET'])
@@ -3806,6 +3807,7 @@ def api_workflow_designer_workflows_get(name):
     if '..' in safe_name or '/' in safe_name or '\\' in safe_name:
         return jsonify({'error': 'invalid workflow name'}), 400
     path = _designer_wf_dir / f'{safe_name}.json'
+    if not path.exists():
         return jsonify({'error': 'not found'}), 404
     try:
         defn = json.loads(path.read_text(encoding='utf-8'))
@@ -3887,7 +3889,9 @@ def api_configs_get(name):
         parsed = json.loads(content)
         return jsonify({"name": safe, "content": content, "parsed": parsed})
     except json.JSONDecodeError as e:
-        return jsonify({"error": f"Invalid JSON: {e}"}), 400
+        import logging
+        logging.getLogger(__name__).error("config JSON parse error: %s", e)
+        return jsonify({"error": "Invalid JSON in file"}), 400
     except OSError as e:
         import logging
         logging.getLogger(__name__).error("config read error: %s", e)
@@ -3904,7 +3908,9 @@ def api_configs_put(name):
     try:
         json.loads(content)
     except json.JSONDecodeError as e:
-        return jsonify({"error": f"Invalid JSON: {e}"}), 400
+        import logging
+        logging.getLogger(__name__).error("config backup JSON error: %s", e)
+        return jsonify({"error": "Invalid JSON in backup"}), 400
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     ts = _ts()
     backup_name = f"{safe}.backup.{ts}.json"
