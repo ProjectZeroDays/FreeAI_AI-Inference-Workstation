@@ -186,6 +186,8 @@ class MemoryCorruptionAgent:
     def generate_payload(self, payload_type="nop_sled", arch="x86_64"):
         """Generate exploit payload with MITRE ATT&CK technical details."""
         tech = MITRE_TECHNIQUES["memory_corruption"]
+        _nop = "\\x90" * 100
+        _pad = "\\x41" * 4
         return {
             "status": "active",
             "mitre_id": tech["id"],
@@ -199,7 +201,7 @@ class MemoryCorruptionAgent:
                 "return_address": "Target address for ROP chain or direct jump"
             },
             "encoder": None,
-            "example_usage": f"echo -ne '{'\\x90'*100}{'\\x41'*4}shellcode_here' | ./vulnerable_binary"
+            "example_usage": f"echo -ne '{_nop}{_pad}shellcode_here' | ./vulnerable_binary"
         }
 
     def get_cves(self):
