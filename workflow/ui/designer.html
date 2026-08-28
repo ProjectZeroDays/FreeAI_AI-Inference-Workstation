@@ -507,12 +507,26 @@ function closeTab(id, e){
 function renderTabs(){
   const bar = document.getElementById("tab-bar");
   if(!bar) return;
-  bar.innerHTML = tabs.map(t => `
-    <div class="wd-tab ${t.id === activeTabId ? 'active' : ''}" data-id="${escAttr(t.id)}">
-      <span>${esc(t.name)}</span>
-      ${tabs.length > 1 ? `<span class="wd-tab-close" data-close="${escAttr(t.id)}">✕</span>` : ''}
-    </div>
-  `).join("");
+  // Build DOM elements directly to avoid innerHTML XSS
+  const frag = document.createDocumentFragment();
+  for (const t of tabs) {
+    const div = document.createElement("div");
+    div.className = "wd-tab" + (t.id === activeTabId ? ' active' : '');
+    div.dataset.id = t.id;
+    const span = document.createElement("span");
+    span.textContent = t.name;
+    div.appendChild(span);
+    if (tabs.length > 1) {
+      const cls = document.createElement("span");
+      cls.className = "wd-tab-close";
+      cls.dataset.close = t.id;
+      cls.textContent = "✕";
+      div.appendChild(cls);
+    }
+    frag.appendChild(div);
+  }
+  bar.innerHTML = "";
+  bar.appendChild(frag);
   bar.querySelectorAll(".wd-tab").forEach(el => {
     el.addEventListener("click", e => {
       if(e.target.classList.contains("wd-tab-close")) return;

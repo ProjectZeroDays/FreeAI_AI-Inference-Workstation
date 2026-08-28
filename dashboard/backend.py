@@ -1716,7 +1716,7 @@ def api_sandbox_run():
         return jsonify({"error": "Forbidden pattern in sandbox code"}), 400
     try:
         if lang == "python":
-            import io, sys, tempfile, os
+            import io, sys, tempfile, os, subprocess
             out = io.StringIO()
             old = sys.stdout
             sys.stdout = out
@@ -1740,14 +1740,14 @@ def api_sandbox_run():
                     proc = subprocess.run(
                         [sys.executable, tmp_path],
                         capture_output=True, text=True, timeout=10
-                    )
+                    )  # nosec B603
                     result = {"output": proc.stdout.strip()}
                     if proc.returncode != 0:
                         result["error"] = "Execution error"
                 except subprocess.TimeoutExpired:
-                    result = {"error": "Execution timeout"}
+                    result = {"error": "Execution timeout", "output": ""}
                 except Exception:
-                    result = {"error": "Execution error"}
+                    result = {"error": "Execution error", "output": ""}
                 finally:
                     try:
                         os.unlink(tmp_path)

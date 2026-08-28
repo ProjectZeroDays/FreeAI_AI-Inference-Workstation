@@ -258,7 +258,9 @@ def verify_code(run_id, language="python"):
                 results[f"lint:{py_file.name}"] = {"exit": proc.returncode,
                                                    "output": proc.stdout[-1000:]}
             except Exception as exc:
-                results[f"lint:{py_file.name}"] = {"error": str(exc)}
+                import logging
+                logging.getLogger(__name__).error("lint error: %s", exc)
+                results[f"lint:{py_file.name}"] = {"error": "Lint failed"}
 
     # Test
     test_cmd = lang_cfg.get("test_command", "")
@@ -273,7 +275,9 @@ def verify_code(run_id, language="python"):
                 results[f"test:{test_file.name}"] = {"exit": proc.returncode,
                                                       "output": proc.stdout[-2000:]}
             except Exception as exc:
-                results[f"test:{test_file.name}"] = {"error": str(exc)}
+                import logging
+                logging.getLogger(__name__).error("test error: %s", exc)
+                results[f"test:{test_file.name}"] = {"error": "Test failed"}
 
     record["verification"] = results
     record["verified_at"] = time.time()
@@ -315,7 +319,9 @@ def run_code(run_id, language="python", args=None):
     except subprocess.TimeoutExpired:
         return {"error": "timeout after 30s", "exit_code": -1}
     except Exception as exc:
-        return {"error": str(exc), "exit_code": -1}
+        import logging
+        logging.getLogger(__name__).error("run error: %s", exc)
+        return {"error": "Execution failed", "exit_code": -1}
 
 
 def improve_code(run_id, instruction, language="python"):
