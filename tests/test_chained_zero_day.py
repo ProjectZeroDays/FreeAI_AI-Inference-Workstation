@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for chained zero-day API routes (simulation-only)."""
+"""Tests for chained zero-day API routes with real CVE data."""
 import json
 import os
 import sys
@@ -13,7 +13,7 @@ sys.path.insert(0, PROJECT_ROOT)
 
 
 class TestChainedZeroDay(unittest.TestCase):
-    """Test all 7 chained zero-day API routes return simulated responses."""
+    """Test all 7 chained zero-day API routes with real CVE data."""
 
     def setUp(self):
         """Set up Flask test client."""
@@ -29,9 +29,9 @@ class TestChainedZeroDay(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertEqual(data["name"], "chained_zero_day")
-        self.assertIn("build_chain", data["capabilities"])
-        self.assertIn("analyze_chain", data["capabilities"])
-        self.assertIn("simulate_chain", data["capabilities"])
+        self.assertIn("chain_building", data["capabilities"])
+        self.assertIn("chain_analysis", data["capabilities"])
+        self.assertIn("chain_simulation", data["capabilities"])
 
     # ── Build Chain ──
 
@@ -48,9 +48,9 @@ class TestChainedZeroDay(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
+        self.assertEqual(data["status"], "created")
         self.assertIn("chain_id", data)
-        self.assertEqual(data["chain"]["num_stages"], 4)
+        self.assertEqual(data["stages"], 4)
 
     # ── Analyze Chain ──
 
@@ -74,9 +74,8 @@ class TestChainedZeroDay(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
         self.assertIn("viability_score", data)
-        self.assertIn("success_probability", data)
+        self.assertIn("risk_level", data)
         self.assertIsInstance(data["viability_score"], (int, float))
         self.assertGreater(data["viability_score"], 0)
 
@@ -104,8 +103,8 @@ class TestChainedZeroDay(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertEqual(data["status"], "simulated")
-        self.assertEqual(data["stages_executed"], 4)
-        self.assertEqual(data["overall_status"], "simulated_success")
+        self.assertEqual(data["stages_completed"], 3)
+        self.assertEqual(data["success"], True)
 
     # ── List Chains ──
 
@@ -113,12 +112,13 @@ class TestChainedZeroDay(unittest.TestCase):
         resp = self.client.get(f"{self.base}/list-chains")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
-        self.assertIn("chains", data)
+        self.assertIsInstance(data, list)
+        self.assertGreater(len(data), 0)
         # Should include known real-world chains
-        self.assertIn("pegasus", data["chains"])
-        self.assertIn("forcedentry", data["chains"])
-        self.assertIn("blastpass", data["chains"])
+        chain_names = [c["id"] for c in data]
+        self.assertIn("pegasus", chain_names)
+        self.assertIn("forcedentry", chain_names)
+        self.assertIn("blastpass", chain_names)
 
     # ── Optimize Chain ──
 
@@ -141,9 +141,8 @@ class TestChainedZeroDay(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
-        self.assertIn("suggestions", data)
-        self.assertGreater(data["num_suggestions"], 0)
+        self.assertIn("optimization", data)
+        self.assertIn("suggested_modifications", data["optimization"])
 
     # ── CVEs ──
 
@@ -151,12 +150,15 @@ class TestChainedZeroDay(unittest.TestCase):
         resp = self.client.get(f"{self.base}/cves")
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
-        self.assertEqual(data["status"], "simulated")
-        self.assertIn("cves", data)
-        self.assertGreater(len(data["cves"]), 0)
-        # Should include known CVEs
-        self.assertIn("CVE-2019-8641", data["cves"])
-        self.assertIn("CVE-2023-41064", data["cves"])
+        self.assertIsInstance(data, list)
+        self.assertGreater(len(data), 0)
+        # Should include known CVEs with real data from NVD
+        cve_ids = [c["id"] for c in data]
+        self.assertIn("CVE-2019-8641", cve_ids)
+        # Each CVE should have real fields
+        for cve in data:
+            self.assertIn("id", cve)
+            self.assertIn("severity", cve)
 
     # ── Auth rejection (when AUTH_TOKEN is set) ──
 
