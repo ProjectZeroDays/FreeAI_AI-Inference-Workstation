@@ -4178,9 +4178,9 @@ def api_workflow_designer_workflows_delete(name):
         return jsonify({'error': 'invalid workflow name'}), 400
     path = _designer_wf_dir / f'{safe_name}.json'
     # Validate path stays within designer-workflows directory
-    full = path.resolve()
-    base = _designer_wf_dir.resolve()
-    if not str(full).startswith(str(base) + os.sep) and full != base:
+    full = os.path.normpath(str(path))
+    base = os.path.normpath(str(_designer_wf_dir))
+    if not full.startswith(base + os.sep):
         return jsonify({'error': 'invalid workflow name'}), 400
     if path.exists():
         with _workflow_saves_lock:

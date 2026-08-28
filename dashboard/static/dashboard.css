@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Fira+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
 
 :root{
   --bg:#020617;
@@ -397,22 +397,37 @@ html[dir="rtl"] .i18n-switcher-wrap {
   transition:transform .2s ease;
 }
 
-/* Collapsed state */
+/* Collapsed state — Linear pattern: 48px icon-only, not 0 */
 .sidebar.collapsed{
-  width:0;
-  padding:0;
+  width:48px;
+  min-width:48px;
+  padding:14px 8px;
   overflow:hidden;
-  border:none;
+  border-right:none;
 }
 .sidebar.collapsed .brand-text,
-.sidebar.collapsed .nav-item,
+.sidebar.collapsed .nav-item span:not(.nav-dot),
 .sidebar.collapsed .nav-label,
-.sidebar.collapsed .sidebar-foot{
+.sidebar.collapsed .sidebar-foot .muted{
   display:none;
 }
-.sidebar.collapsed .brand-mark{
-  margin:0;
-  position:absolute;
-  left:14px;
-  top:14px;
+.sidebar.collapsed .brand{
+  justify-content:center;
+  padding:6px 0 14px;
+}
+.sidebar.collapsed .nav-section{
+  align-items:center;
+}
+.sidebar.collapsed .nav-item{
+  justify-content:center;
+  padding:9px 0;
+}
+.sidebar.collapsed .sidebar-foot{
+  justify-content:center;
+  padding:10px 0;
+  border:none;
+  background:transparent;
+}
+.sidebar.collapsed .live-dot{
+  margin:0 auto;
 }
