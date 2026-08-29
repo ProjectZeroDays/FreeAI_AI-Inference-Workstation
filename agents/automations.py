@@ -36,6 +36,16 @@ def _secure_path(base: Path, user_path: str) -> Path | None:
     return None
 
 
+def _is_safe_path(path: Path, base: Path) -> bool:
+    """Verify resolved path is contained within base directory."""
+    try:
+        base_resolved = str(base.resolve())
+        path_resolved = str(path.resolve())
+        return path_resolved == base_resolved or path_resolved.startswith(base_resolved + os.sep)
+    except (OSError, ValueError):
+        return False
+
+
 def _sanitize_run_id(run_id: str) -> str:
     """Sanitize run_id to prevent path traversal when used as directory name."""
     if not run_id:
@@ -238,6 +248,8 @@ def execute_workflow(workflow_id, params=None):
 
     run_id = f"wf_{_sanitize_run_id(workflow_id)}_{int(time.time())}"
     ws_dir = WORKSPACES_DIR / run_id
+    if not _is_safe_path(ws_dir, WORKSPACES_DIR):
+        return {"error": "Invalid workflow path"}
     ws_dir.mkdir(parents=True, exist_ok=True)
 
     record = {
@@ -267,6 +279,8 @@ def execute_workflow(workflow_id, params=None):
             if output:
                 safe_name = re.sub(r'[^\w\-\.]', '_', step_name)
                 output_file = ws_dir / f"{safe_name}.md"
+                if not _is_safe_path(output_file, WORKSPACES_DIR):
+                    continue
                 output_file.parent.mkdir(parents=True, exist_ok=True)
                 output_file.write_text(output, encoding="utf-8")
                 record["outputs"][step_name] = str(output_file)

@@ -26,13 +26,23 @@ def _secure_path(base: Path, user_path: str) -> Path | None:
         if not safe_name or safe_name != user_path.replace("/", "").replace("\\", "").replace("..", ""):
             return None
         result = base / safe_name
-        base_str = str(base).rstrip("\\").rstrip("/")
-        result_str = str(result).rstrip("\\").rstrip("/")
-        if result_str.startswith(base_str + "\\"):
+        base_resolved = str(base.resolve())
+        result_resolved = str(result.resolve())
+        if result_resolved == base_resolved or result_resolved.startswith(base_resolved + os.sep):
             return result
     except (OSError, ValueError):
         pass
     return None
+
+
+def _is_safe_path(path: Path, base: Path) -> bool:
+    """Verify resolved path is contained within base directory."""
+    try:
+        base_resolved = str(base.resolve())
+        path_resolved = str(path.resolve())
+        return path_resolved == base_resolved or path_resolved.startswith(base_resolved + os.sep)
+    except (OSError, ValueError):
+        return False
 
 
 def _sanitize_run_id(run_id: str) -> str:
@@ -487,6 +497,8 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
     run_id = run_id or f"builder_{int(time.time())}_{os.getpid()}"
     run_id = _sanitize_run_id(run_id)
     ws_dir = Path(workspace_dir) if workspace_dir else WORKSPACES_DIR / run_id
+    if not _is_safe_path(ws_dir, WORKSPACES_DIR):
+        return {"error": "Invalid workspace path", "run_id": run_id, "status": "error"}
     ws_dir.mkdir(parents=True, exist_ok=True)
 
     builder_info = BUILDER_AGENTS.get(build_type)
@@ -525,6 +537,8 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
         try:
             full = _secure_path(ws_dir, path)
             if full is None:
+                continue
+            if not _is_safe_path(full, WORKSPACES_DIR):
                 continue
             full.parent.mkdir(parents=True, exist_ok=True)
             full.write_text(content, encoding="utf-8")
