@@ -17,8 +17,6 @@ class TestPrimitiveList:
     """Test listing primitives"""
 
     @pytest.mark.asyncio
-    @pytest.mark.asyncio
-
     async def test_list_primitives(self, agent):
         """Test listing all primitives"""
         result = await agent.list_primitives()
