@@ -44,17 +44,90 @@
 <body>
   <div class="net-layout">
     <nav class="sidebar" aria-label="Primary">
-      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Network</span></div></div>
-      <div class="nav-section">
-        <span class="nav-label">Navigation</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
-        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
-        <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS Manager</a>
-        <a href="/network-auto" class="nav-item active"><span class="nav-dot"></span> Network Auto</a>
-        <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
-        <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+      <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Network Auto</span></div></div>
+      <div class="scrollable-nav">
+        <div class="nav-section">
+          <span class="nav-label">Stack</span>
+          <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+          <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+          <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+          <a href="/ai-training" class="nav-item"><span class="nav-dot"></span> AI Training</a>
+          <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+          <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Control</span>
+          <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+          <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+          <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+          <a href="/campaign-settings" class="nav-item"><span class="nav-dot"></span> Campaign Settings</a>
+          <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+          <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+          <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+          <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+          <a href="/communications" class="nav-item"><span class="nav-dot"></span> Communications</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Tools</span>
+          <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+          <a href="/skills-catalog" class="nav-item"><span class="nav-dot"></span> Skills Catalog</a>
+          <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+          <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+          <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+          <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+          <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Security</span>
+          <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+          <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+          <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Operations</span>
+          <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+          <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> Live Logs</a>
+          <a href="/terminal" class="nav-item"><span class="nav-dot"></span> Terminal</a>
+          <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+          <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+          <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+          <a href="/network-auto" class="nav-item active"><span class="nav-dot"></span> Network Auto</a>
+          <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS Manager</a>
+          <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+          <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity</a>
+          <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
+          <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime</a>
+          <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+          <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+          <a href="/salad" class="nav-item"><span class="nav-dot"></span> Salad GPU</a>
+          <a href="/aikido" class="nav-item"><span class="nav-dot"></span> Aikido</a>
+          <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> Remote Access</a>
+          <a href="/encryption" class="nav-item"><span class="nav-dot"></span> Encryption</a>
+          <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+          <a href="/prompts" class="nav-item"><span class="nav-dot"></span> Prompts</a>
+          <a href="/plugins-manage" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+          <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+          <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
+          <a href="/files" class="nav-item"><span class="nav-dot"></span> Files</a>
+          <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
+          <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+          <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+          <a href="/dependency-agent" class="nav-item"><span class="nav-dot"></span> Dependency Agent</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Exploitation</span>
+          <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero-Day</a>
+          <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+          <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Engineering</a>
+          <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+          <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+          <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploitation</a>
+          <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploitation</a>
+          <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intelligence</a>
+          <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+          <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+          <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Teaming</a>
+        </div>
       </div>
       <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
     </nav>

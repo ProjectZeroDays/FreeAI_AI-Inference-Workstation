@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Gateway</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/components.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
+  <style>
+    .gateway-layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+    .gateway-main { padding:22px 28px 32px; min-width:0; overflow-y:auto; }
+    .gateway-topbar { display:flex; align-items:center; justify-content:space-between;
+                       padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                       margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .gateway-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .gateway-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .g-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .g-stat { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
+    .g-stat .gs-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .g-stat .gs-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .g-stat.err .gs-val { color:var(--danger); }
+
+    .g-comp { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:14px; padding:16px;
+              box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px); margin-bottom:14px; }
+    .g-comp-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .g-comp-title { font-size:11px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px; }
+    .g-comp-title .dot { width:8px; height:8px; border-radius:50%; }
+
+    .platform-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; }
+    .plat-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px;
+                 padding:16px; transition:all .15s; }
+    .plat-card:hover { border-color:var(--border-strong); }
+    .plat-card.connected { border-color:rgba(34,197,94,.25); }
+    .plat-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .plat-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+                 font-size:18px; font-weight:700; }
+    .plat-icon.slack { background:rgba(228,104,63,.15); color:#E4683F; }
+    .plat-icon.discord { background:rgba(88,101,242,.15); color:#5865F2; }
+    .plat-icon.telegram { background:rgba(0,136,204,.15); color:#0088CC; }
+    .plat-icon.email { background:rgba(167,139,250,.15); color:#A78BFA; }
+    .plat-icon.webhook { background:rgba(34,197,94,.15); color:#22C55E; }
+    .plat-name { font-size:14px; font-weight:600; color:var(--text); }
+    .plat-status { font-size:11px; color:var(--muted-2); }
+    .plat-stats { display:flex; gap:16px; margin-bottom:10px; }
+    .plat-stat-item { font-size:12px; color:var(--muted); }
+    .plat-stat-item strong { color:var(--text); }
+    .plat-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
+    .route-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .route-table th { text-align:left; padding:6px 10px; color:var(--muted-2); font-weight:600;
+                      font-size:10px; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid var(--border); }
+    .route-table td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .route-table tr:hover td { background:rgba(255,255,255,.02); }
+    .route-table .mono { font-family:'Fira Code',monospace; font-size:11px; color:var(--muted); }
+    .route-src { font-weight:600; }
+    .route-arrow { color:var(--accent-2); }
+    .route-dst { color:var(--accent-2); }
+  </style>
+</head>
+<body>
+  <div class="gateway-layout">
+    <nav class="sidebar" aria-label="Primary">
+  <div class="brand">
+    <div class="brand-mark">&#9688;</div>
+    <div class="brand-text"><strong>FreeAI</strong><span>Gateway</span></div>
+  </div>
+  <div class="scrollable-nav">
+    <div class="nav-section">
+      <span class="nav-label">Stack</span>
+      <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+      <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+      <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+      <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Control</span>
+      <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+      <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+      <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+      <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+      <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Tools</span>
+      <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+      <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+      <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+      <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Security</span>
+      <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+      <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+      <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Operations</span>
+      <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> Live Logs</a>
+      <a href="/audit" class="nav-item"><span class="nav-dot"></span> Audit</a>
+      <a href="/terminal" class="nav-item"><span class="nav-dot"></span> Terminal</a>
+      <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+      <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+      <a href="/secrets" class="nav-item"><span class="nav-dot"></span> Secrets</a>
+      <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+      <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+      <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+      <a href="/training" class="nav-item"><span class="nav-dot"></span> Training</a>
+      <a href="/memory" class="nav-item"><span class="nav-dot"></span> Memory</a>
+      <a href="/gateway" class="nav-item active"><span class="nav-dot"></span> Gateway</a>
+      <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+      <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+      <a href="/files" class="nav-item"><span class="nav-dot"></span> Files</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Exploitation</span>
+      <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero Day</a>
+      <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+      <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Eng</a>
+      <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Team</a>
+      <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intel</a>
+      <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+      <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+      <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+      <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
+      <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime Monitor</a>
+      <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploit</a>
+      <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploit</a>
+      <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+      <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+      <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity Mgmt</a>
+      <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS Manager</a>
+      <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> Network Auto</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Integrations</span>
+      <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+      <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2 Dashboard</a>
+      <a href="/salad" class="nav-item"><span class="nav-dot"></span> Salad Farms</a>
+      <a href="/aikido" class="nav-item"><span class="nav-dot"></span> Aikido</a>
+      <a href="/extensions" class="nav-item"><span class="nav-dot"></span> Extensions</a>
+      <a href="/dependency-agent" class="nav-item"><span class="nav-dot"></span> Dependency Agent</a>
+      <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+      <a href="/prompts" class="nav-item"><span class="nav-dot"></span> Prompts</a>
+      <a href="/rbac" class="nav-item"><span class="nav-dot"></span> RBAC</a>
+      <a href="/communications" class="nav-item"><span class="nav-dot"></span> Communications</a>
+      <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> Remote Access</a>
+      <a href="/encryption" class="nav-item"><span class="nav-dot"></span> Encryption</a>
+      <a href="/gpu-warmup" class="nav-item"><span class="nav-dot"></span> GPU Warmup</a>
+      <a href="/skills-catalog" class="nav-item"><span class="nav-dot"></span> Skills Catalog</a>
+      <a href="/plugins-manage" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+      <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC</a>
+      <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
+      <a href="/ws-test" class="nav-item"><span class="nav-dot"></span> WS Test</a>
+      <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
+    </div>
+  </div>
+  <div class="sidebar-foot">
+    <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+      <span class="toggle-icon">&#9664;</span>
+    </button>
+    <span class="live-dot" aria-hidden="true"></span>
+    <span class="muted">Live</span>
+  </div>
+</nav>
+
+    <div class="gateway-main">
+      <header class="gateway-topbar">
+        <div>
+          <h1>Gateway</h1>
+          <p>Platform connections and message routing status</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="showAddPlatform()">+ Connect Platform</button>
+        </div>
+      </header>
+
+      <div class="g-stats">
+        <div class="g-stat"><div class="gs-val" id="gs-platforms">—</div><div class="gs-lbl">Platforms</div></div>
+        <div class="g-stat"><div class="gs-val" id="gs-connected">—</div><div class="gs-lbl">Connected</div></div>
+        <div class="g-stat"><div class="gs-val" id="gs-messages">—</div><div class="gs-lbl">Messages (24h)</div></div>
+        <div class="g-stat"><div class="gs-val" id="gs-routes">—</div><div class="gs-lbl">Active Routes</div></div>
+        <div class="g-stat err"><div class="gs-val" id="gs-errors">—</div><div class="gs-lbl">Route Errors</div></div>
+      </div>
+
+      <section class="g-comp">
+        <div class="g-comp-head">
+          <span class="g-comp-title"><span class="dot" style="background:var(--accent)"></span>Platform Connections</span>
+        </div>
+        <div class="platform-grid" id="platform-grid">
+          <div class="mono" style="color:var(--muted-2)">Loading platforms…</div>
+        </div>
+      </section>
+
+      <section class="g-comp">
+        <div class="g-comp-head">
+          <span class="g-comp-title"><span class="dot" style="background:#A78BFA"></span>Message Routing Table</span>
+          <a href="/gateway/routes" style="font-size:11px;color:var(--accent-2);text-decoration:none">Manage Routes →</a>
+        </div>
+        <div class="table-wrap">
+          <table class="route-table">
+            <thead><tr><th>Source</th><th>→</th><th>Destination</th><th>Type</th><th>Status</th><th>Latency</th><th>Today</th></tr></thead>
+            <tbody id="route-tbody">
+              <tr><td colspan="7" class="mono" style="color:var(--muted-2)">Loading routes…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    const platforms = [
+      {name:'Slack',icon:'slack',status:'connected',channel:'#freeai-ops',msgs:1247,latency:'23ms',webhooks:3},
+      {name:'Discord',icon:'discord',status:'connected',channel:'#agents',msgs:834,latency:'45ms',webhooks:2},
+      {name:'Telegram',icon:'telegram',status:'disconnected',channel:'—',msgs:0,latency:'—',webhooks:0},
+      {name:'Email',icon:'email',status:'connected',channel:'ops@freeai.local',msgs:156,latency:'1.2s',webhooks:1},
+      {name:'Webhook',icon:'webhook',status:'connected',channel:'https://hooks.example.com',msgs:2048,latency:'120ms',webhooks:5},
+    ];
+
+    const routes = [
+      {src:'Slack #freeai-ops',arrow:'→',dst:'Agent Orchestrator',type:'inbound',status:'active',latency:'23ms',count:412},
+      {src:'Discord #agents',arrow:'→',dst:'Task Router',type:'inbound',status:'active',latency:'45ms',count:287},
+      {src:'Webhook /events',arrow:'→',dst:'Alert Pipeline',type:'inbound',status:'active',latency:'12ms',count:1024},
+      {src:'Agent Orchestrator',arrow:'→',dst:'Slack #freeai-ops',type:'outbound',status:'active',latency:'31ms',count:398},
+      {src:'Alert Pipeline',arrow:'→',dst:'Email ops@freeai.local',type:'outbound',status:'degraded',latency:'1.2s',count:156},
+      {src:'Discord #general',arrow:'→',dst:'Archive',type:'inbound',status:'inactive',latency:'—',count:0},
+    ];
+
+    function renderPlatforms() {
+      $('platform-grid').innerHTML = platforms.map(p => `<div class="plat-card ${p.status==='connected'?'connected':''}">
+        <div class="plat-header">
+          <div class="plat-icon ${p.icon}">${p.icon[0].toUpperCase()}</div>
+          <div>
+            <div class="plat-name">${esc(p.name)}</div>
+            <div class="plat-status">${p.status==='connected'?'● Connected':'○ Disconnected'} · ${esc(p.channel)}</div>
+          </div>
+          <span class="badge badge-${p.status==='connected'?'green':'red'}" style="margin-left:auto">${esc(p.status)}</span>
+        </div>
+        <div class="plat-stats">
+          <div class="plat-stat-item"><strong>${p.msgs}</strong> messages</div>
+          <div class="plat-stat-item"><strong>${p.latency}</strong> latency</div>
+          <div class="plat-stat-item"><strong>${p.webhooks}</strong> webhooks</div>
+        </div>
+        <div class="plat-actions">
+          <button class="btn btn-sm" onclick="testConnection('${p.name}')">Test</button>
+          <button class="btn btn-sm" onclick="location.href='/gateway/${p.name.toLowerCase()}'">Configure</button>
+          ${p.status==='connected'?'<button class="btn btn-sm btn-danger" onclick="disconnectPlatform(\''+p.name+'\')">Disconnect</button>':''}
+        </div>
+      </div>`).join('');
+    }
+
+    function renderRoutes() {
+      $('route-tbody').innerHTML = routes.map(r => `<tr>
+        <td class="route-src">${esc(r.src)}</td>
+        <td class="route-arrow">${esc(r.arrow)}</td>
+        <td class="route-dst">${esc(r.dst)}</td>
+        <td><span class="badge badge-${r.type==='inbound'?'blue':'yellow'}">${esc(r.type)}</span></td>
+        <td><span class="badge badge-${r.status==='active'?'green':r.status==='degraded'?'yellow':'gray'}">${esc(r.status)}</span></td>
+        <td class="mono">${esc(r.latency)}</td>
+        <td class="mono">${r.count}</td>
+      </tr>`).join('');
+    }
+
+    function refreshAll() {
+      $('gs-platforms').textContent  = platforms.length;
+      $('gs-connected').textContent  = platforms.filter(p=>p.status==='connected').length;
+      $('gs-messages').textContent   = platforms.reduce((s,p)=>s+p.msgs,0).toLocaleString();
+      $('gs-routes').textContent     = routes.filter(r=>r.status==='active').length;
+      $('gs-errors').textContent     = routes.filter(r=>r.status==='degraded').length;
+      renderPlatforms();
+      renderRoutes();
+    }
+
+    function testConnection(name) { toast('Testing '+name+' connection…','info'); }
+    function disconnectPlatform(name) { if(confirm('Disconnect '+name+'?')) toast(name+' disconnected','warning'); }
+    function showAddPlatform() { alert('Add platform modal — connect to /api/gateway platforms'); }
+
+    function toast(msg, type='info') {
+      const c = document.createElement('div');
+      c.className = 'toast show ' + type;
+      c.textContent = msg;
+      document.body.appendChild(c);
+      setTimeout(() => c.classList.remove('show'), 3000);
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    refreshAll();
+    setInterval(refreshAll, 60000);
+  </script>
+</body>
+</html>

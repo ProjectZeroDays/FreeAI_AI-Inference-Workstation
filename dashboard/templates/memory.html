@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Memory</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/components.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
+  <style>
+    .memory-layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+    .memory-main { padding:22px 28px 32px; min-width:0; overflow-y:auto; }
+    .memory-topbar { display:flex; align-items:center; justify-content:space-between;
+                     padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                     margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .memory-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .memory-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .m-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .m-stat { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
+    .m-stat .ms-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .m-stat .ms-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+
+    .m-comp { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:14px; padding:16px;
+              box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px); margin-bottom:14px; }
+    .m-comp-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .m-comp-title { font-size:11px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px; }
+    .m-comp-title .dot { width:8px; height:8px; border-radius:50%; }
+
+    .mem-entry { display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+                 border-radius:10px; border:1px solid var(--border); margin-bottom:8px;
+                 background:rgba(255,255,255,.02); transition:all .15s; }
+    .mem-entry:hover { border-color:var(--border-strong); background:rgba(255,255,255,.04); }
+    .mem-type { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+                font-size:13px; flex-shrink:0; }
+    .mem-type.learning { background:rgba(167,139,250,.15); color:#A78BFA; }
+    .mem-type.pattern { background:rgba(34,197,94,.15); color:#22C55E; }
+    .mem-type.error { background:rgba(239,68,68,.15); color:#F87171; }
+    .mem-type.preference { background:rgba(56,189,248,.15); color:#38BDF8; }
+    .mem-body { flex:1; min-width:0; }
+    .mem-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+    .mem-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+    .mem-meta { display:flex; gap:10px; margin-top:6px; font-size:11px; color:var(--muted-2); }
+    .mem-meta span { display:flex; align-items:center; gap:4px; }
+
+    .pattern-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+    .pattern-card { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px;
+                    padding:12px; cursor:pointer; transition:all .15s; }
+    .pattern-card:hover { border-color:var(--accent-2); background:rgba(255,255,255,.05); }
+    .pattern-card .pc-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+    .pattern-card .pc-count { font-size:11px; color:var(--muted-2); }
+    .pattern-card .pc-bar { height:3px; background:rgba(255,255,255,.08); border-radius:999px; margin-top:8px; overflow:hidden; }
+    .pattern-card .pc-fill { height:100%; background:var(--accent-2); border-radius:999px; }
+
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                  border-radius:10px; padding:7px 12px; font-size:13px; width:220px;
+                  font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+  </style>
+</head>
+<body>
+  <div class="memory-layout">
+    <nav class="sidebar" aria-label="Primary">
+  <div class="brand">
+    <div class="brand-mark">&#9688;</div>
+    <div class="brand-text"><strong>FreeAI</strong><span>Memory</span></div>
+  </div>
+  <div class="scrollable-nav">
+    <div class="nav-section">
+      <span class="nav-label">Stack</span>
+      <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+      <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+      <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+      <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Control</span>
+      <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+      <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+      <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+      <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+      <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+      <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Tools</span>
+      <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+      <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+      <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+      <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+      <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Security</span>
+      <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+      <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+      <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Operations</span>
+      <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+      <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> Live Logs</a>
+      <a href="/audit" class="nav-item"><span class="nav-dot"></span> Audit</a>
+      <a href="/terminal" class="nav-item"><span class="nav-dot"></span> Terminal</a>
+      <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+      <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+      <a href="/secrets" class="nav-item"><span class="nav-dot"></span> Secrets</a>
+      <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+      <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+      <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+      <a href="/training" class="nav-item"><span class="nav-dot"></span> Training</a>
+      <a href="/memory" class="nav-item active"><span class="nav-dot"></span> Memory</a>
+      <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+      <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+      <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+      <a href="/files" class="nav-item"><span class="nav-dot"></span> Files</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Exploitation</span>
+      <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero Day</a>
+      <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+      <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Eng</a>
+      <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Team</a>
+      <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intel</a>
+      <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+      <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+      <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+      <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
+      <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime Monitor</a>
+      <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploit</a>
+      <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploit</a>
+      <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+      <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+      <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity Mgmt</a>
+      <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS Manager</a>
+      <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> Network Auto</a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Integrations</span>
+      <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+      <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2 Dashboard</a>
+      <a href="/salad" class="nav-item"><span class="nav-dot"></span> Salad Farms</a>
+      <a href="/aikido" class="nav-item"><span class="nav-dot"></span> Aikido</a>
+      <a href="/extensions" class="nav-item"><span class="nav-dot"></span> Extensions</a>
+      <a href="/dependency-agent" class="nav-item"><span class="nav-dot"></span> Dependency Agent</a>
+      <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+      <a href="/prompts" class="nav-item"><span class="nav-dot"></span> Prompts</a>
+      <a href="/rbac" class="nav-item"><span class="nav-dot"></span> RBAC</a>
+      <a href="/communications" class="nav-item"><span class="nav-dot"></span> Communications</a>
+      <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> Remote Access</a>
+      <a href="/encryption" class="nav-item"><span class="nav-dot"></span> Encryption</a>
+      <a href="/gpu-warmup" class="nav-item"><span class="nav-dot"></span> GPU Warmup</a>
+      <a href="/skills-catalog" class="nav-item"><span class="nav-dot"></span> Skills Catalog</a>
+      <a href="/plugins-manage" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+      <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC</a>
+      <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
+      <a href="/ws-test" class="nav-item"><span class="nav-dot"></span> WS Test</a>
+      <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
+    </div>
+  </div>
+  <div class="sidebar-foot">
+    <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+      <span class="toggle-icon">&#9664;</span>
+    </button>
+    <span class="live-dot" aria-hidden="true"></span>
+    <span class="muted">Live</span>
+  </div>
+</nav>
+
+    <div class="memory-main">
+      <header class="memory-topbar">
+        <div>
+          <h1>Memory</h1>
+          <p>Project memory, learned patterns, and knowledge catalog</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="showAddModal()">+ Add Learning</button>
+          <button class="btn btn-sm" onclick="location.href='/memory/patterns'">Pattern Catalog</button>
+        </div>
+      </header>
+
+      <div class="m-stats">
+        <div class="m-stat"><div class="ms-val" id="ms-total">—</div><div class="ms-lbl">Total Entries</div></div>
+        <div class="m-stat"><div class="ms-val" id="ms-learnings">—</div><div class="ms-lbl">Learnings</div></div>
+        <div class="m-stat"><div class="ms-val" id="ms-patterns">—</div><div class="ms-lbl">Patterns</div></div>
+        <div class="m-stat"><div class="ms-val" id="ms-errors">—</div><div class="ms-lbl">Error Patterns</div></div>
+        <div class="m-stat"><div class="ms-val" id="ms-sessions">—</div><div class="ms-lbl">Sessions Logged</div></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+        <input type="text" class="search-box" id="mem-search" placeholder="Search memories…" oninput="filterMemories()" />
+        <select id="mem-type-filter" onchange="filterMemories()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="all">All Types</option>
+          <option value="learning">Learnings</option>
+          <option value="pattern">Patterns</option>
+          <option value="error">Errors</option>
+          <option value="preference">Preferences</option>
+        </select>
+        <select id="mem-project-filter" onchange="filterMemories()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="all">All Projects</option>
+          <option value="project-zero">Project Zero</option>
+          <option value="quantum">Quantum C2</option>
+          <option value="freeai">FreeAI</option>
+        </select>
+      </div>
+
+      <section class="m-comp">
+        <div class="m-comp-head">
+          <span class="m-comp-title"><span class="dot" style="background:var(--accent-2)"></span>Recent Memory Entries</span>
+          <span class="mono" style="font-size:11px;color:var(--muted-2)" id="mem-count">0 entries</span>
+        </div>
+        <div id="mem-list" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
+          <div class="mono" style="color:var(--muted-2)">Loading memories…</div>
+        </div>
+      </section>
+
+      <section class="m-comp">
+        <div class="m-comp-head">
+          <span class="m-comp-title"><span class="dot" style="background:#A78BFA"></span>Pattern Catalog</span>
+          <a href="/memory/patterns" style="font-size:11px;color:var(--accent-2);text-decoration:none">Manage →</a>
+        </div>
+        <div class="pattern-grid" id="pattern-grid">
+          <div class="mono" style="color:var(--muted-2)">Loading patterns…</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    const memories = [
+      {id:'m1',type:'learning',title:'GPU warmup saves 30s on first inference',desc:'Pre-warming the GPU with a dummy inference before actual requests reduces cold-start latency significantly.',project:'freeai',created:'2025-07-14',recurrence:5},
+      {id:'m2',type:'pattern',title:'Retry pattern for provider timeouts',desc:'Implement exponential backoff with jitter when providers return 503 or timeout. Max 3 retries.',project:'project-zero',created:'2025-07-13',recurrence:12},
+      {id:'m3',type:'error',title:'SQLite WAL mode required for concurrent writes',desc:'Without WAL mode, concurrent agent writes cause database locked errors. Always set PRAGMA journal_mode=WAL.',project:'quantum',created:'2025-07-12',recurrence:3},
+      {id:'m4',type:'preference',title:'User prefers compact sidebar by default',desc:'On session start, sidebar is collapsed. Restore preference from localStorage.',project:'project-zero',created:'2025-07-11',recurrence:8},
+      {id:'m5',type:'learning',title:'RAG retrieval improves accuracy on domain Q&A',desc:'Adding project-specific context via RAG reduced hallucination rate by ~40% in code review tasks.',project:'freeai',created:'2025-07-10',recurrence:7},
+      {id:'m6',type:'pattern',title:'Cron job idempotency check',desc:'Always check if a job is already running before starting a new instance. Use flock or DB lock.',project:'project-zero',created:'2025-07-09',recurrence:6},
+    ];
+
+    const patterns = [
+      {name:'Provider Retry',count:24,usage:92},
+      {name:'GPU Warmup',count:18,usage:78},
+      {name:'Session Memory',count:15,usage:65},
+      {name:'Config Validation',count:12,usage:55},
+      {name:'Alert Throttling',count:9,usage:40},
+      {name:'Log Rotation',count:7,usage:30},
+    ];
+
+    function renderMemories(list) {
+      const el = $('mem-list');
+      if (!list.length) { el.innerHTML = '<div class="mono" style="color:var(--muted-2)">No memories found.</div>'; return; }
+      $('mem-count').textContent = list.length + ' entries';
+      el.innerHTML = list.map(m => `<div class="mem-entry">
+        <div class="mem-type ${m.type}">${{learning:'✦',pattern:'◇',error:'⚠',preference:'♥'}[m.type]||'·'}</div>
+        <div class="mem-body">
+          <div class="mem-title">${esc(m.title)}</div>
+          <div class="mem-desc">${esc(m.desc)}</div>
+          <div class="mem-meta">
+            <span>📁 ${esc(m.project)}</span>
+            <span>📅 ${esc(m.created)}</span>
+            <span>🔄 ×${m.recurrence}</span>
+          </div>
+        </div>
+      </div>`).join('');
+    }
+
+    function renderPatterns() {
+      $('pattern-grid').innerHTML = patterns.map(p => `<div class="pattern-card">
+        <div class="pc-name">${esc(p.name)}</div>
+        <div class="pc-count">${p.count} occurrences · ${p.usage}% usage</div>
+        <div class="pc-bar"><div class="pc-fill" style="width:${p.usage}%"></div></div>
+      </div>`).join('');
+    }
+
+    function filterMemories() {
+      const q = $('mem-search').value.toLowerCase();
+      const type = $('mem-type-filter').value;
+      const project = $('mem-project-filter').value;
+      const filtered = memories.filter(m => {
+        const mq = !q || m.title.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q);
+        const mt = type === 'all' || m.type === type;
+        const mp = project === 'all' || m.project === project;
+        return mq && mt && mp;
+      });
+      renderMemories(filtered);
+    }
+
+    function refreshAll() {
+      $('ms-total').textContent    = memories.length;
+      $('ms-learnings').textContent = memories.filter(m=>m.type==='learning').length;
+      $('ms-patterns').textContent  = memories.filter(m=>m.type==='pattern').length;
+      $('ms-errors').textContent    = memories.filter(m=>m.type==='error').length;
+      $('ms-sessions').textContent  = '34';
+      renderMemories(memories);
+      renderPatterns();
+    }
+
+    function showAddModal() { alert('Add Learning modal — connect to /api/memory endpoint'); }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    refreshAll();
+    setInterval(refreshAll, 120000);
+  </script>
+</body>
+</html>

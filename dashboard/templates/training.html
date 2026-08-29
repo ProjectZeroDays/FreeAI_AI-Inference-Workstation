@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — AI Training</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/components.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .training-layout { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+    .training-main { padding:22px 28px 32px; min-width:0; overflow-y:auto; }
+    .training-topbar { display:flex; align-items:center; justify-content:space-between;
+                       padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                       margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .training-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .training-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .t-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .t-stat { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
+    .t-stat .ts-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .t-stat .ts-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .t-stat.warn .ts-val { color:var(--warn); }
+    .t-stat.err .ts-val { color:var(--danger); }
+
+    .t-comp { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:14px; padding:16px;
+              box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px); margin-bottom:14px; }
+    .t-comp-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .t-comp-title { font-size:11px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px; }
+    .t-comp-title .dot { width:8px; height:8px; border-radius:50%; }
+    .t-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; }
+    .t-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .t-table th { text-align:left; padding:6px 10px; color:var(--muted-2); font-weight:600;
+                  font-size:10px; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid var(--border); }
+    .t-table td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .t-table tr:hover td { background:rgba(255,255,255,.02); }
+    .t-table .mono { font-family:'Fira Code',monospace; font-size:11px; color:var(--muted); }
+    .chart-wrap { position:relative; height:160px; }
+  </style>
+</head>
+<body>
+  <div class="training-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Training</span></div>
+      </div>
+      <div class="scrollable-nav">
+        <div class="nav-section">
+          <span class="nav-label">Overview</span>
+          <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+          <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+          <a href="/audit" class="nav-item"><span class="nav-dot"></span> Audit Log</a>
+          <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+          <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> Log Stream</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Infrastructure</span>
+          <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+          <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+          <a href="/salad" class="nav-item"><span class="nav-dot"></span> Salad GPU</a>
+          <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+          <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+          <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+          <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> Proxy Chain</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Agents</span>
+          <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+          <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+          <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+          <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+          <a href="/training" class="nav-item active"><span class="nav-dot"></span> AI Training</a>
+          <a href="/memory" class="nav-item"><span class="nav-dot"></span> Memory</a>
+          <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
+          <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Workflow</span>
+          <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+          <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+          <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+          <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+          <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+          <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Security</span>
+          <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+          <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+          <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+          <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+          <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+          <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero Day</a>
+          <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> Red Teaming</a>
+          <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Eng</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Exploitation</span>
+          <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+          <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+          <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploit</a>
+          <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploit</a>
+          <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> Remote Access</a>
+          <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2 Framework</a>
+          <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot Manager</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Intelligence</span>
+          <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intel</a>
+          <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> Realtime Monitor</a>
+          <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
+          <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Management</span>
+          <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+          <a href="/rbac" class="nav-item"><span class="nav-dot"></span> RBAC</a>
+          <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+          <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+          <a href="/prompts" class="nav-item"><span class="nav-dot"></span> Prompts</a>
+          <a href="/extensions" class="nav-item"><span class="nav-dot"></span> Extensions</a>
+          <a href="/plugins-manage" class="nav-item"><span class="nav-dot"></span> Plugins</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Tools</span>
+          <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+          <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+          <a href="/terminal" class="nav-item"><span class="nav-dot"></span> Terminal</a>
+          <a href="/files" class="nav-item"><span class="nav-dot"></span> Files</a>
+          <a href="/encryption" class="nav-item"><span class="nav-dot"></span> Encryption</a>
+          <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS</a>
+          <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> Network Auto</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Knowledge</span>
+          <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+          <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+          <a href="/forum" class="nav-item"><span class="nav-dot"></span> Forum</a>
+          <a href="/aikido" class="nav-item"><span class="nav-dot"></span> Aikido</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">System</span>
+          <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> Identity Mgmt</a>
+          <a href="/communications" class="nav-item"><span class="nav-dot"></span> Communications</a>
+          <a href="/dependency-agent" class="nav-item"><span class="nav-dot"></span> Dependencies</a>
+          <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
+          <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
+          <a href="/secrets" class="nav-item"><span class="nav-dot"></span> Secrets</a>
+        </div>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar (Ctrl+\)" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="training-main">
+      <header class="training-topbar">
+        <div>
+          <h1>AI Training</h1>
+          <p>Dataset management, training job monitoring, and model registry</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="location.href='/gpu-workstation'">Launch Training</button>
+          <a class="btn btn-sm" href="/model-registry">Model Registry</a>
+        </div>
+      </header>
+
+      <div class="t-stats">
+        <div class="t-stat"><div class="ts-val" id="ts-datasets">—</div><div class="ts-lbl">Datasets</div></div>
+        <div class="t-stat"><div class="ts-val" id="ts-active">—</div><div class="ts-lbl">Active Jobs</div></div>
+        <div class="t-stat warn"><div class="ts-val" id="ts-queued">—</div><div class="ts-lbl">Queued</div></div>
+        <div class="t-stat"><div class="ts-val" id="ts-models">—</div><div class="ts-lbl">Registered Models</div></div>
+        <div class="t-stat err"><div class="ts-val" id="ts-failed">—</div><div class="ts-lbl">Failed (24h)</div></div>
+      </div>
+
+      <div class="t-grid">
+        <section class="t-comp">
+          <div class="t-comp-head">
+            <span class="t-comp-title"><span class="dot" style="background:var(--accent-2)"></span>Training Job Loss Curve</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="loss-chart"></canvas>
+          </div>
+        </section>
+
+        <section class="t-comp">
+          <div class="t-comp-head">
+            <span class="t-comp-title"><span class="dot" style="background:#A78BFA"></span>GPU Utilization During Training</span>
+            <select style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px">
+              <option>Current Session</option>
+              <option>Last 24h</option>
+              <option>Last 7d</option>
+            </select>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="gpu-training-chart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <section class="t-comp">
+        <div class="t-comp-head">
+          <span class="t-comp-title"><span class="dot" style="background:var(--accent)"></span>Recent Training Jobs</span>
+          <a href="/jobs" style="font-size:11px;color:var(--accent-2);text-decoration:none">View all →</a>
+        </div>
+        <div class="table-wrap">
+          <table class="t-table">
+            <thead><tr><th>Job Name</th><th>Dataset</th><th>Model</th><th>Status</th><th>Epoch</th><th>Loss</th><th>Duration</th><th>Started</th></tr></thead>
+            <tbody id="training-tbody">
+              <tr><td colspan="8" class="mono" style="color:var(--muted-2)">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="t-comp">
+        <div class="t-comp-head">
+          <span class="t-comp-title"><span class="dot" style="background:#F59E0B"></span>Dataset Catalog</span>
+          <button class="btn btn-sm" onclick="location.href='/training/datasets'">+ Upload Dataset</button>
+        </div>
+        <div class="table-wrap">
+          <table class="t-table">
+            <thead><tr><th>Dataset</th><th>Records</th><th>Size</th><th>Format</th><th>Last Updated</th><th>Status</th></tr></thead>
+            <tbody id="dataset-tbody">
+              <tr><td colspan="6" class="mono" style="color:var(--muted-2)">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    const trainingJobs = [
+      {name:'sst2-finetune-v3', dataset:'SST-2 v3', model:'llama-3.2-3b', status:'running', epoch:'3/5', loss:'0.042', dur:'2h 14m', started:'2025-07-15 08:00'},
+      {name:'code-instruct-q4', dataset:'CodeInstruct-12k', model:'qwen-2.5-7b', status:'completed', epoch:'10/10', loss:'0.018', dur:'5h 42m', started:'2025-07-14 10:00'},
+      {name:'medqa-rAG', dataset:'MedQA-RAG', model:'llama-3.1-8b', status:'failed', epoch:'1/5', loss:'—', dur:'12m', started:'2025-07-15 06:00'},
+      {name:'rlhf-round4', dataset:'RLHF-Collected', model:'llama-3.2-3b', status:'queued', epoch:'—', loss:'—', dur:'—', started:'—'},
+      {name:'summarization-v2', dataset:'CNN-Daily', model:'mistral-7b', status:'completed', epoch:'3/3', loss:'0.231', dur:'1h 55m', started:'2025-07-13 14:00'},
+    ];
+    const datasets = [
+      {name:'SST-2 v3', records:'87k', size:'2.1 GB', format:'JSONL', updated:'2025-07-10', status:'ready'},
+      {name:'CodeInstruct-12k', records:'12k', size:'840 MB', format:'JSON', updated:'2025-07-08', status:'ready'},
+      {name:'MedQA-RAG', records:'45k', size:'1.4 GB', format:'Parquet', updated:'2025-07-12', status:'processing'},
+      {name:'RLHF-Collected', records:'28k', size:'920 MB', format:'JSONL', updated:'2025-07-14', status:'ready'},
+      {name:'CNN-Daily', records:'320k', size:'4.2 GB', format:'JSON', updated:'2025-06-20', status:'ready'},
+    ];
+
+    function renderTrainingJobs() {
+      $('training-tbody').innerHTML = trainingJobs.map(j => `<tr>
+        <td style="font-weight:600">${esc(j.name)}</td>
+        <td class="mono">${esc(j.dataset)}</td>
+        <td class="mono">${esc(j.model)}</td>
+        <td><span class="badge badge-${j.status==='running'?'blue':j.status==='completed'?'green':j.status==='failed'?'red':'yellow'}">${esc(j.status)}</span></td>
+        <td class="mono">${esc(j.epoch)}</td>
+        <td class="mono" style="color:${j.loss!=='—'?'#BBF7D0':'var(--muted)'}">${esc(j.loss)}</td>
+        <td class="mono">${esc(j.dur)}</td>
+        <td class="mono">${esc(j.started)}</td>
+      </tr>`).join('');
+    }
+
+    function renderDatasets() {
+      $('dataset-tbody').innerHTML = datasets.map(d => `<tr>
+        <td style="font-weight:600">${esc(d.name)}</td>
+        <td class="mono">${esc(d.records)}</td>
+        <td class="mono">${esc(d.size)}</td>
+        <td class="mono">${esc(d.format)}</td>
+        <td class="mono">${esc(d.updated)}</td>
+        <td><span class="badge badge-${d.status==='ready'?'green':'yellow'}">${esc(d.status)}</span></td>
+      </tr>`).join('');
+    }
+
+    function initCharts() {
+      const chartOpts = { responsive:true, maintainAspectRatio:false, animation:false,
+        plugins:{legend:{labels:{color:'#94A3B8',font:{size:11}}}},
+        scales:{x:{grid:{color:'rgba(148,163,184,.08)'},ticks:{color:'#64748B',font:{size:10}}},
+                y:{min:0,max:100,grid:{color:'rgba(148,163,184,.08)'},ticks:{color:'#64748B',font:{size:10},callback:v=>v+'%'}}} };
+
+      new Chart($('loss-chart'), { type:'line', data:{
+        labels:['Epoch 1','Epoch 2','Epoch 3','Epoch 4','Epoch 5'],
+        datasets:[{label:'Training Loss',data:[0.82,0.41,0.19,0.09,0.042],borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,.1)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#22C55E'},
+                  {label:'Validation Loss',data:[0.91,0.55,0.31,0.18,0.11],borderColor:'#A78BFA',backgroundColor:'rgba(167,139,250,.08)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#A78BFA'}]
+      }, options:chartOpts});
+
+      new Chart($('gpu-training-chart'), { type:'line', data:{
+        labels:['0h','1h','2h','3h','4h','5h','6h'],
+        datasets:[{label:'GPU Util %',data:[45,78,92,88,95,91,87],borderColor:'#F59E0B',backgroundColor:'rgba(245,158,11,.1)',fill:true,tension:0.4,pointRadius:0},
+                  {label:'GPU Mem %',data:[30,55,72,68,80,75,70],borderColor:'#0EA5E9',backgroundColor:'rgba(14,165,233,.08)',fill:true,tension:0.4,pointRadius:0}]
+      }, options:chartOpts});
+    }
+
+    async function refreshAll() {
+      renderTrainingJobs();
+      renderDatasets();
+      $('ts-datasets').textContent = datasets.length;
+      $('ts-active').textContent  = trainingJobs.filter(j=>j.status==='running').length;
+      $('ts-queued').textContent  = trainingJobs.filter(j=>j.status==='queued').length;
+      $('ts-models').textContent  = '12';
+      $('ts-failed').textContent  = trainingJobs.filter(j=>j.status==='failed').length;
+    }
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    refreshAll();
+    initCharts();
+    setInterval(refreshAll, 60000);
+  </script>
+</body>
+</html>
