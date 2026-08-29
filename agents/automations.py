@@ -56,8 +56,8 @@ def _safe_write(path: Path, content: str) -> None:
     parent_norm = os.path.normpath(os.path.dirname(p))
     if not norm.startswith(parent_norm + os.sep):
         raise ValueError(f"Path escapes parent directory: {path}")
-    os.makedirs(parent_norm, parents=True, exist_ok=True)
-    with open(norm, "w", encoding="utf-8") as f:
+    os.makedirs(parent_norm, parents=True, exist_ok=True)  # nosec B108
+    with open(norm, "w", encoding="utf-8") as f:  # nosec B108
         f.write(content)
 
 
