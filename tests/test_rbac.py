@@ -61,12 +61,20 @@ def jwt_client(tmp_path, monkeypatch):
 
 
 def _login(jwt_client, username="admin", password="admin123"):
+    import auth.users as u_mod
+    u_mod._ensure_defaults()
+    # If admin has first_login_required, change password first
+    admin_user = u_mod.get_user("admin")
+    if admin_user and admin_user.get("first_login_required"):
+        default_pw = u_mod.get_default_admin_password()
+        if default_pw:
+            u_mod.change_password("admin", default_pw, password)
     res = jwt_client.post(
         "/auth/login",
         json={"username": username, "password": password},
         content_type="application/json",
     )
-    assert res.status_code == 200
+    assert res.status_code == 200, f"Login failed: {res.status_code} {res.get_json()}"
     return res.get_json()["access_token"]
 
 
