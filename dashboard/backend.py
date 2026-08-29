@@ -4785,6 +4785,13 @@ except ImportError:
     _AUTH_MODULE_AVAILABLE = False
     _RBAC_ENABLED = False
 
+try:
+    from todos.api import todos_bp
+    app.register_blueprint(todos_bp)
+    _TODOS_AVAILABLE = True
+except ImportError:
+    _TODOS_AVAILABLE = False
+
 
 @app.route("/auth/login", methods=["GET"])
 def auth_login_page():
@@ -8179,6 +8186,11 @@ def campaign_settings_page():
 def jobs_page():
     locale = get_locale_from_session(session)
     return render_template("jobs.html", i18n_locale=locale)
+
+@app.route("/todos")
+def todos_page():
+    locale = get_locale_from_session(session)
+    return render_template("todos.html", i18n_locale=locale)
 
 @app.route("/external-providers")
 def external_providers_page():

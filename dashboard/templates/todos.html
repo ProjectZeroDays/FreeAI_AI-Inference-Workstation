@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Todos</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .todos-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .todos-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .todos-topbar { display:flex; align-items:center; justify-content:space-between;
+                    padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                    margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .todos-topbar h1 { margin:0; font-size:22px; }
+    .todos-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    .todos-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:18px; }
+    .todo-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .todo-stat .ts-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .todo-stat .ts-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .todo-stat.warn .ts-val { color:var(--warn); }
+    .todo-stat.err .ts-val { color:var(--danger); }
+    .todo-stat.info .ts-val { color:var(--accent-2); }
+
+    .todos-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+    .todos-tab { padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600;
+                 border:1px solid var(--border); background:transparent; color:var(--muted);
+                 cursor:pointer; transition:all .15s; }
+    .todos-tab.active { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .todos-tab .tab-count { display:inline-flex; align-items:center; justify-content:center;
+                            min-width:18px; height:18px; border-radius:999px; font-size:10px;
+                            background:rgba(148,163,184,.15); color:var(--muted); margin-left:5px; padding:0 5px; }
+    .todos-tab.active .tab-count { background:rgba(92,139,255,.25); color:#93C5FD; }
+
+    .todos-toolbar { display:flex; gap:8px; margin-bottom:14px; align-items:center; flex-wrap:wrap; }
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border);
+                  border-radius:10px; padding:7px 12px; font-size:13px; width:220px;
+                  font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+
+    .todo-list { display:flex; flex-direction:column; gap:8px; }
+    .todo-item { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                 border:1px solid var(--border); border-radius:14px; padding:14px 16px;
+                 display:flex; align-items:flex-start; gap:12px; transition:all .15s; }
+    .todo-item:hover { border-color:var(--border-strong); }
+    .todo-item.done { opacity:.55; }
+    .todo-item.done .todo-title { text-decoration:line-through; color:var(--muted); }
+
+    .todo-check { width:20px; height:20px; border-radius:6px; border:2px solid var(--border);
+                  cursor:pointer; flex-shrink:0; margin-top:1px; display:grid; place-items:center;
+                  transition:all .15s; font-size:11px; color:transparent; }
+    .todo-check:hover { border-color:var(--accent); }
+    .todo-check.checked { background:var(--accent); border-color:var(--accent); color:#020617; }
+
+    .todo-body { flex:1; min-width:0; }
+    .todo-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; word-break:break-word; }
+    .todo-desc { font-size:12px; color:var(--muted); margin-bottom:6px; word-break:break-word; }
+    .todo-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .todo-time { font-size:11px; color:var(--muted-2); font-family:'Fira Code',monospace; }
+
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+
+    .btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text);
+           border:1px solid var(--border); border-radius:10px; padding:7px 14px;
+           font-size:13px; cursor:pointer; transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; }
+
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,.7);
+                     backdrop-filter:blur(4px); z-index:100; place-items:center; }
+    .modal-overlay.open { display:grid; }
+    .modal { background:var(--panel); border:1px solid var(--border); border-radius:16px;
+             padding:24px; width:min(520px,90vw); box-shadow:var(--shadow); }
+    .modal h2 { margin:0 0 16px; font-size:16px; }
+    .modal-field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    .modal-field label { font-size:12px; color:var(--muted); font-weight:500; }
+    .modal-field input, .modal-field textarea, .modal-field select {
+      background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:8px 12px;
+      font-size:13px; font-family:Inter,system-ui,sans-serif; }
+    .modal-field textarea { min-height:80px; resize:vertical; font-family:'Fira Code',monospace; }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    .pagination { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:18px; }
+    .page-btn { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:8px;
+                padding:5px 12px; font-size:12px; color:var(--muted); cursor:pointer; transition:all .15s; }
+    .page-btn:hover { border-color:var(--border-strong); color:var(--text); }
+    .page-btn.active { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .page-btn:disabled { opacity:.4; cursor:default; }
+    .page-info { font-size:12px; color:var(--muted-2); margin:0 8px; }
+
+    @media (max-width:768px) {
+      .todos-layout { grid-template-columns:1fr; }
+      .sidebar { display:none; }
+      .todos-main { padding:16px; }
+      .search-box { width:100%; }
+      .todos-toolbar { flex-direction:column; }
+      .todos-stats { grid-template-columns:repeat(2,1fr); }
+    }
+
+    .loading-row td { text-align:center; padding:40px; color:var(--muted-2); font-size:13px; }
+    .spinner { display:inline-block; width:16px; height:16px; border:2px solid var(--border);
+               border-top-color:var(--accent-2); border-radius:50%; animation:spin .6s linear infinite; margin-right:8px; vertical-align:middle; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="todos-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Todos</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/todos" class="nav-item active"><span class="nav-dot"></span> Todos</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Tools</span>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="todos-main">
+      <header class="todos-topbar">
+        <div>
+          <h1>Todos</h1>
+          <p>Task tracking and todo management for your workflow</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm" onclick="refreshTodos()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="openAddModal()">+ New Todo</button>
+        </div>
+      </header>
+
+      <div class="todos-stats" id="todos-stats">
+        <div class="todo-stat"><div class="ts-val" id="ts-total">—</div><div class="ts-lbl">Total</div></div>
+        <div class="todo-stat info"><div class="ts-val" id="ts-active">—</div><div class="ts-lbl">Active</div></div>
+        <div class="todo-stat warn"><div class="ts-val" id="ts-pending">—</div><div class="ts-lbl">Pending</div></div>
+        <div class="todo-stat"><div class="ts-val" id="ts-done">—</div><div class="ts-lbl">Completed</div></div>
+        <div class="todo-stat err"><div class="ts-val" id="ts-high">—</div><div class="ts-lbl">High Priority</div></div>
+      </div>
+
+      <div class="todos-tabs">
+        <button class="todos-tab active" data-filter="all" onclick="setFilter(this)">All<span class="tab-count" id="cnt-all">0</span></button>
+        <button class="todos-tab" data-filter="active" onclick="setFilter(this)">Active<span class="tab-count" id="cnt-active">0</span></button>
+        <button class="todos-tab" data-filter="completed" onclick="setFilter(this)">Completed<span class="tab-count" id="cnt-completed">0</span></button>
+      </div>
+
+      <div class="todos-toolbar">
+        <input type="text" class="search-box" id="todo-search" placeholder="Search todos…" oninput="applyFilters()" />
+        <select id="todo-priority-filter" onchange="applyFilters()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="all">All Priorities</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <select id="todo-sort" onchange="applyFilters()" style="background:var(--bg-soft);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:13px">
+          <option value="created_desc">Newest First</option>
+          <option value="created_asc">Oldest First</option>
+          <option value="priority">By Priority</option>
+          <option value="title">By Title</option>
+        </select>
+      </div>
+
+      <div class="todo-list" id="todo-list">
+        <div class="loading-row"><table style="width:100%"><tr><td><span class="spinner"></span>Loading todos…</td></tr></table></div>
+      </div>
+
+      <div class="pagination" id="pagination" style="display:none"></div>
+
+      <div class="live-dot" style="margin-top:16px"></div>
+      <span class="mono" style="font-size:11px;color:var(--muted-2);margin-left:8px" id="last-refresh">Last refresh: —</span>
+    </div>
+  </div>
+
+  <!-- Add/Edit Todo Modal -->
+  <div class="modal-overlay" id="todo-modal">
+    <div class="modal">
+      <h2 id="modal-title">New Todo</h2>
+      <div class="modal-field">
+        <label>Title *</label>
+        <input type="text" id="todo-title-input" placeholder="What needs to be done?" maxlength="200" />
+      </div>
+      <div class="modal-field">
+        <label>Description</label>
+        <textarea id="todo-desc-input" placeholder="Optional details…" rows="3"></textarea>
+      </div>
+      <div class="modal-field">
+        <label>Priority</label>
+        <select id="todo-priority-input">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTodo()">Save Todo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal" style="max-width:380px">
+      <h2>Delete Todo</h2>
+      <p style="color:var(--muted);font-size:13px;margin:8px 0 16px" id="delete-message">Are you sure you want to delete this todo?</p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const API = '/api/todos';
+    const TOKEN_KEY = 'auth_token';
+
+    let todos = [];
+    let currentFilter = 'all';
+    let currentPage = 1;
+    const PAGE_SIZE = 10;
+    let editingId = null;
+    let deletingId = null;
+
+    const toast = (msg, type='success') => {
+      const t = $('toast');
+      t.textContent = msg; t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // ── Sidebar toggle ─────────────────────────────────────────────
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    // ── Auth helper ────────────────────────────────────────────────
+    function getAuthHeaders() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+      return headers;
+    }
+
+    // ── Fetch todos ────────────────────────────────────────────────
+    async function fetchTodos() {
+      $('todo-list').innerHTML = '<div class="loading-row"><table style="width:100%"><tr><td><span class="spinner"></span>Loading todos…</td></tr></table></div>';
+      try {
+        const r = await fetch(API, { headers: getAuthHeaders() });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        todos = Array.isArray(data) ? data : (data.todos || []);
+        currentPage = 1;
+        applyFilters();
+        updateStats();
+        $('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString();
+      } catch (e) {
+        console.error('Failed to load todos:', e);
+        $('todo-list').innerHTML = '<div class="empty-state">Failed to load todos. Please check your connection.<br><span style="font-size:11px;color:var(--muted-2)">' + esc(e.message) + '</span></div>';
+        toast('Failed to load todos', 'error');
+      }
+    }
+
+    // ── Filter & Sort ──────────────────────────────────────────────
+    function setFilter(btn) {
+      document.querySelectorAll('.todos-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      currentPage = 1;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const search = $('todo-search').value.toLowerCase().trim();
+      const priority = $('todo-priority-filter').value;
+      const sort = $('todo-sort').value;
+
+      let filtered = todos.filter(t => {
+        const matchFilter = currentFilter === 'all' ||
+          (currentFilter === 'active' && !t.completed) ||
+          (currentFilter === 'completed' && t.completed);
+        const matchSearch = !search ||
+          (t.title || '').toLowerCase().includes(search) ||
+          (t.description || '').toLowerCase().includes(search);
+        const matchPriority = priority === 'all' || t.priority === priority;
+        return matchFilter && matchSearch && matchPriority;
+      });
+
+      // Sort
+      const prioOrder = { high: 0, medium: 1, low: 2 };
+      filtered.sort((a, b) => {
+        if (sort === 'created_desc') return (b.created_at || 0) - (a.created_at || 0);
+        if (sort === 'created_asc') return (a.created_at || 0) - (b.created_at || 0);
+        if (sort === 'priority') return (prioOrder[a.priority] ?? 1) - (prioOrder[b.priority] ?? 1);
+        if (sort === 'title') return (a.title || '').localeCompare(b.title || '');
+        return 0;
+      });
+
+      // Move completed to bottom when showing all/active
+      if (currentFilter !== 'completed') {
+        filtered.sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1);
+      }
+
+      renderList(filtered);
+      renderPagination(filtered.length);
+      updateTabCounts();
+    }
+
+    function updateTabCounts() {
+      const all = todos.length;
+      const active = todos.filter(t => !t.completed).length;
+      const completed = todos.filter(t => t.completed).length;
+      $('cnt-all').textContent = all;
+      $('cnt-active').textContent = active;
+      $('cnt-completed').textContent = completed;
+    }
+
+    // ── Render list ────────────────────────────────────────────────
+    function renderList(list) {
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const page = list.slice(start, start + PAGE_SIZE);
+      const container = $('todo-list');
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="empty-state">' +
+          (todos.length === 0 ? 'No todos yet. Click "+ New Todo" to get started.' : 'No todos match your filters.') +
+          '</div>';
+        return;
+      }
+
+      container.innerHTML = page.map(t => {
+        const prioBadge = t.priority === 'high' ? 'badge-red' : t.priority === 'medium' ? 'badge-yellow' : 'badge-gray';
+        const checked = t.completed ? 'checked' : '';
+        const doneClass = t.completed ? 'done' : '';
+        const timeStr = t.created_at ? new Date(t.created_at * 1000).toLocaleString() : 'Just now';
+        return `<div class="todo-item ${doneClass}" data-id="${esc(t.id)}">
+          <div class="todo-check ${checked}" onclick="toggleTodo('${esc(t.id)}')" title="Toggle completed">${t.completed ? '✓' : ''}</div>
+          <div class="todo-body">
+            <div class="todo-title">${esc(t.title || 'Untitled')}</div>
+            ${t.description ? '<div class="todo-desc">' + esc(t.description) + '</div>' : ''}
+            <div class="todo-meta">
+              <span class="badge ${prioBadge}">${esc(t.priority || 'medium')}</span>
+              <span class="todo-time">${esc(timeStr)}</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-danger" onclick="openDeleteModal('${esc(t.id)}','${esc(t.title || 'Untitled')}')" title="Delete">✕</button>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Pagination ─────────────────────────────────────────────────
+    function renderPagination(total) {
+      const pages = Math.ceil(total / PAGE_SIZE);
+      const container = $('pagination');
+      if (pages <= 1) { container.style.display = 'none'; return; }
+      container.style.display = 'flex';
+      let html = '';
+      html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+      const maxVisible = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+      let endPage = Math.min(pages, startPage + maxVisible - 1);
+      if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+      if (startPage > 1) {
+        html += `<button class="page-btn" onclick="goPage(1)">1</button>`;
+        if (startPage > 2) html += `<span class="page-info">…</span>`;
+      }
+      for (let p = startPage; p <= endPage; p++) {
+        html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})">${p}</button>`;
+      }
+      if (endPage < pages) {
+        if (endPage < pages - 1) html += `<span class="page-info">…</span>`;
+        html += `<button class="page-btn" onclick="goPage(${pages})">${pages}</button>`;
+      }
+      html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === pages ? 'disabled' : ''}>Next ›</button>`;
+      html += `<span class="page-info">${total} item${total !== 1 ? 's' : ''}</span>`;
+      container.innerHTML = html;
+    }
+
+    function goPage(p) {
+      const filtered = getFilteredTodos();
+      currentPage = p;
+      const start = (p - 1) * PAGE_SIZE;
+      const page = filtered.slice(start, start + PAGE_SIZE);
+      renderList(page);
+      renderPagination(filtered.length);
+      $('todo-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function getFilteredTodos() {
+      const search = $('todo-search').value.toLowerCase().trim();
+      const priority = $('todo-priority-filter').value;
+      const sort = $('todo-sort').value;
+      let filtered = todos.filter(t => {
+        const matchFilter = currentFilter === 'all' ||
+          (currentFilter === 'active' && !t.completed) ||
+          (currentFilter === 'completed' && t.completed);
+        const matchSearch = !search ||
+          (t.title || '').toLowerCase().includes(search) ||
+          (t.description || '').toLowerCase().includes(search);
+        const matchPriority = priority === 'all' || t.priority === priority;
+        return matchFilter && matchSearch && matchPriority;
+      });
+      const prioOrder = { high: 0, medium: 1, low: 2 };
+      filtered.sort((a, b) => {
+        if (sort === 'created_desc') return (b.created_at || 0) - (a.created_at || 0);
+        if (sort === 'created_asc') return (a.created_at || 0) - (b.created_at || 0);
+        if (sort === 'priority') return (prioOrder[a.priority] ?? 1) - (prioOrder[b.priority] ?? 1);
+        if (sort === 'title') return (a.title || '').localeCompare(b.title || '');
+        return 0;
+      });
+      if (currentFilter !== 'completed') {
+        filtered.sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1);
+      }
+      return filtered;
+    }
+
+    // ── Stats ──────────────────────────────────────────────────────
+    function updateStats() {
+      $('ts-total').textContent = todos.length;
+      $('ts-active').textContent = todos.filter(t => !t.completed).length;
+      $('ts-pending').textContent = todos.filter(t => !t.completed && t.priority === 'high').length;
+      $('ts-done').textContent = todos.filter(t => t.completed).length;
+      $('ts-high').textContent = todos.filter(t => t.priority === 'high' && !t.completed).length;
+    }
+
+    // ── Toggle completed ───────────────────────────────────────────
+    async function toggleTodo(id) {
+      const t = todos.find(x => x.id === id);
+      if (!t) return;
+      t.completed = !t.completed;
+      try {
+        const r = await fetch(API + '/' + encodeURIComponent(id) + '/toggle', {
+          method: 'POST', headers: getAuthHeaders()
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        applyFilters();
+        updateStats();
+        toast(t.completed ? 'Completed: ' + (t.title || 'Todo') : 'Reopened: ' + (t.title || 'Todo'));
+      } catch (e) {
+        console.error(e);
+        t.completed = !t.completed; // revert
+        applyFilters();
+        toast('Failed to update todo', 'error');
+      }
+    }
+
+    // ── Add / Edit modal ───────────────────────────────────────────
+    function openAddModal() {
+      editingId = null;
+      $('modal-title').textContent = 'New Todo';
+      $('todo-title-input').value = '';
+      $('todo-desc-input').value = '';
+      $('todo-priority-input').value = 'medium';
+      $('todo-modal').classList.add('open');
+      setTimeout(() => $('todo-title-input').focus(), 100);
+    }
+
+    function openEditModal(id) {
+      const t = todos.find(x => x.id === id);
+      if (!t) return;
+      editingId = id;
+      $('modal-title').textContent = 'Edit Todo';
+      $('todo-title-input').value = t.title || '';
+      $('todo-desc-input').value = t.description || '';
+      $('todo-priority-input').value = t.priority || 'medium';
+      $('todo-modal').classList.add('open');
+    }
+
+    function closeModal() { $('todo-modal').classList.remove('open'); editingId = null; }
+
+    async function saveTodo() {
+      const title = $('todo-title-input').value.trim();
+      const description = $('todo-desc-input').value.trim();
+      const priority = $('todo-priority-input').value;
+      if (!title) { toast('Title is required', 'error'); return; }
+
+      try {
+        let result;
+        if (editingId) {
+          const r = await fetch(API + '/' + encodeURIComponent(editingId), {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ title, description, priority })
+          });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          result = await r.json();
+        } else {
+          const r = await fetch(API, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ title, description, priority })
+          });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          result = await r.json();
+        }
+
+        closeModal();
+        await fetchTodos();
+        toast(editingId ? 'Todo updated' : 'Todo created: ' + title);
+      } catch (e) {
+        console.error(e);
+        toast('Failed to save todo: ' + e.message, 'error');
+      }
+    }
+
+    // ── Delete ─────────────────────────────────────────────────────
+    function openDeleteModal(id, title) {
+      deletingId = id;
+      $('delete-message').textContent = 'Are you sure you want to delete "' + title + '"? This cannot be undone.';
+      $('delete-modal').classList.add('open');
+    }
+
+    function closeDeleteModal() { $('delete-modal').classList.remove('open'); deletingId = null; }
+
+    async function confirmDelete() {
+      if (!deletingId) return;
+      try {
+        const r = await fetch(API + '/' + encodeURIComponent(deletingId), {
+          method: 'DELETE', headers: getAuthHeaders()
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        closeDeleteModal();
+        await fetchTodos();
+        toast('Todo deleted');
+      } catch (e) {
+        console.error(e);
+        toast('Failed to delete: ' + e.message, 'error');
+      }
+    }
+
+    // ── Refresh ────────────────────────────────────────────────────
+    async function refreshTodos() {
+      await fetchTodos();
+      toast('Todos refreshed');
+    }
+
+    // ── Modal close on backdrop click ──────────────────────────────
+    $('todo-modal').addEventListener('click', e => { if (e.target === $('todo-modal')) closeModal(); });
+    $('delete-modal').addEventListener('click', e => { if (e.target === $('delete-modal')) closeDeleteModal(); });
+
+    // ── Keyboard shortcuts ─────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); openAddModal(); }
+    });
+
+    // ── Init ───────────────────────────────────────────────────────
+    fetchTodos();
+    setInterval(fetchTodos, 60000);
+  </script>
+</body>
+</html>
