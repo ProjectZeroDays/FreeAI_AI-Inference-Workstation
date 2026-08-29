@@ -75,12 +75,14 @@ class MemoryCorruptionAgent:
 
     def generate_payload(self, payload_type="nop_sled", arch="x86_64"):
         """Generate simulated exploit payload."""
+        _nop = "\x90" * 100
+        _pad = "\x41" * (1024 - 100)
         return {
             "status": "pending_real_execution",
             "type": payload_type,
             "architecture": arch,
             "size": 1024 if payload_type == "nop_sled" else 512,
-            "content": f"{'\\x90' * 100} <shellcode_placeholder> {'\\x41' * (1024 - 100)}",
+            "content": f"{_nop} <shellcode_placeholder> {_pad}",
             "encoding": "raw",
             "encoder": None,
         }
