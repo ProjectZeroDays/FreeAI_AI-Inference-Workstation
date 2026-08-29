@@ -39,6 +39,7 @@ def _fresh_users(tmp_path, monkeypatch):
     u_module._USERS_PATH = tmp_path / "auth-users.json"
     u_module._users = {}
     u_module._ensure_defaults()
+    u_module.change_password("admin", u_module.get_default_admin_password(), "admin123")
     # Reset rate-limit state
     jwt_module._login_attempts.clear()
     yield
@@ -124,6 +125,27 @@ def test_authenticate_missing_user():
     user, err = users_store.authenticate("nobody", "any")
     assert user is None
     assert err == "invalid_credentials"
+
+
+def test_authenticate_first_login_required():
+    """Fresh default admin should require password change on first login."""
+    import auth.users as u_module
+    import tempfile
+    # Use a fresh temp path so _load_users returns empty
+    u_module._USERS_PATH = Path(tempfile.mktemp(suffix="-auth-users.json"))
+    u_module._users = {}
+    u_module._ensure_defaults()
+    user, err = users_store.authenticate("admin", u_module.get_default_admin_password())
+    assert user is None
+    assert err == "first_login_required"
+    # After changing password, login should succeed
+    ok, err2 = change_password("admin", u_module.get_default_admin_password(), "newpass")
+    assert ok is True
+    user2, err3 = users_store.authenticate("admin", "newpass")
+    assert user2 is not None
+    assert err3 is None
+    # Cleanup temp file
+    u_module._USERS_PATH.unlink(missing_ok=True)
 
 
 def test_create_user():

@@ -6,6 +6,7 @@ reloaded on demand via reload().
 import hashlib
 import json
 import os
+import secrets
 import time
 import threading
 from pathlib import Path
@@ -24,6 +25,7 @@ _DEFAULT_ROLE = "viewer"
 # In-memory user cache: {username: {"password_hash": "...", "role": "..."}}
 _users: dict = {}
 _lock = threading.Lock()
+_DEFAULT_ADMIN_PASSWORD = ""
 
 
 def _hash_password(plaintext: str) -> str:
@@ -51,16 +53,26 @@ def _load_users() -> dict:
 
 def _ensure_defaults() -> None:
     """Create the default admin user if the file doesn't exist or has no users."""
-    global _users
+    global _users, _DEFAULT_ADMIN_PASSWORD
     with _lock:
         if _users:
             return
         _users = _load_users()
         if not _users:
-            # Create default admin
-            default_hash = _hash_password("admin123")
-            _users["admin"] = {"password_hash": default_hash, "role": "admin"}
+            # Create default admin with a random password
+            _DEFAULT_ADMIN_PASSWORD = secrets.token_urlsafe(24)
+            default_hash = _hash_password(_DEFAULT_ADMIN_PASSWORD)
+            _users["admin"] = {
+                "password_hash": default_hash,
+                "role": "admin",
+                "first_login_required": True,
+            }
             _save_users()
+
+
+def get_default_admin_password() -> str:
+    """Return the default admin password set at module load time."""
+    return _DEFAULT_ADMIN_PASSWORD
 
 
 def _save_users() -> None:
@@ -100,6 +112,8 @@ def authenticate(username: str, password: str) -> tuple[dict | None, str | None]
     user = get_user(username)
     if not user:
         return None, "invalid_credentials"
+    if user.get("first_login_required", False):
+        return None, "first_login_required"
     if not bcrypt.checkpw(
         password.encode("utf-8"), user["password_hash"].encode("utf-8")
     ):
@@ -135,6 +149,7 @@ def change_password(username: str, old_password: str, new_password: str) -> tupl
         return False, "password_too_short"
     with _lock:
         _users[username]["password_hash"] = _hash_password(new_password)
+        _users[username].pop("first_login_required", None)
     _save_users()
     return True, ""
 

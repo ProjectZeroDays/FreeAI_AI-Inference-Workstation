@@ -24,6 +24,7 @@ def _setup_jwt(tmp_path, monkeypatch):
     u_mod._USERS_PATH = tmp_path / "auth-users.json"
     u_mod._users = {}
     u_mod._ensure_defaults()
+    u_mod.change_password("admin", u_mod.get_default_admin_password(), "admin123")
     jwt_mod._login_attempts.clear()
     # Reinitialize jwt_auth singleton with test secret
     jwt_mod.jwt_auth = jwt_mod.JWTAuth(secret="test-jwt-secret-for-unit-tests")

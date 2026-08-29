@@ -22,18 +22,21 @@
         <span class="nav-label" data-i18n="nav.stack">Stack</span>
         <a href="#" class="nav-item active" data-tab="dashboard"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
         <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
-        <a href="#clients" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.clients">Clients</span></a>
+        <a href="/clients" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.clients">Clients</span></a>
         <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
-        <a href="#runs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.runs">SDLC Runs</span></a>
+        <a href="/sdlc-runs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.runs">SDLC Runs</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label" data-i18n="nav.control">Control</span>
         <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sdlc">SDLC & Pipelines</span></a>
         <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
         <a href="/hermes" class="nav-item hermes-link" data-hermes-port="8090"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
-        <a href="#settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
-        <a href="#files" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.files">Files</span></a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="/files" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.files">Files</span></a>
         <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.live_logs">Live Logs</span></a>
+        <a href="/todos" class="nav-item"><span class="nav-dot"></span> Todos</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/notifications" class="nav-item"><span class="nav-dot"></span> Notifications</a>
       </div>
       <div class="nav-section">
         <span class="nav-label" data-i18n="nav.integrations">Integrations</span>
@@ -48,6 +51,11 @@
         <a href="/ai-training" class="nav-item"><span class="nav-dot"></span> AI Training</a>
         <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> DDNS Manager</a>
         <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> Network Auto</a>
+        <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+        <a href="/skills-catalog" class="nav-item"><span class="nav-dot"></span> Skills Catalog</a>
+        <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> Remote Access</a>
+        <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+        <a href="/shodan" class="nav-item"><span class="nav-dot"></span> Shodan</a>
       </div>
       <div class="nav-section">
         <span class="nav-label" data-i18n="nav.security">Security</span>
@@ -62,15 +70,30 @@
         <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
         <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
         <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Teaming</a>
+        <a href="/secrets" class="nav-item"><span class="nav-dot"></span> Secrets</a>
+        <a href="/rbac" class="nav-item"><span class="nav-dot"></span> RBAC</a>
+        <a href="/prompts" class="nav-item"><span class="nav-dot"></span> Prompts</a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki Dashboard</a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+        <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> Device Fingerprint</a>
         <span class="nav-label">Exploit Categories</span>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> Memory Corruption</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> SSRF</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> Deserialization</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> Messaging RCE</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> Media Playback</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> File Parse (XXE/PDF/Email)</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> Memory Primitives</a>
-        <a href="#" class="nav-item"><span class="nav-dot"></span> Chained Zero-Day</a>
+        <a href="/exploits/memory-corruption" class="nav-item"><span class="nav-dot"></span> Memory Corruption</a>
+        <a href="/exploits/ssrf" class="nav-item"><span class="nav-dot"></span> SSRF</a>
+        <a href="/exploits/deserialization" class="nav-item"><span class="nav-dot"></span> Deserialization</a>
+        <a href="/exploits/messaging-rce" class="nav-item"><span class="nav-dot"></span> Messaging RCE</a>
+        <a href="/exploits/media-playback" class="nav-item"><span class="nav-dot"></span> Media Playback</a>
+        <a href="/exploits/file-parse" class="nav-item"><span class="nav-dot"></span> File Parse (XXE/PDF/Email)</a>
+        <a href="/exploits/memory-primitives" class="nav-item"><span class="nav-dot"></span> Memory Primitives</a>
+        <a href="/exploits/chained-zero-day" class="nav-item"><span class="nav-dot"></span> Chained Zero-Day</a>
+        <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Engineering</a>
+        <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero-Day</a>
+        <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+        <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploitation</a>
+        <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploitation</a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaign Manager</a>
+        <a href="/campaign-settings" class="nav-item"><span class="nav-dot"></span> Campaign Settings</a>
+        <a href="/evals" class="nav-item"><span class="nav-dot"></span> Evals</a>
+        <a href="/godmode" class="nav-item"><span class="nav-dot"></span> Godmode</a>
         <span class="nav-label">Infrastructure</span>
         <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
       </div>
@@ -95,10 +118,6 @@
           <span id="timestamp" class="muted"></span>
           <button class="theme-toggle" id="theme-toggle" title="Toggle theme">☀</button>
           <div id="notif-bell" title="Notifications">🔔<span id="notif-badge" style="display:none"></span></div>
-          <div id="user-badge" class="pill" style="display:none;cursor:pointer" title="User profile">
-            <span id="user-name"></span>
-            <span id="user-role" class="muted"></span>
-          </div>
           <div id="user-badge" class="pill" style="display:none;cursor:pointer" title="User profile">
             <span id="user-name"></span>
             <span id="user-role" class="muted"></span>

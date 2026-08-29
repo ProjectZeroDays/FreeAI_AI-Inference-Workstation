@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Shodan</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .sh-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .sh-main { padding:22px 24px 32px; min-width:0; }
+    .sh-topbar { display:flex; align-items:flex-end; justify-content:space-between;
+                 padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                 margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .sh-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .sh-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .sh-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .sh-kpi { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:14px; }
+    .sh-kpi .kpi-val { font-size:24px; font-weight:700; color:var(--accent-2); }
+    .sh-kpi .kpi-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .sh-search-row { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:flex-end; }
+    .sh-search-row label { font-size:12px; color:var(--muted); font-weight:600; display:block; margin-bottom:4px; }
+    .sh-search-group { display:flex; flex-direction:column; gap:4px; flex:1; min-width:200px; }
+    .sh-search-group input { width:100%; }
+    .sh-search-group select { width:100%; }
+    .sh-btn { background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text); border:1px solid var(--border);
+              border-radius:10px; padding:7px 14px; font-size:13px; cursor:pointer; transition:all .15s; font-weight:500; }
+    .sh-btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .sh-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+    .sh-btn-primary { background:linear-gradient(135deg,#38BDF8,#22C55E); color:#020617; border:none; font-weight:700; }
+    .sh-btn-primary:hover { opacity:.9; }
+    .sh-btn-sm { padding:5px 10px; font-size:12px; }
+    .sh-btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .sh-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .sh-tab { padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600;
+              border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all .15s; }
+    .sh-tab.active { background:rgba(56,189,248,.15); border-color:rgba(56,189,248,.35); color:#BAE6FD; }
+    .sh-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .sh-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                    border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .sh-table td { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:top; }
+    .sh-table tr:hover td { background:rgba(255,255,255,.02); }
+    .sh-table .mono { font-family:'Fira Code',monospace; font-size:12px; color:var(--muted); word-break:break-all; }
+    .sh-port { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700;
+               background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.25); }
+    .sh-vuln-badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;
+                     background:rgba(239,68,68,.18); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); margin-right:3px; }
+    .sh-empty { text-align:center; padding:48px 20px; color:var(--muted-2); }
+    .sh-empty p { margin:6px 0 0; font-size:13px; }
+    .sh-host-detail { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:12px; }
+    .sh-host-detail h3 { margin:0 0 12px; font-size:15px; color:var(--accent-2); }
+    .sh-meta-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+    .sh-meta-item { display:flex; flex-direction:column; gap:2px; }
+    .sh-meta-label { font-size:11px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.05em; }
+    .sh-meta-val { font-size:13px; font-family:'Fira Code',monospace; color:var(--text); word-break:break-all; }
+    .sh-banner { background:var(--bg-soft); border:1px solid var(--border); border-radius:8px; padding:10px;
+                font-family:'Fira Code',monospace; font-size:11px; color:var(--muted); white-space:pre-wrap;
+                max-height:160px; overflow-y:auto; margin-top:8px; }
+    .sh-status-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
+    .sh-status-badge.configured { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.28); }
+    .sh-status-badge.not-configured { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.28); }
+    .sh-loading { display:inline-block; width:14px; height:14px; border:2px solid var(--border);
+                  border-top-color:var(--accent-2); border-radius:50%; animation:sh-spin .6s linear infinite; }
+    @keyframes sh-spin { to { transform:rotate(360deg); } }
+    .sh-query-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:8px;
+                     background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.2); font-size:12px;
+                     color:var(--muted); margin-right:6px; margin-bottom:6px; }
+    .sh-query-chip button { background:none; border:none; color:var(--muted-2); cursor:pointer; font-size:14px; padding:0; line-height:1; }
+    .sh-query-chip button:hover { color:var(--danger); }
+    .sh-modal-overlay { display:none; position:fixed; inset:0; background:rgba(2,6,23,.8); z-index:100;
+                         place-items:center; backdrop-filter:blur(4px); }
+    .sh-modal-overlay.open { display:grid; }
+    .sh-modal { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:24px;
+                width:min(480px,90vw); box-shadow:var(--shadow); }
+    .sh-modal h2 { margin:0 0 16px; font-size:16px; }
+    .sh-modal label { font-size:12px; color:var(--muted); display:block; margin-bottom:4px; font-weight:600; }
+    .sh-modal input { width:100%; margin-bottom:12px; }
+    .sh-modal .btn-row { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="sh-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Shodan</span></div>
+      </div>
+      <div class="scrollable-nav">
+        <div class="nav-section">
+          <span class="nav-label">Navigation</span>
+          <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+          <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+          <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+          <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+          <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+          <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+          <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+          <a href="/loot" class="nav-item"><span class="nav-dot"></span> Loot</a>
+          <a href="/c2" class="nav-item"><span class="nav-dot"></span> C2</a>
+          <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+          <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+          <a href="/shodan" class="nav-item active"><span class="nav-dot"></span> Shodan</a>
+          <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+        </div>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="sh-main">
+      <header class="sh-topbar">
+        <div>
+          <h1>Shodan Reconnaissance</h1>
+          <p>Internet-wide service enumeration, host profiling, and banner grabbing</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span id="sh-key-status" class="sh-status-badge not-configured">Checking…</span>
+          <button class="sh-btn sh-btn-sm" onclick="openKeyModal()" title="Configure API key">⚙ Key</button>
+          <button class="sh-btn sh-btn-sm" onclick="loadHealth()">↻</button>
+        </div>
+      </header>
+
+      <div class="sh-kpis">
+        <div class="sh-kpi"><div class="kpi-val" id="sh-kpi-total">0</div><div class="kpi-lbl">Results Found</div></div>
+        <div class="sh-kpi"><div class="kpi-val" id="sh-kpi-hosts">0</div><div class="kpi-lbl">Unique Hosts</div></div>
+        <div class="sh-kpi"><div class="kpi-val" id="sh-kpi-ports">0</div><div class="kpi-lbl">Open Ports</div></div>
+        <div class="sh-kpi"><div class="kpi-val" id="sh-kpi-scans">0</div><div class="kpi-lbl">Historical Scans</div></div>
+      </div>
+
+      <div class="sh-search-row">
+        <div class="sh-search-group" style="flex:3">
+          <label for="sh-query">Search Query</label>
+          <input type="text" id="sh-query" placeholder="e.g. ip:8.8.8.8, hostname:google.com, port:443, ssl.cert.subject:C=US" />
+        </div>
+        <div class="sh-search-group" style="flex:0 0 100px">
+          <label for="sh-limit">Limit</label>
+          <select id="sh-limit">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div style="align-self:flex-end">
+          <button class="sh-btn sh-btn-primary" id="sh-search-btn" onclick="doSearch()">Search</button>
+        </div>
+      </div>
+
+      <div id="sh-query-history" style="margin-bottom:14px;flex-wrap:wrap;display:flex;gap:4px;align-items:center"></div>
+
+      <div class="sh-tabs">
+        <button class="sh-tab active" data-tab="results" onclick="switchTab(this)">Search Results</button>
+        <button class="sh-tab" data-tab="history" onclick="switchTab(this)">History</button>
+        <button class="sh-tab" data-tab="host" onclick="switchTab(this)">Host Detail</button>
+      </div>
+
+      <table class="sh-table" id="sh-results-table" style="display:none">
+        <thead><tr>
+          <th>IP</th><th>Port</th><th>Service</th><th>Vulns</th><th>Org / Country</th><th>Last Update</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="sh-results-tbody"></tbody>
+      </table>
+
+      <div id="sh-results-empty" class="sh-empty">
+        <div style="font-size:32px;margin-bottom:8px">◎</div>
+        <p style="font-size:14px;color:var(--muted);font-weight:600">No results yet</p>
+        <p>Enter a query above to search Shodan's internet-wide scan data.</p>
+      </div>
+
+      <div id="sh-host-panel" style="display:none">
+        <div id="sh-host-detail" class="sh-host-detail">
+          <div class="sh-empty"><p>Select a result row to view host details.</p></div>
+        </div>
+      </div>
+
+      <div id="sh-history-panel" style="display:none">
+        <table class="sh-table">
+          <thead><tr><th>Time</th><th>Query</th><th>Results</th><th>Unique Hosts</th><th>Actions</th></tr></thead>
+          <tbody id="sh-history-tbody"></tbody>
+        </table>
+        <div id="sh-history-empty" class="sh-empty">
+          <p>No search history yet.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button class="sh-btn sh-btn-sm" onclick="exportResults('csv')" id="sh-export-csv" disabled>Export CSV</button>
+        <button class="sh-btn sh-btn-sm" onclick="exportResults('json')" id="sh-export-json" disabled>Export JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh-modal-overlay" id="sh-key-modal">
+    <div class="sh-modal">
+      <h2>Configure Shodan API Key</h2>
+      <label for="sh-key-input">API Key</label>
+      <input type="password" id="sh-key-input" placeholder="Enter your Shodan API key" />
+      <div class="btn-row">
+        <button class="sh-btn sh-btn-sm" onclick="closeKeyModal()">Cancel</button>
+        <button class="sh-btn sh-btn-sm sh-btn-primary" onclick="saveApiKey()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SHODAN_API = '/api/shodan';
+    let shData = { results:[], history:[], currentHost:null };
+    let currentTab = 'results';
+    let searchCount = 0;
+
+    // ── XSS prevention ────────────────────────────────────────────────
+    function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function $(id) { return document.getElementById(id); }
+
+    // ── Health / key status ───────────────────────────────────────────
+    async function loadHealth() {
+      try {
+        const r = await fetch(SHODAN_API + '/health');
+        const d = await r.json();
+        const badge = $('sh-key-status');
+        if (d.configured) {
+          badge.className = 'sh-status-badge configured';
+          badge.textContent = '● Configured (' + esc(d.key_prefix) + '…)';
+        } else {
+          badge.className = 'sh-status-badge not-configured';
+          badge.textContent = '○ Not Configured';
+        }
+      } catch(e) {
+        console.error('shodan health error:', e);
+      }
+    }
+
+    // ── Key modal ─────────────────────────────────────────────────────
+    function openKeyModal() {
+      $('sh-key-modal').classList.add('open');
+      $('sh-key-input').value = '';
+      $('sh-key-input').focus();
+    }
+    function closeKeyModal() { $('sh-key-modal').classList.remove('open'); }
+    async function saveApiKey() {
+      const key = $('sh-key-input').value.trim();
+      try {
+        const r = await fetch(SHODAN_API + '/key', {
+          method:'PUT', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({key})
+        });
+        const d = await r.json();
+        if (d.ok) { closeKeyModal(); loadHealth(); }
+        else { alert('Failed to save key'); }
+      } catch(e) { console.error(e); }
+    }
+
+    // ── Search ────────────────────────────────────────────────────────
+    async function doSearch() {
+      const query = $('sh-query').value.trim();
+      const limit = parseInt($('sh-limit').value, 10);
+      if (!query) { alert('Please enter a search query'); return; }
+
+      const btn = $('sh-search-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="sh-loading"></span> Searching…';
+
+      try {
+        const r = await fetch(SHODAN_API + '/search', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({query, limit})
+        });
+        const d = await r.json();
+        if (d.error) {
+          alert('Shodan error: ' + d.error);
+          return;
+        }
+        shData.results = d.results || [];
+        shData.total = d.total || 0;
+        searchCount++;
+        updateKPIs(d.total, shData.results);
+        addToHistory(query, d.total, shData.results);
+        renderResults(shData.results);
+        setActiveTab('results');
+        updateExportButtons(true);
+      } catch(e) {
+        console.error(e);
+        alert('Search failed: ' + (e.message || 'unknown error'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Search';
+      }
+    }
+
+    function updateKPIs(total, results) {
+      $('sh-kpi-total').textContent = total.toLocaleString();
+      const hosts = new Set(results.map(r => r.ip || r.hostnames?.[0] || r.ip_str));
+      const ports = new Set(results.map(r => r.port));
+      $('sh-kpi-hosts').textContent = hosts.size.toLocaleString();
+      $('sh-kpi-ports').textContent = ports.size.toLocaleString();
+      $('sh-kpi-scans').textContent = searchCount.toLocaleString();
+    }
+
+    function renderResults(results) {
+      const tbl = $('sh-results-table');
+      const empty = $('sh-results-empty');
+      if (!results || !results.length) {
+        tbl.style.display = 'none';
+        empty.style.display = '';
+        empty.querySelector('p') ? empty.querySelector('p').textContent = 'No results found for this query.' : null;
+        return;
+      }
+      tbl.style.display = '';
+      empty.style.display = 'none';
+      const tbody = $('sh-results-tbody');
+      tbody.innerHTML = results.map((r, i) => {
+        const vulns = (r.vulns || []).slice(0, 3);
+        const org = esc(r.org || r.asn || '—');
+        const country = esc(r.country_name || '—');
+        const service = esc(r.product || r.transport || r.os || '—');
+        const lastUpdate = r.last_update ? new Date(r.last_update * 1000).toLocaleDateString() : '—';
+        const ip = esc(r.ip || r.ip_str || '—');
+        const port = r.port || '?';
+        const hostnames = (r.hostnames || []).slice(0, 2).join(', ');
+        return `<tr onclick="showHostDetail(${i})" style="cursor:pointer">
+          <td class="mono">${ip}${hostnames ? '<br><span style="font-size:11px;color:var(--muted-2)">'+esc(hostnames)+'</span>' : ''}</td>
+          <td><span class="sh-port">${port}</span></td>
+          <td class="mono">${service}</td>
+          <td>${vulns.map(v => '<span class="sh-vuln-badge">'+esc(v)+'</span>').join('')}${!vulns.length ? '<span style="color:var(--muted-2);font-size:11px">—</span>' : ''}</td>
+          <td class="mono" style="font-size:12px">${org}<br><span style="color:var(--muted-2)">${country}</span></td>
+          <td class="mono" style="font-size:11px;color:var(--muted-2)">${lastUpdate}</td>
+          <td><button class="sh-btn sh-btn-sm" onclick="event.stopPropagation();showHostDetail(${i})">Detail</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function showHostDetail(idx) {
+      const r = shData.results[idx];
+      if (!r) return;
+      const ip = r.ip || r.ip_str;
+      if (!ip) return;
+      setActiveTab('host');
+      const panel = $('sh-host-panel');
+      const detail = $('sh-host-detail');
+      panel.style.display = '';
+      detail.innerHTML = '<div class="sh-empty"><span class="sh-loading"></span> Loading…</div>';
+      try {
+        const resp = await fetch(SHODAN_API + '/host/' + encodeURIComponent(ip));
+        const d = await resp.json();
+        if (d.error) { detail.innerHTML = '<div class="sh-empty"><p>Error: ' + esc(d.error) + '</p></div>'; return; }
+        const h = d.data || {};
+        const ports = (h.ports || []).slice(0, 20);
+        const vulns = (h.vulns || []);
+        const hostnames = (h.hostnames || []);
+        const org = esc(h.org || h.asn || '—');
+        const country = esc(h.country_name || '—');
+        const os = esc(h.os || '—');
+        const data = esc((h.data || '').slice(0, 2000));
+        const ips = (h.ip_addresses || []).map(a => '<span class="sh-port" style="margin:2px">'+esc(a)+'</span>').join('');
+        detail.innerHTML = `
+          <h3>${esc(h.ip || ip)} ${hostnames.length ? '<span style="font-size:12px;color:var(--muted)">(' + esc(hostnames.join(', ')) + ')</span>' : ''}</h3>
+          <div class="sh-meta-grid">
+            <div class="sh-meta-item"><span class="sh-meta-label">Organization</span><span class="sh-meta-val">${org}</span></div>
+            <div class="sh-meta-item"><span class="sh-meta-label">Country</span><span class="sh-meta-val">${country}</span></div>
+            <div class="sh-meta-item"><span class="sh-meta-label">Operating System</span><span class="sh-meta-val">${os}</span></div>
+            <div class="sh-meta-item"><span class="sh-meta-label">Vulnerabilities</span><span class="sh-meta-val">${vulns.length ? vulns.map(v=>'<span class="sh-vuln-badge">'+esc(v)+'</span>').join(' ') : '<span style="color:var(--muted-2)">None</span>'}</span></div>
+            <div class="sh-meta-item"><span class="sh-meta-label">Associated IPs</span><span class="sh-meta-val" style="font-size:11px">${ips || '<span style="color:var(--muted-2)">—</span>'}</span></div>
+          </div>
+          ${ports.length ? '<h3 style="margin-top:16px">Open Ports & Services</h3><table class="sh-table"><thead><tr><th>Port</th><th>Protocol</th><th>Product</th><th>Version</th><th>Transport</th></tr></thead><tbody>' +
+            ports.map(p => `<tr><td class="mono">${esc(String(p.port))}</td><td class="mono">${esc(p.protocol||'tcp')}</td><td class="mono">${esc(p.product||'—')}</td><td class="mono">${esc(p.version||'—')}</td><td class="mono">${esc(p.transport||'—')}</td></tr>`).join('') +
+            '</tbody></table>' : ''}
+          ${data ? '<h3 style="margin-top:16px">Banner Data</h3><div class="sh-banner">' + data + '</div>' : ''}
+        `;
+      } catch(e) {
+        detail.innerHTML = '<div class="sh-empty"><p>Failed to load host detail: ' + esc(e.message) + '</p></div>';
+      }
+    }
+
+    // ── History ───────────────────────────────────────────────────────
+    function addToHistory(query, total, results) {
+      const entry = {
+        time: new Date().toLocaleString(),
+        query,
+        total,
+        uniqueHosts: new Set(results.map(r => r.ip || r.ip_str)).size,
+        results: results.slice(0, 50)
+      };
+      shData.history.unshift(entry);
+      if (shData.history.length > 50) shData.history.pop();
+      renderHistory();
+      renderQueryChips();
+    }
+
+    function renderHistory() {
+      const tbody = $('sh-history-tbody');
+      const empty = $('sh-history-empty');
+      if (!shData.history.length) {
+        tbody.innerHTML = '';
+        empty.style.display = '';
+        return;
+      }
+      empty.style.display = 'none';
+      tbody.innerHTML = shData.history.map((h, i) => `<tr>
+        <td class="mono" style="font-size:11px;color:var(--muted-2)">${esc(h.time)}</td>
+        <td class="mono">${esc(h.query)}</td>
+        <td>${esc(String(h.total))}</td>
+        <td>${esc(String(h.uniqueHosts))}</td>
+        <td><button class="sh-btn sh-btn-sm" onclick="rerunHistory(${i})">Rerun</button>
+            <button class="sh-btn sh-btn-sm sh-btn-danger" onclick="deleteHistory(${i})">Del</button></td>
+      </tr>`).join('');
+    }
+
+    function rerunHistory(i) {
+      $('sh-query').value = shData.history[i].query;
+      doSearch();
+    }
+
+    function deleteHistory(i) {
+      shData.history.splice(i, 1);
+      renderHistory();
+    }
+
+    function renderQueryChips() {
+      const cont = $('sh-query-history');
+      const recent = shData.history.slice(0, 8);
+      cont.innerHTML = recent.map((h, i) => `<span class="sh-query-chip">${esc(h.query)}<button onclick="rerunHistory(${i})">×</button></span>`).join('');
+    }
+
+    // ── Tabs ──────────────────────────────────────────────────────────
+    function switchTab(btn) {
+      document.querySelectorAll('.sh-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setActiveTab(btn.dataset.tab);
+    }
+
+    function setActiveTab(tab) {
+      currentTab = tab;
+      $('sh-results-table').style.display = (tab === 'results' && shData.results.length) ? '' : 'none';
+      $('sh-results-empty').style.display = (tab !== 'results') ? 'none' : (shData.results.length ? 'none' : '');
+      $('sh-host-panel').style.display = tab === 'host' ? '' : 'none';
+      $('sh-history-panel').style.display = tab === 'history' ? '' : 'none';
+    }
+
+    // ── Export ────────────────────────────────────────────────────────
+    function updateExportButtons(enabled) {
+      $('sh-export-csv').disabled = !enabled;
+      $('sh-export-json').disabled = !enabled;
+    }
+
+    function exportResults(format) {
+      if (!shData.results.length) return;
+      let blob, filename;
+      if (format === 'json') {
+        blob = new Blob([JSON.stringify(shData.results, null, 2)], { type: 'application/json' });
+        filename = 'shodan-results.json';
+      } else {
+        const headers = ['ip', 'port', 'product', 'version', 'org', 'country_name', 'os', 'vulns', 'data', 'hostnames', 'last_update'];
+        const rows = shData.results.map(r => headers.map(h => {
+          let v = r[h];
+          if (Array.isArray(v)) v = v.join(', ');
+          return '"' + String(v ?? '').replace(/"/g, '""') + '"';
+        }).join(','));
+        blob = new Blob(['"' + headers.join(',') + '"\n' + rows.join('\n')], { type: 'text/csv' });
+        filename = 'shodan-results.csv';
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────
+    loadHealth();
+    renderHistory();
+    $('sh-query').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+  </script>
+</body>
+</html>

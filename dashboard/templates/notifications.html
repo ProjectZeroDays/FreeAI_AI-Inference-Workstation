@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Notifications</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
+  <style>
+    .notif-layout { display:grid; grid-template-columns:var(--sidebar-width) 1fr; min-height:100vh; }
+    .notif-main { padding:22px 22px 28px; overflow-y:auto; }
+    .notif-topbar { display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+                    padding:6px 2px 16px; border-bottom:1px solid var(--border); margin-bottom:18px; flex-wrap:wrap; }
+    .notif-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .notif-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .notif-topbar-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+
+    .kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+    .kpi-card { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+    .kpi-label { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2); margin-bottom:4px; }
+    .kpi-value { font-family:Fira Code,monospace; font-size:20px; font-weight:700; }
+    .kpi-value.error   { color:var(--danger); }
+    .kpi-value.warning { color:var(--warn); }
+    .kpi-value.info    { color:var(--accent-2); }
+    .kpi-value.success { color:var(--accent); }
+
+    .q-card { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+              border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:14px; }
+    .q-card-header { padding:12px 16px; border-bottom:1px solid var(--border);
+                     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .q-card-header h2 { margin:0; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+    .q-card-body { padding:10px; display:flex; flex-direction:column; gap:6px; max-height:520px; overflow-y:auto; }
+    .q-card-body::-webkit-scrollbar { width:4px; }
+    .q-card-body::-webkit-scrollbar-track { background:transparent; }
+    .q-card-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+    .filter-row { display:flex; gap:6px; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid var(--border); }
+    .filter-chip { padding:5px 12px; border-radius:8px; border:1px solid var(--border); background:var(--panel-2);
+                   color:var(--muted); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; }
+    .filter-chip:hover { border-color:var(--accent-2); color:var(--text); }
+    .filter-chip.active { border-color:var(--accent); color:var(--accent); background:rgba(34,197,94,.08); }
+    .filter-chip.active-error   { border-color:var(--danger); color:var(--danger); background:rgba(239,68,68,.08); }
+    .filter-chip.active-warning { border-color:var(--warn); color:var(--warn); background:rgba(245,158,11,.08); }
+    .filter-chip.active-info    { border-color:var(--accent-2); color:var(--accent-2); background:rgba(56,189,248,.08); }
+    .filter-chip.active-success { border-color:var(--accent); color:var(--accent); background:rgba(34,197,94,.08); }
+
+    .search-input { padding:5px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg-soft);
+                    color:var(--text); font-size:12px; min-width:160px; outline:none; }
+    .search-input:focus { border-color:rgba(56,189,248,.45); }
+    .search-input::placeholder { color:var(--muted-2); }
+
+    .notif-list-item { display:flex; gap:10px; padding:10px 12px; border-radius:10px;
+                       border:1px solid var(--border); background:rgba(2,6,23,.35); transition:border-color .15s; }
+    .notif-list-item.unread { border-color:var(--border-strong); background:rgba(2,6,23,.55); }
+    .notif-list-item.level-error   { border-left:3px solid var(--danger); }
+    .notif-list-item.level-warning { border-left:3px solid var(--warn); }
+    .notif-list-item.level-info    { border-left:3px solid var(--accent-2); }
+    .notif-list-item.level-success { border-left:3px solid var(--accent); }
+    .notif-list-item:hover { border-color:var(--border-strong); }
+    .notif-list-item.selected { background:rgba(56,189,248,.06); border-color:rgba(56,189,248,.3); }
+
+    .notif-list-check { width:16px; height:16px; margin-top:2px; cursor:pointer; accent-color:var(--accent-2); flex-shrink:0; }
+    .notif-list-icon { width:28px; height:28px; border-radius:8px; display:grid; place-items:center;
+                       font-size:13px; flex-shrink:0; }
+    .notif-list-icon.error   { background:rgba(239,68,68,.15); color:#FCA5A5; }
+    .notif-list-icon.warning { background:rgba(245,158,11,.15); color:#FCD34D; }
+    .notif-list-icon.info    { background:rgba(56,189,248,.15); color:#7DD3FC; }
+    .notif-list-icon.success { background:rgba(34,197,94,.15); color:#86EFAC; }
+    .notif-list-body { flex:1; min-width:0; }
+    .notif-list-title { font-size:13px; font-weight:600; margin-bottom:2px; }
+    .notif-list-msg { font-size:12px; color:var(--muted); line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .notif-list-meta { font-size:11px; color:var(--muted-2); margin-top:4px; display:flex; gap:8px; align-items:center; }
+    .notif-list-actions { display:flex; gap:4px; flex-shrink:0; align-self:center; }
+    .notif-list-actions button { background:none; border:none; padding:4px; color:var(--muted-2);
+                                 cursor:pointer; font-size:13px; border-radius:6px; }
+    .notif-list-actions button:hover { color:var(--text); background:rgba(148,163,184,.1); }
+
+    .empty-notif { text-align:center; color:var(--muted-2); padding:40px 20px; font-size:13px; }
+    .empty-notif .empty-icon { font-size:32px; opacity:.3; margin-bottom:8px; }
+
+    .live-indicator { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+    .live-dot-sm { width:6px; height:6px; border-radius:50%; background:var(--accent);
+                   box-shadow:0 0 8px rgba(34,197,94,.6); animation:pulse 1.6s infinite; }
+    .live-dot-sm.disconnected { background:var(--muted-2); box-shadow:none; animation:none; }
+
+    .settings-panel { display:none; }
+    .settings-panel.open { display:block; }
+
+    .setting-row { display:flex; align-items:center; justify-content:space-between;
+                   padding:10px 0; border-bottom:1px solid var(--border); }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-label { font-size:13px; }
+    .setting-desc { font-size:11px; color:var(--muted-2); margin-top:2px; }
+
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px;
+           font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border);
+           background:rgba(255,255,255,.05); color:var(--text); transition:all .15s; }
+    .btn:hover { background:rgba(255,255,255,.09); border-color:var(--border-strong); }
+    .btn-primary { background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.35); color:#86EFAC; }
+    .btn-primary:hover { background:rgba(34,197,94,.25); }
+    .btn-danger { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .btn-danger:hover { background:rgba(239,68,68,.2); }
+    .btn-sm { padding:4px 9px; font-size:11px; }
+
+    .toast-container { position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+    .toast { padding:10px 16px; border-radius:10px; font-size:13px; font-weight:500;
+             border:1px solid var(--border); animation:toast-in .25s ease;
+             box-shadow:0 8px 24px rgba(0,0,0,.4); max-width:320px; }
+    .toast.ok { background:rgba(34,197,94,.15); border-color:rgba(34,197,94,.3); color:#86EFAC; }
+    .toast.err { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .toast.info { background:rgba(56,189,248,.12); border-color:rgba(56,189,248,.3); color:#BAE6FD; }
+    @keyframes toast-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+    @media (max-width:1024px){
+      .notif-layout { grid-template-columns:1fr; }
+      .kpi-row { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:640px){
+      .kpi-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="notif-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text">
+          <strong>FreeAI</strong>
+          <span>Notifications</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> Configs</a>
+        <a href="/notifications" class="nav-item active"><span class="nav-dot"></span> Notifications</a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
+        <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> Live Logs</a>
+        <a href="/todos" class="nav-item"><span class="nav-dot"></span> Todos</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+        <span id="ws-indicator" class="ws-status disconnected" style="margin-left:auto;font-size:11px">WS:off</span>
+      </div>
+    </nav>
+
+    <div class="notif-main">
+      <header class="notif-topbar">
+        <div>
+          <h1>Notifications</h1>
+          <p>System events, automation results, and gateway status</p>
+        </div>
+        <div class="notif-topbar-actions">
+          <div class="live-indicator">
+            <span class="live-dot-sm" id="live-dot"></span>
+            <span id="live-text">Connected</span>
+          </div>
+          <button class="btn" onclick="toggleSettings()" title="Notification settings">⚙ Settings</button>
+          <button class="btn" onclick="markAllRead()" title="Mark all notifications as read">✓ Mark all read</button>
+          <button class="btn btn-danger" onclick="deleteSelected()" id="delete-selected-btn" style="display:none">
+            ⊘ Delete selected (<span id="selected-count">0</span>)
+          </button>
+          <button class="btn" onclick="loadNotifications()" title="Refresh">↻ Refresh</button>
+        </div>
+      </header>
+
+      <!-- KPI cards -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">Total</div>
+          <div class="kpi-value" id="kpi-total">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Unread</div>
+          <div class="kpi-value" id="kpi-unread" style="color:var(--accent-2)">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Errors</div>
+          <div class="kpi-value error" id="kpi-errors">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Warnings</div>
+          <div class="kpi-value warning" id="kpi-warnings">—</div>
+        </div>
+      </div>
+
+      <!-- Notifications list -->
+      <div class="q-card">
+        <div class="q-card-header">
+          <h2>
+            <span style="color:var(--accent-2)">◈</span>
+            Notification Log
+          </h2>
+          <span id="filter-count" class="muted" style="font-size:12px"></span>
+        </div>
+
+        <div class="filter-row">
+          <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</button>
+          <button class="filter-chip" data-filter="error" onclick="setFilter('error')">Error</button>
+          <button class="filter-chip" data-filter="warning" onclick="setFilter('warning')">Warning</button>
+          <button class="filter-chip" data-filter="info" onclick="setFilter('info')">Info</button>
+          <button class="filter-chip" data-filter="success" onclick="setFilter('success')">Success</button>
+          <input type="text" class="search-input" id="search-input" placeholder="Search…" oninput="applyFilters()" />
+        </div>
+
+        <div class="q-card-body" id="notif-list-body">
+          <div class="empty-notif"><div class="empty-icon">◈</div><p>Loading notifications…</p></div>
+        </div>
+      </div>
+
+      <!-- Settings panel -->
+      <div class="q-card settings-panel" id="settings-panel">
+        <div class="q-card-header">
+          <h2><span style="color:var(--accent-2)">⚙</span> Notification Settings</h2>
+          <button class="btn btn-sm" onclick="toggleSettings()">✕ Close</button>
+        </div>
+        <div style="padding:14px 16px" id="settings-body">
+          <div style="text-align:center;color:var(--muted-2);padding:20px;font-size:13px">Loading settings…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden toast container (reused from notifications.css) -->
+  <div id="notif-toasts"></div>
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/static/notifications.js"></script>
+  <script>
+    /* ── State ─────────────────────────────────────────────────── */
+    let allNotifications = [];
+    let currentFilter = 'all';
+    let selectedIds = new Set();
+    let notifSettings = { enabled_types: ['error','warning','info','success'], sound: true };
+    let ws = null;
+    let wsReconnectDelay = 1000;
+
+    const ICONS = { error: '✕', warning: '⚠', info: 'ℹ', success: '✓' };
+    const LABELS = { error: 'Error', warning: 'Warning', info: 'Info', success: 'Success' };
+
+    /* ── Helpers ───────────────────────────────────────────────── */
+    function esc(t) {
+      return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function timeAgo(ts) {
+      if (!ts) return '';
+      const d = new Date(ts * 1000);
+      const now = Date.now() / 1000;
+      const diff = now - ts;
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    }
+
+    function toast(msg, type = 'info') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast ' + type;
+      t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 250); }, 3000);
+    }
+
+    /* ── WebSocket ─────────────────────────────────────────────── */
+    function connectWS() {
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${proto}//${location.host}:8765`);
+      const indicator = document.getElementById('ws-indicator');
+      const liveDot = document.getElementById('live-dot');
+      const liveText = document.getElementById('live-text');
+
+      ws.onopen = () => {
+        indicator.textContent = 'WS:on';
+        indicator.className = 'ws-status connected';
+        liveDot.className = 'live-dot-sm';
+        liveText.textContent = 'Connected';
+        wsReconnectDelay = 1000;
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const n = JSON.parse(event.data);
+          allNotifications.unshift(n);
+          if (allNotifications.length > 50) allNotifications = allNotifications.slice(0, 50);
+          renderNotifications();
+          updateKPIs();
+        } catch (_) {}
+      };
+
+      ws.onclose = () => {
+        indicator.textContent = 'WS:off';
+        indicator.className = 'ws-status disconnected';
+        liveDot.className = 'live-dot-sm disconnected';
+        liveText.textContent = 'Disconnected';
+        setTimeout(connectWS, wsReconnectDelay);
+        wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    /* ── API calls ─────────────────────────────────────────────── */
+    async function loadNotifications() {
+      try {
+        const r = await fetch('/api/notifications');
+        const data = await r.json();
+        notifSettings = data.settings || notifSettings;
+        allNotifications = data.log || [];
+        renderNotifications();
+        updateKPIs();
+      } catch(e) {
+        toast('Failed to load notifications: ' + e.message, 'err');
+      }
+    }
+
+    async function loadSettings() {
+      try {
+        const r = await fetch('/api/notifications/settings');
+        notifSettings = await r.json();
+      } catch(_) {}
+    }
+
+    async function saveSettings() {
+      try {
+        await fetch('/api/notifications/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(notifSettings)
+        });
+        toast('Settings saved', 'ok');
+      } catch(e) {
+        toast('Failed to save settings: ' + e.message, 'err');
+      }
+    }
+
+    async function clearAll() {
+      try {
+        await fetch('/api/notifications/clear', { method: 'POST' });
+        allNotifications = [];
+        selectedIds.clear();
+        renderNotifications();
+        updateKPIs();
+        toast('All notifications cleared', 'ok');
+      } catch(e) {
+        toast('Failed to clear: ' + e.message, 'err');
+      }
+    }
+
+    /* ── Render ────────────────────────────────────────────────── */
+    function updateKPIs() {
+      const total = allNotifications.length;
+      const unread = allNotifications.filter(n => !n.read).length;
+      const errors = allNotifications.filter(n => n.level === 'error').length;
+      const warnings = allNotifications.filter(n => n.level === 'warning').length;
+      document.getElementById('kpi-total').textContent = total;
+      document.getElementById('kpi-unread').textContent = unread;
+      document.getElementById('kpi-errors').textContent = errors;
+      document.getElementById('kpi-warnings').textContent = warnings;
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        const active = chip.dataset.filter === type;
+        chip.classList.toggle('active', active);
+        if (active && type !== 'all') {
+          chip.classList.add('active-' + type);
+        } else {
+          chip.classList.remove('active-' + type);
+        }
+      });
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const search = (document.getElementById('search-input').value || '').toLowerCase();
+      let filtered = allNotifications;
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(n => n.level === currentFilter);
+      }
+      if (search) {
+        filtered = filtered.filter(n =>
+          (n.title || '').toLowerCase().includes(search) ||
+          (n.message || '').toLowerCase().includes(search) ||
+          (n.source || '').toLowerCase().includes(search)
+        );
+      }
+      renderList(filtered);
+      document.getElementById('filter-count').textContent =
+        filtered.length !== allNotifications.length ? `${filtered.length} of ${allNotifications.length}` : '';
+    }
+
+    function renderList(list) {
+      const body = document.getElementById('notif-list-body');
+      if (!list.length) {
+        body.innerHTML = '<div class="empty-notif"><div class="empty-icon">◈</div><p>No notifications found.</p></div>';
+        return;
+      }
+      body.innerHTML = list.map(n => {
+        const icon = ICONS[n.level] || '●';
+        const time = timeAgo(n.ts);
+        const src = n.source ? esc(n.source) : '';
+        const isSelected = selectedIds.has(n.id);
+        return `
+          <div class="notif-list-item level-${esc(n.level)}${n.read ? '' : ' unread'}${isSelected ? ' selected' : ''}" data-id="${esc(n.id)}">
+            <input type="checkbox" class="notif-list-check" ${isSelected ? 'checked' : ''}
+                   onchange="toggleSelect('${esc(n.id)}', this.checked)" />
+            <div class="notif-list-icon ${esc(n.level)}">${icon}</div>
+            <div class="notif-list-body">
+              <div class="notif-list-title">${esc(n.title)}</div>
+              <div class="notif-list-msg">${esc(n.message)}</div>
+              <div class="notif-list-meta">
+                <span>${time}</span>
+                ${src ? `<span>· ${src}</span>` : ''}
+                ${!n.read ? '<span class="badge" style="background:rgba(56,189,248,.15);color:#7DD3FC;border-color:rgba(56,189,248,.3);font-size:10px;padding:1px 6px;border-radius:999px">unread</span>' : ''}
+              </div>
+            </div>
+            <div class="notif-list-actions">
+              ${!n.read ? `<button title="Mark as read" onclick="markRead('${esc(n.id)}')">✓</button>` : ''}
+              <button title="Delete" onclick="deleteOne('${esc(n.id)}')">✕</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderNotifications() {
+      applyFilters();
+    }
+
+    /* ── Actions ───────────────────────────────────────────────── */
+    function toggleSelect(id, checked) {
+      if (checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+      updateSelectedUI();
+      const el = document.querySelector(`.notif-list-item[data-id="${CSS.escape(id)}"]`);
+      if (el) el.classList.toggle('selected', checked);
+    }
+
+    function updateSelectedUI() {
+      const btn = document.getElementById('delete-selected-btn');
+      const count = document.getElementById('selected-count');
+      if (selectedIds.size > 0) {
+        btn.style.display = 'inline-flex';
+        count.textContent = selectedIds.size;
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    async function markRead(id) {
+      try {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ action: 'mark_read', id }));
+        }
+      } catch(_) {}
+      const n = allNotifications.find(x => x.id === id);
+      if (n) n.read = true;
+      renderNotifications();
+      updateKPIs();
+    }
+
+    async function markAllRead() {
+      try {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ action: 'mark_all_read' }));
+        }
+      } catch(_) {}
+      allNotifications.forEach(n => n.read = true);
+      renderNotifications();
+      updateKPIs();
+      toast('All marked as read', 'ok');
+    }
+
+    async function deleteOne(id) {
+      allNotifications = allNotifications.filter(n => n.id !== id);
+      selectedIds.delete(id);
+      updateSelectedUI();
+      renderNotifications();
+      updateKPIs();
+    }
+
+    async function deleteSelected() {
+      if (!selectedIds.size) return;
+      allNotifications = allNotifications.filter(n => !selectedIds.has(n.id));
+      selectedIds.clear();
+      updateSelectedUI();
+      renderNotifications();
+      updateKPIs();
+      toast(`Deleted ${selectedIds.size} notification(s)`, 'ok');
+    }
+
+    /* ── Settings panel ────────────────────────────────────────── */
+    function toggleSettings() {
+      const panel = document.getElementById('settings-panel');
+      const isOpen = panel.classList.toggle('open');
+      if (isOpen) renderSettings();
+    }
+
+    function renderSettings() {
+      const body = document.getElementById('settings-body');
+      const types = ['error','warning','info','success'];
+      body.innerHTML = `
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Sound effects</div>
+            <div class="setting-desc">Play audio on error and warning notifications</div>
+          </div>
+          <div class="toggle ${notifSettings.sound ? 'on' : ''}" data-key="sound" onclick="toggleSetting(this,'sound')"></div>
+        </div>
+        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <div class="setting-label">Notification types</div>
+          <div class="type-chips">
+            ${types.map(t => `<span class="type-chip ${((notifSettings.enabled_types||[]).includes(t))?'active-'+t:''}" data-type="${t}" onclick="toggleTypeChip(this,'${t}')">${LABELS[t]}</span>`).join('')}
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Auto-clear old notifications</div>
+            <div class="setting-desc">Remove notifications older than 24 hours</div>
+          </div>
+          <button class="btn btn-sm" onclick="clearAll()">Clear all</button>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+          <button class="btn" onclick="toggleSettings()">Close</button>
+          <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+      `;
+    }
+
+    function toggleSetting(el, key) {
+      el.classList.toggle('on');
+      notifSettings[key] = el.classList.contains('on');
+    }
+
+    function toggleTypeChip(el, type) {
+      const arr = notifSettings.enabled_types || [];
+      if (arr.includes(type)) {
+        el.classList.remove('active-' + type);
+        notifSettings.enabled_types = arr.filter(x => x !== type);
+      } else {
+        el.classList.add('active-' + type);
+        notifSettings.enabled_types = [...arr, type];
+      }
+    }
+
+    /* ── Init ──────────────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadNotifications();
+      loadSettings();
+      try { connectWS(); } catch(e) { console.warn('WS unavailable', e); }
+
+      // Periodic refresh as fallback
+      setInterval(() => {
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          loadNotifications();
+        }
+      }, 30000);
+    });
+  </script>
+</body>
+</html>

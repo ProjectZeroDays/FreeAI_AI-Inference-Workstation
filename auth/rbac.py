@@ -115,6 +115,8 @@ _PERMISSION_MAP: list[dict] = [
     {"pattern": "/api/providers/test", "methods": ["GET", "POST"], "role": "viewer"},
     {"pattern": "/api/shodan/search", "methods": ["GET", "POST"], "role": "viewer"},
     {"pattern": "/api/shodan/host/", "methods": ["GET"], "role": "viewer"},
+    {"pattern": "/api/shodan/health", "methods": ["GET"], "role": "viewer"},
+    {"pattern": "/api/shodan/key", "methods": ["GET", "PUT"], "role": "viewer"},
     # ── Developer+ (admin + developer) ──────────────────────────
     {"pattern": "/api/browser/settings", "methods": ["POST"], "role": "developer"},
     {"pattern": "/api/browser/reset", "methods": ["POST"], "role": "developer"},

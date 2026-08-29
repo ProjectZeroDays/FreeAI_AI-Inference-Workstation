@@ -1,17 +1,15 @@
 """External provider bridge tests (no network)."""
 import json
 import os
-import sys
 
 import pytest
 
 requests = pytest.importorskip("requests")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "router"))
 
 from providers import (load_providers, is_keyed, build_request,  # noqa: E402
-                       parse_response, fallback_models, PRESETS)
+                        parse_response, fallback_models, PRESETS)
 
 
 @pytest.fixture()

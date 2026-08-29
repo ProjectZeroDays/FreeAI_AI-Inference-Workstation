@@ -1969,9 +1969,12 @@ def api_sandbox_run():
     if not code:
         return jsonify({"error": "code required"}), 400
     # Block obviously dangerous patterns
-    _SANDBOX_DANGEROUS = ("__import__", "eval(", "exec(", "open(", "input(",
-                          "subprocess", "importlib", "compile(", "os.system",
-                          "os.popen", "os.spawn", "os.fork", "os.exec")
+    _SANDBOX_DANGEROUS = (
+        "__import__", "eval(", "exec(", "open(", "input(",
+        "subprocess", "importlib", "compile(", "os.system",
+        "os.popen", "os.spawn", "os.fork", "os.exec",
+        "socket", "import socket",
+    )
     if any(d in code for d in _SANDBOX_DANGEROUS):
         return jsonify({"error": "Forbidden pattern in sandbox code"}), 400
     try:
@@ -1990,7 +1993,6 @@ def api_sandbox_run():
                     "repr", "hash", "id", "callable", "hasattr", "getattr",
                     "setattr", "delattr", "dir", "vars", "pow", "divmod",
                     "oct", "hex", "bin", "chr", "ord", "format",
-                    "__import__",
                 ) if k in __builtins__}
                 # Use subprocess to avoid exec() code-injection flag
                 with tempfile.NamedTemporaryFile(suffix='.py', delete=False, mode='w', encoding='utf-8') as tmp:
@@ -3602,10 +3604,11 @@ def _resolve_path(user_path):
     if not root.is_absolute():
         root = Path(root.resolve())
     user = str(root / user_path) if user_path else str(root)
-    root_str = str(root).rstrip(os.sep)
-    if user != root_str and not user.startswith(root_str + os.sep):
+    real_root = os.path.realpath(str(root))
+    real_path = os.path.realpath(user)
+    if real_path != real_root and not real_path.startswith(real_root + os.sep):
         return None
-    return Path(user)
+    return Path(real_path)
 
 
 def _is_allowed(name):
@@ -4817,6 +4820,8 @@ def auth_login():
     user_info, error = users_store.authenticate(username, password)
     if error:
         record_login_attempt(client_ip, False)
+        if error == "first_login_required":
+            return jsonify({"error": "first_login_required", "message": "Please change your default password"}), 403
         return jsonify({"error": "invalid credentials"}), 401
 
     record_login_attempt(client_ip, True)
@@ -6324,6 +6329,10 @@ def page_ai_red_teaming():
 @app.route("/vuln-scanner")
 def vuln_scanner_page():
     return render_template("vuln-scanner.html")
+
+@app.route("/shodan")
+def shodan_page():
+    return render_template("shodan.html")
 
 @app.route("/identity-mgmt")
 def identity_mgmt_page():
@@ -8181,6 +8190,11 @@ def campaign_manager_page():
 def campaign_settings_page():
     locale = get_locale_from_session(session)
     return render_template("campaign-settings.html", i18n_locale=locale)
+
+@app.route("/godmode")
+def godmode_page():
+    locale = get_locale_from_session(session)
+    return render_template("godmode.html", i18n_locale=locale)
 
 @app.route("/jobs")
 def jobs_page():

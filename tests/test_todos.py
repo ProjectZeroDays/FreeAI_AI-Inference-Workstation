@@ -40,8 +40,8 @@ def _todo_dict(t):
         "description": t.get("description"),
         "completed": t["completed"],
         "priority": t["priority"],
-        "created_at": t.get("created_at", datetime.utcnow().isoformat()),
-        "updated_at": t.get("updated_at", datetime.utcnow().isoformat()),
+        "created_at": t.get("created_at", datetime.now().isoformat()),
+        "updated_at": t.get("updated_at", datetime.now().isoformat()),
         "user_id": t["user_id"],
     }
 
@@ -112,8 +112,8 @@ def _patch_views(app):
             "priority": int(data.get("priority", 0)),
             "completed": False,
             "user_id": user.id,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
         }
         _next_id[0] += 1
         return jsonify({"status": "success", "data": _todo_dict(_todos[todo_id])}), 201
@@ -137,7 +137,7 @@ def _patch_views(app):
                 todo["priority"] = int(data["priority"])
             except (ValueError, TypeError):
                 return jsonify({"status": "error", "message": "invalid priority value"}), 400
-        todo["updated_at"] = datetime.utcnow().isoformat()
+        todo["updated_at"] = datetime.now().isoformat()
         return jsonify({"status": "success", "data": _todo_dict(todo)})
 
     def delete_todo(todo_id, user):
@@ -152,7 +152,7 @@ def _patch_views(app):
         if not todo or todo["user_id"] != user.id:
             return jsonify({"status": "error", "message": "todo not found"}), 404
         todo["completed"] = not todo["completed"]
-        todo["updated_at"] = datetime.utcnow().isoformat()
+        todo["updated_at"] = datetime.now().isoformat()
         return jsonify({"status": "success", "data": _todo_dict(todo)})
 
     app.view_functions["todos.list_todos"] = require_auth(list_todos)

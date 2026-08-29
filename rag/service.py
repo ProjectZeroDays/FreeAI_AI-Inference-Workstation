@@ -335,7 +335,7 @@ if HAS_FASTAPI:
     app = FastAPI(title="RAG Service", version="1.0")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["http://localhost:8030", "http://127.0.0.1:8030"],
         allow_methods=["*"],
         allow_headers=["*"],
     )

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Godmode Control</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .godmode-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .godmode-main { padding:22px 24px 32px; min-width:0; overflow-y:auto; }
+    .godmode-topbar { display:flex; align-items:center; justify-content:space-between;
+                      padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                      margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .godmode-topbar h1 { margin:0; font-size:22px; }
+    .godmode-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+
+    /* Status card */
+    .status-card { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                   border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:18px;
+                   display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .status-indicator { width:64px; height:64px; border-radius:16px; display:grid; place-items:center;
+                        font-size:28px; flex-shrink:0; transition:all .3s; }
+    .status-indicator.on { background:rgba(34,197,94,.15); border:2px solid rgba(34,197,94,.4);
+                           box-shadow:0 0 20px rgba(34,197,94,.2); }
+    .status-indicator.off { background:rgba(148,163,184,.08); border:2px solid var(--border); }
+    .status-text { font-size:20px; font-weight:700; margin-bottom:2px; }
+    .status-text.on { color:#4ADE80; }
+    .status-text.off { color:var(--muted); }
+    .status-meta { font-size:11px; color:var(--muted-2); }
+    .status-actions { display:flex; gap:8px; margin-left:auto; flex-wrap:wrap; }
+
+    /* Panels */
+    .panel { background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+             border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:18px; }
+    .panel h3 { margin:0 0 14px; font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; }
+    .panel h3 .panel-icon { width:28px; height:28px; border-radius:7px; display:grid; place-items:center;
+                            font-size:13px; background:rgba(92,139,255,.12); }
+
+    /* Rows */
+    .row { display:flex; align-items:flex-start; justify-content:space-between;
+           padding:11px 0; border-bottom:1px solid rgba(255,255,255,.04); gap:16px; }
+    .row:last-child { border-bottom:none; }
+    .row-info { flex:1; }
+    .row-label { font-size:13px; font-weight:600; }
+    .row-desc  { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .row-control { flex-shrink:0; display:flex; align-items:center; gap:8px; }
+    .row-control input, .row-control select { background:var(--bg-soft); color:var(--text);
+                                              border:1px solid var(--border); border-radius:8px;
+                                              padding:6px 10px; font-size:12px; }
+    .row-control input[type="number"] { width:80px; }
+
+    /* Toggle */
+    .toggle { position:relative; width:40px; height:22px; cursor:pointer; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:rgba(148,163,184,.15); border-radius:999px; transition:.2s; }
+    .toggle-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px;
+                             background:var(--muted); border-radius:50%; transition:.2s; }
+    .toggle input:checked + .toggle-slider { background:rgba(34,197,94,.3); }
+    .toggle input:checked + .toggle-slider::before { transform:translateX(18px); background:#4ADE80; }
+
+    /* Buttons */
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:10px;
+           font-size:13px; cursor:pointer; border:1px solid var(--border);
+           background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text); transition:all .15s; }
+    .btn:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .btn-primary { background:rgba(92,139,255,.15); border-color:rgba(92,139,255,.3); color:#93C5FD; }
+    .btn-danger  { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.3); color:#FCA5A5; }
+    .btn-success { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.3); color:#86EFAC; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+
+    /* Badges */
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+             font-size:11px; font-weight:600; }
+    .badge-green  { background:rgba(34,197,94,.12); color:#BBF7D0; border:1px solid rgba(34,197,94,.3); }
+    .badge-red    { background:rgba(239,68,68,.12); color:#FCA5A5; border:1px solid rgba(239,68,68,.3); }
+    .badge-gray   { background:rgba(148,163,184,.08); color:var(--muted-2); border:1px solid var(--border); }
+    .badge-blue   { background:rgba(56,189,248,.12); color:#BAE6FD; border:1px solid rgba(56,189,248,.3); }
+    .badge-yellow { background:rgba(245,158,11,.12); color:#FDE68A; border:1px solid rgba(245,158,11,.3); }
+
+    /* Chips / tags */
+    .chip-list { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+    .chip { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px;
+            font-size:11px; font-weight:600; background:rgba(92,139,255,.1); color:#93C5FD;
+            border:1px solid rgba(92,139,255,.2); }
+    .chip .chip-remove { cursor:pointer; opacity:0.6; font-size:13px; line-height:1; }
+    .chip .chip-remove:hover { opacity:1; }
+
+    /* Log */
+    .log-list { max-height:320px; overflow-y:auto; font-family:'Fira Code',monospace; font-size:12px; }
+    .log-entry { display:flex; gap:10px; padding:7px 10px; border-radius:8px; margin-bottom:4px;
+                 background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.04); }
+    .log-entry:hover { background:rgba(255,255,255,.04); }
+    .log-ts { color:var(--muted-2); flex-shrink:0; }
+    .log-action { font-weight:600; flex-shrink:0; min-width:90px; }
+    .log-detail { color:var(--muted); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .log-action.enable { color:#4ADE80; }
+    .log-action.disable { color:#F87171; }
+    .log-action.campaign { color:#60A5FA; }
+    .log-action.toggle { color:#FBBF24; }
+
+    /* Toast */
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--panel);
+             border:1px solid var(--border); border-radius:12px; padding:12px 18px;
+             font-size:13px; color:var(--text); box-shadow:var(--shadow);
+             transform:translateY(80px); opacity:0; transition:all .25s ease; z-index:999; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { border-color:rgba(34,197,94,.4); }
+    .toast.error   { border-color:rgba(239,68,68,.4); }
+
+    /* Pulse dot */
+    .live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent);
+                box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    /* Fallback chain */
+    .chain-list { display:flex; flex-direction:column; gap:4px; }
+    .chain-item { display:flex; align-items:center; gap:8px; padding:6px 10px;
+                  background:rgba(255,255,255,.02); border:1px solid var(--border);
+                  border-radius:8px; font-size:12px; font-family:monospace; }
+    .chain-num { width:20px; height:20px; border-radius:50%; display:grid; place-items:center;
+                 font-size:10px; font-weight:700; background:rgba(92,139,255,.15); color:#93C5FD; flex-shrink:0; }
+
+    /* Warning banner */
+    .warning-banner { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25);
+                      border-radius:12px; padding:12px 16px; margin-bottom:18px;
+                      display:flex; align-items:flex-start; gap:10px; font-size:13px; }
+    .warning-banner .warn-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+    .warning-banner .warn-text { color:#FCA5A5; flex:1; }
+    .warning-banner .warn-sub  { color:rgba(251,113,133,.7); font-size:11px; margin-top:4px; }
+  </style>
+</head>
+<body>
+  <div class="godmode-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Godmode Control</span></div>
+      </div>
+      <div class="scrollable-nav">
+        <div class="nav-section">
+          <span class="nav-label">Stack</span>
+          <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+          <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+          <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+          <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Control</span>
+          <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+          <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+          <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+          <a href="/campaign-settings" class="nav-item"><span class="nav-dot"></span> Campaign Settings</a>
+          <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+          <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+          <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
+          <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Red Teaming</span>
+          <a href="/godmode" class="nav-item active"><span class="nav-dot"></span> Godmode</a>
+          <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> Zero-Day</a>
+          <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> Malware Analysis</a>
+          <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> Social Engineering</a>
+          <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> Network Exploit</a>
+          <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> Cloud Exploit</a>
+          <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> AI Red Teaming</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Tools</span>
+          <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+          <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+          <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+          <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+        </div>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="godmode-main">
+      <header class="godmode-topbar">
+        <div>
+          <h1>Godmode Control</h1>
+          <p>Uncensored, full-spectrum agent mode — override safety filters for authorized operations</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="header-status" class="badge badge-gray">Loading…</span>
+          <button class="btn btn-sm" onclick="loadState()">↻ Refresh</button>
+        </div>
+      </header>
+
+      <!-- Warning banner (shown when godmode is ON) -->
+      <div class="warning-banner" id="warning-banner" style="display:none">
+        <span class="warn-icon">⚠️</span>
+        <div>
+          <div class="warn-text"><strong>GODMODE IS ACTIVE</strong> — Safety filters are disabled. All operations are unrestricted.</div>
+          <div class="warn-sub">Only use this mode for authorized red-team and security research operations.</div>
+        </div>
+      </div>
+
+      <!-- Status Card -->
+      <div class="status-card">
+        <div class="status-indicator off" id="status-icon">🔒</div>
+        <div>
+          <div class="status-text off" id="status-label">OFF</div>
+          <div class="status-meta" id="status-meta">Godmode is currently disabled</div>
+        </div>
+        <div class="status-actions">
+          <button class="btn btn-success" id="btn-enable" onclick="enableGodmode()">▶ Enable Godmode</button>
+          <button class="btn btn-danger" id="btn-disable" onclick="disableGodmode()" disabled>⏹ Disable Godmode</button>
+        </div>
+      </div>
+
+      <!-- Override Controls -->
+      <div class="panel">
+        <h3><span class="panel-icon">⚡</span> Override State</h3>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Permissions Override</div>
+            <div class="row-desc">Bypass RBAC permission checks for all active agents</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="override-permissions" onchange="updateOverrides()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Safety Filter Bypass</div>
+            <div class="row-desc">Disable content filtering on model responses</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="override-safety" checked onchange="updateOverrides()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Agent-Specific Overrides</div>
+            <div class="row-desc">Add agents that inherit godmode when running</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap">
+          <div class="chip-list" id="agent-chips"></div>
+          <input type="text" id="new-agent-input" placeholder="Agent name…" style="width:140px"
+                 onkeydown="if(event.key==='Enter')addAgent()">
+          <button class="btn btn-sm" onclick="addAgent()">+ Add</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <div class="row-info">
+            <div class="row-label">Model-Specific Overrides</div>
+            <div class="row-desc">Add models that use uncensored responses</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px;flex-wrap:wrap">
+          <div class="chip-list" id="model-chips"></div>
+          <input type="text" id="new-model-input" placeholder="Model name…" style="width:160px"
+                 onkeydown="if(event.key==='Enter')addModel()">
+          <button class="btn btn-sm" onclick="addModel()">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Campaign Mode -->
+      <div class="panel">
+        <h3><span class="panel-icon">🎯</span> Campaign Mode</h3>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Campaign Mode</div>
+            <div class="row-desc">Enable coordinated multi-agent campaign operations</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="campaign-toggle" onchange="toggleCampaign()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Campaign Name</div>
+            <div class="row-desc">Identifier for the current campaign</div>
+          </div>
+          <div class="row-control">
+            <input type="text" id="campaign-name" placeholder="e.g. op-phoenix"
+                   style="width:180px" onchange="saveCampaign()">
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Auto-Enable on Campaign Start</div>
+            <div class="row-desc">Automatically enable godmode when a campaign is launched</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="campaign-auto-enable" onchange="updateOverrides()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Safety Boundaries -->
+      <div class="panel">
+        <h3><span class="panel-icon">🛡️</span> Safety Boundaries</h3>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Hard Kill Switch</div>
+            <div class="row-desc">Immediately terminate all godmode operations if resource limits are exceeded</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="kill-switch" checked onchange="updateOverrides()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Max Duration (minutes)</div>
+            <div class="row-desc">Hard limit on continuous godmode session duration</div>
+          </div>
+          <div class="row-control">
+            <input type="number" id="max-duration" value="480" min="30" max="1440" step="30"
+                   style="width:80px" onchange="updateOverrides()">
+            <span style="font-size:12px;color:var(--muted)">min</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Audit Logging</div>
+            <div class="row-desc">Log all godmode actions to the activity log for compliance review</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="audit-log" checked onchange="updateOverrides()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Require Confirmation</div>
+            <div class="row-desc">Show confirmation dialog before enabling godmode</div>
+          </div>
+          <div class="row-control">
+            <label class="toggle">
+              <input type="checkbox" id="require-confirm" checked onchange="updateOverrides()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fallback Chain -->
+      <div class="panel">
+        <h3><span class="panel-icon">🔗</span> Fallback Chain</h3>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Model Fallback Sequence</div>
+            <div class="row-desc">Ordered list of models to route through when godmode is active</div>
+          </div>
+          <div class="row-control">
+            <button class="btn btn-sm" onclick="loadFallbackChain()">↻ Reload</button>
+          </div>
+        </div>
+        <div class="chain-list" id="fallback-chain" style="margin-top:10px">
+          <div class="chain-item"><span class="chain-num">—</span><span style="color:var(--muted)">Loading…</span></div>
+        </div>
+      </div>
+
+      <!-- Skill Management -->
+      <div class="panel">
+        <h3><span class="panel-icon">📦</span> Skill Management</h3>
+        <div class="row">
+          <div class="row-info">
+            <div class="row-label">Copy Skill to Workstation</div>
+            <div class="row-desc">Deploy the godmode skill definition to the active skills directory</div>
+          </div>
+          <div class="row-control">
+            <button class="btn btn-sm" onclick="copySkill()">⬆ Deploy Skill</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="panel">
+        <h3><span class="panel-icon">📋</span> Activity Log</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:12px;color:var(--muted)" id="log-count">0 entries</span>
+          <button class="btn btn-sm" onclick="loadLog()">↻ Refresh</button>
+        </div>
+        <div class="log-list" id="log-list">
+          <div style="color:var(--muted-2);font-size:12px;padding:12px">Loading activity log…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── XSS escape ──────────────────────────────────────────────────
+    function esc(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── Toast ───────────────────────────────────────────────────────
+    function toast(msg, type='success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── State ───────────────────────────────────────────────────────
+    let godmodeState = null;
+
+    async function loadState() {
+      try {
+        const r = await fetch('/api/godmode');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+      } catch(e) {
+        toast('Failed to load godmode state: ' + esc(e.message), 'error');
+      }
+    }
+
+    function renderState(s) {
+      const enabled = s.enabled;
+
+      // Status indicator
+      const icon = document.getElementById('status-icon');
+      const label = document.getElementById('status-label');
+      const meta = document.getElementById('status-meta');
+      icon.className = 'status-indicator ' + (enabled ? 'on' : 'off');
+      icon.textContent = enabled ? '🔓' : '🔒';
+      label.className = 'status-text ' + (enabled ? 'on' : 'off');
+      label.textContent = enabled ? 'ON' : 'OFF';
+      meta.textContent = enabled
+        ? 'Active since ' + formatTime(s.created_at) + ' · Updated ' + formatTime(s.updated_at)
+        : 'Godmode is currently disabled';
+
+      // Header badge
+      const badge = document.getElementById('header-status');
+      badge.className = 'badge ' + (enabled ? 'badge-green' : 'badge-gray');
+      badge.textContent = enabled ? '● GODMODE ON' : '○ GODMODE OFF';
+
+      // Buttons
+      document.getElementById('btn-enable').disabled = enabled;
+      document.getElementById('btn-disable').disabled = !enabled;
+
+      // Warning banner
+      document.getElementById('warning-banner').style.display = enabled ? 'flex' : 'none';
+
+      // Override controls
+      document.getElementById('override-permissions').checked = s.permissions_override !== false;
+      document.getElementById('campaign-auto-enable').checked = false;
+      document.getElementById('kill-switch').checked = true;
+      document.getElementById('audit-log').checked = true;
+      document.getElementById('require-confirm').checked = true;
+
+      // Campaign
+      document.getElementById('campaign-toggle').checked = s.campaign_mode;
+      document.getElementById('campaign-name').value = esc(s.campaign_name || '');
+
+      // Agent chips
+      renderChips('agent-chips', s.enabled_for_agents || [], 'agent');
+
+      // Model chips
+      renderChips('model-chips', s.enabled_for_models || [], 'model');
+    }
+
+    function renderChips(containerId, items, type) {
+      const container = document.getElementById(containerId);
+      if (!items || !items.length) {
+        container.innerHTML = '<span style="font-size:12px;color:var(--muted-2)">None configured</span>';
+        return;
+      }
+      container.innerHTML = items.map(item =>
+        `<span class="chip">${esc(item)}<span class="chip-remove" onclick="remove${type.charAt(0).toUpperCase()+type.slice(1)}('${esc(item)}')">&times;</span></span>`
+      ).join('');
+    }
+
+    // ── Enable / Disable ────────────────────────────────────────────
+    async function enableGodmode() {
+      if (document.getElementById('require-confirm').checked) {
+        if (!confirm('Enable GODMODE? This will disable safety filters for all configured agents and models.')) return;
+      }
+      try {
+        const r = await fetch('/api/godmode/enable', { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        addLogEntry('enable', 'Godmode enabled');
+        toast('Godmode enabled', 'success');
+      } catch(e) {
+        toast('Failed to enable godmode: ' + esc(e.message), 'error');
+      }
+    }
+
+    async function disableGodmode() {
+      if (!confirm('Disable GODMODE? All safety filters will be re-enabled.')) return;
+      try {
+        const r = await fetch('/api/godmode/disable', { method: 'POST' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        addLogEntry('disable', 'Godmode disabled');
+        toast('Godmode disabled', 'success');
+      } catch(e) {
+        toast('Failed to disable godmode: ' + esc(e.message), 'error');
+      }
+    }
+
+    // ── Agent / Model management ────────────────────────────────────
+    async function addAgent() {
+      const input = document.getElementById('new-agent-input');
+      const name = input.value.trim();
+      if (!name) return;
+      try {
+        const r = await fetch('/api/godmode/toggle', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ agent: name, enable: true })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        input.value = '';
+        addLogEntry('toggle', 'Added agent: ' + name);
+        toast('Agent "' + esc(name) + '" added', 'success');
+      } catch(e) {
+        toast('Failed to add agent: ' + esc(e.message), 'error');
+      }
+    }
+
+    async function removeAgent(name) {
+      try {
+        const r = await fetch('/api/godmode/toggle', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ agent: name, enable: false })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        addLogEntry('toggle', 'Removed agent: ' + name);
+      } catch(e) {
+        toast('Failed to remove agent: ' + esc(e.message), 'error');
+      }
+    }
+
+    async function addModel() {
+      const input = document.getElementById('new-model-input');
+      const name = input.value.trim();
+      if (!name) return;
+      try {
+        const r = await fetch('/api/godmode/toggle', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ model: name, enable: true })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        input.value = '';
+        addLogEntry('toggle', 'Added model: ' + name);
+        toast('Model "' + esc(name) + '" added', 'success');
+      } catch(e) {
+        toast('Failed to add model: ' + esc(e.message), 'error');
+      }
+    }
+
+    async function removeModel(name) {
+      try {
+        const r = await fetch('/api/godmode/toggle', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ model: name, enable: false })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        addLogEntry('toggle', 'Removed model: ' + name);
+      } catch(e) {
+        toast('Failed to remove model: ' + esc(e.message), 'error');
+      }
+    }
+
+    // ── Campaign ────────────────────────────────────────────────────
+    async function toggleCampaign() {
+      const enabled = document.getElementById('campaign-toggle').checked;
+      const name = document.getElementById('campaign-name').value.trim();
+      try {
+        const r = await fetch('/api/godmode/campaign', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ name: name, enable: enabled })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+        addLogEntry('campaign', (enabled ? 'Started' : 'Stopped') + ' campaign: ' + (name || '(none)'));
+        toast('Campaign ' + (enabled ? 'enabled' : 'disabled'), 'success');
+      } catch(e) {
+        toast('Campaign error: ' + esc(e.message), 'error');
+      }
+    }
+
+    async function saveCampaign() {
+      if (!godmodeState) return;
+      const enabled = document.getElementById('campaign-toggle').checked;
+      const name = document.getElementById('campaign-name').value.trim();
+      try {
+        const r = await fetch('/api/godmode/campaign', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ name: name, enable: enabled })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        godmodeState = await r.json();
+        renderState(godmodeState);
+      } catch(e) {
+        toast('Failed to save campaign: ' + esc(e.message), 'error');
+      }
+    }
+
+    // ── Overrides ───────────────────────────────────────────────────
+    async function updateOverrides() {
+      if (!godmodeState) return;
+      const payload = {
+        permissions_override: document.getElementById('override-permissions').checked,
+        safety_override: document.getElementById('override-safety').checked,
+        kill_switch: document.getElementById('kill-switch').checked,
+        audit_log: document.getElementById('audit-log').checked,
+        require_confirm: document.getElementById('require-confirm').checked,
+        max_duration: parseInt(document.getElementById('max-duration').value) || 480,
+      };
+      // Note: override changes are local-only until backend supports them as a dedicated endpoint.
+      toast('Override settings updated (local)', 'success');
+    }
+
+    // ── Fallback Chain ──────────────────────────────────────────────
+    async function loadFallbackChain() {
+      try {
+        const r = await fetch('/api/godmode/fallback-chain');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        const chain = data.chain || [];
+        const container = document.getElementById('fallback-chain');
+        if (!chain.length) {
+          container.innerHTML = '<div class="chain-item"><span style="color:var(--muted-2)">No fallback models configured</span></div>';
+          return;
+        }
+        container.innerHTML = chain.map((m, i) =>
+          `<div class="chain-item"><span class="chain-num">${i+1}</span>${esc(m)}</div>`
+        ).join('');
+      } catch(e) {
+        document.getElementById('fallback-chain').innerHTML =
+          '<div class="chain-item" style="color:var(--danger)">' + esc('Failed to load: ' + e.message) + '</div>';
+      }
+    }
+
+    // ── Copy Skill ──────────────────────────────────────────────────
+    async function copySkill() {
+      try {
+        const r = await fetch('/api/godmode/copy-skill', { method: 'POST' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        addLogEntry('toggle', 'Skill ' + (data.status === 'copied' ? 'deployed' : data.reason));
+        toast(data.status === 'copied' ? 'Skill deployed successfully' : 'Skill: ' + esc(data.reason),
+              data.status === 'copied' ? 'success' : 'error');
+      } catch(e) {
+        toast('Skill copy failed: ' + esc(e.message), 'error');
+      }
+    }
+
+    // ── Activity Log ────────────────────────────────────────────────
+    let activityLog = [];
+
+    async function loadLog() {
+      try {
+        const r = await fetch('/api/godmode/log');
+        if (!r.ok) {
+          // Fallback: use in-memory log if endpoint not available
+          renderLog(activityLog);
+          return;
+        }
+        const data = await r.json();
+        activityLog = data.log || data;
+        renderLog(activityLog);
+      } catch(e) {
+        renderLog(activityLog);
+      }
+    }
+
+    function renderLog(log) {
+      const container = document.getElementById('log-list');
+      const countEl = document.getElementById('log-count');
+      if (!log || !log.length) {
+        container.innerHTML = '<div style="color:var(--muted-2);font-size:12px;padding:12px">No activity recorded yet</div>';
+        countEl.textContent = '0 entries';
+        return;
+      }
+      countEl.textContent = log.length + ' entries';
+      container.innerHTML = log.map(entry => {
+        const ts = entry.ts || entry.timestamp || '';
+        const action = entry.action || entry.type || 'action';
+        const detail = entry.detail || entry.message || '';
+        return `<div class="log-entry">
+          <span class="log-ts">${esc(ts)}</span>
+          <span class="log-action ${esc(action)}">${esc(action)}</span>
+          <span class="log-detail" title="${esc(detail)}">${esc(detail)}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function addLogEntry(action, detail) {
+      const entry = {
+        ts: new Date().toISOString(),
+        action: action,
+        detail: detail,
+      };
+      activityLog.unshift(entry);
+      // Keep last 100 entries
+      if (activityLog.length > 100) activityLog = activityLog.slice(0, 100);
+      renderLog(activityLog);
+    }
+
+    // ── Utilities ───────────────────────────────────────────────────
+    function formatTime(ts) {
+      if (!ts) return '—';
+      try {
+        return new Date(ts * 1000).toLocaleString();
+      } catch { return String(ts); }
+    }
+
+    // ── Sidebar toggle ──────────────────────────────────────────────
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    toggleBtn?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      const icon = toggleBtn.querySelector('.toggle-icon');
+      if (icon) icon.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    // ── Init ────────────────────────────────────────────────────────
+    loadState();
+    loadFallbackChain();
+    loadLog();
+  </script>
+</body>
+</html>

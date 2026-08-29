@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Evals &amp; Leaderboard</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .evals-main{padding:22px 22px 28px; min-width:0; overflow-y:auto;}
+    .evals-topbar{display:flex; align-items:center; justify-content:space-between;
+                  padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                  margin-bottom:18px; flex-wrap:wrap; gap:10px;}
+    .evals-topbar h1{margin:0; font-size:22px; letter-spacing:-.02em;}
+    .evals-topbar p{margin:4px 0 0; color:var(--muted); font-size:13px;}
+
+    /* KPI cards */
+    .evals-kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:18px;}
+    .evals-kpi{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+               border:1px solid var(--border); border-radius:14px; padding:14px;
+               box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px);}
+    .evals-kpi .kpi-val{font-size:26px; font-weight:700; color:var(--accent);}
+    .evals-kpi .kpi-val.warn{color:var(--warn);}
+    .evals-kpi .kpi-val.danger{color:var(--danger);}
+    .evals-kpi .kpi-lbl{font-size:11px; color:var(--muted-2); text-transform:uppercase; letter-spacing:.06em; margin-top:2px;}
+
+    /* Filters */
+    .evals-filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center;}
+    .evals-filters select,.evals-filters input{background:rgba(2,6,23,.55); color:var(--text);
+      border:1px solid var(--border); border-radius:10px; padding:7px 10px; font-size:13px; font-family:Inter,sans-serif;}
+    .evals-filters input[type="date"]{min-width:140px;}
+    .evals-filter-label{font-size:12px; color:var(--muted); font-weight:600;}
+
+    /* Table */
+    .evals-table-wrap{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                      border:1px solid var(--border); border-radius:14px; padding:16px;
+                      box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px); margin-bottom:18px;}
+    .evals-table-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+    .evals-table-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-2); display:flex; align-items:center; gap:8px;}
+    .evals-table-title .dot{width:8px; height:8px; border-radius:50%; background:var(--accent);}
+    .evals-table{width:100%; border-collapse:collapse; font-size:13px;}
+    .evals-table th{text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                    border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.04em;}
+    .evals-table td{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle;}
+    .evals-table tr:hover td{background:rgba(255,255,255,.02);}
+    .evals-table .mono{font-family:'Fira Code',monospace; font-size:12px; color:var(--muted);}
+
+    /* Score bar in table */
+    .score-bar-track{height:6px; background:rgba(2,6,23,.6); border-radius:999px; overflow:hidden; width:80px; display:inline-block; vertical-align:middle; margin-right:8px;}
+    .score-bar-fill{height:100%; border-radius:999px; transition:width .4s ease;}
+
+    /* Status badges */
+    .badge{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px;
+           font-size:11px; font-weight:700; letter-spacing:.02em; border:1px solid transparent;}
+    .badge::after{content:""; width:6px; height:6px; border-radius:50%; background:currentColor; opacity:.9;}
+    .badge-passed{background:rgba(34,197,94,.16); color:#BBF7D0; border-color:rgba(34,197,94,.28);}
+    .badge-failed{background:rgba(239,68,68,.16); color:#FECACA; border-color:rgba(239,68,68,.28);}
+    .badge-pending{background:rgba(245,158,11,.16); color:#FDE68A; border-color:rgba(245,158,11,.28);}
+    .badge-running{background:rgba(56,189,248,.16); color:#BAE6FD; border-color:rgba(56,189,248,.28); animation:pulse 1.6s infinite;}
+
+    /* Chart */
+    .evals-chart-wrap{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));
+                      border:1px solid var(--border); border-radius:14px; padding:16px;
+                      box-shadow:0 10px 30px rgba(2,6,23,.45); backdrop-filter:blur(8px); margin-bottom:18px;}
+    .evals-chart-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-2);
+                       display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+    .evals-chart-title .live-dot{width:7px; height:7px; border-radius:50%; background:var(--accent);
+                                  box-shadow:0 0 8px rgba(34,197,94,.7); animation:pulse 1.6s infinite;}
+    .chart-container{position:relative; height:260px;}
+
+    /* Empty state */
+    .empty-state{text-align:center; padding:40px 20px; color:var(--muted-2); font-size:13px;}
+
+    /* Leaderboard ranking */
+    .rank-badge{display:inline-flex; align-items:center; justify-content:center;
+                width:24px; height:24px; border-radius:6px; font-size:12px; font-weight:700;
+                background:rgba(148,163,184,.1); color:var(--muted);}
+    .rank-1{background:rgba(251,191,36,.2); color:#FDE68A; border:1px solid rgba(251,191,36,.4);}
+    .rank-2{background:rgba(148,163,184,.2); color:#CBD5E1; border:1px solid rgba(148,163,184,.35);}
+    .rank-3{background:rgba(180,120,60,.2); color:#D4A574; border:1px solid rgba(180,120,60,.35);}
+
+    /* Tabs */
+    .evals-tabs{display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0;}
+    .evals-tab{padding:8px 16px; border-radius:10px 10px 0 0; border:1px solid transparent; border-bottom:none;
+               background:transparent; color:var(--muted); font-size:13px; font-weight:500; cursor:pointer;
+               transition:all .15s ease; font-family:Inter,sans-serif;}
+    .evals-tab:hover{color:var(--text); background:rgba(148,163,184,.06);}
+    .evals-tab.active{color:var(--accent); border-color:var(--border); background:var(--panel); box-shadow:0 -2px 0 var(--accent) inset;}
+    .evals-tab-content{display:none;}
+    .evals-tab-content.active{display:block;}
+
+    /* Category pills */
+    .cat-pills{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;}
+    .cat-pill{font-size:11px; padding:4px 10px; border-radius:999px;
+              background:rgba(148,163,184,.08); border:1px solid var(--border); color:var(--muted);}
+    .cat-pill strong{color:var(--text); font-weight:600;}
+
+    /* Run detail modal */
+    .modal-overlay{position:fixed; inset:0; z-index:500; display:none; align-items:center; justify-content:center;
+                   background:rgba(0,0,0,.6); backdrop-filter:blur(4px);}
+    .modal-overlay.open{display:flex;}
+    .modal-box{background:var(--panel); border:1px solid var(--border-strong); border-radius:14px;
+               box-shadow:0 20px 60px rgba(0,0,0,.5); width:640px; max-width:92vw; max-height:80vh;
+               overflow-y:auto; animation:cmdIn .15s ease;}
+    .modal-header{display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+                  border-bottom:1px solid var(--border);}
+    .modal-header h2{margin:0; font-size:15px; font-weight:600;}
+    .modal-close{background:transparent; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px 8px;}
+    .modal-close:hover{color:var(--text);}
+    .modal-body{padding:16px 18px;}
+    .modal-body .mono{font-family:'Fira Code',monospace; font-size:12px;}
+
+    @keyframes cmdIn{from{opacity:0;transform:scale(.97) translateY(-8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+    /* Button styles */
+    .btn{background:linear-gradient(180deg,#111D33,#0F172A); color:var(--text); border:1px solid var(--border);
+         border-radius:10px; padding:7px 14px; font-size:13px; font-weight:500; cursor:pointer; transition:all .15s;}
+    .btn:hover{border-color:var(--border-strong); transform:translateY(-1px);}
+    .btn-sm{padding:5px 10px; font-size:12px;}
+    .btn-primary{background:linear-gradient(135deg,#22C55E,#0EA5E9); color:#020617; border:none; font-weight:700;}
+    .btn-primary:hover{opacity:.9; transform:translateY(-1px);}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Evals</span></div>
+      </div>
+      <div class="scrollable-nav">
+        <div class="nav-section">
+          <span class="nav-label">Stack</span>
+          <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+          <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
+          <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
+          <a href="/ai-training" class="nav-item"><span class="nav-dot"></span> AI Training</a>
+          <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+          <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> External Providers</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Control</span>
+          <a href="/permissions" class="nav-item"><span class="nav-dot"></span> Permissions</a>
+          <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+          <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
+          <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+          <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Tools</span>
+          <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+          <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
+          <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP</a>
+          <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Operations</span>
+          <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+          <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+          <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> Model Registry</a>
+          <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> Hot Models</a>
+          <a href="/evals" class="nav-item active"><span class="nav-dot"></span> Evals</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-label">Security</span>
+          <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+          <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> Vuln Scanner</a>
+          <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> Threat Intel</a>
+        </div>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="evals-main">
+      <header class="evals-topbar">
+        <div>
+          <h1>Evals &amp; Leaderboard</h1>
+          <p>Golden-task evaluation harness · <span id="last-run-label" class="mono" style="color:var(--muted-2)">Loading…</span></p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="loadAll()">↻ Refresh</button>
+          <button class="btn btn-sm btn-primary" onclick="triggerRun()">▶ Run Eval</button>
+        </div>
+      </header>
+
+      <!-- KPIs -->
+      <div class="evals-kpis">
+        <div class="evals-kpi">
+          <div class="kpi-val" id="kpi-total-runs">—</div>
+          <div class="kpi-lbl">Total Runs</div>
+        </div>
+        <div class="evals-kpi">
+          <div class="kpi-val" id="kpi-avg-score">—</div>
+          <div class="kpi-lbl">Avg Score</div>
+        </div>
+        <div class="evals-kpi">
+          <div class="kpi-val" id="kpi-best-score">—</div>
+          <div class="kpi-lbl">Best Score</div>
+        </div>
+        <div class="evals-kpi">
+          <div class="kpi-val" id="kpi-models">—</div>
+          <div class="kpi-lbl">Models Evaluated</div>
+        </div>
+        <div class="evals-kpi">
+          <div class="kpi-val" id="kpi-tasks">—</div>
+          <div class="kpi-lbl">Golden Tasks</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="evals-filters">
+        <span class="evals-filter-label">Filter:</span>
+        <select id="filter-model" onchange="applyFilters()">
+          <option value="">All Models</option>
+        </select>
+        <select id="filter-status" onchange="applyFilters()">
+          <option value="">All Statuses</option>
+          <option value="passed">Passed (≥0.7)</option>
+          <option value="failed">Failed (&lt;0.7)</option>
+        </select>
+        <input type="date" id="filter-date-from" onchange="applyFilters()" title="From date" />
+        <input type="date" id="filter-date-to" onchange="applyFilters()" title="To date" />
+        <button class="btn btn-sm" onclick="clearFilters()" style="margin-left:auto">Clear</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="evals-tabs">
+        <button class="evals-tab active" data-tab="leaderboard" onclick="switchTab(this)">Leaderboard</button>
+        <button class="evals-tab" data-tab="runs" onclick="switchTab(this)">Eval Runs</button>
+        <button class="evals-tab" data-tab="tasks" onclick="switchTab(this)">Golden Tasks</button>
+        <button class="evals-tab" data-tab="trends" onclick="switchTab(this)">Trends</button>
+      </div>
+
+      <!-- Leaderboard tab -->
+      <div class="evals-tab-content active" id="tab-leaderboard">
+        <div class="evals-table-wrap">
+          <div class="evals-table-head">
+            <span class="evals-table-title"><span class="dot" style="background:var(--accent)"></span>Model Rankings</span>
+          </div>
+          <table class="evals-table" id="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Model</th>
+                <th>Avg Score</th>
+                <th>Best / Worst</th>
+                <th>Runs</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody">
+              <tr><td colspan="6" class="empty-state">Loading leaderboard…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Runs tab -->
+      <div class="evals-tab-content" id="tab-runs">
+        <div class="evals-table-wrap">
+          <div class="evals-table-head">
+            <span class="evals-table-title"><span class="dot" style="background:var(--accent-2)"></span>Eval Run History</span>
+            <span class="mono muted" id="runs-count" style="font-size:11px"></span>
+          </div>
+          <table class="evals-table" id="runs-table">
+            <thead>
+              <tr>
+                <th>Run ID</th>
+                <th>Date</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Tasks</th>
+                <th>Categories</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="runs-tbody">
+              <tr><td colspan="7" class="empty-state">Loading runs…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tasks tab -->
+      <div class="evals-tab-content" id="tab-tasks">
+        <div class="evals-table-wrap">
+          <div class="evals-table-head">
+            <span class="evals-table-title"><span class="dot" style="background:#A78BFA"></span>Golden Task Catalog</span>
+            <span class="mono muted" id="tasks-count" style="font-size:11px"></span>
+          </div>
+          <div id="tasks-container" style="display:flex; flex-direction:column; gap:8px;">
+            <div class="empty-state">Loading tasks…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trends tab -->
+      <div class="evals-tab-content" id="tab-trends">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;">
+          <div class="evals-chart-wrap">
+            <div class="evals-chart-title"><span class="live-dot"></span>Score Trend Over Time</div>
+            <div class="chart-container"><canvas id="trend-chart"></canvas></div>
+          </div>
+          <div class="evals-chart-wrap">
+            <div class="evals-chart-title"><span class="live-dot" style="background:var(--accent-2)"></span>Category Breakdown</div>
+            <div class="chart-container"><canvas id="category-chart"></canvas></div>
+          </div>
+        </div>
+        <div class="evals-chart-wrap">
+          <div class="evals-chart-title"><span class="live-dot" style="background:#F59E0B"></span>Difficulty Breakdown</div>
+          <div class="chart-container" style="height:200px;"><canvas id="difficulty-chart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Run detail modal -->
+      <div class="modal-overlay" id="run-modal">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h2 id="modal-title">Run Details</h2>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+          </div>
+          <div class="modal-body" id="modal-body">
+            <div class="empty-state">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let allRuns = [];
+    let allTasks = [];
+    let leaderboardData = null;
+    let trendChart = null;
+    let categoryChart = null;
+    let difficultyChart = null;
+
+    // ── Sidebar toggle ─────────────────────────────────────────────
+    const sidebar = document.querySelector('.sidebar');
+    const toggle  = $('sidebar-toggle');
+    toggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    });
+
+    // ── XSS escape ─────────────────────────────────────────────────
+    function esc(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Tab switching ──────────────────────────────────────────────
+    function switchTab(btn) {
+      document.querySelectorAll('.evals-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.evals-tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const tabId = 'tab-' + btn.dataset.tab;
+      $(tabId)?.classList.add('active');
+    }
+
+    // ── Fetch helpers ──────────────────────────────────────────────
+    async function fetchJson(url) {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+      return r.json();
+    }
+
+    // ── Load all data ──────────────────────────────────────────────
+    async function loadAll() {
+      await Promise.all([loadLeaderboard(), loadRuns(), loadTasks()]);
+      applyFilters();
+    }
+
+    async function loadLeaderboard() {
+      try {
+        leaderboardData = await fetchJson('/api/evals/leaderboard');
+        populateKPIs(leaderboardData);
+        renderLeaderboard(leaderboardData);
+        renderCharts(leaderboardData);
+        populateModelFilter(leaderboardData);
+      } catch(e) {
+        console.error('leaderboard fetch failed:', e);
+        $('kpi-total-runs').textContent = '—';
+      }
+    }
+
+    async function loadRuns() {
+      try {
+        const data = await fetchJson('/api/evals/runs');
+        allRuns = data.runs || [];
+        $('runs-count').textContent = allRuns.length + ' runs';
+        renderRuns(allRuns);
+      } catch(e) {
+        console.error('runs fetch failed:', e);
+        $('runs-tbody').innerHTML = '<tr><td colspan="7" class="empty-state" style="color:var(--danger)">Failed to load eval runs</td></tr>';
+      }
+    }
+
+    async function loadTasks() {
+      try {
+        const data = await fetchJson('/api/evals/tasks');
+        allTasks = data.tasks || [];
+        $('tasks-count').textContent = allTasks.length + ' tasks';
+        $('kpi-tasks').textContent = allTasks.length;
+        renderTasks(allTasks);
+      } catch(e) {
+        console.error('tasks fetch failed:', e);
+        $('tasks-container').innerHTML = '<div class="empty-state" style="color:var(--danger)">Failed to load tasks</div>';
+      }
+    }
+
+    // ── KPIs ───────────────────────────────────────────────────────
+    function populateKPIs(data) {
+      if (!data) return;
+      const total = data.total_runs || 0;
+      $('kpi-total-runs').textContent = total;
+      const models = data.models || {};
+      $('kpi-models').textContent = Object.keys(models).length;
+
+      if (total > 0) {
+        const scores = (data.trend || []).filter(s => typeof s === 'number');
+        if (scores.length > 0) {
+          const avg = scores.reduce((a,b) => a+b, 0) / scores.length;
+          const best = Math.max(...scores);
+          const avgEl = $('kpi-avg-score');
+          const bestEl = $('kpi-best-score');
+          avgEl.textContent = avg.toFixed(3);
+          bestEl.textContent = best.toFixed(3);
+          avgEl.className = 'kpi-val' + (avg >= 0.7 ? '' : avg >= 0.5 ? ' warn' : ' danger');
+          bestEl.className = 'kpi-val' + (best >= 0.7 ? '' : best >= 0.5 ? ' warn' : ' danger');
+        }
+      }
+      if (data.latest) {
+        const d = new Date(data.latest.timestamp * 1000);
+        $('last-run-label').textContent = 'Last: ' + d.toLocaleDateString() + ' · ' + d.toLocaleTimeString();
+      }
+    }
+
+    // ── Leaderboard table ──────────────────────────────────────────
+    function renderLeaderboard(data) {
+      if (!data || !data.models || !Object.keys(data.models).length) {
+        $('leaderboard-tbody').innerHTML = '<tr><td colspan="6" class="empty-state">No model data available. Run an eval to populate the leaderboard.</td></tr>';
+        return;
+      }
+      const sorted = Object.entries(data.models).sort((a,b) => b[1].avg - a[1].avg);
+      const trend = data.trend || [];
+      $('leaderboard-tbody').innerHTML = sorted.map(([model, stats], i) => {
+        const rank = i + 1;
+        const rankClass = rank <= 3 ? 'rank-' + rank : '';
+        const scoreColor = stats.avg >= 0.7 ? 'var(--accent)' : stats.avg >= 0.5 ? 'var(--warn)' : 'var(--danger)';
+        const barWidth = (stats.avg * 100).toFixed(0);
+        const trendArrow = trend.length > 1
+          ? (trend[trend.length-1] >= trend[0] ? '↑' : '↓') + ' ' + (Math.abs(trend[trend.length-1] - trend[0])).toFixed(3)
+          : '—';
+        return `<tr>
+          <td><span class="rank-badge ${rankClass}">${rank}</span></td>
+          <td style="font-weight:600">${esc(model)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="score-bar-track"><div class="score-bar-fill" style="width:${barWidth}%;background:${scoreColor}"></div></div>
+              <span class="mono" style="color:${scoreColor};font-weight:600">${stats.avg.toFixed(3)}</span>
+            </div>
+          </td>
+          <td class="mono" style="font-size:12px;color:var(--muted)">${stats.best.toFixed(3)} / ${stats.worst.toFixed(3)}</td>
+          <td class="mono">${stats.runs}</td>
+          <td class="mono" style="color:${trendArrow.startsWith('↑')?'var(--accent)':'var(--danger)'}">${esc(trendArrow)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── Runs table ─────────────────────────────────────────────────
+    function renderRuns(runs) {
+      if (!runs.length) {
+        $('runs-tbody').innerHTML = '<tr><td colspan="7" class="empty-state">No eval runs found. Click "Run Eval" to start one.</td></tr>';
+        return;
+      }
+      $('runs-tbody').innerHTML = runs.map((r, i) => {
+        const d = new Date((r.timestamp || 0) * 1000);
+        const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+        const score = r.overall_score ?? 0;
+        const passed = score >= 0.7;
+        const barColor = passed ? 'var(--accent)' : score >= 0.5 ? 'var(--warn)' : 'var(--danger)';
+        const catPills = Object.entries(r.category_avg || {})
+          .map(([k,v]) => `<span class="cat-pill" style="font-size:10px;padding:2px 7px">${esc(k)}: <strong>${v.toFixed(2)}</strong></span>`)
+          .join('');
+        return `<tr>
+          <td class="mono" style="font-size:11px;color:var(--accent-2)">${esc(r.run_id || '—')}</td>
+          <td class="mono" style="font-size:11px">${esc(dateStr)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="score-bar-track"><div class="score-bar-fill" style="width:${(score*100).toFixed(0)}%;background:${barColor}"></div></div>
+              <span class="mono" style="font-weight:600;color:${barColor}">${score.toFixed(3)}</span>
+            </div>
+          </td>
+          <td><span class="badge ${passed ? 'badge-passed' : 'badge-failed'}">${passed ? 'Passed' : 'Failed'}</span></td>
+          <td class="mono" style="font-size:12px">${r.total_tasks || 0}</td>
+          <td><div class="cat-pills">${catPills || '<span class="mono" style="font-size:11px;color:var(--muted-2)">—</span>'}</div></td>
+          <td><button class="btn btn-sm" onclick="showRunDetail(${i})">Details</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ── Tasks table ────────────────────────────────────────────────
+    function renderTasks(tasks) {
+      if (!tasks.length) {
+        $('tasks-container').innerHTML = '<div class="empty-state">No golden tasks defined. Add tasks to evals/golden_tasks.json</div>';
+        return;
+      }
+      $('tasks-container').innerHTML = tasks.map(t => {
+        const methodBadge = t.scoring_method === 'llm'
+          ? '<span class="badge badge-pending">LLM</span>'
+          : t.scoring_method === 'exact'
+          ? '<span class="badge" style="background:rgba(167,139,250,.16);color:#DDD6FE;border-color:rgba(167,139,250,.28)">Exact</span>'
+          : '<span class="badge badge-passed">String</span>';
+        const diffColor = t.difficulty === 'hard' ? 'var(--danger)' : t.difficulty === 'medium' ? 'var(--warn)' : 'var(--accent)';
+        return `<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(2,6,23,.35);border:1px solid var(--border);font-size:13px">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+              <span class="mono" style="font-size:11px;color:var(--accent-2)">${esc(t.id)}</span>
+              <span style="font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(148,163,184,.1);border:1px solid var(--border);color:var(--muted)">${esc(t.category)}</span>
+              <span style="font-size:11px;color:${diffColor};font-weight:600;text-transform:capitalize">${esc(t.difficulty)}</span>
+              ${methodBadge}
+            </div>
+            <div style="color:var(--muted);font-size:12px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${esc(t.prompt)}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Run detail modal ───────────────────────────────────────────
+    function showRunDetail(idx) {
+      const r = allRuns[idx];
+      if (!r) return;
+      const d = new Date((r.timestamp || 0) * 1000);
+      $('modal-title').textContent = 'Run ' + (r.run_id || '—');
+      const catRows = Object.entries(r.category_avg || {}).map(([k,v]) =>
+        `<tr><td class="mono">${esc(k)}</td><td class="mono" style="color:var(--accent)">${v.toFixed(4)}</td></tr>`
+      ).join('');
+      const diffRows = Object.entries(r.difficulty_avg || {}).map(([k,v]) =>
+        `<tr><td class="mono">${esc(k)}</td><td class="mono" style="color:var(--accent-2)">${v.toFixed(4)}</td></tr>`
+      ).join('');
+      $('modal-body').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="padding:10px 12px;background:rgba(2,6,23,.4);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em">Overall Score</div>
+            <div style="font-size:22px;font-weight:700;color:${(r.overall_score??0)>=0.7?'var(--accent)':'var(--danger)'}">${(r.overall_score??0).toFixed(4)}</div>
+          </div>
+          <div style="padding:10px 12px;background:rgba(2,6,23,.4);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em">Timestamp</div>
+            <div style="font-size:14px;font-weight:600;margin-top:2px">${esc(d.toLocaleString())}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="padding:10px 12px;background:rgba(2,6,23,.4);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em">Run ID</div>
+            <div class="mono" style="font-size:12px;color:var(--accent-2);margin-top:2px;word-break:break-all">${esc(r.run_id||'—')}</div>
+          </div>
+          <div style="padding:10px 12px;background:rgba(2,6,23,.4);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:11px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.06em">Total Tasks</div>
+            <div style="font-size:18px;font-weight:700;margin-top:2px">${r.total_tasks||0}</div>
+          </div>
+        </div>
+        ${catRows ? `<h3 style="margin:0 0 8px;font-size:13px;color:var(--muted)">Category Averages</h3>
+          <table class="evals-table" style="margin-bottom:14px"><thead><tr><th>Category</th><th>Average</th></tr></thead>
+          <tbody>${catRows}</tbody></table>` : ''}
+        ${diffRows ? `<h3 style="margin:0 0 8px;font-size:13px;color:var(--muted)">Difficulty Averages</h3>
+          <table class="evals-table"><thead><tr><th>Difficulty</th><th>Average</th></tr></thead>
+          <tbody>${diffRows}</tbody></table>` : ''}
+        <div style="margin-top:12px">
+          <button class="btn btn-sm" onclick="closeModal()">Close</button>
+        </div>`;
+      $('run-modal').classList.add('open');
+    }
+
+    function closeModal() {
+      $('run-modal').classList.remove('open');
+    }
+    $('run-modal')?.addEventListener('click', e => { if (e.target === $('run-modal')) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ── Charts ─────────────────────────────────────────────────────
+    function renderCharts(data) {
+      const trend = data?.trend || [];
+      const catAvg = data?.category_avg || {};
+      const diffAvg = data?.difficulty_avg || {};
+
+      // Trend chart (bar chart of scores over time)
+      if (trend.length > 0) {
+        if (trendChart) trendChart.destroy();
+        const ctx1 = $('trend-chart').getContext('2d');
+        trendChart = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: trend.map((_, i) => '#' + (i + 1)),
+            datasets: [{
+              label: 'Overall Score',
+              data: trend,
+              backgroundColor: trend.map(s => s >= 0.7 ? 'rgba(34,197,94,.7)' : s >= 0.5 ? 'rgba(245,158,11,.7)' : 'rgba(239,68,68,.7)'),
+              borderColor: trend.map(s => s >= 0.7 ? '#22C55E' : s >= 0.5 ? '#F59E0B' : '#EF4444'),
+              borderWidth: 1,
+              borderRadius: 6,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 600 },
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: ctx => ' Score: ' + ctx.parsed.y.toFixed(4) } }
+            },
+            scales: {
+              x: { grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B', font: { size: 10 } } },
+              y: { min: 0, max: 1, grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B', font: { size: 10 }, callback: v => v.toFixed(2) } }
+            }
+          }
+        });
+      } else {
+        if (trendChart) { trendChart.destroy(); trendChart = null; }
+      }
+
+      // Category chart
+      const catKeys = Object.keys(catAvg);
+      if (catKeys.length > 0) {
+        if (categoryChart) categoryChart.destroy();
+        const ctx2 = $('category-chart').getContext('2d');
+        categoryChart = new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: catKeys.map(k => esc(k)),
+            datasets: [{
+              data: catKeys.map(k => catAvg[k]),
+              backgroundColor: ['#22C55E','#38BDF8','#A78BFA','#F59E0B','#EF4444','#EC4899'],
+              borderColor: 'var(--panel)',
+              borderWidth: 2,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 600 },
+            plugins: {
+              legend: { position: 'right', labels: { color: '#94A3B8', font: { size: 11 }, padding: 12, usePointStyle: true } },
+              tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed.toFixed(4) } }
+            }
+          }
+        });
+      } else {
+        if (categoryChart) { categoryChart.destroy(); categoryChart = null; }
+      }
+
+      // Difficulty chart
+      const diffKeys = Object.keys(diffAvg);
+      if (diffKeys.length > 0) {
+        if (difficultyChart) difficultyChart.destroy();
+        const ctx3 = $('difficulty-chart').getContext('2d');
+        difficultyChart = new Chart(ctx3, {
+          type: 'bar',
+          data: {
+            labels: diffKeys.map(k => esc(k)),
+            datasets: [{
+              label: 'Avg Score',
+              data: diffKeys.map(k => diffAvg[k]),
+              backgroundColor: ['rgba(34,197,94,.7)','rgba(245,158,11,.7)','rgba(239,68,68,.7)'],
+              borderRadius: 6,
+              borderWidth: 0,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 600 },
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B', font: { size: 11 } } },
+              y: { min: 0, max: 1, grid: { color: 'rgba(148,163,184,.08)' }, ticks: { color: '#64748B', font: { size: 10 }, callback: v => v.toFixed(2) } }
+            }
+          }
+        });
+      } else {
+        if (difficultyChart) { difficultyChart.destroy(); difficultyChart = null; }
+      }
+    }
+
+    // ── Model filter ───────────────────────────────────────────────
+    function populateModelFilter(data) {
+      const sel = $('filter-model');
+      const current = sel.value;
+      const models = data?.models ? Object.keys(data.models) : [];
+      sel.innerHTML = '<option value="">All Models</option>' +
+        models.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+      sel.value = current;
+    }
+
+    // ── Filters ────────────────────────────────────────────────────
+    function applyFilters() {
+      let filtered = [...allRuns];
+      const modelVal = $('filter-model').value;
+      const statusVal = $('filter-status').value;
+      const dateFrom = $('filter-date-from').value;
+      const dateTo = $('filter-date-to').value;
+
+      if (modelVal) {
+        filtered = filtered.filter(r => {
+          if (r.results) return r.results.some(res => res.model_used === modelVal);
+          return false;
+        });
+      }
+      if (statusVal === 'passed') {
+        filtered = filtered.filter(r => (r.overall_score ?? 0) >= 0.7);
+      } else if (statusVal === 'failed') {
+        filtered = filtered.filter(r => (r.overall_score ?? 0) < 0.7);
+      }
+      if (dateFrom) {
+        const fromTs = new Date(dateFrom).getTime() / 1000;
+        filtered = filtered.filter(r => (r.timestamp || 0) >= fromTs);
+      }
+      if (dateTo) {
+        const toTs = (new Date(dateTo + 'T23:59:59').getTime()) / 1000;
+        filtered = filtered.filter(r => (r.timestamp || 0) <= toTs);
+      }
+      renderRuns(filtered);
+    }
+
+    function clearFilters() {
+      $('filter-model').value = '';
+      $('filter-status').value = '';
+      $('filter-date-from').value = '';
+      $('filter-date-to').value = '';
+      renderRuns(allRuns);
+    }
+
+    // ── Trigger eval run ───────────────────────────────────────────
+    async function triggerRun() {
+      try {
+        const btn = document.querySelector('.btn-primary');
+        btn.disabled = true;
+        btn.textContent = 'Running…';
+        const r = await fetch('/api/evals/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+        const d = await r.json();
+        if (d.ok || d.status === 'started') {
+          setTimeout(() => { loadAll(); btn.disabled = false; btn.textContent = '▶ Run Eval'; }, 2000);
+        } else {
+          alert('Failed to start eval: ' + (d.error || JSON.stringify(d)));
+          btn.disabled = false;
+          btn.textContent = '▶ Run Eval';
+        }
+      } catch(e) {
+        console.error('trigger run failed:', e);
+        alert('Failed to start eval run');
+      }
+    }
+
+    // ── Init ───────────────────────────────────────────────────────
+    loadAll();
+    setInterval(loadAll, 60000);
+  </script>
+</body>
+</html>
