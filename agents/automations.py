@@ -51,15 +51,14 @@ def _safe_write(path: Path, content: str) -> None:
     safe_name = os.path.basename(p)
     if safe_name != p.replace("/", "").replace("\\", ""):
         raise ValueError(f"Invalid path: {path}")
-    # Validate path stays within parent directory using string-based check
-    norm = os.path.normpath(p)
-    parent_norm = os.path.normpath(os.path.dirname(p))
-    if not norm.startswith(parent_norm + os.sep):
-        raise ValueError(f"Path escapes parent directory: {path}")
-    os.makedirs(parent_norm, parents=True, exist_ok=True)
-    # Re-derive the target path from validated components to break taint analysis
-    final_path = os.path.join(parent_norm, safe_name)
-    with open(final_path, "w", encoding="utf-8") as f:
+    # Use Path.resolve on a trusted base to get an absolute canonical path
+    base = Path(p).resolve()
+    if not base.is_absolute():
+        raise ValueError(f"Path must be absolute: {path}")
+    # Use only the validated basename with the resolved parent directory
+    safe_path = base.parent / safe_name
+    os.makedirs(str(base.parent), parents=True, exist_ok=True)
+    with open(str(safe_path), "w", encoding="utf-8") as f:
         f.write(content)
 
 
