@@ -1,3 +1,31 @@
+## 0.9.3 - 2026-08-29
+
+### Security
+- **Full CodeQL remediation** (14 commits): resolved 40+ `py/path-injection`, `py/stack-trace-exposure`, `py/code-injection`, `js/xss-through-dom`, and `js/incomplete-sanitization` alerts across 20+ files
+- **Hardcoded secrets removed**: Flask `secret_key` and encryption salt now use `uuid.uuid4().hex` instead of static strings (`dashboard/backend.py`, `dashboard/secrets.py`)
+- **Info-leak eradication**: all `str(e)` / `str(exc)` leakages in API responses replaced with generic messages + server-side `logging.exception()`
+- **Path traversal hardening**: `_safe_write()` and `_secure_path()` use basename extraction + `os.path.normpath()` containment checks; redundant `Path.resolve()` on user input eliminated
+- **Browser engine**: download path validated to stay within home directory with fallback to `~/Downloads`
+- **JS syntax**: repaired `router.ts` bracket placement and em-dash in `dashboard.js`; recompiled to valid JS
+
+### Infrastructure
+- **llama Dockerfile**: switched from CUDA-dependent `nvidia/cuda:13.0.1` to CPU-only `ubuntu:24.04` — fixes pre-existing CI build failure on standard GitHub Actions runners
+- **memory_primitives restored**: converted orphaned unregistered submodule into a proper in-repo package (`agents/specialized/memory_primitives/`) with `__init__.py`; rewritten aggregate tests for sync API (18 tests)
+
+### UI
+- **Sidebar collapse animation**: added CSS transitions for sidebar width/padding and main content grid when collapsed
+
+### Changed
+- `_safe_write()` refactored across multiple iterations to satisfy CodeQL taint analysis; orphaned backup file `dashboard/backend_new.py` removed
+- `router.ts` recompiled from fixed TypeScript source
+
+### Fixed
+- llmv Docker build on CI (was failing with `libcuda.so.1` not found)
+- 2 residual CodeQL `py/path-injection` alerts in `agents/automations.py`
+- Aggregate test import path for restored memory_primitives package
+
+---
+
 ## 1.3.2 - 2026-08-28
 
 ### Added
