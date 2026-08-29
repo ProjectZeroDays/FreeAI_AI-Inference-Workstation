@@ -44,24 +44,6 @@ def _sanitize_run_id(run_id: str) -> str:
     return safe if safe else f"run_{int(time.time())}"
 
 
-def _safe_write(path: Path, content: str) -> None:
-    """Safely write content to a known-fixed path (no user-controlled path component)."""
-    p = str(path)
-    # Ensure path is a basename only — no directory traversal
-    safe_name = os.path.basename(p)
-    if safe_name != p.replace("/", "").replace("\\", ""):
-        raise ValueError(f"Invalid path: {path}")
-    # Use Path.resolve on a trusted base to get an absolute canonical path
-    base = Path(p).resolve()
-    if not base.is_absolute():
-        raise ValueError(f"Path must be absolute: {path}")
-    # Use only the validated basename with the resolved parent directory
-    safe_path = base.parent / safe_name
-    os.makedirs(str(base.parent), parents=True, exist_ok=True)
-    with open(str(safe_path), "w", encoding="utf-8") as f:
-        f.write(content)
-
-
 from typing import Optional
 
 try:
@@ -285,7 +267,8 @@ def execute_workflow(workflow_id, params=None):
             if output:
                 safe_name = re.sub(r'[^\w\-\.]', '_', step_name)
                 output_file = ws_dir / f"{safe_name}.md"
-                _safe_write(output_file, output)
+                output_file.parent.mkdir(parents=True, exist_ok=True)
+                output_file.write_text(output, encoding="utf-8")
                 record["outputs"][step_name] = str(output_file)
         elif step_type == "api_fetch":
             step_result = {"status": "done", "endpoints": step.get("endpoints", [])}
