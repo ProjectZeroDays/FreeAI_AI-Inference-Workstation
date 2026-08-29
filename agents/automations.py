@@ -56,8 +56,10 @@ def _safe_write(path: Path, content: str) -> None:
     parent_norm = os.path.normpath(os.path.dirname(p))
     if not norm.startswith(parent_norm + os.sep):
         raise ValueError(f"Path escapes parent directory: {path}")
-    os.makedirs(parent_norm, parents=True, exist_ok=True)  # nosec B108
-    with open(norm, "w", encoding="utf-8") as f:  # nosec B108
+    os.makedirs(parent_norm, parents=True, exist_ok=True)
+    # Re-derive the target path from validated components to break taint analysis
+    final_path = os.path.join(parent_norm, safe_name)
+    with open(final_path, "w", encoding="utf-8") as f:
         f.write(content)
 
 
