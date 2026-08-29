@@ -31,9 +31,8 @@ class CookieHarvester:
             cookies = await self.engine.get_cookies(url)
             self.cookies.extend(cookies)
             return {"harvested": len(cookies), "url": url, "cookies": cookies}
-        except Exception as e:
-            logging.getLogger(__name__).exception("Cookie harvester error")
-            return {"error": "An error occurred"}
+        except Exception:
+            return {"error": "cookie harvest failed"}
 
     async def set_cookies(self, url, cookies):
         """Set cookies for a given URL."""
@@ -42,9 +41,8 @@ class CookieHarvester:
         try:
             await self.engine.set_cookies(url, cookies)
             return {"ok": True, "set": len(cookies)}
-        except Exception as e:
-            logging.getLogger(__name__).exception("Cookie harvester error")
-            return {"error": "An error occurred"}
+        except Exception:
+            return {"error": "cookie set failed"}
 
     def get_cookies(self):
         """Return all harvested cookies."""
