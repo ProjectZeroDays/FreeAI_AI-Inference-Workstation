@@ -279,7 +279,10 @@ def execute_workflow(workflow_id, params=None):
             if output:
                 safe_name = re.sub(r'[^\w\-\.]', '_', step_name)
                 output_file = ws_dir / f"{safe_name}.md"
-                if not _is_safe_path(output_file, WORKSPACES_DIR):
+                output_file_resolved = output_file.resolve()
+                workspaces_resolved = WORKSPACES_DIR.resolve()
+                if not (str(output_file_resolved) == str(workspaces_resolved) or
+                        str(output_file_resolved).startswith(str(workspaces_resolved) + os.sep)):
                     continue
                 output_file.parent.mkdir(parents=True, exist_ok=True)
                 output_file.write_text(output, encoding="utf-8")

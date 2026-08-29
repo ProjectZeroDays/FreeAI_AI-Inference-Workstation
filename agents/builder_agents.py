@@ -538,7 +538,10 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
             full = _secure_path(ws_dir, path)
             if full is None:
                 continue
-            if not _is_safe_path(full, WORKSPACES_DIR):
+            full_resolved = full.resolve()
+            ws_resolved = WORKSPACES_DIR.resolve()
+            if not (str(full_resolved) == str(ws_resolved) or
+                    str(full_resolved).startswith(str(ws_resolved) + os.sep)):
                 continue
             full.parent.mkdir(parents=True, exist_ok=True)
             full.write_text(content, encoding="utf-8")
