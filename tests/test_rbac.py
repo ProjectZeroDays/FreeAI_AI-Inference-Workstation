@@ -21,11 +21,15 @@ from auth.users import users_store, create_user  # noqa: E402
 def _fresh_users(tmp_path, monkeypatch):
     """Use a temp users file for every test."""
     import auth.users as u_module
+    import auth.jwt as jwt_module
     u_module._USERS_PATH = tmp_path / "auth-users.json"
     u_module._users = {}
     u_module._ensure_defaults()
+    jwt_module._login_attempts.clear()
     yield
     u_module._users = {}
+    jwt_module._login_attempts.clear()
+    u_module._ensure_defaults()
 
 
 @pytest.fixture

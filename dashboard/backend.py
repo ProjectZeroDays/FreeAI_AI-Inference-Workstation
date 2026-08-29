@@ -4779,7 +4779,7 @@ try:
     from auth.jwt import jwt_auth, generate_access_token, generate_refresh_token, decode_token, check_login_rate_limit, record_login_attempt
     from auth.users import users_store, list_users as _list_users
     from auth.rbac import apply_rbac_middleware, get_permission_map
-    apply_rbac_middleware(app, auth_enabled=_AUTH_ENABLED)
+    apply_rbac_middleware(app)
     _RBAC_ENABLED = True
 except ImportError:
     _AUTH_MODULE_AVAILABLE = False
