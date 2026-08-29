@@ -567,6 +567,54 @@ def env_agents():
     return out
 
 
+# Quantum C2 integration — direct agent execution bypassing LLM prompts
+QUANTUM_AGENT_API_URL = os.environ.get("QUANTUM_AGENT_API_URL", "http://localhost:4433")
+
+
+@app.get("/env/specialized-agents")
+def env_specialized_agents():
+    """List specialized agents from Quantum's REST API."""
+    try:
+        resp = requests.get(f"{QUANTUM_AGENT_API_URL}/api/specialized/agents", timeout=10)
+        if resp.status_code == 200:
+            return resp.json()
+        return {"error": f"Quantum returned status {resp.status_code}", "agents": {}}
+    except Exception as e:
+        return {"error": str(e), "agents": {}}
+
+
+class ExploitAgentRequest(BaseModel):
+    """Request body for direct agent execution via Quantum."""
+    target: str
+    technique: str | None = None
+    cve: str | None = None
+    params: dict | None = None
+
+
+@app.post("/agent/exploit")
+def agent_exploit(request: Request, req: ExploitAgentRequest):
+    """Call a Quantum specialized agent directly, bypassing LLM prompts."""
+    _check_auth(request)
+    agent = req.technique or "vuln_scanner"
+    try:
+        resp = requests.post(
+            f"{QUANTUM_AGENT_API_URL}/api/specialized/{agent}/describe",
+            json=req.params or {},
+            timeout=30,
+        )
+        if resp.status_code == 200:
+            result = resp.json()
+            return {
+                "source": "quantum_direct",
+                "agent": result.get("agent"),
+                "method": "describe",
+                "result": result.get("result"),
+            }
+        return {"error": f"Quantum returned {resp.status_code}", "body": resp.text}
+    except Exception as e:
+        return {"error": f"Failed to reach Quantum at {QUANTUM_AGENT_API_URL}: {e}"}
+
+
 @app.get("/env/plugins")
 def env_plugins(category: str = None):
     """List plugins from the registry."""
