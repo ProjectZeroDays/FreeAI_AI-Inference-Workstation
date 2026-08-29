@@ -12,3 +12,10 @@ from auth.users import (  # noqa: F401
     delete_user,
     require_role,
 )
+from auth.rbac import (  # noqa: F401
+    login_required,
+    require_role as require_role_decorator,
+    get_permission_map,
+    apply_rbac_middleware,
+    resolve_route_permission,
+)

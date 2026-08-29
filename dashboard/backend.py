@@ -4778,9 +4778,12 @@ _AUTH_ENABLED = bool(os.environ.get("AUTH_JWT_SECRET", "").strip())
 try:
     from auth.jwt import jwt_auth, generate_access_token, generate_refresh_token, decode_token, check_login_rate_limit, record_login_attempt
     from auth.users import users_store, list_users as _list_users
-    _AUTH_MODULE_AVAILABLE = True
+    from auth.rbac import apply_rbac_middleware, get_permission_map
+    apply_rbac_middleware(app, auth_enabled=_AUTH_ENABLED)
+    _RBAC_ENABLED = True
 except ImportError:
     _AUTH_MODULE_AVAILABLE = False
+    _RBAC_ENABLED = False
 
 
 @app.route("/auth/login", methods=["GET"])

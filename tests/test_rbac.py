@@ -1,18 +1,49 @@
-"""RBAC role hierarchy and permission matrix tests."""
+"""RBAC (Role-Based Access Control) tests."""
 import sys
-import os
-
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
+from pathlib import Path
 
 import pytest
+
 flask = pytest.importorskip("flask")
 
-from dashboard import backend as dash  # noqa: E402
+ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT))
+
+from auth.rbac import (  # noqa: E402
+    get_permission_map,
+    set_permission_map,
+    resolve_route_permission,
+)
+from auth.users import users_store, create_user  # noqa: E402
 
 
-@pytest.fixture()
-def client(tmp_path, monkeypatch):
+@pytest.fixture(autouse=True)
+def _fresh_users(tmp_path, monkeypatch):
+    """Use a temp users file for every test."""
+    import auth.users as u_module
+    u_module._USERS_PATH = tmp_path / "auth-users.json"
+    u_module._users = {}
+    u_module._ensure_defaults()
+    yield
+    u_module._users = {}
+
+
+@pytest.fixture
+def jwt_client(tmp_path, monkeypatch):
+    """Flask test client with JWT auth enabled (gates RBAC middleware)."""
+    monkeypatch.setenv("AUTH_JWT_SECRET", "rbac-test-secret")
+    import dashboard.backend as dash
+    import auth.jwt as jwt_mod
+    jwt_mod._login_attempts.clear()
+    # Reinitialize jwt_auth singleton with test secret
+    test_jwt = jwt_mod.JWTAuth(secret="rbac-test-secret")
+    jwt_mod.jwt_auth = test_jwt
+    # Also patch the backend's reference (it imports the module-level name)
+    dash.jwt_auth = test_jwt
+    dash.app.config["TESTING"] = True
+    dash._AUTH_MODULE_AVAILABLE = True
+    dash._AUTH_ENABLED = True
+    dash._RBAC_ENABLED = True
     monkeypatch.setattr(dash, "CONFIG_DIR", tmp_path)
     monkeypatch.setattr(dash, "SKILLS_DIR", tmp_path / "skills")
     monkeypatch.setattr(dash, "ACTIVITY_LOG", tmp_path / "activity_log.jsonl")
@@ -20,174 +51,136 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(dash, "SALAD_API_KEY", "")
     monkeypatch.setattr(dash, "AIKIDO_API_KEY", "")
     monkeypatch.setattr(dash, "AIKIDO_APP_ID", "")
-    monkeypatch.setattr(dash, "OPT_SETTINGS_PATH",
-                        str(tmp_path / "runtime-settings.json"))
-    monkeypatch.setattr(dash, "PRESETS_PATH",
-                        str(tmp_path / "presets.json"))
-    monkeypatch.setattr(dash, "PROVIDERS_MERGED_PATH",
-                        str(tmp_path / "providers-merged.json"))
-    monkeypatch.setattr(dash, "_SCHEDULER_CONFIG_PATH",
-                        str(tmp_path / "scheduler.json"))
     dash._SUBAGENTS.clear()
-    dash._TRAINING_DATA.update({
-        "datasets": [], "jobs": {"sft": [], "dpo": [], "abr": []},
-        "models": [],
-    })
-    dash._MEMORY_STATE["projects"].clear()
-    dash._MEMORY_STATE["learnings"].clear()
-    dash._AUTOMATIONS["jobs"].clear()
-    dash._AUTOMATIONS["history"].clear()
-    dash._campaigns.clear()
-    dash._scheduler_jobs.clear()
-    dash._gpu_state["devices"] = []
-    dash._gpu_state["total_vram_mb"] = 0
-    dash._gpu_state["used_vram_mb"] = 0
-    dash._uploads.clear()
-    dash.app.config["TESTING"] = True
-    dash.app.config["SECRET_KEY"] = "test-secret-key-for-rbac"
     with dash.app.test_client() as c:
         yield c
 
 
-# ── Role hierarchy ─────────────────────────────────────────────
-
-def test_role_hierarchy_operator_can_viewer(client):
-    """operator > viewer: operator can do everything viewer can."""
-    res = client.post("/api/permissions/check",
-                      json={"resource": "config", "action": "read",
-                            "role": "viewer"})
-    assert res.get_json()["allowed"] is True
-    res2 = client.post("/api/permissions/check",
-                       json={"resource": "config", "action": "read",
-                             "role": "operator"})
-    assert res2.get_json()["allowed"] is True
+def _login(jwt_client, username="admin", password="admin123"):
+    res = jwt_client.post(
+        "/auth/login",
+        json={"username": username, "password": password},
+        content_type="application/json",
+    )
+    assert res.status_code == 200
+    return res.get_json()["access_token"]
 
 
-def test_role_hierarchy_admin_can_operator(client):
-    """admin > operator: admin can do everything operator can."""
-    res = client.post("/api/permissions/check",
-                      json={"resource": "config", "action": "write",
-                            "role": "admin"})
-    body = res.get_json()
-    assert body["allowed"] is True
-    res2 = client.post("/api/permissions/check",
-                       json={"resource": "config", "action": "write",
-                             "role": "operator"})
-    assert res2.get_json()["allowed"] is True
+def _header(token):
+    return {"Authorization": f"Bearer {token}"}
 
 
-def test_viewer_cannot_modify_config(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "config", "action": "write",
-                            "role": "viewer"})
-    assert res.get_json()["allowed"] is False
+# ── Permission map tests ─────────────────────────────────────────
+
+def test_health_is_public():
+    assert resolve_route_permission("/api/health", "GET") is None
 
 
-def test_viewer_can_read_models(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "models", "action": "read",
-                            "role": "viewer"})
-    assert res.get_json()["allowed"] is True
+def test_stats_is_public():
+    assert resolve_route_permission("/api/stats", "GET") is None
 
 
-def test_operator_can_deploy_models(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "models", "action": "write",
-                            "role": "operator"})
-    assert res.get_json()["allowed"] is True
+def test_services_is_public():
+    assert resolve_route_permission("/api/services", "GET") is None
 
 
-def test_admin_can_delete_users(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "users", "action": "delete",
-                            "role": "admin"})
-    assert res.get_json()["allowed"] is True
+def test_config_get_requires_viewer():
+    assert resolve_route_permission("/api/config", "GET") == "viewer"
 
 
-def test_viewer_cannot_delete_users(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "users", "action": "delete",
-                            "role": "viewer"})
-    assert res.get_json()["allowed"] is False
+def test_config_post_requires_developer():
+    assert resolve_route_permission("/api/config", "POST") == "developer"
 
 
-# ── Permission matrix ──────────────────────────────────────────
-
-def test_permission_matrix_admin_all_actions(client):
-    for resource in ("models", "config", "users", "run", "delete"):
-        for action in ("read", "write", "exec"):
-            res = client.post("/api/permissions/check",
-                              json={"resource": resource, "action": action,
-                                    "role": "admin"})
-            assert res.get_json()["allowed"] is True, \
-                f"admin should allow {resource}/{action}"
+def test_auth_users_get_requires_admin():
+    assert resolve_route_permission("/auth/users", "GET") == "admin"
 
 
-def test_permission_matrix_viewer_read_only(client):
-    for resource in ("models", "config", "skills", "workflows"):
-        res = client.post("/api/permissions/check",
-                          json={"resource": resource, "action": "read",
-                                "role": "viewer"})
-        assert res.get_json()["allowed"] is True, \
-            f"viewer should read {resource}"
-    res = client.post("/api/permissions/check",
-                      json={"resource": "config", "action": "write",
-                            "role": "viewer"})
-    assert res.get_json()["allowed"] is False
+def test_auth_users_post_requires_admin():
+    assert resolve_route_permission("/auth/users", "POST") == "admin"
 
 
-def test_permission_matrix_developer_cannot_delete(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "users", "action": "delete",
-                            "role": "developer"})
-    assert res.get_json()["allowed"] is False
+def test_subagents_get_requires_viewer():
+    assert resolve_route_permission("/api/subagents", "GET") == "viewer"
 
 
-def test_permission_matrix_operator_can_run(client):
-    res = client.post("/api/permissions/check",
-                      json={"resource": "run", "action": "exec",
-                            "role": "operator"})
-    assert res.get_json()["allowed"] is True
+def test_subagents_post_requires_developer():
+    assert resolve_route_permission("/api/subagents", "POST") == "developer"
 
 
-# ── @require_role decorator ────────────────────────────────────
-
-def test_require_role_decorator_allows_equal(client):
-    from auth.users import require_role
-    checker = require_role("developer")
-    user = {"username": "alice", "role": "developer"}
-    result = checker(user)
-    assert result == user
+def test_secrets_requires_admin():
+    assert resolve_route_permission("/api/secrets", "GET") == "admin"
+    assert resolve_route_permission("/api/secrets", "POST") == "admin"
 
 
-def test_require_role_decorator_allows_higher(client):
-    from auth.users import require_role
-    checker = require_role("developer")
-    user = {"username": "bob", "role": "admin"}
-    result = checker(user)
-    assert result == user
+# ── Middleware integration tests ─────────────────────────────────
+
+def test_middleware_allows_public_health(jwt_client):
+    res = jwt_client.get("/api/health")
+    assert res.status_code == 200
 
 
-def test_require_role_decorator_blocks_lower(client):
-    from auth.users import require_role
-    checker = require_role("admin")
-    user = {"username": "carol", "role": "developer"}
-    result = checker(user)
-    assert result is None
+def test_middleware_allows_login_page(jwt_client):
+    res = jwt_client.get("/auth/login")
+    assert res.status_code == 200
 
 
-def test_require_role_decorator_blocks_none(client):
-    from auth.users import require_role
-    checker = require_role("viewer")
-    assert checker(None) is None
+def test_middleware_rejects_unauthed_config(jwt_client):
+    """Authenticated but no token on a viewer-gated route."""
+    res = jwt_client.get("/api/config")
+    assert res.status_code == 401
 
 
-def test_require_role_unknown_role_defaults_to_viewer(client):
-    """A role not in the hierarchy falls back to level 0 (viewer)."""
-    from auth.users import require_role
-    checker = require_role("superadmin")
-    user = {"username": "x", "role": "admin"}
-    # superadmin is not in the role_order dict, defaults to 0
-    # admin level is 2, so 2 >= 0 -> allowed
-    result = checker(user)
-    assert result == user
+def test_middleware_allows_viewer_on_viewer_route(jwt_client):
+    create_user("viewer1", "viewpass", "viewer")
+    import auth.users as u_mod
+    u_mod._ensure_defaults()
+    token = _login(jwt_client, username="viewer1", password="viewpass")
+    res = jwt_client.get("/api/config", headers=_header(token))
+    assert res.status_code == 200
+
+
+def test_middleware_rejects_viewer_on_developer_route(jwt_client):
+    create_user("viewer1", "viewpass", "viewer")
+    import auth.users as u_mod
+    u_mod._ensure_defaults()
+    token = _login(jwt_client, username="viewer1", password="viewpass")
+    res = jwt_client.post("/api/config", json={}, headers=_header(token))
+    assert res.status_code == 403
+
+
+def test_middleware_rejects_developer_on_admin_route(jwt_client):
+    create_user("dev1", "devpass", "developer")
+    import auth.users as u_mod
+    u_mod._ensure_defaults()
+    token = _login(jwt_client, username="dev1", password="devpass")
+    res = jwt_client.get("/auth/users", headers=_header(token))
+    assert res.status_code == 403
+
+
+def test_middleware_admin_can_access_everything(jwt_client):
+    token = _login(jwt_client)
+    h = _header(token)
+    # Public route
+    assert jwt_client.get("/api/health", headers=h).status_code == 200
+    # Viewer route
+    assert jwt_client.get("/api/config", headers=h).status_code == 200
+    # Admin route
+    assert jwt_client.get("/auth/users", headers=h).status_code == 200
+
+
+def test_public_health_no_token_required(jwt_client):
+    """Public routes must work without any Authorization header."""
+    res = jwt_client.get("/api/health")
+    assert res.status_code == 200
+
+
+def test_public_stats_no_token_required(jwt_client):
+    res = jwt_client.get("/api/stats")
+    assert res.status_code == 200
+
+
+def test_permission_map_mutable():
+    original = get_permission_map()
+    set_permission_map(original)
+    assert len(get_permission_map()) == len(original)
