@@ -57,6 +57,14 @@ jobs:
             exit 1
           fi
 
+      - name: Verify asyncio mode
+        run: |
+          if ! grep -q 'asyncio_mode' pyproject.toml; then
+            echo "FAIL: asyncio_mode not set in pyproject.toml"
+            exit 1
+          fi
+          echo "asyncio_mode configured OK"
+
       - name: Pytest — unit + regression + integration
         run: |
           python -m pytest tests/ \

@@ -18,3 +18,7 @@
   rule-id: py/path-injection
   path: workflow/api.py
   justification: 'TEMPLATES_PATH is hardcoded config constant; no user input reaches open()'
+- tool: codeql
+  rule-id: py/stack-trace-exposure
+  path: errors/tracker.py
+  justification: 'Tracebacks stored server-side only; never returned to clients. Intentional error logging for production debugging.'
