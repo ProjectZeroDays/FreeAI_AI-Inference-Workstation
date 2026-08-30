@@ -23,26 +23,16 @@ def _secure_path(base: Path, user_path: str) -> Path | None:
     """Resolve user_path against base and verify it stays within base. Returns None if traversal detected."""
     try:
         safe_name = Path(user_path).name
-        if not safe_name or safe_name != user_path.replace("/", "").replace("\\", "").replace("..", ""):
+        if not safe_name or ".." in safe_name:
             return None
         result = base / safe_name
-        base_resolved = str(base.resolve())
-        result_resolved = str(result.resolve())
-        if result_resolved == base_resolved or result_resolved.startswith(base_resolved + os.sep):
+        base_real = os.path.realpath(str(base))
+        result_real = os.path.realpath(str(result))
+        if result_real == base_real or result_real.startswith(base_real + os.sep):
             return result
     except (OSError, ValueError):
         pass
     return None
-
-
-def _is_safe_path(path: Path, base: Path) -> bool:
-    """Verify resolved path is contained within base directory."""
-    try:
-        base_resolved = str(base.resolve())
-        path_resolved = str(path.resolve())
-        return path_resolved == base_resolved or path_resolved.startswith(base_resolved + os.sep)
-    except (OSError, ValueError):
-        return False
 
 
 def _sanitize_run_id(run_id: str) -> str:
@@ -497,7 +487,9 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
     run_id = run_id or f"builder_{int(time.time())}_{os.getpid()}"
     run_id = _sanitize_run_id(run_id)
     ws_dir = Path(workspace_dir) if workspace_dir else WORKSPACES_DIR / run_id
-    if not _is_safe_path(ws_dir, WORKSPACES_DIR):
+    _ws_real = os.path.realpath(str(WORKSPACES_DIR))
+    _ws_dir_real = os.path.realpath(str(ws_dir))
+    if not (_ws_dir_real == _ws_real or _ws_dir_real.startswith(_ws_real + os.sep)):
         return {"error": "Invalid workspace path", "run_id": run_id, "status": "error"}
     ws_dir.mkdir(parents=True, exist_ok=True)
 
@@ -538,10 +530,8 @@ def scaffold_builder(build_type, spec, business_type=None, stack=None,
             full = _secure_path(ws_dir, path)
             if full is None:
                 continue
-            full_resolved = full.resolve()
-            ws_resolved = WORKSPACES_DIR.resolve()
-            if not (str(full_resolved) == str(ws_resolved) or
-                    str(full_resolved).startswith(str(ws_resolved) + os.sep)):
+            _full_real = os.path.realpath(str(full))
+            if not (_full_real == _ws_real or _full_real.startswith(_ws_real + os.sep)):
                 continue
             full.parent.mkdir(parents=True, exist_ok=True)
             full.write_text(content, encoding="utf-8")
