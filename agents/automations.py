@@ -275,7 +275,9 @@ def execute_workflow(workflow_id, params=None):
                 if not (_out_real == _ws_real or _out_real.startswith(_ws_real + os.sep)):
                     continue
                 _safe_file = os.path.realpath(os.path.join(_ws_real, os.path.basename(_out_real)))
+                # CodeQL [py/path-injection] — _safe_file is realpath-validated against _ws_real
                 os.makedirs(os.path.dirname(_safe_file), exist_ok=True)
+                # CodeQL [py/path-injection] — _safe_file is realpath-validated against _ws_real
                 with open(_safe_file, "w", encoding="utf-8") as _f:
                     _f.write(output)
                 record["outputs"][step_name] = _safe_file
