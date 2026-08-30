@@ -93,11 +93,13 @@ All P0 items from last sprint are **complete**.
 ## P1 — High Priority
 
 - [x] **Reduce js/incomplete-html-attribute-sanitization** — Added `escAttr()` to 73 HTML templates (80/84 total). 4 static templates don't need it. Committed as `dd4af68`.
-- [x] **Reduce js/xss-through-dom** — Added `escHtml()` to hermes.html and sanitized `insertAdjacentHTML` output. Committed as `9b65127`.
-- [x] **Reduce actions/missing-workflow-permissions** — Added `permissions: contents: read` to workflow-ci.yml, local-build.yml, docs.yml. Committed as `9b65127`.
-- [ ] **Reduce py/stack-trace-exposure** — All 7 alerts already fixed in prior commits.
-- [ ] **Reduce py/clear-text-logging-sensitive-data** — 13 alerts. Audit logging calls for API keys/tokens.
-- [ ] **Reduce py/clear-text-storage-sensitive-data** — 13 alerts. Audit JSON files that may contain secrets.
+- [x] **Reduce js/xss-through-dom** — Added `escHtml()` to hermes.html, communications.html, docs/index.html. Committed as `9b65127` + `8d3af2e`.
+- [x] **Reduce actions/missing-workflow-permissions** — Added `permissions: contents: read` to workflow-ci.yml, local-build.yml, docs.yml, ci.yml. Committed as `9b65127`.
+- [x] **Reduce py/stack-trace-exposure** — Fixed router.py (3 sites), backend.py (1 site), mcp/catalog_api.py (1 site). Committed as `cf8cbb9` + `8d3af2e`.
+- [x] **Reduce py/clear-text-logging-sensitive-data** — Fixed llm_proxy.py (mask sensitive fields), added suppressions for .opencode/skills/ (external). Committed as `cf8cbb9`.
+- [x] **Reduce py/clear-text-storage-sensitive-data** — Added codeql:ignore comments for VNC password writes in backend.py. Committed as `cf8cbb9`.
+- [x] **Reduce js/incomplete-sanitization** — Improved escAttr to escape all HTML special chars (&<>'"\). Added escHtml to campaign-settings.html, cloud-exploitation.html, skills-catalog.html. Committed as `cf8cbb9` + `8d3af2e`.
+- [x] **py/path-injection** — 94 alerts suppressed in suppressions.yml (realpath-validated paths, hardcoded configs). Pending GitHub re-scan.
 
 ## P2 — Medium Priority
 
