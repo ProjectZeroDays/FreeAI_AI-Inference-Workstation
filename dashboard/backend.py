@@ -7505,7 +7505,7 @@ def _call_agent_method(agent, method_name, *args, **kwargs):
 
 
 _chained_zero_day_lock = threading.Lock()
-_chained_zero_day_state = {"simulations": []}
+_chained_zero_day_state = {"simulations": [], "chains": {}}
 
 
 @app.route("/api/exploit-cat/chained-zero-day/describe")
@@ -7525,7 +7525,12 @@ def api_exploit_cat_chained_zero_day_build_chain():
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
     stages = data.get("stages", [])
-    return jsonify(_call_agent_method(agent, "build_chain", stages))
+    result = _call_agent_method(agent, "build_chain", stages)
+    chain_id = result.get("chain_id")
+    if chain_id and chain_id in agent.chains:
+        with _chained_zero_day_lock:
+            _chained_zero_day_state["chains"][chain_id] = agent.chains[chain_id]
+    return jsonify(result)
 
 
 @app.route("/api/exploit-cat/chained-zero-day/analyze-chain", methods=["POST"])
@@ -7534,8 +7539,11 @@ def api_exploit_cat_chained_zero_day_analyze_chain():
         return jsonify({"error": "unauthorized"}), 401
     data = request.get_json(silent=True) or {}
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
-    agent = ChainedZeroDayAgent()
     chain_id = data.get("chain_id", "")
+    if chain_id not in _chained_zero_day_state["chains"]:
+        return jsonify({"error": f"Chain {chain_id} not found"}), 404
+    agent = ChainedZeroDayAgent()
+    agent.chains = _chained_zero_day_state["chains"]
     return jsonify(_call_agent_method(agent, "analyze_chain", chain_id))
 
 
@@ -7545,9 +7553,10 @@ def api_exploit_cat_chained_zero_day_simulate_chain():
         return jsonify({"error": "unauthorized"}), 401
     data = request.get_json(silent=True) or {}
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
-    agent = ChainedZeroDayAgent()
     chain_id = data.get("chain_id", "")
     target = data.get("target", None)
+    agent = ChainedZeroDayAgent()
+    agent.chains = _chained_zero_day_state["chains"]
     result = _call_agent_method(agent, "simulate_chain", chain_id, target)
     with _chained_zero_day_lock:
         _chained_zero_day_state["simulations"].append(result)
@@ -7560,6 +7569,7 @@ def api_exploit_cat_chained_zero_day_list_chains():
         return jsonify({"error": "unauthorized"}), 401
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
     agent = ChainedZeroDayAgent()
+    agent.chains = _chained_zero_day_state["chains"]
     return jsonify(_call_agent_method(agent, "list_chains"))
 
 
@@ -7569,8 +7579,11 @@ def api_exploit_cat_chained_zero_day_optimize_chain():
         return jsonify({"error": "unauthorized"}), 401
     data = request.get_json(silent=True) or {}
     from agents.specialized.chained_zero_day import ChainedZeroDayAgent
-    agent = ChainedZeroDayAgent()
     chain_id = data.get("chain_id", "")
+    if chain_id not in _chained_zero_day_state["chains"]:
+        return jsonify({"error": f"Chain {chain_id} not found"}), 404
+    agent = ChainedZeroDayAgent()
+    agent.chains = _chained_zero_day_state["chains"]
     return jsonify(_call_agent_method(agent, "optimize_chain", chain_id))
 
 

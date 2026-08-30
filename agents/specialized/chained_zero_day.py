@@ -47,9 +47,9 @@ REAL_CHAINS = {
 }
 
 CVE_DB = {
-    "CVE-2019-8641": {"name": "iMessage Imagebuf Subsystem", "type": "RCE", "affected": "iOS 12.1.1+", "cwe": "CWE-787"},
-    "CVE-2019-8646": {"name": "Libxpc Kernel OOB", "type": "LPE", "affected": "iOS 12.0+", "cwe": "CWE-787"},
-    "CVE-2019-8647": {"name": "Sandbox Escape", "type": "Escape", "affected": "iOS 12.0+", "cwe": "CWE-284"}
+    "CVE-2019-8641": {"name": "iMessage Imagebuf Subsystem", "type": "RCE", "affected": "iOS 12.1.1+", "cwe": "CWE-787", "severity": "critical"},
+    "CVE-2019-8646": {"name": "Libxpc Kernel OOB", "type": "LPE", "affected": "iOS 12.0+", "cwe": "CWE-787", "severity": "critical"},
+    "CVE-2019-8647": {"name": "Sandbox Escape", "type": "Escape", "affected": "iOS 12.0+", "cwe": "CWE-284", "severity": "high"},
 }
 
 class ChainedZeroDayAgent:
@@ -171,6 +171,7 @@ class ChainedZeroDayAgent:
                 "type": info["type"],
                 "affected": info["affected"],
                 "cwe": info["cwe"],
+                "severity": info.get("severity", "unknown"),
             })
 
         if cve_id:
