@@ -277,9 +277,10 @@ def execute_workflow(workflow_id, params=None):
                 _parent_real = os.path.realpath(str(output_file.parent))
                 if not (_parent_real == _ws_real or _parent_real.startswith(_ws_real + os.sep)):
                     continue
-                output_file.parent.mkdir(parents=True, exist_ok=True)
-                output_file.write_text(output, encoding="utf-8")
-                record["outputs"][step_name] = str(output_file)
+                safe_output_file = Path(_out_real)
+                safe_output_file.parent.mkdir(parents=True, exist_ok=True)
+                safe_output_file.write_text(output, encoding="utf-8")
+                record["outputs"][step_name] = str(safe_output_file)
         elif step_type == "api_fetch":
             step_result = {"status": "done", "endpoints": step.get("endpoints", [])}
         elif step_type in ("email_send", "notification", "social_publish", "cloud_upload"):
