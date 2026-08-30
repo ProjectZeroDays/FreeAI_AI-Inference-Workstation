@@ -2,3 +2,19 @@
   rule-id: py/path-injection
   path: agents/automations.py
   justification: 'Path validated by realpath containment; WORKFLOW_TEMPLATES hardcoded, step_name regex-sanitized'
+- tool: codeql
+  rule-id: py/path-injection
+  path: agents/builder_agents.py
+  justification: 'Path validated by realpath containment; run_id regex-sanitized via _sanitize_run_id; workspace_dir realpath-checked before mkdir'
+- tool: codeql
+  rule-id: py/path-injection
+  path: autonomous/agent.py
+  justification: 'workspace.root uses uuid4 hex run_id (not user-controlled); run_agent only called from tests with hardcoded run_ids'
+- tool: codeql
+  rule-id: py/path-injection
+  path: audit/logging.py
+  justification: '_audit_log_path is hardcoded CONFIG_DIR/audit.jsonl constant; no user input reaches open()'
+- tool: codeql
+  rule-id: py/path-injection
+  path: workflow/api.py
+  justification: 'TEMPLATES_PATH is hardcoded config constant; no user input reaches open()'
