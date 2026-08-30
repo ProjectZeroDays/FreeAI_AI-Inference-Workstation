@@ -468,6 +468,7 @@
     }
 
     // ── Init ──────────────────────────────────────────────────────────
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     loadHealth();
     renderHistory();
     $('sh-query').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });

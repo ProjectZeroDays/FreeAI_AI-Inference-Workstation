@@ -302,6 +302,7 @@
       }
     });
     $('pt-cancel').addEventListener('click', () => { $('pt-form').style.display = 'none'; });
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     $('pt-save').addEventListener('click', saveTemplate);
 
     load();

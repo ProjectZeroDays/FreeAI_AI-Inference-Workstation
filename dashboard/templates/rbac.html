@@ -189,7 +189,7 @@
         <div class="user-row">
           <span class="user-name">${u}</span>
           <select onchange="updateUserRole('${u}', this.value)">
-            ${ROLES.map(r => `<option value="${r}" ${r===role?'selected':''}>${r}</option>`).join('')}
+            ${ROLES.map(r => `<option value="${escAttr(r)}" ${r===role?'selected':''}>${r}</option>`).join('')}
           </select>
           ${u !== 'admin' ? `<button onclick="deleteUser('${u}')">✕</button>` : ''}
         </div>
@@ -237,6 +237,7 @@
       el.textContent = `${r.role} ${r.allowed ? '✓' : '✕'} ${r.action} on ${r.resource}`;
     }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     loadRoles();
     loadMatrix();
     loadUsers();

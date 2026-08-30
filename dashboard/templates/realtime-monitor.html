@@ -204,7 +204,7 @@
           <td class="mono">${item.timestamp?new Date(item.timestamp).toLocaleString():'—'}</td>
           <td>${item.type||item.name||'—'}</td>
           <td>${item.message||item.description||'—'}</td>
-          <td class="${sc}">${sev.toUpperCase()}</td>
+          <td class="${escAttr(sc)}">${sev.toUpperCase()}</td>
           <td><button class="btn btn-sm" onclick="dismissItem(${i})">Dismiss</button></td>
         </tr>`;
       }).join('');
@@ -253,6 +253,7 @@
       if (currentTab==='alerts') rmData.alerts.splice(i,1);
       else if (currentTab==='anomalies') rmData.anomalies.splice(i,1);
       render();
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     }
     loadData();
     setInterval(loadData, 5000);

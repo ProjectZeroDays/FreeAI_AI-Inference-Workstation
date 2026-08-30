@@ -126,7 +126,7 @@
         return `<tr>
           <td class="mono">${name}</td>
           <td>${type}</td>
-          <td class="${scl}">${sc}</td>
+          <td class="${escAttr(scl)}">${sc}</td>
           <td class="mono">${updated?new Date(updated).toLocaleString():'—'}</td>
           <td><button class="btn btn-sm" onclick="viewDetail(${i})">View</button></td>
         </tr>`;
@@ -141,6 +141,7 @@
     function viewDetail(i) {
       const items = currentTab==='iocs'?tiData.iocs:currentTab==='actors'?tiData.actors:tiData.feeds;
       alert(JSON.stringify(items[i],null,2));
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     }
     loadData();
     setInterval(loadData, 30000);

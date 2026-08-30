@@ -334,7 +334,7 @@
     function openRunNow() {
       const sel = $('run-job-select');
       sel.innerHTML = '<option value="">— Select a job —</option>' +
-        jobs.filter(j => j.status !== 'running').map(j => `<option value="${j.id}">${esc(j.name)} (${j.handler})</option>`).join('');
+        jobs.filter(j => j.status !== 'running').map(j => `<option value="${escAttr(j.id)}">${esc(j.name)} (${j.handler})</option>`).join('');
       $('run-modal').classList.add('open');
     }
     function closeRunNow() { $('run-modal').classList.remove('open'); }
@@ -407,6 +407,7 @@
       toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
     });
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     filterJobs();
     setInterval(() => { $('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString(); }, 30000);
   </script>

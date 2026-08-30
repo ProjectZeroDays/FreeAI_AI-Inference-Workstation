@@ -441,6 +441,7 @@
   }, 5000);
 })();
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
 function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>

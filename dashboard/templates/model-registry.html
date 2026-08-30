@@ -213,7 +213,7 @@
       const colors = scored.map(m => m.quality_score >= 0.7 ? '#22C55E' : m.quality_score >= 0.4 ? '#F59E0B' : '#EF4444');
       container.innerHTML = scored.slice(0, 12).map(m => `
         <div class="mr-bar-row">
-          <span class="mr-bar-label" title="${escHtml(m.key)}">${escHtml(m.key)}</span>
+          <span class="mr-bar-label" title="${escAttr(escHtml(m.key))}">${escHtml(m.key)}</span>
           <div class="mr-bar-track">
             <div class="mr-bar-fill" style="width:${(m.quality_score/maxScore*100).toFixed(1)}%;background:${colors[scored.indexOf(m)]}"></div>
           </div>
@@ -337,6 +337,7 @@
     // Refresh
     document.getElementById('btnRefresh').addEventListener('click', fetchData);
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     fetchData();
     setInterval(fetchData, 30000);
   </script>

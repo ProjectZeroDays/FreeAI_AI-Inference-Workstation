@@ -248,7 +248,7 @@
       if (!extensions.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
       empty.style.display = 'none';
       container.innerHTML = extensions.map(ext => `
-        <div class="ext-card" data-name="${ext.name}">
+        <div class="ext-card" data-name="${escAttr(ext.name)}">
           <div class="ext-card-header">
             <div class="ext-icon">${ext.name[0].toUpperCase()}</div>
             <div class="ext-info">
@@ -256,7 +256,7 @@
               <div class="meta">v${ext.version}${ext.builtin ? ' · builtin' : ''}${ext.enabled ? ' · active' : ' · disabled'}</div>
             </div>
             <label class="toggle" style="flex-shrink:0">
-              <input type="checkbox" ${ext.enabled ? 'checked' : ''} data-toggle="${ext.name}">
+              <input type="checkbox" ${ext.enabled ? 'checked' : ''} data-toggle="${escAttr(ext.name)}">
               <span class="slider"></span>
             </label>
           </div>
@@ -267,9 +267,9 @@
             ${ext.disabled_domains.length ? `<div>Blocked domains: ${ext.disabled_domains.join(', ')}</div>` : ''}
           </div>
           <div class="ext-actions">
-            <button class="btn-sm" data-action="domains" data-name="${ext.name}">Domains</button>
-            <button class="btn-sm" data-action="view-source" data-name="${ext.name}">View Source</button>
-            <button class="btn-sm danger" data-action="uninstall" data-name="${ext.name}">Remove</button>
+            <button class="btn-sm" data-action="domains" data-name="${escAttr(ext.name)}">Domains</button>
+            <button class="btn-sm" data-action="view-source" data-name="${escAttr(ext.name)}">View Source</button>
+            <button class="btn-sm danger" data-action="uninstall" data-name="${escAttr(ext.name)}">Remove</button>
           </div>
         </div>
       `).join('');
@@ -278,7 +278,7 @@
     function populateSourceSelect() {
       const sel = $('source-ext-select');
       sel.innerHTML = '<option value="">— select —</option>' +
-        extensions.map(e => `<option value="${e.name}">${e.name} (v${e.version})</option>`).join('');
+        extensions.map(e => `<option value="${escAttr(e.name)}">${e.name} (v${e.version})</option>`).join('');
     }
 
     // Tab switching
@@ -417,6 +417,7 @@
 
     $('btn-refresh').addEventListener('click', () => { load(); loadLog(); });
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     load();
     loadLog();
     setInterval(load, 30000);

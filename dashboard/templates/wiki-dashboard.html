@@ -215,7 +215,7 @@
     async function loadPage(anchor) {
       currentPage = anchor;
       document.querySelectorAll('.wiki-toc-item').forEach(i => i.classList.remove('active'));
-      const btn = document.querySelector(`.wiki-toc-item[data-page="${anchor}"]`);
+      const btn = document.querySelector(`.wiki-toc-item[data-page="${escAttr(anchor)}"]`);
       if (btn) btn.classList.add('active');
 
       const wrap = document.getElementById('wiki-content-wrap');
@@ -258,7 +258,7 @@
         return;
       }
       container.innerHTML = allSections.map(s => `
-        <button class="wiki-page-toc-item ${s.tag}" data-anchor="${s.id}" onclick="scrollToSection('${s.id}')">${escHtml(s.text)}</button>
+        <button class="wiki-page-toc-item ${s.tag}" data-anchor="${escAttr(s.id)}" onclick="scrollToSection('${s.id}')">${escHtml(s.text)}</button>
       `).join('');
     }
 
@@ -319,6 +319,7 @@
 
     function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     // Init
     loadPage('overview');
     setTimeout(initScrollSpy, 100);

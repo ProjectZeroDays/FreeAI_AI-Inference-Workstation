@@ -329,6 +329,7 @@
     // Initial load + auto-refresh
     runHealthCheck();
     startCountdown();
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     setInterval(() => runHealthCheck(), AUTO_INTERVAL * 1000);
 
     document.getElementById('foot-time').textContent = new Date().toLocaleTimeString();

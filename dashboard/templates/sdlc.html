@@ -517,7 +517,7 @@ curl -X POST http://localhost:8170/pipeline/custom \
             <div class="run-card">
               <div class="run-card-header">
                 <code class="run-id">${run.run_id}</code>
-                <span class="run-spec" title="${run.spec}">${run.spec}</span>
+                <span class="run-spec" title="${escAttr(run.spec)}">${run.spec}</span>
                 <span class="run-phase ${phaseClass}">${run.status}</span>
               </div>
               <div class="run-meta">
@@ -566,6 +566,7 @@ curl -X POST http://localhost:8170/pipeline/custom \
 
     $('btn-refresh').addEventListener('click', loadRuns);
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     // Auto-refresh runs every 15s
     setInterval(loadRuns, 15000);
     loadRuns();

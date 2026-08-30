@@ -171,6 +171,7 @@
     function viewProgress(i) {}
     function remediateFromCampaign(i) {}
     function viewResult(i) {}
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     function verifyRemediation(i) {}
     loadAll();
     setInterval(loadAll, 20000);

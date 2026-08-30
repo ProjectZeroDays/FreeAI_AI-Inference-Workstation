@@ -561,7 +561,7 @@
 
     function switchTab(tabName) {
       TABS.forEach(t => {
-        const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
+        const btn = document.querySelector(`.tab-btn[data-tab="${escAttr(t)}"]`);
         const content = document.getElementById(`tab-${t}`);
         if (btn) btn.classList.toggle('active', t === tabName);
         if (content) content.classList.toggle('active', t === tabName);
@@ -893,6 +893,7 @@
       } catch(e) {
         document.getElementById('dep-status-badge').textContent = 'error';
       }
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     }
     document.getElementById('dep-scan-btn')?.addEventListener('click', loadDependencyCard);
     loadDependencyCard();

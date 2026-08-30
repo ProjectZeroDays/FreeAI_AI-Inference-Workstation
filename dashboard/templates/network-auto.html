@@ -264,6 +264,7 @@
       } catch(e) { console.error(e); }
     }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     loadStatus();
     loadQuality();
     setInterval(loadQuality, 10000);

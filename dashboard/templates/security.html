@@ -324,7 +324,7 @@
       }
 
       list.innerHTML = findings.map((f, i) => `
-        <div class="finding-card severity-${f.severity}" data-severity="${f.severity}" data-category="${f.category}">
+        <div class="finding-card severity-${f.severity}" data-severity="${escAttr(f.severity)}" data-category="${escAttr(f.category)}">
           <div class="finding-top">
             <span class="severity-badge ${f.severity}">${f.severity}</span>
             <span class="finding-type">${f.subtype || f.type}</span>
@@ -451,6 +451,7 @@
         await fetch(`/api/cards/settings/${currentCardName}`, {
           method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
         });
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
         closeSettingsModal();
       } catch(e) { console.error(e); }
     }

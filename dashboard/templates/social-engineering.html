@@ -148,6 +148,7 @@
         const d = await r.json();
         seData.quiz = d.questions || d.quiz || [];
         currentTab = 'quiz';
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
         render();
       } catch(e) { console.error(e); }
     }

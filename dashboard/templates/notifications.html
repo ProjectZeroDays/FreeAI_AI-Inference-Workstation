@@ -417,7 +417,7 @@
         const src = n.source ? esc(n.source) : '';
         const isSelected = selectedIds.has(n.id);
         return `
-          <div class="notif-list-item level-${esc(n.level)}${n.read ? '' : ' unread'}${isSelected ? ' selected' : ''}" data-id="${esc(n.id)}">
+          <div class="notif-list-item level-${esc(n.level)}${n.read ? '' : ' unread'}${isSelected ? ' selected' : ''}" data-id="${escAttr(esc(n.id))}">
             <input type="checkbox" class="notif-list-check" ${isSelected ? 'checked' : ''}
                    onchange="toggleSelect('${esc(n.id)}', this.checked)" />
             <div class="notif-list-icon ${esc(n.level)}">${icon}</div>
@@ -447,7 +447,7 @@
       if (checked) selectedIds.add(id);
       else selectedIds.delete(id);
       updateSelectedUI();
-      const el = document.querySelector(`.notif-list-item[data-id="${CSS.escape(id)}"]`);
+      const el = document.querySelector(`.notif-list-item[data-id="${escAttr(CSS.escape(id))}"]`);
       if (el) el.classList.toggle('selected', checked);
     }
 
@@ -525,7 +525,7 @@
         <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px">
           <div class="setting-label">Notification types</div>
           <div class="type-chips">
-            ${types.map(t => `<span class="type-chip ${((notifSettings.enabled_types||[]).includes(t))?'active-'+t:''}" data-type="${t}" onclick="toggleTypeChip(this,'${t}')">${LABELS[t]}</span>`).join('')}
+            ${types.map(t => `<span class="type-chip ${((notifSettings.enabled_types||[]).includes(t))?'active-'+t:''}" data-type="${escAttr(t)}" onclick="toggleTypeChip(this,'${t}')">${LABELS[t]}</span>`).join('')}
           </div>
         </div>
         <div class="setting-row">
@@ -568,6 +568,7 @@
       setInterval(() => {
         if (!ws || ws.readyState !== WebSocket.OPEN) {
           loadNotifications();
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
         }
       }, 30000);
     });

@@ -176,7 +176,7 @@
       const cats = ['all', ...new Set(plugins.map(p => p.category || 'general'))];
       const row = $('cat-pills');
       row.innerHTML = cats.map(c =>
-        `<button class="cat-pill${c===currentCat?' active':''}" data-cat="${c}">${esc(c)}</button>`
+        `<button class="cat-pill${c===currentCat?' active':''}" data-cat="${escAttr(c)}">${esc(c)}</button>`
       ).join('');
       row.querySelectorAll('.cat-pill').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -233,6 +233,7 @@
     $('search').addEventListener('input', e => render(plugins, e.target.value));
     $('btn-refresh').addEventListener('click', load);
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     load();
     setInterval(load, 60000);
   </script>

@@ -237,6 +237,7 @@
     function loadTTPs() { loadAll(); }
     function viewGroup(i) {}
     function viewTTP(i) {}
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     function huntIOC(i) {}
     loadAll();
     setInterval(loadAll, 30000);

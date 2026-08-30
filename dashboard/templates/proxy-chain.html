@@ -198,7 +198,7 @@
           <td>${p.type||'—'}</td>
           <td>${p.location||'—'}</td>
           <td class="mono">${p.latency_ms||'—'}ms</td>
-          <td class="${hc}">${p.health||'unknown'}</td>
+          <td class="${escAttr(hc)}">${p.health||'unknown'}</td>
           <td><button class="btn btn-sm" onclick="testProxy(${i})">Test</button></td>
         </tr>`;
       }).join('');
@@ -209,6 +209,7 @@
         loadData();
       } catch(e) { console.error(e); }
     }
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     function testProxy(i) { alert('Testing '+pcData.proxies[i].address); }
     loadData();
     setInterval(loadData, 30000);

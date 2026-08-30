@@ -301,7 +301,7 @@
         return;
       }
       el.innerHTML = list.map(c => `
-        <div class="tree-item" data-name="${c.name}" onclick="selectConfig('${c.name}')">
+        <div class="tree-item" data-name="${escAttr(c.name)}" onclick="selectConfig('${escAttr(c.name)}')">
           <span class="tree-icon">${c.has_schema ? '⚙' : '📄'}</span>
           <span class="tree-name">${c.name}</span>
           <span class="tree-meta">${c.size}</span>

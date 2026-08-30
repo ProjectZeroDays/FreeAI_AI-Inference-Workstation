@@ -545,7 +545,7 @@
       grid.innerHTML = CARDS.map(card => {
         const d = telemetry[card.id === 'proxy-chain' ? 'proxyChain' : card.id === 'network-interfaces' ? 'networkInterfaces' : card.id === 'dns-over-https' ? 'doh' : card.id];
         return `
-          <div class="net-card" draggable="true" data-id="${card.id}">
+          <div class="net-card" draggable="true" data-id="${escAttr(card.id)}">
             <div class="card-head">
               <div class="card-title">
                 <span class="drag-handle" title="Drag to reorder">⠿</span>
@@ -617,6 +617,7 @@
       });
     }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     // ── Init ───────────────────────────────────────────────────────────
     renderCards();
     setInterval(renderCards, 5000);

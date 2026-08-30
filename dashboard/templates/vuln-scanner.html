@@ -136,6 +136,7 @@
     async function dismissVuln(i) {
       vulnData.results.splice(i,1);
       render();
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     }
     loadResults();
     setInterval(loadResults, 30000);

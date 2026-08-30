@@ -345,7 +345,7 @@
       const sel = document.getElementById('log-service-filter');
       sel.innerHTML = '<option value="all">All Services</option>' +
         SERVICES.filter(s => s.id !== 'all').map(s =>
-          `<option value="${s.id}" ${activeService === s.id ? 'selected' : ''}>${s.name}</option>`
+          `<option value="${escAttr(s.id)}" ${activeService === s.id ? 'selected' : ''}>${s.name}</option>`
         ).join('');
     }
 
@@ -384,7 +384,7 @@
       // Cap DOM nodes for performance
       const displayLogs = logs.slice(-500);
       display.innerHTML = displayLogs.map(l => `
-        <div class="log-entry" data-level="${l.level}">
+        <div class="log-entry" data-level="${escAttr(l.level)}">
           <span class="log-time">${l.time}</span>
           <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
           <span class="log-msg">${escHtml(l.msg)}</span>
@@ -523,6 +523,7 @@
       }, 3000);
     }
     // Start simulation after 3s if WS not connected
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     setTimeout(() => {
       if (!ws || ws.readyState !== 1) startSim();
     }, 3000);

@@ -204,6 +204,7 @@
     $('search').addEventListener('input', e => render(servers, e.target.value));
     $('btn-refresh').addEventListener('click', load);
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     load();
     setInterval(load, 60000);
   </script>

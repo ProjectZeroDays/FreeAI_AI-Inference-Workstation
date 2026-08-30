@@ -305,7 +305,7 @@
         <td class="mono" style="font-size:11px;color:var(--muted)">${esc(c.last_run)}</td>
         <td>
           <div style="display:flex;gap:4px">
-            <button class="btn btn-sm" onclick="toggleCampaign('${c.id}')" title="${c.status==='active'?'Pause':'Start'}">${c.status==='active'?'⏸':'▶'}</button>
+            <button class="btn btn-sm" onclick="toggleCampaign('${c.id}')" title="${escAttr(c.status==='active'?'Pause':'Start')}">${c.status==='active'?'⏸':'▶'}</button>
             <button class="btn btn-sm" onclick="editCampaign('${c.id}')" title="Edit">✏️</button>
             <button class="btn btn-sm btn-danger" onclick="deleteCampaign('${c.id}')" title="Delete">🗑</button>
           </div>
@@ -393,6 +393,7 @@
     toggle?.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     });
 
     filterCampaigns();

@@ -234,7 +234,7 @@
       for (const [svc, data] of Object.entries(services)) {
         const unacked = data.unacked || 0;
         const cls = unacked > 0 ? 'critical' : '';
-        html += `<div class="svc-badge ${activeService === svc ? 'active' : ''}" data-svc="${svc}" onclick="filterService('${svc}')">${svc} <span class="badge-count ${cls}">${unacked}</span></div>`;
+        html += `<div class="svc-badge ${activeService === svc ? 'active' : ''}" data-svc="${escAttr(svc)}" onclick="filterService('${svc}')">${svc} <span class="badge-count ${cls}">${unacked}</span></div>`;
       }
       container.innerHTML = html;
     }
@@ -379,6 +379,7 @@
 
     function escHtml(t) { return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     // Init
     loadErrors();
     setInterval(loadErrors, 30000);

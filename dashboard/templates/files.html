@@ -280,7 +280,7 @@
       if (currentView === 'list') {
         list.className = '';
         list.innerHTML = sorted.map(f => `
-          <div class="file-row" data-name="${escHtml(f.name)}" data-type="${escHtml(f.type)}"
+          <div class="file-row" data-name="${escAttr(escHtml(f.name))}" data-type="${escAttr(escHtml(f.type))}"
                onclick="selectFile(this,'${escHtml(f.name)}','${escHtml(f.type || '')}')"
                ondblclick="openItem('${escHtml(f.name)}','${escHtml(f.type || '')}')">
             <div class="fname">
@@ -378,7 +378,7 @@
         list.className = '';
         if (!d.results.length) { list.innerHTML = '<div class="empty-state"><div class="eicon">🔍</div><div>No results for "' + escHtml(q) + '"</div></div>'; return; }
         list.innerHTML = d.results.map(f => `
-          <div class="file-row" data-name="${escHtml(f.name)}" data-type="${escHtml(f.type||'file')}">
+          <div class="file-row" data-name="${escAttr(escHtml(f.name))}" data-type="${escAttr(escHtml(f.type||'file'))}">
             <div class="fname"><span class="ficon">${f.type==='dir'?'📁':escHtml(getIcon(f.name))}</span><span class="fnm">${escHtml(f.name)}</span></div>
             <div class="fsize">${f.type==='dir'?'<span class="muted">'+(f.items||0)+' items</span>':escHtml(formatSize(f.size))}</div>
             <div class="fdate">${escHtml(formatDate(f.modified))}</div>
@@ -436,6 +436,7 @@
       }
     });
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     loadFiles();
   </script>
 </body>

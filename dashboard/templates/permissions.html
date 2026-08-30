@@ -456,6 +456,7 @@
 
     function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     async function refreshAll() { renderTools($('tool-filter').value, $('tool-search').value); }
     renderTools();
   </script>

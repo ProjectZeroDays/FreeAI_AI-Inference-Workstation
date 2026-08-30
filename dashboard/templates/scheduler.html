@@ -193,7 +193,7 @@
         return;
       }
       list.innerHTML = filtered.map(j => `
-        <div class="job-card" data-id="${esc(j.id)}">
+        <div class="job-card" data-id="${escAttr(esc(j.id))}">
           <div class="job-head">
             <span class="job-name">${esc(j.name || 'untitled')}</span>
             <span class="job-cron">${esc(j.cron || '—')}</span>
@@ -277,6 +277,7 @@
     $('search').addEventListener('input', e => render(jobs, e.target.value));
     $('btn-refresh').addEventListener('click', load);
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     load();
     setInterval(load, 30000);
   </script>

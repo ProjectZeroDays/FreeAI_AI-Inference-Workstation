@@ -277,6 +277,7 @@
         await fetch(`/api/cards/settings/${currentCardName}`, {
           method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
         });
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
         closeSettingsModal();
       } catch(e) { console.error(e); }
     }

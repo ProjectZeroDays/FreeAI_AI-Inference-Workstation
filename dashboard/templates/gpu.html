@@ -312,6 +312,7 @@ document.getElementById('btn-refresh').addEventListener('click', () => {
   fetchGpuData();
 });
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
 // initial load + interval
 fetchGpuData();
 refreshTimer = setInterval(fetchGpuData, REFRESH_MS);

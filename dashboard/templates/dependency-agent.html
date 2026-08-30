@@ -219,6 +219,7 @@
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({preset, auto_apply: autoApply}),
       });
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
       alert('Settings saved');
     }
     loadAnalysis();

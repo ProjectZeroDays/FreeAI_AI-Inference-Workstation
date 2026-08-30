@@ -272,7 +272,7 @@
       grid.innerHTML = items.map(a => {
         const fillClass = a.status === 'done' ? 'green' : a.status === 'failed' ? 'red' : a.status === 'paused' ? 'yellow' : 'blue';
         return `
-          <div class="sa-card" data-id="${esc(a.id)}">
+          <div class="sa-card" data-id="${escAttr(esc(a.id))}">
             <div class="sa-card-head">
               <div class="sa-avatar">${(a.name||'?').charAt(0)}</div>
               <div style="flex:1;min-width:0">
@@ -417,6 +417,7 @@
         });
         closeSettingsModal();
       } catch(e) { console.error(e); }
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     }
   </script>
 </body>

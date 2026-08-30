@@ -487,6 +487,7 @@
     // ── Init ───────────────────────────────────────────────────────
     loadProviders();
     loadLogs();
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     loadSharedConfigs();
     setInterval(loadProviders, 30000);
     setInterval(loadLogs, 15000);

@@ -319,8 +319,8 @@
       tbody.innerHTML = list.map(p => `<tr>
         <td style="font-weight:600">${esc(p.name)}</td>
         <td><span class="badge badge-${p.type==='primary'?'green':p.type==='fallback'?'yellow':p.type==='local'?'blue':p.type==='tool'?'purple':'gray'}">${esc(p.type)}</span></td>
-        <td class="ext-url" title="${esc(p.url)}">${esc(p.url)}</td>
-        <td class="ext-models" title="${p.models.join(', ')}">${esc(p.models.join(', '))}</td>
+        <td class="ext-url" title="${escAttr(esc(p.url))}">${esc(p.url)}</td>
+        <td class="ext-models" title="${escAttr(p.models.join(', '))}">${esc(p.models.join(', '))}</td>
         <td><span class="badge badge-${p.status==='healthy'?'green':p.status==='degraded'?'yellow':'red'}">${esc(p.status)}</span></td>
         <td>${p.latency ? '<span class="latency-badge '+(p.latency<100?'latency-fast':p.latency<200?'latency-slow':'latency-crit')+'">'+p.latency+'ms</span>' : '—'}</td>
         <td>
@@ -405,6 +405,7 @@
     toggle?.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     });
 
     renderProviders(providers);

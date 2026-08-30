@@ -694,7 +694,7 @@
       const current = sel.value;
       const models = data?.models ? Object.keys(data.models) : [];
       sel.innerHTML = '<option value="">All Models</option>' +
-        models.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+        models.map(m => `<option value="${escAttr(esc(m))}">${esc(m)}</option>`).join('');
       sel.value = current;
     }
 
@@ -757,6 +757,7 @@
       }
     }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     // ── Init ───────────────────────────────────────────────────────
     loadAll();
     setInterval(loadAll, 60000);

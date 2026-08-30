@@ -515,10 +515,11 @@
         const sel = document.getElementById('service-filter');
         const services = Object.keys(data).sort();
         sel.innerHTML = '<option value="all">All Services</option>' +
-          services.map(s => `<option value="${s}">${s}</option>`).join('');
+          services.map(s => `<option value="${escAttr(s)}">${s}</option>`).join('');
       })
       .catch(() => {});
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     connectWS();
   </script>
 </body>

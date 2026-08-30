@@ -402,6 +402,7 @@
       } catch(e) { console.error(e); }
     }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     refreshAll();
     setInterval(refreshAll, 30000);
   </script>

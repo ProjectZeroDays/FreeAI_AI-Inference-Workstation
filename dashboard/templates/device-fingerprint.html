@@ -214,6 +214,7 @@
         const r = await fetch('/api/fingerprint/tips');
         const d = await r.json();
         fpData.tips = d.tips || [];
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
         render();
       } catch(e) { console.error(e); }
     }

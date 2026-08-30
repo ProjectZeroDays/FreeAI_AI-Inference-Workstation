@@ -190,7 +190,7 @@
         div.className = "device-item";
         div.innerHTML =
           `<span class="name">GPU ${r.device_index}: ${r.device_name || "unknown"}</span>` +
-          `<span class="stats">latency: <span class="${latClass}">${lat}</span> &nbsp; peak VRAM: <span>${vram}</span></span>`;
+          `<span class="stats">latency: <span class="${escAttr(latClass)}">${lat}</span> &nbsp; peak VRAM: <span>${vram}</span></span>`;
         deviceList.appendChild(div);
       });
       $("sum-latency").textContent = count ? (totalLat / count).toFixed(1) + " ms" : "—";
@@ -280,6 +280,7 @@
     $("btn-warmup").addEventListener("click", runWarmup);
     $("btn-benchmark").addEventListener("click", runBenchmark);
     $("btn-results").addEventListener("click", loadResults);
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     $("btn-toggle-log").addEventListener("click", () => {
       logArea.classList.toggle("visible");
     });

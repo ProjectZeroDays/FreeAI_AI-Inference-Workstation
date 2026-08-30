@@ -492,6 +492,7 @@
     const sidebar = document.querySelector('.sidebar');
     const toggle  = $('sidebar-toggle');
     toggle?.addEventListener('click', () => {
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
       sidebar.classList.toggle('collapsed');
       toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
     });

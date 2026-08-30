@@ -292,7 +292,7 @@
       const sel = document.getElementById('pass-disk-select');
       sel.innerHTML = '<option value="">Select disk...</option>' +
         diskList.filter(d => d.encrypted).map(d =>
-          `<option value="${escHtml(d.name)}">${escHtml(d.name)} (LUKS)</option>`
+          `<option value="${escAttr(escHtml(d.name))}">${escHtml(d.name)} (LUKS)</option>`
         ).join('');
     }
 
@@ -410,6 +410,7 @@
       return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
+    function escAttr(s) { return s.replace(/'/g, "\\'"); }
     // Load on page open
     scanDisks();
     setInterval(scanDisks, 60000);
