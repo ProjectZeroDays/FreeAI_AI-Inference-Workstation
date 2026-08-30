@@ -237,7 +237,7 @@
       el.textContent = `${r.role} ${r.allowed ? '✓' : '✕'} ${r.action} on ${r.resource}`;
     }
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     loadRoles();
     loadMatrix();
     loadUsers();

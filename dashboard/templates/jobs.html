@@ -393,7 +393,7 @@
       $('interval-field').style.display = type === 'interval' ? 'flex' : 'none';
     }
 
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'.replace(/\\/g,'&#92;'); }
 
     async function refreshAll() {
       filterJobs();
@@ -407,7 +407,7 @@
       toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
     });
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     filterJobs();
     setInterval(() => { $('last-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString(); }, 30000);
   </script>

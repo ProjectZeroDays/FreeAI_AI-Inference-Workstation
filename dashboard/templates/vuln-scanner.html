@@ -136,7 +136,7 @@
     async function dismissVuln(i) {
       vulnData.results.splice(i,1);
       render();
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     }
     loadResults();
     setInterval(loadResults, 30000);

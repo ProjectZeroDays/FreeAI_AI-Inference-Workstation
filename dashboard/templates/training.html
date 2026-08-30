@@ -317,9 +317,9 @@
       $('ts-failed').textContent  = trainingJobs.filter(j=>j.status==='failed').length;
     }
 
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'.replace(/\\/g,'&#92;'); }
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     refreshAll();
     initCharts();
     setInterval(refreshAll, 60000);

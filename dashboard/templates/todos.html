@@ -276,8 +276,8 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     };
 
-    function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function escAttr(s) { return esc(s); }
+    function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'.replace(/\\/g,'&#92;'); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
 
     // ── Sidebar toggle ─────────────────────────────────────────────
     const sidebar = document.querySelector('.sidebar');

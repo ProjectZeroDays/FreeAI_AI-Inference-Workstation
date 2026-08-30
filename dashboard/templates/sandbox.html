@@ -729,7 +729,7 @@
     const style = document.createElement('style');
     style.textContent = `
       @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
       .blink { animation: blink 1s infinite; }
     `;
     document.head.appendChild(style);

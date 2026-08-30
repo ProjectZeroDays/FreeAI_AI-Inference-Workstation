@@ -219,7 +219,7 @@
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({preset, auto_apply: autoApply}),
       });
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
       alert('Settings saved');
     }
     loadAnalysis();

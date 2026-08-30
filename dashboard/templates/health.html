@@ -329,7 +329,7 @@
     // Initial load + auto-refresh
     runHealthCheck();
     startCountdown();
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     setInterval(() => runHealthCheck(), AUTO_INTERVAL * 1000);
 
     document.getElementById('foot-time').textContent = new Date().toLocaleTimeString();

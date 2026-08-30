@@ -564,7 +564,7 @@
       } catch(e) { toast('Failed to load backups: ' + e.message, 'err'); }
     }
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
 
     async function restoreBackup(filename) {
       if (!currentFile) return;

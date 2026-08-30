@@ -210,7 +210,7 @@
     let searchCount = 0;
 
     // ── XSS prevention ────────────────────────────────────────────────
-    function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'.replace(/\\/g,'&#92;'); }
 
     function $(id) { return document.getElementById(id); }
 
@@ -468,7 +468,7 @@
     }
 
     // ── Init ──────────────────────────────────────────────────────────
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     loadHealth();
     renderHistory();
     $('sh-query').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });

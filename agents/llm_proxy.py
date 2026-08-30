@@ -283,4 +283,8 @@ if __name__ == "__main__":
     else:
         prompt = " ".join(sys.argv[1:])
         result = complete(prompt)
-        print(json.dumps(result, indent=2))
+        # Mask sensitive fields before printing
+        safe = json.dumps(result, indent=2)
+        for key in ("api_key", "token", "password", "secret", "authorization"):
+            safe = re.sub(f'"{key}":\s*"[^"]*"', f'"{key}": "[REDACTED]"', safe, flags=re.I)
+        print(safe)

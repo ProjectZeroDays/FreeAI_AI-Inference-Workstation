@@ -611,7 +611,7 @@ def route():
                                    timeout=TIMEOUT)
         except Exception as exc:
             metrics_incr("errors_total")
-            error = str(exc)
+            error = exc.args[0] if exc.args else "service unavailable"
             status = "error"
             elapsed_ms = int((time.monotonic() - started) * 1000)
             if span:
@@ -621,7 +621,7 @@ def route():
             if otel:
                 otel.record_trace(trace_id, task_type, None,
                                   elapsed_ms, "error", confidence)
-            return jsonify({"error": error, "provider": pname,
+            return jsonify({"error": "service unavailable", "provider": pname,
                             "task_type": task_type, "trace_id": trace_id}), 502
         elapsed_ms = int((time.monotonic() - started) * 1000)
         metrics_latency(elapsed_ms)
@@ -758,7 +758,7 @@ def route():
                                 from_model=model_used_prev, to_model=fid).inc()
                     break
                 except Exception as exc:
-                    error = str(exc)
+                    error = exc.args[0] if exc.args else "backend error"
                     continue
 
         if result is None:
@@ -773,7 +773,7 @@ def route():
                 otel.record_trace(trace_id, task_type, None,
                                   elapsed_ms, "error", confidence)
             return jsonify({
-                "error": error or "all backends failed",
+                "error": "all backends failed",
                 "task_type": task_type,
                 "trace_id": trace_id,
             }), 502

@@ -389,7 +389,7 @@
       toast('Provider deleted: ' + name);
     }
 
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'.replace(/\\/g,'&#92;'); }
 
     async function refreshAll() {
       try {
@@ -405,7 +405,7 @@
     toggle?.addEventListener('click', () => {
       sidebar.classList.toggle('collapsed');
       toggle.querySelector('.toggle-icon').textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     });
 
     renderProviders(providers);

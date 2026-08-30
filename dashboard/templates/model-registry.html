@@ -337,7 +337,7 @@
     // Refresh
     document.getElementById('btnRefresh').addEventListener('click', fetchData);
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     fetchData();
     setInterval(fetchData, 30000);
   </script>

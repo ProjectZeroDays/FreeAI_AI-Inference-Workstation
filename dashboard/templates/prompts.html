@@ -168,7 +168,7 @@
       setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'.replace(/\\/g,'&#92;'); }
 
     async function load() {
       try {
@@ -302,7 +302,7 @@
       }
     });
     $('pt-cancel').addEventListener('click', () => { $('pt-form').style.display = 'none'; });
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     $('pt-save').addEventListener('click', saveTemplate);
 
     load();

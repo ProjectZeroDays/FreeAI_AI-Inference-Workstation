@@ -131,7 +131,7 @@
       const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + type;
       setTimeout(() => t.classList.remove('show'), 3000);
     }
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'.replace(/\\/g,'&#92;'); }
 
     let servers = [];
 
@@ -204,7 +204,7 @@
     $('search').addEventListener('input', e => render(servers, e.target.value));
     $('btn-refresh').addEventListener('click', load);
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     load();
     setInterval(load, 60000);
   </script>

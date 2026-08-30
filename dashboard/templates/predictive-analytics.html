@@ -269,7 +269,7 @@
         data.trends = (await r.json()).trends || [];
         render();
       } catch(e) {}
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     }
     loadAll();
     setInterval(loadAll, 30000);

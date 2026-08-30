@@ -208,7 +208,7 @@ def verify_services(services):
             r = requests.get(f"{svc['url']}/health", timeout=3)
             results[name] = {"status": r.status_code, "healthy": r.ok}
         except Exception as exc:
-            results[name] = {"status": 0, "healthy": False, "error": str(exc)}
+            results[name] = {"status": 0, "healthy": False, "error": "health check failed"}
     return results
 
 

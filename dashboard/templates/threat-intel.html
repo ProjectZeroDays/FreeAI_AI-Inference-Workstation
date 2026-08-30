@@ -141,7 +141,7 @@
     function viewDetail(i) {
       const items = currentTab==='iocs'?tiData.iocs:currentTab==='actors'?tiData.actors:tiData.feeds;
       alert(JSON.stringify(items[i],null,2));
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     }
     loadData();
     setInterval(loadData, 30000);

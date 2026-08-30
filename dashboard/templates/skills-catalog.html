@@ -414,7 +414,7 @@
     $('search').addEventListener('input', e => renderGrid(e.target.value));
     $('btn-refresh').addEventListener('click', refreshCatalog);
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     // ── Init ──────────────────────────────────────────────────────
     loadCatalog().then(() => { renderCategories(); renderGrid(); });
   </script>

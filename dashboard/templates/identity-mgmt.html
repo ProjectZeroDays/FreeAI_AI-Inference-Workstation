@@ -226,7 +226,7 @@
       } catch(e) { console.error(e); }
     }
     function editRole(i) { alert('Edit role for '+idData.users[i].username); }
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     function revokeSession(i) { idData.sessions[i].active=false; render(); }
     loadData();
     setInterval(loadData, 30000);

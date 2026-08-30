@@ -395,7 +395,7 @@
       window.open(`http://127.0.0.1:${port}`, '_blank');
     });
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     loadStatus();
     setInterval(loadStatus, 30000);
   </script>

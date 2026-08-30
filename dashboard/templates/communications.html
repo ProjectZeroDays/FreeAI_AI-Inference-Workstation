@@ -487,7 +487,7 @@
     // ── Init ───────────────────────────────────────────────────────
     loadProviders();
     loadLogs();
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     loadSharedConfigs();
     setInterval(loadProviders, 30000);
     setInterval(loadLogs, 15000);

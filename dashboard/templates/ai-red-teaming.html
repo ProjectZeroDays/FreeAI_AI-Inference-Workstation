@@ -171,7 +171,7 @@
     function viewProgress(i) {}
     function remediateFromCampaign(i) {}
     function viewResult(i) {}
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     function verifyRemediation(i) {}
     loadAll();
     setInterval(loadAll, 20000);

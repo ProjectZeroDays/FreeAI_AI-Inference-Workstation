@@ -192,7 +192,7 @@
           <td>${c.status||'—'}</td>
           <td>—</td>
           <td><button class="btn btn-sm">View</button></td>
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
         </tr>`).join('');
       }
     }

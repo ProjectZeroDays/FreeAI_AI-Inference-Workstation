@@ -200,7 +200,7 @@
     function exportLoot(fmt) { alert('Export '+fmt+' — stub for now'); }
     async function clearLoot() {
       if (!confirm('Clear all loot?')) return;
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
       try { await fetch('/api/loot/clear', {method:'POST'}); loadLoot(); } catch(e) {}
     }
     loadLoot();
@@ -249,7 +249,7 @@
         await fetch(`/api/cards/settings/${currentCardName}`, {
           method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
         });
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
         closeSettingsModal();
       } catch(e) { console.error(e); }
     }

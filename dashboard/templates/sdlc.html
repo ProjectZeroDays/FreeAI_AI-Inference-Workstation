@@ -566,7 +566,7 @@ curl -X POST http://localhost:8170/pipeline/custom \
 
     $('btn-refresh').addEventListener('click', loadRuns);
 
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     // Auto-refresh runs every 15s
     setInterval(loadRuns, 15000);
     loadRuns();

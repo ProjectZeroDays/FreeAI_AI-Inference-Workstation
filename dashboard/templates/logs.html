@@ -523,7 +523,7 @@
       }, 3000);
     }
     // Start simulation after 3s if WS not connected
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     setTimeout(() => {
       if (!ws || ws.readyState !== 1) startSim();
     }, 3000);

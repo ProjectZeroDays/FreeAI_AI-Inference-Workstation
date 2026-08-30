@@ -121,7 +121,7 @@
           <td class="p-models">${(p.models||[]).slice(0,3).join(', ')}${(p.models||[]).length>3?'...':''}</td>
           <td style="font-size:12px;color:var(--muted)">${p.auth||'none'}</td>
         </tr>`).join('');
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     }
     $('search').addEventListener('input', e => render(e.target.value));
     load();

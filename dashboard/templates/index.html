@@ -893,7 +893,7 @@
       } catch(e) {
         document.getElementById('dep-status-badge').textContent = 'error';
       }
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     }
     document.getElementById('dep-scan-btn')?.addEventListener('click', loadDependencyCard);
     loadDependencyCard();

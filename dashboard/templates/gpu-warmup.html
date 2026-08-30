@@ -280,7 +280,7 @@
     $("btn-warmup").addEventListener("click", runWarmup);
     $("btn-benchmark").addEventListener("click", runBenchmark);
     $("btn-results").addEventListener("click", loadResults);
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     $("btn-toggle-log").addEventListener("click", () => {
       logArea.classList.toggle("visible");
     });

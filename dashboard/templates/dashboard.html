@@ -517,7 +517,7 @@
       } catch(e) { console.error(e); }
     }
 
-    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'.replace(/\\/g,'&#92;'); }
 
     // Init
     refreshAll();
@@ -693,7 +693,7 @@
       const el = document.getElementById('cmd-palette');
       if(el) el.classList.remove('open');
     }
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     document.addEventListener('keydown', e => {
       if((e.metaKey || e.ctrlKey) && e.key === 'k'){ e.preventDefault(); openCmdPalette(); }
     });

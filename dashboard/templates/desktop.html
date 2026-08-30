@@ -402,7 +402,7 @@
       localStorage.setItem(GRID_KEY, JSON.stringify(cardOrder));
       renderCards();
       showToast('Cards reset to default order');
-    function escAttr(s) { return s.replace(/'/g, "\\'"); }
+    function escAttr(s) { return (s||"").replace(/[&>'"\\/]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;","\\":"&#92;","\/":"&#x2F;"}[c];}); }
     });
 
     renderCards();
