@@ -579,8 +579,8 @@ def env_specialized_agents():
         if resp.status_code == 200:
             return resp.json()
         return {"error": f"Quantum returned status {resp.status_code}", "agents": {}}
-    except Exception as e:
-        return {"error": str(e), "agents": {}}
+    except Exception:
+        return {"error": "Quantum service unavailable", "agents": {}}
 
 
 class ExploitAgentRequest(BaseModel):
@@ -611,8 +611,8 @@ def agent_exploit(request: Request, req: ExploitAgentRequest):
                 "result": result.get("result"),
             }
         return {"error": f"Quantum returned {resp.status_code}", "body": resp.text}
-    except Exception as e:
-        return {"error": f"Failed to reach Quantum at {QUANTUM_AGENT_API_URL}: {e}"}
+    except Exception:
+        return {"error": "Failed to reach Quantum service"}
 
 
 @app.get("/env/plugins")

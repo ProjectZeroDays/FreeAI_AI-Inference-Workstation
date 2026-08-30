@@ -108,9 +108,9 @@ def create_todo(user):
         session.commit()
         session.refresh(todo)
         return jsonify({"status": "success", "data": _todo_to_dict(todo)}), 201
-    except Exception as exc:
+    except Exception:
         session.rollback()
-        return jsonify({"status": "error", "message": str(exc)}), 500
+        return jsonify({"status": "error", "message": "internal error"}), 500
     finally:
         session.close()
 
@@ -143,9 +143,9 @@ def update_todo(todo_id, user):
         return jsonify({"status": "success", "data": _todo_to_dict(todo)})
     except ValueError:
         return jsonify({"status": "error", "message": "invalid priority value"}), 400
-    except Exception as exc:
+    except Exception:
         session.rollback()
-        return jsonify({"status": "error", "message": str(exc)}), 500
+        return jsonify({"status": "error", "message": "internal error"}), 500
     finally:
         session.close()
 
@@ -162,9 +162,9 @@ def delete_todo(todo_id, user):
         session.delete(todo)
         session.commit()
         return jsonify({"status": "success", "data": {"id": todo_id}})
-    except Exception as exc:
+    except Exception:
         session.rollback()
-        return jsonify({"status": "error", "message": str(exc)}), 500
+        return jsonify({"status": "error", "message": "internal error"}), 500
     finally:
         session.close()
 
@@ -183,8 +183,8 @@ def toggle_todo(todo_id, user):
         session.commit()
         session.refresh(todo)
         return jsonify({"status": "success", "data": _todo_to_dict(todo)})
-    except Exception as exc:
+    except Exception:
         session.rollback()
-        return jsonify({"status": "error", "message": str(exc)}), 500
+        return jsonify({"status": "error", "message": "internal error"}), 500
     finally:
         session.close()
