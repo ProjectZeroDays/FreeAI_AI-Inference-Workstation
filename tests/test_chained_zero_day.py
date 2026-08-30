@@ -103,7 +103,7 @@ class TestChainedZeroDay(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         data = resp.get_json()
         self.assertEqual(data["status"], "simulated")
-        self.assertEqual(data["stages_completed"], 3)
+        self.assertEqual(data["stages_completed"], 4)
         self.assertEqual(data["success"], True)
 
     # ── List Chains ──
