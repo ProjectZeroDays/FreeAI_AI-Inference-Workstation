@@ -87,7 +87,9 @@
 
 ## P0 — Blocking (must fix before shipping)
 
-- [ ] **`memory_primitives` agent** — **ALREADY COVERED**: 20 tests passing in `tests/test_memory_primitives.py`, 15 in `agents/specialized/MemoryPrimitives/`. No action needed.
+- [x] **Add CI test-count gate** — fail pipeline if total test count drops below 1154 (commit `30260ee`)
+- [x] **Fix Windows file-lock race** in `test_jwt_auth.py::test_authenticate_first_login_required` (mkstemp fd not closed before unlink) — **DONE** (commit `b876d78`)
+- [x] **`memory_primitives` agent** — **ALREADY COVERED**: 20 tests passing in `tests/test_memory_primitives.py`, 15 in `agents/specialized/MemoryPrimitives/`. No action needed.
 - [ ] **Fix Windows file-lock race** in `test_jwt_auth.py::test_authenticate_first_login_required` (mkstemp fd not closed before unlink) — **DONE** (commit b876d78)
 - [ ] **Add CI test-count gate** — fail pipeline if total test count drops below 1154 — **DONE** (commit added to ci.yml)
 
