@@ -8,6 +8,9 @@ on:
       - "router/**"
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   test-workflows:
     runs-on: ubuntu-latest

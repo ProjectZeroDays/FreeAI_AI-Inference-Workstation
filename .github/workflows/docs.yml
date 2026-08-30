@@ -6,6 +6,9 @@ on:
       - "workflow/**"
       - "docs/**"
 
+permissions:
+  contents: read
+
 jobs:
   docs:
     runs-on: ubuntu-latest

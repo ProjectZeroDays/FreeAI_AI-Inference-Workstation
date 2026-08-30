@@ -253,6 +253,7 @@
 
   <script>
     const $ = id => document.getElementById(id);
+    function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
     function toast(msg, type='success') {
       const t = $('toast');
       t.textContent = msg;
@@ -314,7 +315,7 @@
       const area = $('log-area');
       const now = new Date().toLocaleTimeString();
       area.insertAdjacentHTML('beforeend',
-        `<div class="log-line"><span class="log-time">${now}</span><span class="log-level ${level}">${level}</span><span>${msg}</span></div>`);
+        `<div class="log-line"><span class="log-time">${now}</span><span class="log-level ${escHtml(level)}">${escHtml(level)}</span><span>${escHtml(msg)}</span></div>`);
       area.scrollTop = area.scrollHeight;
     }
 
