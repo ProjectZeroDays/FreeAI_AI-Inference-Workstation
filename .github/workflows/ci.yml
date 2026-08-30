@@ -48,6 +48,15 @@ jobs:
       - name: Install test dependencies
         run: pip install -r requirements-dev.txt
 
+      - name: Verify test count
+        run: |
+          COUNT=$(python -m pytest tests/ --co -q 2>&1 | grep -E '^\S+\.py:' | awk -F': ' '{s+=$2} END{print s}')
+          echo "Collected $COUNT tests"
+          if [ "$COUNT" -lt 1154 ]; then
+            echo "FAIL: Expected at least 1154 tests, found $COUNT"
+            exit 1
+          fi
+
       - name: Pytest — unit + regression + integration
         run: |
           python -m pytest tests/ \
