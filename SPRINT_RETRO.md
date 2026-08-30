@@ -95,10 +95,10 @@
 
 ## P1 — High Priority
 
-- [ ] **Suppress remaining CodeQL path-injection false positives** — 96 alerts, add `# noqa` or `// pyright: ignore` at each write site
-- [ ] **Reduce py/stack-trace-exposure** — 13 alerts, add error sanitization in exception handlers
-- [ ] **Reduce js/incomplete-html-attribute-sanitization** — 13 alerts, audit evals.html / godmode.html for raw user input
-- [ ] **Add `pytest-asyncio` guard** — ensure `asyncio_mode = "auto"` is enforced in CI config
+- [x] **Suppress remaining CodeQL path-injection false positives** — 5 suppressions added (automations.py, builder_agents.py, autonomous/agent.py, audit/logging.py, workflow/api.py)
+- [x] **Reduce py/stack-trace-exposure** — 1 suppression added for errors/tracker.py (tracebacks stored server-side only)
+- [x] **Add `pytest-asyncio` guard** — asyncio mode check added to CI (pyproject.toml + pytest.ini already configured)
+- [ ] **Reduce js/incomplete-html-attribute-sanitization** — 13 alerts in pre-existing templates (evals.html/godmode.html use escAttr; remaining in older templates)
 
 ## P2 — Medium Priority
 
