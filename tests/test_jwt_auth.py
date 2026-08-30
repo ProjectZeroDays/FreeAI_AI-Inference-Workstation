@@ -132,7 +132,9 @@ def test_authenticate_first_login_required():
     import auth.users as u_module
     import tempfile
     # Use a fresh temp path so _load_users returns empty
-    u_module._USERS_PATH = Path(tempfile.mkstemp(suffix="-auth-users.json")[1])
+    fd, tmp_path = tempfile.mkstemp(suffix="-auth-users.json")
+    os.close(fd)
+    u_module._USERS_PATH = Path(tmp_path)
     u_module._users = {}
     u_module._ensure_defaults()
     user, err = users_store.authenticate("admin", u_module.get_default_admin_password())

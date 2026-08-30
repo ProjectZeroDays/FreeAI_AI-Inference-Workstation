@@ -1,4 +1,4 @@
 - tool: codeql
   rule-id: py/path-injection
   path: agents/automations.py
-  justification: "Path is validated via realpath containment against WORKSPACES_DIR; WORKFLOW_TEMPLATES are hardcoded and step_name is regex-sanitized"
+  justification: 'Path validated by realpath containment; WORKFLOW_TEMPLATES hardcoded, step_name regex-sanitized'
