@@ -101,7 +101,7 @@ def score_llm(task: dict, actual: str, router_url: str) -> tuple[float, str]:
             return round(min(1.0, max(0.0, val)), 4), f"llm judge: {val:.2f}"
         return 0.5, f"llm parse fail: {text[:100]}"
     except Exception as exc:
-        return 0.5, f"llm judge error: {exc}"
+        return 0.5, "evaluation error"
 
 
 def score_task(task: dict, response: str) -> tuple[float, str]:

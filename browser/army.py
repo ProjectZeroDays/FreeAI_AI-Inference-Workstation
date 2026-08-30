@@ -162,7 +162,7 @@ class SwarmCoordinator:
         except Exception as exc:
             agent.tasks_failed += 1
             agent.status = "failed"
-            return {"agent_id": agent_id, "error": str(exc)}
+            return {"agent_id": agent_id, "error": "task execution failed"}
 
     async def _run_task(self, agent, task):
         """Run a task against the agent's BrowserEngine."""

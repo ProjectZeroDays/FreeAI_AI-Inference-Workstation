@@ -326,7 +326,7 @@ class WorkflowEngine:
             wf.last_result = {"run_id": run_id, "results": all_results}
         except Exception as e:
             wf.status = "failed"
-            wf.last_result = {"error": str(e)}
+            wf.last_result = {"error": "workflow execution failed"}
         with self._lock:
             if workflow_id in self._active_runs:
                 self._active_runs[workflow_id]["completed_at"] = time.time()

@@ -140,7 +140,7 @@ def _call_provider(provider: str, model: str, prompt: str,
             return {"content": "", "model": f"{provider}/{model}"}
 
     except Exception as exc:
-        return {"error": str(exc), "model": f"{provider}/{model}"}
+        return {"error": "service unavailable", "model": f"{provider}/{model}"}
 
     return {"content": "", "model": f"{provider}/{model}"}
 

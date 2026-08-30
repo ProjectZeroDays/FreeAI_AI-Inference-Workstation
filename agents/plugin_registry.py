@@ -62,7 +62,7 @@ class PluginRegistry:
             self._save()
             return data
         except Exception as exc:
-            return {"error": str(exc), "plugins": self._plugins}
+            return {"error": "registry unavailable", "plugins": self._plugins}
 
     def list_plugins(self, category: str = None, enabled: bool = None) -> list:
         with _lock:

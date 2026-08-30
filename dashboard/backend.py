@@ -2770,7 +2770,7 @@ def api_evals_run():
         t.start()
         return jsonify({"ok": True, "status": "started", "thread": t.ident})
     except ImportError as exc:
-        return jsonify({"error": f"evals module not available: {exc}", "status": "error"}), 503
+        return jsonify({"error": "evals unavailable", "status": "error"}), 503
 
 
 @app.route("/api/evals/results/<run_id>")

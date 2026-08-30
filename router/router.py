@@ -247,7 +247,7 @@ def stream_provider(provider_model, prompt, payload_base=None):
                 (time.monotonic() - started))
         yield "data: [DONE]\n\n"
     except Exception as exc:
-        yield f'data: {json.dumps({"error": str(exc)})}\n\n'
+        yield 'data: {"error": "route failed"}\n\n'
         yield "data: [DONE]\n\n"
 
 
@@ -385,7 +385,7 @@ def _try_candidate(candidate, payload, stream=False):
         return r.json(), f"{candidate}@{lb_key}", None
     except Exception as exc:
         record_failure(lb_key)
-        return None, None, str(exc)
+        return None, None, "routing failed"
 @app.route("/health")
 def health():
     return jsonify({"status": "ok", "mock": MOCK_LLM})

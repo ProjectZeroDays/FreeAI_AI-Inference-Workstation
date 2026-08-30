@@ -530,7 +530,7 @@ def route():
             result["model"] = provider_model
     except Exception as exc:
         incr_metrics("errors_total")
-        return jsonify({"error": str(exc), "provider": prov_name}), 502
+        return jsonify({"error": "provider error", "provider": prov_name}), 502
 
     elapsed_ms = int((time.monotonic() - started) * 1000)
     record_latency(elapsed_ms)
@@ -584,7 +584,7 @@ def proxy():
                 data.get("temperature", 0.2))
     except Exception as exc:
         incr_metrics("errors_total")
-        return jsonify({"error": str(exc)}), 502
+        return jsonify({"error": "service error"}), 502
 
     elapsed_ms = int((time.monotonic() - started) * 1000)
     record_latency(elapsed_ms)

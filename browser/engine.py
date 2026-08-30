@@ -1032,7 +1032,7 @@ class BrowserEngine:
             else:
                 raise ValueError(f"Unknown wait state: {state}")
         except Exception as exc:
-            return {"error": str(exc), "selector": selector, "state": state}
+            return {"error": "operation failed", "selector": selector, "state": state}
 
     async def wait_for_url(self, pattern, timeout=30000):
         """Wait for URL to match a regex pattern."""
@@ -1158,7 +1158,7 @@ class BrowserEngine:
                 else:
                     self._page = await self._ctx.new_page()
             except Exception as exc:
-                return {"error": str(exc)}
+                return {"error": "proxy configuration failed"}
         return {"proxy": self._proxy}
 
     async def screenshot_base64(self, full_page=False, format="png"):

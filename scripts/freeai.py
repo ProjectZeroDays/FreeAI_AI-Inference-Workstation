@@ -74,7 +74,7 @@ def _http(method, url, body=None, timeout=10):
     except urllib.error.URLError as exc:
         return 0, {"error": str(exc.reason)}
     except Exception as exc:
-        return 0, {"error": str(exc)}
+        return 0, {"error": "request failed"}
 
 
 def _url(port, path="/"):
