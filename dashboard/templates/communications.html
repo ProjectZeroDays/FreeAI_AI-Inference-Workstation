@@ -459,7 +459,7 @@
       const el = document.getElementById('send-result');
       el.innerHTML = data.ok
         ? `<span style="color:#22C55E">&#10003; Sent via ${pid}</span>`
-        : `<span style="color:#EF4444">&#10007; ${data.error}</span>`;
+        : `<span style="color:#EF4444">&#10007; ${escHtml(data.error)}</span>`;
       toast(data.ok ? 'Message sent' : `Send failed: ${data.error}`, data.ok ? 'success' : 'error');
       loadLogs();
     });

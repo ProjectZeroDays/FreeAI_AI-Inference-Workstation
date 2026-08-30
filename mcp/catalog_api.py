@@ -1,4 +1,4 @@
-"""MCP Catalog API — REST endpoints for MCP server management.
+"""MCP Catalog API â€” REST endpoints for MCP server management.
 
 Endpoints:
   GET  /api/catalog/mcps             - List all cataloged MCPs
@@ -178,7 +178,7 @@ def get_stats() -> dict:
     }
 
 
-# ── FastAPI app ────────────────────────────────────────────────────
+# â”€â”€ FastAPI app â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if HAS_FASTAPI:
     app = FastAPI(title="MCP Catalog API", version="2.0")
     app.add_middleware(
@@ -224,7 +224,10 @@ if HAS_FASTAPI:
 
     @app.post("/api/catalog/mcps/test/{mcp_id}")
     def test_mcp_endpoint(mcp_id: str):
-        return test_mcp(mcp_id)
+        try:
+            return test_mcp(mcp_id)
+        except Exception as e:
+            return {"error": str(e)}, 500
 
     @app.get("/api/catalog/mcps/stats")
     def stats_endpoint():
