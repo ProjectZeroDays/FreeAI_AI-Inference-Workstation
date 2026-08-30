@@ -57,6 +57,16 @@ jobs:
             exit 1
           fi
 
+      - name: Debug test collection
+        run: |
+          python -m pytest tests/ --co -v --tb=short 2>&1 | tee /tmp/pytest_collect.log
+          echo "---"
+          echo "Total collected:"
+          python -m pytest tests/ --co -q 2>&1 | grep -E '^\S+\.py:' | awk -F': ' '{s+=$2} END{print s}'
+          echo "---"
+          echo "Files with errors:"
+          grep -i "error collecting" /tmp/pytest_collect.log || echo "None"
+
       - name: Verify asyncio mode
         run: |
           if ! grep -q 'asyncio_mode' pyproject.toml; then
