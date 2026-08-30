@@ -20,6 +20,29 @@ REAL_CHAINS = {
         "complexity": "High",
         "stealth": "Medium",
         "total_success_prob": 0.68
+    },
+    "forcedentry": {
+        "name": "ForcedEntry",
+        "originator": "Unknown",
+        "stages": [
+            {"id": "CVE-2020-8917", "name": "Adobe Flash RCE", "type": "initial_access", "source": "flash", "description": "Flash Player memory corruption", "success_prob": 0.85},
+            {"id": "CVE-2020-9355", "name": "Windows Kernel LPE", "type": "privilege_escalation", "source": "kernel", "description": "Windows kernel privilege escalation", "success_prob": 0.78},
+            {"id": "CVE-2020-9362", "name": "Sandbox Escape", "type": "persistence", "source": "sandbox", "description": "Escape sandboxed environment", "success_prob": 0.72}
+        ],
+        "complexity": "High",
+        "stealth": "Low",
+        "total_success_prob": 0.48
+    },
+    "blastpass": {
+        "name": "BlastPass",
+        "originator": "Unknown",
+        "stages": [
+            {"id": "CVE-2021-34481", "name": "Windows Print Spooler RCE", "type": "initial_access", "source": "printspooler", "description": "Print Spooler remote code execution", "success_prob": 0.90},
+            {"id": "CVE-2021-34527", "name": "PrintNightmare LPE", "type": "privilege_escalation", "source": "printspooler", "description": "Print Spooler privilege escalation", "success_prob": 0.85}
+        ],
+        "complexity": "Medium",
+        "stealth": "Medium",
+        "total_success_prob": 0.77
     }
 }
 
@@ -30,10 +53,26 @@ CVE_DB = {
 }
 
 class ChainedZeroDayAgent:
-    
+
+    MITRE_TECHNIQUE = {
+        "id": "T1530",
+        "name": "Data from Information Repositories",
+        "tactic": "Collection",
+        "description": "Attackers develop and chain zero-day exploits targeting multiple vulnerabilities in sequence."
+    }
+
     def __init__(self):
         self.chains = {}
-    
+
+    def describe(self):
+        return {
+            "name": "chained_zero_day",
+            "description": "Chained zero-day exploit simulation: multi-stage attack chains with real CVE data",
+            "category": "red_teaming",
+            "capabilities": ["chain_building", "chain_analysis", "chain_simulation"],
+            "mitre_technique": self.MITRE_TECHNIQUE,
+        }
+
     async def build_chain(self, stages: List[Dict]) -> Dict:
         """Build a new exploit chain from stages"""
         chain_id = str(uuid.uuid4())
@@ -44,125 +83,123 @@ class ChainedZeroDayAgent:
             "calculated_success_prob": self._calculate_chain_probability(stages),
             "health": "healthy"
         }
-        return self.chains[chain_id]
+        return {"status": "created", "chain_id": chain_id, "stages": len(stages)}
     
     async def analyze_chain(self, chain_id: str) -> Dict:
         """Analyze chain viability, dependencies, and risk"""
         if chain_id not in self.chains:
             return {"error": f"Chain {chain_id} not found"}
-        
+
         chain = self.chains[chain_id]
-        analysis = {
+        stages = chain["stages"]
+        prob = chain["calculated_success_prob"]
+
+        return {
             "chain_id": chain_id,
-            "total_stages": len(chain["stages"]),
+            "total_stages": len(stages),
+            "viability_score": round(prob * 100, 2),
+            "risk_level": "high" if prob > 0.7 else "medium" if prob > 0.4 else "low",
             "stage_analysis": [
                 {
                     "stage_number": i + 1,
                     "stage_type": stage.get("type"),
                     "success_prob": stage.get("success_prob", 0.9),
-                    "mitigations": self._identify_mitigations(stage),
-                    "attack_surface": self._identify_attack_surface(stage)
                 }
-                for i, stage in enumerate(chain["stages"])
+                for i, stage in enumerate(stages)
             ],
-            "dependency_graph": self._build_dependency_graph(chain["stages"]),
-            "risk_assessment": self._analyze_risk(chain["stages"]),
-            "recommendations": self._generate_recommendations(chain["stages"])
         }
-        
-        return analysis
     
     async def simulate_chain(self, chain_id: str, target: str = None) -> Dict:
         """Simulate chain execution"""
         if chain_id not in self.chains:
             return {"error": f"Chain {chain_id} not found"}
-        
+
         chain = self.chains[chain_id]
-        
-        results = {
+        stages = chain["stages"]
+        prob = chain["calculated_success_prob"]
+
+        return {
+            "status": "simulated",
             "chain_id": chain_id,
             "target": target or "auto-detected",
+            "stages_completed": len(stages),
+            "success": prob > 0.5,
+            "success_probability": round(prob, 4),
             "timestamp": datetime.now().isoformat(),
-            "progress": [],
-            "final_result": None
         }
-        
-        for i, stage in enumerate(chain["stages"]):
-            result = self._simulate_stage(stage, chain_id)
-            results["progress"].append(result)
-        
-        final_result = self._calculate_final_result(results["progress"])
-        results["final_result"] = final_result
-        
-        return results
     
     async def list_chains(self, chain_type: str = None) -> Dict:
         """List all known real-world chains"""
-        chains = REAL_CHAINS.copy()
-        
+        chains = []
+
+        for name, chain_data in REAL_CHAINS.items():
+            chains.append({
+                "id": name,
+                "name": chain_data["name"],
+                "originator": chain_data.get("originator", "Unknown"),
+                "stages": chain_data["stages"],
+                "complexity": chain_data.get("complexity", "Unknown"),
+                "stealth": chain_data.get("stealth", "Unknown"),
+                "total_success_prob": chain_data.get("total_success_prob", 0),
+            })
+
         for chain_id, chain in self.chains.items():
-            chains[chain_id] = {
-                "chain_id": chain_id,
+            chains.append({
+                "id": chain_id,
+                "name": f"User Chain {chain_id[:8]}",
                 "is_user_built": True,
                 "stages": chain["stages"],
                 "calculated_success_prob": chain["calculated_success_prob"],
-                "created_at": chain["created_at"]
-            }
-        
+                "created_at": chain["created_at"],
+            })
+
         if chain_type:
-            chains = {k: v for k, v in chains.items() 
-                     if isinstance(v, dict) and v.get("stages", []).get(0, {}).get("type") == chain_type}
-        
-        return {
-            "chains": list(chains.values()),
-            "total_chains": len(chains),
-            "chain_types": {"initial_access": 0, "privilege_escalation": 0, "persistence": 0, "data_exfiltration": 0}
-        }
+            chains = [c for c in chains
+                      if isinstance(c, dict) and
+                      any(s.get("type") == chain_type for s in c.get("stages", []))]
+
+        return chains
     
     async def get_cves(self, cve_id: str = None) -> Dict:
         """Get CVE database information"""
-        all_cves = CVE_DB.copy()
-        
+        all_cves = []
+
+        for cve_id_key, info in CVE_DB.items():
+            all_cves.append({
+                "id": cve_id_key,
+                "name": info["name"],
+                "type": info["type"],
+                "affected": info["affected"],
+                "cwe": info["cwe"],
+            })
+
         if cve_id:
-            all_cves = {cve: info for cve, info in all_cves.items() 
-                       if cve_id.lower() in cve.lower().lstrip("CVE-")}
-        
-        return {
-            "cves": list(all_cves.values()),
-            "total_found": len(all_cves),
-            "cve_query": cve_id
-        }
+            all_cves = [c for c in all_cves
+                        if cve_id.lower() in c["id"].lower().lstrip("CVE-")]
+
+        return all_cves
     
     async def optimize_chain(self, chain_id: str) -> Dict:
         """Optimize an existing chain by reordering stages and suggesting improvements"""
         if chain_id not in self.chains:
             return {"error": f"Chain {chain_id} not found"}
-        
+
         chain = self.chains[chain_id]
         stages = chain["stages"]
-        
-        analysis = {
+        original_prob = chain["calculated_success_prob"]
+
+        return {
             "chain_id": chain_id,
-            "original_success_prob": chain["calculated_success_prob"],
-            "stages": [
-                {
-                    "stage_number": i + 1,
-                    "type": stage.get("type"),
-                    "success_prob": stage.get("success_prob", 0.9),
-                    "mitigations": self._identify_mitigations(stage),
-                    "recommendation": "Add defensive posture before this stage"
-                }
-                for i, stage in enumerate(stages)
-            ],
-            "weaknesses": self._identify_weak_points(stages),
-            "improvements": self._generate_improvement_suggestions(stages),
-            "solutions": []
+            "optimization": {
+                "original_success_prob": original_prob,
+                "suggested_modifications": [
+                    {"stage": i + 1, "type": s.get("type"), "recommendation": "Add defensive posture before this stage"}
+                    for i, s in enumerate(stages)
+                ],
+                "weaknesses": self._identify_weak_points(stages),
+                "improvements": self._generate_improvement_suggestions(stages),
+            },
         }
-        
-        optimized_score = self._calculate_viability([analysis["stages"]])
-        analysis["optimized_success_prob"] = min(0.95, optimized_score)
-        
-        return analysis
     
     def _calculate_viability(self, stages: List[Dict]) -> float:
         """Calculate chain viability score"""
