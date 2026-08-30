@@ -274,6 +274,9 @@ def execute_workflow(workflow_id, params=None):
                 _out_real = os.path.realpath(str(output_file))
                 if not (_out_real == _ws_real or _out_real.startswith(_ws_real + os.sep)):
                     continue
+                _parent_real = os.path.realpath(str(output_file.parent))
+                if not (_parent_real == _ws_real or _parent_real.startswith(_ws_real + os.sep)):
+                    continue
                 output_file.parent.mkdir(parents=True, exist_ok=True)
                 output_file.write_text(output, encoding="utf-8")
                 record["outputs"][step_name] = str(output_file)
