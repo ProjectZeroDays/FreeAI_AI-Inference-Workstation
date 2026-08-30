@@ -77,9 +77,10 @@
 
 ## Open Items
 
-- 148 CodeQL alerts remain open (mostly false positives)
+- ~135 CodeQL alerts remain open (67 js/incomplete-html-attribute-sanitization in pre-existing templates, 13 py/stack-trace-exposure, 13 py/clear-text-logging-sensitive-data, 13 py/clear-text-storage-sensitive-data, ~16 other)
 - 638 TODOs/FIXMEs scattered across codebase (mostly in skill files, low priority)
-- `test_browser.py` has 2 unclosed transport warnings on Windows
+- `test_browser.py` has 2 unclosed transport warnings on Windows (cosmetic)
+- 21 exploit agent subdirs each have standalone test files (deduplication opportunity)
 
 ---
 
@@ -87,34 +88,29 @@
 
 ## P0 — Blocking (must fix before shipping)
 
-- [x] **Add CI test-count gate** — fail pipeline if total test count drops below 1154 (commit `30260ee`)
-- [x] **Fix Windows file-lock race** in `test_jwt_auth.py::test_authenticate_first_login_required` (mkstemp fd not closed before unlink) — **DONE** (commit `b876d78`)
-- [x] **`memory_primitives` agent** — **ALREADY COVERED**: 20 tests passing in `tests/test_memory_primitives.py`, 15 in `agents/specialized/MemoryPrimitives/`. No action needed.
-- [ ] **Fix Windows file-lock race** in `test_jwt_auth.py::test_authenticate_first_login_required` (mkstemp fd not closed before unlink) — **DONE** (commit b876d78)
-- [ ] **Add CI test-count gate** — fail pipeline if total test count drops below 1154 — **DONE** (commit added to ci.yml)
+All P0 items from last sprint are **complete**.
 
 ## P1 — High Priority
 
-- [x] **Suppress remaining CodeQL path-injection false positives** — 5 suppressions added (automations.py, builder_agents.py, autonomous/agent.py, audit/logging.py, workflow/api.py)
-- [x] **Reduce py/stack-trace-exposure** — 1 suppression added for errors/tracker.py (tracebacks stored server-side only)
-- [x] **Add `pytest-asyncio` guard** — asyncio mode check added to CI (pyproject.toml + pytest.ini already configured)
-- [ ] **Reduce js/incomplete-html-attribute-sanitization** — 13 alerts in pre-existing templates (evals.html/godmode.html use escAttr; remaining in older templates)
+- [ ] **Reduce js/incomplete-html-attribute-sanitization** — ~67 alerts in pre-existing templates. New dashboards (evals, godmode, exploits) already use `escAttr`. Audit and fix older templates.
+- [ ] **Reduce py/stack-trace-exposure** — 13 alerts. `errors/tracker.py` already suppressed; remaining in exception handlers across the codebase.
+- [ ] **Reduce py/clear-text-logging-sensitive-data** — 13 alerts. Audit logging calls for API keys/tokens.
+- [ ] **Reduce py/clear-text-storage-sensitive-data** — 13 alerts. Audit JSON files that may contain secrets.
 
 ## P2 — Medium Priority
 
-- [ ] **Deduplicate exploit agent tests** — 20 agents × 1 test file each = 20 nearly-identical test files; consider parametrized fixture
-- [ ] **Standardize agent response contract** — all simulate methods should return `status`, `mitre_id`, `exploitation_steps` consistently
-- [ ] **Add integration test for Quantum ↔ FreeAI agent pipeline** — test `/agent/exploit` end-to-end
-- [ ] **Add snapshot tests for dashboard templates** — catch HTML regressions early
-- [ ] **Clean up `memory_primitives` agent** — determine if it's a duplicate of `MemoryCorruption` or a distinct capability
+- [ ] **Deduplicate exploit agent tests** — 20 agents × 1 test file each are nearly identical; consider a shared parametrized fixture.
+- [ ] **Standardize agent response contract** — all simulate methods should return `status`, `mitre_id`, `exploitation_steps` consistently (partially done; top-level vs subdir agents differ).
+- [ ] **Add integration test for Quantum ↔ FreeAI agent pipeline** — test `/agent/exploit` end-to-end.
+- [ ] **Add snapshot tests for dashboard templates** — catch HTML regressions early.
+- [ ] **Security regression test** — detect hardcoded secrets, missing auth, wildcard CORS in CI.
 
 ## P3 — Nice to Have
 
-- [ ] **Add load test baseline** — record 1154-test run time (~120s) and alert if CI exceeds 2x
-- [ ] **Document the dual-agent pattern** in AGENTS.md or SKILL.md
-- [ ] **Add security regression test** — detect hardcoded secrets, missing auth, wildcard CORS in CI
-- [ ] **Migrate remaining skill TODOs** — 638 TODOs are mostly in skill files; triage and assign or clear
-- [ ] **Add browser test cleanup** — suppress or fix unclosed subprocess transport warnings on Windows
+- [ ] **Add load test baseline** — 1154-test run takes ~120s; alert if CI exceeds 2x.
+- [ ] **Document the dual-agent pattern** in AGENTS.md or SKILL.md.
+- [ ] **Migrate remaining skill TODOs** — 638 TODOs mostly in skill files; triage and clear.
+- [ ] **Browser test cleanup** — suppress or fix unclosed subprocess transport warnings on Windows.
 
 ---
 
