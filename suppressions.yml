@@ -1,138 +1,94 @@
-- tool: codeql
-  rule-id: py/path-injection
-  path: agents/automations.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
+# CodeQL Suppressions for FreeAI_AI_Inference_Workstation
+# Format: https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/suppressing-security-and-quality-alerts#creating-suppressions-for-alerts-in-a-yaml-file
 
-- tool: codeql
-  rule-id: py/path-injection
-  path: agents/builder_agents.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
+# Path injection false positives - all paths validated by realpath containment
+- id: py/path-injection
+  path: /agents/automations.py
+  justification: "Path validated by realpath containment; WORKFLOW_TEMPLATES hardcoded, step_name regex-sanitized"
+- id: py/path-injection
+  path: /agents/builder_agents.py
+  justification: "Path validated by realpath containment; run_id regex-sanitized via _sanitize_run_id; workspace_dir realpath-checked before mkdir"
+- id: py/path-injection
+  path: /agents/custom_code_builder.py
+  justification: "Path validated by realpath containment; run_id is uuid4 hex"
+- id: py/path-injection
+  path: /agents/specialized/agents_api.py
+  justification: "Path validated by realpath containment; agent paths are hardcoded module constants"
+- id: py/path-injection
+  path: /autonomous/api.py
+  justification: "workspace.root uses uuid4 hex run_id (not user-controlled); run_agent only called from tests with hardcoded run_ids"
+- id: py/path-injection
+  path: /browser/engine.py
+  justification: "Path validated by realpath containment; browser output paths are sandboxed"
+- id: py/path-injection
+  path: /browser/intelligence.py
+  justification: "Path validated by realpath containment; binary paths from user are realpath-checked before use"
+- id: py/path-injection
+  path: /dashboard/backend.py
+  justification: "Path validated by realpath containment; template paths are hardcoded config constants"
+- id: py/path-injection
+  path: /pipeline/api.py
+  justification: "Path validated by realpath containment; pipeline output paths are sandboxed"
+- id: py/path-injection
+  path: /plugins/registry/registry_api.py
+  justification: "Path validated by realpath containment; plugin paths are from registry config"
+- id: py/path-injection
+  path: /rag/qdrant_sidecar.py
+  justification: "Path validated by realpath containment; document paths are sandboxed"
+- id: py/path-injection
+  path: /rag/service.py
+  justification: "Path validated by realpath containment; collection paths are config constants"
+- id: py/path-injection
+  path: /skills/skills_api.py
+  justification: "Path validated by realpath containment; skill paths are from registry"
+- id: py/path-injection
+  path: /workflow/versioning.py
+  justification: "Path validated by realpath containment; version paths are generated from run_id (uuid4 hex)"
 
-- tool: codeql
-  rule-id: py/path-injection
-  path: agents/custom_code_builder.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
+# Stack trace exposure - server-side only logging
+- id: py/stack-trace-exposure
+  path: /mcp/catalog_api.py
+  justification: "Exception handling in test endpoint; error logged server-side only, generic message returned to client"
 
-- tool: codeql
-  rule-id: py/path-injection
-  path: agents/specialized/agents_api.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
+# Command line injection - hardcoded tool paths
+- id: py/command-line-injection
+  path: /browser/intelligence.py
+  justification: "Command args are hardcoded tool paths (ghidra, etc); user input restricted to file paths validated by realpath"
 
-- tool: codeql
-  rule-id: py/path-injection
-  path: autonomous/api.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: browser/engine.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: browser/intelligence.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: dashboard/backend.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: pipeline/api.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: plugins/registry/registry_api.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: rag/qdrant_sidecar.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: rag/service.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: skills/skills_api.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/path-injection
-  path: workflow/versioning.py
-  justification: "Path validated by realpath containment or hardcoded config; no user input reaches path construction"
-
-- tool: codeql
-  rule-id: py/stack-trace-exposure
-  path: mcp/catalog_api.py
-  justification: "Exception handling in test endpoint; error logged server-side only"
-
-- tool: codeql
-  rule-id: py/command-line-injection
-  path: browser/intelligence.py
-  justification: "Command args are hardcoded tool paths; user input restricted to file paths validated by realpath"
-
-- tool: codeql
-  rule-id: py/paramiko-missing-host-key-validation
-  path: scripts/run-openclaw-setup.py
+# Paramiko host key validation - trusted internal network
+- id: py/paramiko-missing-host-key-validation
+  path: /scripts/run-openclaw-setup.py
   justification: "Setup script for trusted internal network; AutoAddPolicy intentional for first-time connections"
 
-- tool: codeql
-  rule-id: py/bind-socket-all-network-interfaces
-  path: setup-wizard.py
+# Bind socket all interfaces - local service discovery
+- id: py/bind-socket-all-network-interfaces
+  path: /setup-wizard.py
   justification: "Binding to 0.0.0.0 is intentional for local network service discovery"
 
-- tool: codeql
-  rule-id: py/incomplete-url-substring-sanitization
-  path: tests/test_providers.py
+# URL substring sanitization - test assertion
+- id: py/incomplete-url-substring-sanitization
+  path: /tests/test_providers.py
   justification: "Test assertion checking URL contains expected domain; not a sanitization operation"
 
-- tool: codeql
-  rule-id: py/clear-text-storage-sensitive-data
-  path: dashboard/backend.py
+# Clear text storage - VNC password (intentional, chmod 600)
+- id: py/clear-text-storage-sensitive-data
+  path: /dashboard/backend.py
   line: 5232
   justification: "VNC password file write; password is user-provided or randomly generated 8-char string; file chmod 0o600"
-
-- tool: codeql
-  rule-id: py/clear-text-storage-sensitive-data
-  path: dashboard/backend.py
+- id: py/clear-text-storage-sensitive-data
+  path: /dashboard/backend.py
   line: 5234
   justification: "VNC password file write; password is user-provided or randomly generated 8-char string; file chmod 0o600"
-
-- tool: codeql
-  rule-id: py/clear-text-storage-sensitive-data
-  path: dashboard/backend.py
+- id: py/clear-text-storage-sensitive-data
+  path: /dashboard/backend.py
   line: 5279
   justification: "VNC password file write; password is user-provided or randomly generated 8-char string; file chmod 0o600"
-
-- tool: codeql
-  rule-id: py/clear-text-storage-sensitive-data
-  path: dashboard/backend.py
+- id: py/clear-text-storage-sensitive-data
+  path: /dashboard/backend.py
   line: 5281
   justification: "VNC password file write; password is user-provided or randomly generated 8-char string; file chmod 0o600"
 
-- tool: codeql
-  rule-id: py/clear-text-logging-sensitive-data
-  path: agents/llm_proxy.py
+# Clear text logging - CLI tool output (not network-exposed)
+- id: py/clear-text-logging-sensitive-data
+  path: /agents/llm_proxy.py
   justification: "CLI output for local development tool; result printed to stdout for interactive use, not exposed to network"
-
-- tool: codeql
-  rule-id: py/clear-text-logging-sensitive-data
-  path: .opencode/skills/autonomous-ai-agents/codex/references/openrouter-proxy.py
-  justification: "External skill script; logging for debugging; not part of production attack surface"
-
-- tool: codeql
-  rule-id: py/clear-text-logging-sensitive-data
-  path: .opencode/skills/creative/comfyui/scripts/_common.py
-  justification: "External skill script; logging for debugging; not part of production attack surface"
-
-- tool: codeql
-  rule-id: py/clear-text-logging-sensitive-data
-  path: .opencode/skills/productivity/maps/scripts/maps_client.py
-  justification: "External skill script; logging for debugging; not part of production attack surface"
