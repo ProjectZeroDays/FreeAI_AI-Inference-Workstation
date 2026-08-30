@@ -77,7 +77,7 @@
 
 ## Open Items
 
-- ~135 CodeQL alerts remain open (67 js/incomplete-html-attribute-sanitization in pre-existing templates, 13 py/stack-trace-exposure, 13 py/clear-text-logging-sensitive-data, 13 py/clear-text-storage-sensitive-data, ~16 other)
+- [x] ~135 CodeQL alerts reduced to ~68 (HTML sanitization ✅; stack-trace + clear-text remain)
 - 638 TODOs/FIXMEs scattered across codebase (mostly in skill files, low priority)
 - `test_browser.py` has 2 unclosed transport warnings on Windows (cosmetic)
 - 21 exploit agent subdirs each have standalone test files (deduplication opportunity)
@@ -92,7 +92,7 @@ All P0 items from last sprint are **complete**.
 
 ## P1 — High Priority
 
-- [ ] **Reduce js/incomplete-html-attribute-sanitization** — ~67 alerts in pre-existing templates. New dashboards (evals, godmode, exploits) already use `escAttr`. Audit and fix older templates.
+- [x] **Reduce js/incomplete-html-attribute-sanitization** — Added `escAttr()` to 73 HTML templates (80/84 total). 4 static templates don't need it. Committed as `dd4af68`.
 - [ ] **Reduce py/stack-trace-exposure** — 13 alerts. `errors/tracker.py` already suppressed; remaining in exception handlers across the codebase.
 - [ ] **Reduce py/clear-text-logging-sensitive-data** — 13 alerts. Audit logging calls for API keys/tokens.
 - [ ] **Reduce py/clear-text-storage-sensitive-data** — 13 alerts. Audit JSON files that may contain secrets.
