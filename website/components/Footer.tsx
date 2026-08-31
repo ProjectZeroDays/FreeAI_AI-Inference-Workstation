@@ -3,7 +3,7 @@ import { Github, ArrowRight } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#060a18] border-t border-white/10 mt-0">
+    <footer className="bg-slate-900 border-t border-slate-800 mt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Column 1: Brand + CTA */}
@@ -14,7 +14,7 @@ export default function Footer() {
               </div>
               <span className="font-bold text-lg text-white">FreeAI</span>
             </div>
-            <p className="text-gray-400 text-sm max-w-xs mb-4">
+            <p className="text-slate-400 text-sm max-w-xs mb-4">
               Unified AI inference workstation. Manage, secure, and automate every model — automatically.
             </p>
             <Link
@@ -23,9 +23,9 @@ export default function Footer() {
             >
               Get FreeAI <ArrowRight size={16} />
             </Link>
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-wrap gap-2 mt-4">
               {['SOC 2', 'ISO 27001', 'NIST 800-53', 'CMMC L2'].map((badge) => (
-                <span key={badge} className="px-2 py-1 rounded bg-white/5 text-xs text-gray-500 border border-white/5">
+                <span key={badge} className="px-2 py-1 rounded bg-slate-800 text-xs text-slate-500 border border-slate-700">
                   {badge}
                 </span>
               ))}
@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Column 2: Product */}
           <div>
             <h3 className="font-semibold text-white mb-4">Product</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/#ask-agents" className="hover:text-white transition-colors">Ask Agents</Link></li>
               <li><Link href="/#artifacts" className="hover:text-white transition-colors">Artifacts</Link></li>
               <li><Link href="/features" className="hover:text-white transition-colors">Features</Link></li>
@@ -48,7 +48,7 @@ export default function Footer() {
           {/* Column 3: Resources */}
           <div>
             <h3 className="font-semibold text-white mb-4">Resources</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/deploy" className="hover:text-white transition-colors">Deploy Guide</Link></li>
               <li>
                 <a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation"
@@ -70,7 +70,7 @@ export default function Footer() {
           {/* Column 4: Legal */}
           <div>
             <h3 className="font-semibold text-white mb-4">Legal</h3>
-            <ul className="space-y-2 text-sm text-gray-400">
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
               <li><Link href="/legal/terms" className="hover:text-white transition-colors">Terms</Link></li>
               <li><Link href="/security" className="hover:text-white transition-colors">Security</Link></li>
@@ -80,11 +80,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
-            ©2026 FreeAI — Unified AI Workstation — MIT License
+        <div className="border-t border-slate-800 mt-10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-500 text-sm">
+            ©2026 FreeAI — Unified AI Workstation — GPL-3.0 License
           </p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-slate-500 text-sm">
             AI is not just a chatbot — it's an operational layer.
           </p>
         </div>

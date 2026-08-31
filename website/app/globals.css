@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
 :root {
-  --foreground-rgb: 241, 246, 255;
-  --background-start-rgb: 6, 10, 24;
-  --background-end-rgb: 2, 6, 20;
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 248, 250, 252;
 }
 
 * {
@@ -14,7 +16,8 @@
 }
 
 *::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {
@@ -22,35 +25,25 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(92, 139, 255, 0.2);
-  border-radius: 3px;
+  background: rgba(92, 139, 255, 0.3);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(92, 139, 255, 0.5);
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #060a18;
+  background: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 .gradient-text {
-  background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+  background: linear-gradient(108deg, #2563eb 0%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.gradient-text-animated {
-  background: linear-gradient(90deg, #6bd5ff, #5c8bff, #8a70f6, #6bd5ff);
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-shift 4s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 @keyframes pulse-glow {
@@ -58,16 +51,233 @@ body {
   50% { opacity: 0.5; }
 }
 
-/* Applivery-style section spacing */
-.applivery-section {
-  padding: 5rem 1.5rem;
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* Prompt card hover */
-.prompt-card {
-  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
-.prompt-card:hover {
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.6s ease-out forwards;
+}
+
+/* Applivery-style card */
+.ap-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.ap-card:hover {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
-  border-color: rgba(92, 139, 255, 0.3);
+}
+
+/* Applivery-style section */
+.ap-section {
+  padding: 96px 0;
+}
+
+/* Applivery-style hero */
+.ap-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1d4ed8;
+  margin-bottom: 32px;
+}
+
+/* Applivery CTA button */
+.ap-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: #1d4ed8;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.ap-btn-primary:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+
+.ap-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: #ffffff;
+  color: #1d4ed8;
+  border: 1.5px solid #1d4ed8;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.ap-btn-secondary:hover {
+  background: #eff6ff;
+}
+
+/* Prompt chip for Ask Agents section */
+.ap-prompt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #334155;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  cursor: default;
+}
+
+.ap-prompt-chip:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+/* Stat counter */
+.ap-stat-number {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  background: linear-gradient(108deg, #1d4ed8 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ap-stat-label {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* Logo placeholder for trusted-by */
+.ap-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  filter: grayscale(1) opacity(0.5);
+  transition: filter 0.2s ease;
+}
+
+.ap-logo:hover {
+  filter: grayscale(0) opacity(1);
+}
+
+/* Step number */
+.ap-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #1d4ed8;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Pill badge */
+.ap-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: #f1f5f9;
+  border-radius: 100px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.ap-pill-blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* Quote block */
+.ap-quote {
+  position: relative;
+  padding: 32px 32px 32px 48px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border-left: 4px solid #1d4ed8;
+}
+
+.ap-quote::before {
+  content: '"';
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 64px;
+  font-weight: 800;
+  color: #1d4ed8;
+  opacity: 0.15;
+  line-height: 1;
+}
+
+/* Divider */
+.ap-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 0;
 }

