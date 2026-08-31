@@ -385,7 +385,7 @@ class MemoryPrimitivesAgent:
                     "description": "Treating an object as an incorrect type, leading to misinterpreted memory layout or method dispatch。",
                     "subtypes": ["vtable_mismatch", "incorrect_cast", "prototype_pollution", "class_hierarchy_abuse"],
                     "exploitation_mechanics": "Confuse type system to interpret memory as different object type, triggering incorrect virtual call or field access。",
-                    "real_world_cves": ["CVE-2021-21148", "CVE-2023-4863", "CVE-2016-4657"],
+                    "real_world_cves": ["CVE-2021-21148", "CVE-2023-4863", "CVE-2016-4657", "CVE-2021-30561"],
                     "mitigations": ["RTTI Validation", "Type-Safe Languages", "CFI", "Object Tagging"],
                     "ai_selection_score": 88,
                     "difficulty": "high",
