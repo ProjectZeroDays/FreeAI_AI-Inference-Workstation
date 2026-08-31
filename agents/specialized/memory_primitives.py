@@ -415,6 +415,18 @@ class MemoryPrimitivesAgent:
                     "difficulty": "low",
                     "impact": "medium-high",
                 },
+                "auth_bypass": {
+                    "name": "Authentication Bypass",
+                    "category": "access_control",
+                    "description": "Bypassing authentication or authorization checks to access restricted resources or functionality。",
+                    "subtypes": ["header_manipulation", "token_forge", "crypto_weak", "logic_flaw"],
+                    "exploitation_mechanics": "Exploit flaws in auth logic, forged tokens, or missing validation to gain unauthorized access。",
+                    "real_world_cves": ["CVE-2023-46805", "CVE-2021-44228"],
+                    "mitigations": ["Input Validation", "Secure Token Handling", "MFA", "Defense in Depth"],
+                    "ai_selection_score": 72,
+                    "difficulty": "medium",
+                    "impact": "high",
+                },
             })
 
     def describe(self):
@@ -640,6 +652,7 @@ class MemoryPrimitivesAgent:
             "type_confusion": [],
             "toctou": [],
             "null_pointer": [],
+            "auth_bypass": [],
         }
 
         simulated_count = 0
