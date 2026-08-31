@@ -210,8 +210,8 @@
 
     /* ── Chat Panel ── */
     .chat-panel {
-      display: none; position: fixed; bottom: 88px; right: 24px;
-      width: 400px; max-width: calc(100vw - 48px);
+      display: none; position: fixed; bottom: 0; right: 0; left: 0;
+      width: 100%; max-width: none;
       background: #0c1530; border: 1px solid rgba(255,255,255,.08);
       border-radius: 22px; overflow: hidden;
       box-shadow: 0 24px 64px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04);
@@ -271,7 +271,7 @@
     .chat-privacy a { color: rgba(241,246,255,.5); text-decoration: underline; }
 
     @media (max-width: 480px) {
-      .chat-panel { bottom: 76px; right: 10px; left: 10px; width: auto; max-width: none; border-radius: 16px; }
+      .chat-panel { bottom: 0; right: 0; left: 0; width: 100%; max-width: none; border-radius: 0; }
       .chat-launcher { bottom: 14px; right: 14px; }
     }
     @keyframes chatIn { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
@@ -342,7 +342,7 @@
     .chat-privacy a:hover { color: #f1f6ff; }
 
     @media (max-width: 480px) {
-      .chat-panel { bottom: 80px; right: 12px; left: 12px; width: auto; max-width: none; border-radius: 18px; }
+      .chat-panel { bottom: 0; right: 0; left: 0; width: 100%; max-width: none; border-radius: 0; }
       .chat-launcher { bottom: 14px; right: 14px; }
     }
 
