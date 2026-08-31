@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const providers = [
   { name: 'OpenAI', key: 'OPENAI_API_KEY', models: 'gpt-4o, gpt-4-turbo, gpt-3.5-turbo' },
@@ -26,40 +25,28 @@ export default function Providers() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             21+ <span className="gradient-text">AI Providers</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Connect to any AI provider with automatic fallback chains.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {providers.map((provider, i) => (
-            <motion.div
-              key={provider.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
-            >
+          {providers.map((provider) => (
+            <div key={provider.name} className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all">
               <h3 className="text-lg font-semibold text-white mb-2">{provider.name}</h3>
               <code className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded block mb-3">
                 {provider.key}
               </code>
               <p className="text-gray-400 text-sm">{provider.models}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12 p-6 rounded-xl bg-white/5 border border-white/10"
-        >
+        <div className="mt-12 p-6 rounded-xl bg-white/5 border border-white/10">
           <h2 className="text-xl font-semibold text-white mb-4">Configuration</h2>
           <pre className="bg-black/50 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono">
 {`# Add to .env
@@ -72,7 +59,7 @@ curl -X POST localhost:8010/route \\
   -H "Content-Type: application/json" \\
   -d '{"prompt":"Design a rate limiter","model":"openai/gpt-4o-mini"}'`}
           </pre>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

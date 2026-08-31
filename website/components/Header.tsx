@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, Moon, Sun, Github, Download } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -13,6 +12,9 @@ const navLinks = [
   { href: '/providers', label: 'Providers' },
   { href: '/iso', label: 'Live ISO' },
   { href: '/api', label: 'API' },
+  { href: '/docs', label: 'Docs' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/security', label: 'Security' },
 ]
 
 export default function Header() {
@@ -96,36 +98,29 @@ export default function Header() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#060a18]/95 backdrop-blur-md border-b border-white/10"
-          >
-            <nav className="px-4 py-4 space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
+      {isOpen && (
+        <div className="md:hidden bg-[#060a18]/95 backdrop-blur-md border-b border-white/10">
+          <nav className="px-4 py-4 space-y-1">
+            {navLinks.map((link) => (
               <Link
-                href="/deploy"
+                key={link.href}
+                href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-center font-medium transition-colors mt-2"
+                className="block px-3 py-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
               >
-                Deploy FreeAI
+                {link.label}
               </Link>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ))}
+            <Link
+              href="/deploy"
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-center font-medium transition-colors mt-2"
+            >
+              Deploy FreeAI
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const deployMethods = [
   {
@@ -82,36 +81,29 @@ export default function Deploy() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Deployment <span className="gradient-text">Guide</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Deploy anywhere — bare metal, Docker, Kubernetes, cloud, or Live ISO.
           </p>
-        </motion.div>
+        </div>
 
         <div className="space-y-12">
           {deployMethods.map((method, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+            <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10">
               <h2 className="text-2xl font-semibold text-white mb-2">{method.title}</h2>
               <p className="text-gray-400 mb-4">{method.description}</p>
               <pre className="bg-black/50 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono">
                 {method.command}
               </pre>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Hardware Requirements */}
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-16">
+        <section className="mt-16">
           <h2 className="text-2xl font-semibold text-white mb-6">Hardware Requirements</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -135,10 +127,10 @@ export default function Deploy() {
               </tbody>
             </table>
           </div>
-        </motion.section>
+        </section>
 
         {/* Service Ports */}
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-16">
+        <section className="mt-16">
           <h2 className="text-2xl font-semibold text-white mb-6">Service Ports</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -160,7 +152,7 @@ export default function Deploy() {
               </tbody>
             </table>
           </div>
-        </motion.section>
+        </section>
       </div>
     </div>
   )

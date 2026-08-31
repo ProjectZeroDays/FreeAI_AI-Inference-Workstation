@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const releases = [
   {
@@ -32,25 +31,18 @@ export default function Blog() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Blog & <span className="gradient-text">Release Notes</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Latest updates and tutorials from the FreeAI team.
           </p>
-        </motion.div>
+        </div>
 
         <div className="space-y-8">
           {releases.map((release, i) => (
-            <motion.article
-              key={release.version}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+            <article key={release.version} className="p-6 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-4 mb-4">
                 <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-medium">
                   {release.version}
@@ -66,7 +58,7 @@ export default function Blog() {
                   </li>
                 ))}
               </ul>
-            </motion.article>
+            </article>
           ))}
         </div>
       </div>

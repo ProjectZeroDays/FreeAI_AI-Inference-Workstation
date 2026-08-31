@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft, Shield, Lock, Eye, AlertTriangle } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const securityFeatures = [
   {
@@ -34,35 +33,28 @@ export default function Security() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Security <span className="gradient-text">Features</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Production-grade security tools for autonomous operations.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {securityFeatures.map((feature, i) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+          {securityFeatures.map((feature) => (
+            <div key={feature.title} className="p-6 rounded-xl bg-white/5 border border-white/10">
               <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-4">
                 {feature.icon}
               </div>
               <h2 className="text-xl font-semibold text-white mb-2">{feature.title}</h2>
               <p className="text-gray-400">{feature.desc}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <section>
           <h2 className="text-2xl font-semibold text-white mb-6">Security Skills</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-xl bg-red-500/10 border border-red-500/20">
@@ -99,7 +91,7 @@ export default function Security() {
               </ul>
             </div>
           </div>
-        </motion.section>
+        </section>
       </div>
     </div>
   )

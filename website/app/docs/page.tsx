@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, FileText, Terminal, Shield, Cpu, Zap } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const docCategories = [
   {
@@ -66,25 +65,18 @@ export default function Docs() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             <span className="gradient-text">Documentation</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Complete guide to FreeAI — from installation to advanced configurations.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {docCategories.map((category, i) => (
-            <motion.div
-              key={category.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+          {docCategories.map((category) => (
+            <div key={category.title} className="p-6 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
                   {category.icon}
@@ -100,16 +92,11 @@ export default function Docs() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-12 p-6 rounded-xl bg-primary/10 border border-primary/30"
-        >
+        <div className="mt-12 p-6 rounded-xl bg-primary/10 border border-primary/30">
           <h2 className="text-xl font-semibold text-white mb-3">Quick Links</h2>
           <div className="flex flex-wrap gap-4">
             <Link href="/deploy" className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-hover transition-colors">
@@ -125,7 +112,7 @@ export default function Docs() {
               GitHub
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

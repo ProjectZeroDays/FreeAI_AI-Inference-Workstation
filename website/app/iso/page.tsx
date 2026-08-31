@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const isoVariants = [
   { name: 'Ubuntu 24.04 XFCE', desc: 'Default desktop with full FreeAI stack pre-loaded', command: 'Try Live / Install / Rescue' },
@@ -28,33 +27,26 @@ export default function ISO() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             FreeAIOS — <span className="gradient-text">Live ISO</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Bootable workstations for Ubuntu, Kali, Kodachi, Debian, and NixOS.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {isoVariants.map((iso, i) => (
-            <motion.div
-              key={iso.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+          {isoVariants.map((iso) => (
+            <div key={iso.name} className="p-6 rounded-xl bg-white/5 border border-white/10">
               <h3 className="text-lg font-semibold text-white mb-2">{iso.name}</h3>
               <p className="text-gray-400 text-sm mb-4">{iso.desc}</p>
               <code className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded">{iso.command}</code>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-16">
+        <section className="mb-16">
           <h2 className="text-2xl font-semibold text-white mb-6">Build Your Own ISO</h2>
           <pre className="bg-black/50 rounded-lg p-6 text-sm text-green-400 overflow-x-auto font-mono">
 {`# Requirements
@@ -68,9 +60,9 @@ UBUNTU_ISO=ubuntu-24.04.2-live-server-amd64.iso \\
 REPO_TARBALL=../dist/freeai-v1.2.0.tar.gz \\
 ./live/build-live.sh`}
           </pre>
-        </motion.section>
+        </section>
 
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <section>
           <h2 className="text-2xl font-semibold text-white mb-6">GRUB Boot Menu</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -90,7 +82,7 @@ REPO_TARBALL=../dist/freeai-v1.2.0.tar.gz \\
               </tbody>
             </table>
           </div>
-        </motion.section>
+        </section>
       </div>
     </div>
   )

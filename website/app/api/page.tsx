@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft, Mail, FlaskRound as FlaskConical, Terminal, Database } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const apiSections = [
   {
@@ -60,23 +59,19 @@ export default function API() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             REST <span className="gradient-text">API Reference</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Complete API documentation for all FreeAI services.
           </p>
-        </motion.div>
+        </div>
 
         <div className="space-y-12">
           {apiSections.map((section, i) => (
-            <motion.div
+            <div
               key={section.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
               className="p-6 rounded-xl bg-white/5 border border-white/10"
             >
               <div className="flex items-center gap-3 mb-6">
@@ -135,7 +130,7 @@ export default function API() {
                   </pre>
                 </div>
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

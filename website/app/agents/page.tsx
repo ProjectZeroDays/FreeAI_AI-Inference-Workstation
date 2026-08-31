@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const redTeamAgents = [
   { name: 'API Sniffer', desc: 'CDP Network domain interception, endpoint mapping' },
@@ -53,17 +52,17 @@ export default function Agents() {
           Back to Home
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             24 <span className="gradient-text">Autonomous Agents</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Red Team, Blue Team, and Purple Team agents for complete security operations.
           </p>
-        </motion.div>
+        </div>
 
         {/* Red Team */}
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-16">
+        <section className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
               <span className="text-red-500 font-bold">R</span>
@@ -78,10 +77,10 @@ export default function Agents() {
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Blue Team */}
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-16">
+        <section className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
               <span className="text-blue-500 font-bold">B</span>
@@ -96,10 +95,10 @@ export default function Agents() {
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Purple Team */}
-        <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <section>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
               <span className="text-purple-500 font-bold">P</span>
@@ -114,7 +113,7 @@ export default function Agents() {
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
       </div>
     </div>
   )

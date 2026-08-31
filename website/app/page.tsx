@@ -1,770 +1,656 @@
-import Link from 'next/link'
-import { ArrowRight, Download, BookOpen, Cpu, Shield, Zap, Code, Terminal, Globe, Server, Wifi, Lock, ChevronRight, Play, CheckCircle, AlertCircle, Clock } from 'lucide-react'
-import { motion } from 'framer-motion'
+'use client';
 
-const stats = [
-  { value: '174', label: 'Features' },
-  { value: '55+', label: 'Skills' },
-  { value: '24', label: 'Agents' },
-  { value: '40+', label: 'MCPs' },
-  { value: '21+', label: 'Providers' },
-]
-
-const askPrompts = [
-  'Generate deployment plan for Ubuntu + NVIDIA GPU',
-  'Show current GPU utilization across all nodes',
-  'Draft CI/CD pipeline for microservice X',
-  'Scan repo for security issues and CVEs',
-  'Compare bare metal vs Docker performance',
-  'List all running models and their VRAM usage',
-]
-
-const askPromptsSecondary = [
-  'Schedule model downloads outside peak hours',
-  'Export compliance report for SOC 2 audit',
-  'Which models are outdated on GPU clusters?',
-  'Move workloads to cloud fallback provider',
-  'Summarize last nights autonomous SDLC runs',
-  'What broke after the CUDA toolkit update?',
-]
-
-const artifactCards = [
-  {
-    pill: 'Security report',
-    title: 'CVE-2026-4102 — Fleet exposure',
-    meta: '6 agents consulted · just now',
-    metric: '27 exposed, 24 patchable',
-    row: '24 patchable tonight · no user impact',
-    action: 'Create patch rollout',
-    type: 'exposure',
-  },
-  {
-    pill: 'Policy compare',
-    title: 'Bare Metal vs Docker vs K8s',
-    meta: 'v1.2.0 · v1.2.0 · v1.2.0',
-    metric: '0/4 sections identical · 3 conflicts',
-    row: 'GPU passthrough only on bare metal',
-    action: 'Open comparison',
-    actionAlt: 'Apply fix',
-    type: 'compare',
-  },
-  {
-    pill: 'Anomaly',
-    title: 'GPU utilization spike — Node 3',
-    meta: 'today · 09:14 UTC',
-    metric: '+38% load in 20 min · 4x baseline',
-    row: 'Flagged and contained',
-    action: 'Investigate',
-    actionAlt: 'Alert rule',
-    type: 'anomaly',
-  },
-  {
-    pill: 'Action receipt',
-    title: 'Patch rollout #241 — completed',
-    meta: 'approved by admin · logged 02:14 · reversible',
-    checks: ['24/24 devices patched', '0 regressions detected', '3 held for Sun 02:00'],
-    action: 'View in history',
-    type: 'receipt',
-  },
-]
-
-const pillars = [
-  {
-    icon: <Cpu className="w-6 h-6" />,
-    title: 'Hardware & GPU Intelligence',
-    description: 'Every device state understood in context — posture, compliance, location, history, and GPU utilization.',
-  },
-  {
-    icon: <Zap className="w-6 h-6" />,
-    title: 'SDLC Automation',
-    description: 'Apps deployed, updated and retired by policy — 7-phase autonomous lifecycle with real compilation tests.',
-  },
-  {
-    icon: <Shield className="w-6 h-6" />,
-    title: 'Security by Operation',
-    description: 'Security embedded in daily operations — Aikido integration, pentest agents, auto-patching, not bolted on.',
-  },
-  {
-    icon: <Globe className="w-6 h-6" />,
-    title: 'Developer Experience',
-    description: 'IT that feels invisible — VSCode extension, desktop clients, browser automation, MCP tools.',
-  },
-]
-
-const qaItems = [
-  { q: 'Which models are non-compliant right now?', a: '60 devices, mostly outdated drivers. Want a breakdown — or a workflow to fix it?' },
-  { q: 'Show GPU utilization across all nodes', a: 'Node 1: 87% · Node 2: 23% · Node 3: 94% (spike detected) · Node 4: 45%' },
-  { q: 'What-if: move workload to Salad GPU marketplace', a: 'Estimated cost: $1.20/hr · Latency: +45ms · 3 instances available now' },
-]
-
-const deployMethods = [
-  { name: 'Bare Metal', command: 'sudo ./hardware/install-stack.sh', for: 'Production servers' },
-  { name: 'Docker Compose', command: 'docker compose --profile allinone up -d', for: 'Any host with NVIDIA Docker' },
-  { name: 'Kubernetes', command: 'kubectl apply -f k8s/', for: 'Cloud-native deployments' },
-  { name: 'Live ISO', command: 'Boot freeaios-amd64.iso', for: 'No-install workstation' },
-]
-
-const isoVariants = [
-  { name: 'Ubuntu 24.04 XFCE', desc: 'Default desktop with full FreeAI stack pre-loaded', icon: '🐧' },
-  { name: 'Kali Linux Rolling', desc: 'Full penetration-testing suite with networking preserved', icon: '🔴' },
-  { name: 'Kodachi Linux', desc: 'Security-focused — Kali hardened with extra privacy tools', icon: '🔐' },
-  { name: 'Debian 12', desc: 'Stable base with XFCE desktop and FreeAI tools', icon: '🦩' },
-  { name: 'NixOS Minimum', desc: 'Declarative, reproducible, secure by default', icon: '❄️' },
-]
-
-const osSupport = [
-  { os: 'Linux (Ubuntu/Kali/NixOS)', steps: 'git clone → sudo ./hardware/install-stack.sh → bash models/auto-download-models.sh', method: 'Bare Metal' },
-  { os: 'macOS (Intel / Apple Silicon)', steps: 'brew install docker → docker compose --profile allinone up -d', method: 'Docker / Colima' },
-  { os: 'Windows 10/11', steps: 'Install WSL2 → wsl --install -d Ubuntu → docker compose --profile allinone up -d', method: 'WSL2 + Docker' },
-]
-
-const complianceBadges = ['SOC 2 Type II', 'ISO 27001', 'NIST 800-53', 'CMMC L2/L3', 'FedRAMP Ready', 'DOD IL4']
-
-const features = [
-  {
-    icon: <Zap className="w-6 h-6" />,
-    title: 'Model Router',
-    description: 'Classifies prompts, routes to best backend, automatic fallback chains, LRU cache, 21+ providers.',
-  },
-  {
-    icon: <Code className="w-6 h-6" />,
-    title: 'Autonomous Agents',
-    description: '7-phase SDLC: plan → code → verify → fix → review → document → package. Real compilation tests.',
-  },
-  {
-    icon: <Cpu className="w-6 h-6" />,
-    title: 'GPU Inference',
-    description: 'llama.cpp (:9001), vLLM (:9002), FreeToken (:9100) — local GGUF serving with 21+ bridges.',
-  },
-  {
-    icon: <Shield className="w-6 h-6" />,
-    title: 'Security',
-    description: 'Aikido integration, pentest agents, auto-patching, 33 security skills (14 Red, 12 Blue, 7 Purple).',
-  },
-  {
-    icon: <Zap className="w-6 h-6" />,
-    title: 'Workflow Engine',
-    description: 'Visual pipeline designer with validation, templates, audit logs, export/import.',
-  },
-  {
-    icon: <BookOpen className="w-6 h-6" />,
-    title: 'Live ISO',
-    description: 'Bootable FreeAIOS — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes.',
-  },
-]
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import {
+  Shield, Zap, Target, Globe, Users, Cpu, Server, Wifi,
+  Smartphone, Cloud, FileText, Bot, ChevronDown, Check,
+  ArrowRight, Download, Play, Star, Award, Lock, Eye,
+  Terminal, Activity, GitBranch, Layers, Monitor, Bug
+} from 'lucide-react';
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-[#060a18] text-gray-100">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Background orbs */}
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute top-40 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-20 left-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
+  const [scrollY, setScrollY] = useState(0);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [counters, setCounters] = useState({ downloads: 0, agents: 0, countries: 0, vulns: 0 });
+  const statsRef = useRef<HTMLDivElement>(null);
+  const [statsVisible, setStatsVisible] = useState(false);
 
-        <div className="relative max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-400 mb-6">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              v1.2.0 — Autonomous SDLC Agents & Aikido Security
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+      
+      const sections = ['hero', 'what-is', 'agents', 'providers', 'brain', 'iso', 'deploy', 'security', 'faq'];
+      for (const section of sections) {
+        const el = document.getElementById(section);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 200 && rect.bottom >= 200) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    const checkStats = () => {
+      if (statsRef.current) {
+        const rect = statsRef.current.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.8 && !statsVisible) {
+          setStatsVisible(true);
+          animateCounters();
+        }
+      }
+    };
+
+    const animateCounters = () => {
+      const targets = { downloads: 671000, agents: 24, countries: 50, vulns: 21 };
+      const duration = 2000;
+      const steps = 60;
+      const interval = duration / steps;
+      
+      let step = 0;
+      const timer = setInterval(() => {
+        step++;
+        const progress = Math.min(step / steps, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        
+        setCounters({
+          downloads: Math.floor(targets.downloads * eased),
+          agents: Math.floor(targets.agents * eased),
+          countries: Math.floor(targets.countries * eased),
+          vulns: Math.floor(targets.vulns * eased)
+        });
+        
+        if (step >= steps) clearInterval(timer);
+      }, interval);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', checkStats);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', checkStats);
+    };
+  }, [statsVisible]);
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+    return num.toString();
+  };
+
+  const agents = [
+    // RED TEAM
+    { name: 'Red Orchestrator', role: 'red', icon: Target, description: 'Autonomous red team coordination' },
+    { name: 'PhishingSimulator', role: 'red', icon: Eye, description: 'Enterprise phishing simulations' },
+    { name: 'CredsHarvester', role: 'red', icon: Bot, description: 'Credential harvesting operations' },
+    { name: 'LlmAdversarial', role: 'red', icon: Terminal, description: 'LLM prompt injection attacks' },
+    { name: 'WifiRogue', role: 'red', icon: Wifi, description: 'WiFi deauth & rogue AP attacks' },
+    { name: 'WifiJamming', role: 'red', icon: Wifi, description: 'Wireless jamming operations' },
+    { name: 'ExploitDev', role: 'red', icon: Shield, description: 'Custom exploit development' },
+    { name: 'ZeroClickFinder', role: 'red', icon: Zap, description: 'Zero-click vulnerability hunting' },
+    { name: 'VulnAssessor', role: 'red', icon: Activity, description: 'Vulnerability assessment engine' },
+    { name: 'NetworkScanner', role: 'red', icon: Globe, description: 'Full network reconnaissance' },
+    { name: 'SocialEngineer', role: 'red', icon: Users, description: 'Social engineering campaigns' },
+    { name: 'WebAppScanner', role: 'red', icon: Cloud, description: 'Web application pentesting' },
+    
+    // BLUE TEAM
+    { name: 'Blue Orchestrator', role: 'blue', icon: Shield, description: 'Defensive operations coordination' },
+    { name: 'ThreatHunter', role: 'blue', icon: Eye, description: 'Proactive threat hunting' },
+    { name: 'IocAnalyzer', role: 'blue', icon: Activity, description: 'IOC pattern analysis' },
+    { name: 'MalwareAnalyzer', role: 'blue', icon: Bug, description: 'Malware behavior analysis' },
+    { name: 'ForensicAnalyst', role: 'blue', icon: FileText, description: 'Digital forensics investigations' },
+    { name: 'IncidentResponder', role: 'blue', icon: Zap, description: 'Automated incident response' },
+    { name: 'NetworkDefender', role: 'blue', icon: Globe, description: 'Network defense operations' },
+    { name: 'LogAnalyzer', role: 'blue', icon: Terminal, description: 'SIEM log correlation' },
+    { name: 'DeceptionEngine', role: 'blue', icon: Eye, description: 'Honeypot & canary deployment' },
+    
+    // PURPLE TEAM
+    { name: 'Purple Orchestrator', role: 'purple', icon: GitBranch, description: 'Purple team collaboration' },
+    { name: 'AttackSimulation', role: 'purple', icon: Target, description: 'ATT&CK-based simulations' },
+    { name: 'DefenseValidation', role: 'purple', icon: Shield, description: 'Control validation engine' },
+    { name: 'RemediationBot', role: 'purple', icon: Zap, description: 'Auto-remediation workflows' },
+  ];
+
+  const isoVariants = [
+    { name: 'Ubuntu 24.04 XFCE', icon: Monitor, version: 'v24.04', size: '2.4 GB' },
+    { name: 'Kali Linux Rolling', icon: Shield, version: '2024.3', size: '3.1 GB' },
+    { name: 'Debian 12', icon: Server, version: '12.6', size: '2.8 GB' },
+    { name: 'NixOS Minimum', icon: Layers, version: '24.05', size: '1.2 GB' },
+    { name: 'Alpine Linux', icon: Activity, version: '3.20', size: '0.8 GB' },
+  ];
+
+  const faqs = [
+    { q: 'How do I get started with FreeAI?', a: 'Download any Live ISO from our ISO page and boot it. The automated installer configures all services in under 10 minutes.' },
+    { q: 'Does FreeAI support GPU acceleration?', a: 'Yes! FreeAI supports CUDA, ROCm, and oneAPI for GPU-accelerated inference and analysis.' },
+    { q: 'Can I use FreeAI for commercial purposes?', a: 'FreeAI is GPL-3.0 licensed. Commercial use is permitted under the same terms.' },
+    { q: 'How often are CVE databases updated?', a: 'Our CVE feeds update automatically every 6 hours from NVD, MITRE, and GitHub advisory APIs.' },
+    { q: 'What hardware do I need?', a: 'Minimum: 8GB RAM, 4 CPU cores. Recommended: 16GB RAM, 8+ cores, NVIDIA GPU for ML workloads.' },
+  ];
+
+  const providers = [
+    { name: 'Meta', model: 'Llama 3.1' },
+    { name: 'OpenAI', model: 'GPT-4o' },
+    { name: 'Anthropic', model: 'Claude 3.5' },
+    { name: 'Google', model: 'Gemini 1.5' },
+    { name: 'Mistral', model: 'Mistral Large' },
+    { name: 'Cohere', model: 'Command R+' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900">
+      {/* HERO SECTION */}
+      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        {/* Animated background shapes */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="hero-shape w-96 h-96 bg-blue-500/20 top-20 -left-20 animate-float" />
+          <div className="hero-shape w-64 h-64 bg-purple-500/20 top-40 right-20 animate-float-reverse" />
+          <div className="hero-shape w-48 h-48 bg-cyan-500/20 bottom-40 left-1/4 animate-pulse-glow" />
+          <div className="hero-shape w-32 h-32 bg-indigo-500/30 bottom-20 right-1/3 animate-float" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center max-w-5xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8 animate-float-up">
+              <Star className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium">The #1 Open Source AI Security Platform</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              The AI workstation<br />
-              <span className="gradient-text">that thinks ahead.</span>
+            {/* Main heading */}
+            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight animate-float-up" style={{ animationDelay: '0.1s' }}>
+              Your Cybersecurity
+              <br />
+              <span className="gradient-text-animated">Workforce</span>
             </h1>
 
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-              FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, 
-              security scanning, and builder tools — all in one self-hosted stack.
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto animate-float-up" style={{ animationDelay: '0.2s' }}>
+              Deploy <strong className="text-white">24 autonomous agents</strong> for offensive security, 
+              vulnerability research, and AI-powered attack simulation.
             </p>
 
-            <div className="flex flex-wrap gap-3 justify-center mb-8">
-              {complianceBadges.map((badge) => (
-                <span key={badge} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-gray-400">
-                  {badge}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/deploy"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-all hover:scale-105"
-              >
-                <Download size={20} />
-                Deploy FreeAI
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-float-up" style={{ animationDelay: '0.3s' }}>
+              <Link href="/deploy" className="btn-primary px-8 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2">
+                <Download className="w-5 h-5" />
+                Download FreeAI
               </Link>
-              <Link
-                href="/docs"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-lg font-semibold transition-all border border-white/10"
-              >
-                <BookOpen size={20} />
-                Read Docs
+              <Link href="/docs" className="px-8 py-4 rounded-xl text-lg font-semibold border border-white/20 hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                <Play className="w-5 h-5" />
+                Watch Demo
               </Link>
             </div>
-          </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="grid grid-cols-5 gap-8 mt-20 max-w-4xl mx-auto"
-          >
-            {stats.map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white">{stat.value}</div>
-                <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Ask FreeAI Agents Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ask FreeAI <span className="gradient-text">Agents</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Anything you'd hand a senior DevOps engineer.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {askPrompts.map((prompt, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="flex items-center gap-3 px-5 py-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all cursor-pointer group"
-              >
-                <Terminal className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{prompt}</span>
-                <ChevronRight className="w-4 h-4 text-gray-500 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {askPromptsSecondary.map((prompt, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: (i + 6) * 0.05 }}
-                className="flex items-center gap-3 px-5 py-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all cursor-pointer group"
-              >
-                <Play className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{prompt}</span>
-                <ChevronRight className="w-4 h-4 text-gray-500 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Artifacts Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Every answer, an <span className="gradient-text">artifact.</span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Reports, comparisons, insights — and a receipt for every action taken.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {artifactCards.map((card, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-medium mb-2">
-                      {card.pill}
-                    </span>
-                    <h3 className="text-lg font-semibold text-white">{card.title}</h3>
-                    <p className="text-xs text-gray-500 mt-1">{card.meta}</p>
+            {/* Hero image/dashboard mockup */}
+            <div className="relative max-w-4xl mx-auto animate-scale-in" style={{ animationDelay: '0.5s' }}>
+              <div className="glass-card p-2 glow-blue">
+                <div className="bg-navy-900 rounded-lg overflow-hidden">
+                  {/* Dashboard mockup */}
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      {['Red Team Active', 'Blue Team Monitoring', 'Purple Coordination'].map((label, i) => (
+                        <div key={i} className="bg-white/5 rounded-lg p-4 text-center">
+                          <div className="text-2xl font-bold gradient-text">{i + 1}</div>
+                          <div className="text-xs text-gray-400 mt-1">{label}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  {card.type === 'exposure' && (
-                    <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-                      <AlertCircle className="w-6 h-6 text-red-400" />
-                    </div>
-                  )}
-                  {card.type === 'compare' && (
-                    <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                      <ChevronRight className="w-6 h-6 text-purple-400" />
-                    </div>
-                  )}
-                  {card.type === 'anomaly' && (
-                    <div className="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                      <AlertCircle className="w-6 h-6 text-yellow-400" />
-                    </div>
-                  )}
-                  {card.type === 'receipt' && (
-                    <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                      <CheckCircle className="w-6 h-6 text-green-400" />
-                    </div>
-                  )}
                 </div>
-
-                {card.metric && (
-                  <div className="text-2xl font-bold text-white mb-1">{card.metric}</div>
-                )}
-
-                {card.row && (
-                  <p className="text-sm text-gray-400 mb-4">{card.row}</p>
-                )}
-
-                {card.checks && (
-                  <ul className="space-y-2 mb-4">
-                    {card.checks.map((check, j) => (
-                      <li key={j} className="flex items-center gap-2 text-sm text-gray-300">
-                        <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-                        {check}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                <div className="flex gap-3 mt-4">
-                  <button className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-sm font-medium transition-colors">
-                    {card.action}
-                  </button>
-                  {card.actionAlt && (
-                    <button className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-sm font-medium transition-colors border border-white/10">
-                      {card.actionAlt}
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+              </div>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Social Proof / Trusted By */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/5 border-y border-white/5">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-lg font-semibold text-gray-400 mb-8">Trusted by developers worldwide</h2>
-            <div className="flex flex-wrap justify-center gap-8 items-center">
-              {['GitHub', 'Vercel', 'DigitalOcean', 'Hetzner', 'RunPod', 'Salad'].map((name) => (
-                <div key={name} className="px-6 py-3 rounded-lg bg-white/5 text-gray-500 font-medium text-sm">
-                  {name}
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-center gap-6 mt-8">
-              {['⭐ 4.8/5 Capterra', '⭐ 4.9/5 G2', 'SOC 2 Certified'].map((badge) => (
-                <span key={badge} className="text-sm text-gray-400">{badge}</span>
-              ))}
-            </div>
-          </motion.div>
+        {/* Scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-8 h-8 text-white/50" />
         </div>
       </section>
 
-      {/* Problem Framing */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-              The workplace became digital.<br />
-              <span className="text-gray-500">Operations stayed manual.</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-16">
+      {/* STATS SECTION */}
+      <section ref={statsRef} className="py-20 bg-black/20">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              'Too many tools',
-              'Too many policies',
-              'Too many manual workflows',
-              'Too much reactive IT',
-              'Too little operational intelligence',
-            ].map((pain, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 text-center"
-              >
-                <span className="text-sm text-red-400">{pain}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-8 rounded-2xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10"
-          >
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">
-              The next step: the <span className="gradient-text">Autonomous Workplace</span>.
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {['Context-aware', 'Policy-driven', 'AI-assisted', 'Security-integrated', 'Developer-centric', 'Continuously optimized'].map((attr) => (
-                <div key={attr} className="flex items-center gap-2 text-gray-300">
-                  <CheckCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                  <span>{attr}</span>
+              { label: 'Downloads', value: counters.downloads, suffix: '+' },
+              { label: 'Countries', value: counters.countries, suffix: '+' },
+              { label: 'Autonomous Agents', value: counters.agents, suffix: '' },
+              { label: 'CVEs Tracked', value: counters.vulns, suffix: '' },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="stat-number">
+                  {stat.value > 0 ? formatNumber(stat.value) : '0'}{stat.suffix}
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Four Pillars */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white/5">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              One platform, <span className="gradient-text">four pillars.</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Built on what FreeAI already delivers today.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {pillars.map((pillar, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
-              >
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary mb-4">
-                  {pillar.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-2">{pillar.title}</h3>
-                <p className="text-gray-400">{pillar.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* One Brain - Interactive Q&A */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-              One brain. <span className="gradient-text">Your whole fleet.</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              It sees. It simulates. It acts. You approve.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left: Question list */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Ask anything about your fleet</h3>
-              {qaItems.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                      <span className="text-blue-400 text-xs font-bold">Q</span>
-                    </div>
-                    <p className="text-gray-300 text-sm">{item.q}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Right: AI Answer panel */}
-            <div className="p-6 rounded-2xl bg-black/30 border border-white/10">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm text-gray-400">AI Response</span>
+                <div className="text-gray-400 mt-2">{stat.label}</div>
               </div>
-              <div className="space-y-4">
-                {qaItems.map((item, i) => (
-                  <div key={i} className="pb-4 border-b border-white/5 last:border-0 last:pb-0">
-                    <p className="text-xs text-gray-500 mb-1">Q: {item.q}</p>
-                    <div className="flex items-start gap-2">
-                      <div className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-purple-400 text-xs">A</span>
-                      </div>
-                      <p className="text-gray-300 text-sm">{item.a}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT IS FREEAI SECTION */}
+      <section id="what-is" className="py-32 relative">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                What is{' '}
+                <span className="gradient-text-animated">FreeAI</span>?
+              </h2>
+              <p className="text-gray-300 text-lg mb-6">
+                FreeAI is an open-source AI security platform that deploys <strong className="text-white">24 autonomous agents</strong> 
+                across Red, Blue, and Purple teams. Built on cutting-edge LLM technology, it provides 
+                enterprise-grade cybersecurity automation without the enterprise-grade price tag.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  'Autonomous red team operations',
+                  'Real-time threat intelligence',
+                  'Multi-provider AI orchestration',
+                  'Live ISO deployment options',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <Check className="w-4 h-4 text-green-400" />
                     </div>
+                    <span className="text-gray-300">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl" />
+              <div className="relative glass-card p-8">
+                <div className="grid grid-cols-2 gap-4">
+                  {['Red Team', 'Blue Team', 'Purple Team', 'Intelligence'].map((team, i) => (
+                    <div key={i} className="bg-white/5 rounded-xl p-6 text-center hover:bg-white/10 transition-all cursor-pointer">
+                      <div className="text-3xl font-bold gradient-text mb-2">{i + 1}</div>
+                      <div className="text-sm text-gray-400">{team}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AGENTS SECTION */}
+      <section id="agents" className="py-32 bg-black/20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Meet Your{' '}
+              <span className="gradient-text">Agent Workforce</span>
+            </h2>
+            <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+              24 specialized AI agents working 24/7 to secure your infrastructure
+            </p>
+          </div>
+
+          {/* Team filter tabs */}
+          <div className="flex justify-center gap-4 mb-12">
+            {['All', 'Red Team', 'Blue Team', 'Purple Team'].map((tab, i) => (
+              <button
+                key={tab}
+                className={`px-6 py-2 rounded-full transition-all ${
+                  i === 0 ? 'bg-blue-500 text-white' : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Agents grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {agents.map((agent, i) => (
+              <div
+                key={i}
+                className="agent-card glass-card p-6 cursor-pointer"
+                style={{ animationDelay: `${i * 0.05}s` }}
+              >
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                  agent.role === 'red' ? 'bg-red-500/20' :
+                  agent.role === 'blue' ? 'bg-blue-500/20' :
+                  'bg-purple-500/20'
+                }`}>
+                  <agent.icon className={`w-6 h-6 ${
+                    agent.role === 'red' ? 'text-red-400' :
+                    agent.role === 'blue' ? 'text-blue-400' :
+                    'text-purple-400'
+                  }`} />
+                </div>
+                <h3 className="font-bold text-white mb-2">{agent.name}</h3>
+                <p className="text-sm text-gray-400">{agent.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI PROVIDERS SECTION */}
+      <section id="providers" className="py-32">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Connect With{' '}
+              <span className="gradient-text">Top AI Providers</span>
+            </h2>
+            <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+              Integration with the world's leading LLM providers
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {providers.map((provider, i) => (
+              <div key={i} className="glass-card p-8 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <Cpu className="w-8 h-8 text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{provider.name}</h3>
+                <p className="text-gray-400">{provider.model}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link href="/providers" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300">
+              View all 21+ providers <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ONE BRAIN PLATFORM */}
+      <section id="brain" className="py-32 bg-black/20 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="hero-shape w-96 h-96 bg-purple-500/10 top-0 right-0 animate-float" />
+          <div className="hero-shape w-64 h-64 bg-blue-500/10 bottom-0 left-0 animate-float-reverse" />
+        </div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="order-2 md:order-1">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-3xl blur-2xl animate-pulse-glow" />
+                <div className="relative glass-card p-8">
+                  <div className="grid grid-cols-2 gap-6">
+                    {[
+                      { icon: Bot, label: 'Orchestrator', desc: 'Central coordination' },
+                      { icon: Globe, label: 'Internet Engine', desc: 'Web intelligence' },
+                      { icon: Layers, label: 'Data Lake', desc: 'Asset discovery' },
+                      { icon: Zap, label: 'Event Stream', desc: 'Real-time alerts' },
+                    ].map((item, i) => (
+                      <div key={i} className="text-center p-4 bg-white/5 rounded-xl">
+                        <item.icon className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                        <div className="font-semibold text-white">{item.label}</div>
+                        <div className="text-xs text-gray-400">{item.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                The{' '}
+                <span className="gradient-text-animated">One Brain</span>
+                <br />Platform
+              </h2>
+              <p className="text-gray-300 text-lg mb-6">
+                FreeAI's central orchestration layer connects all agents, data sources, 
+                and AI providers into a unified security operations center.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  'Single-pane glass operations center',
+                  'Real-time agent coordination',
+                  'Cross-team intelligence sharing',
+                  'Automated reporting & compliance',
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+                      <Check className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <span className="text-gray-300">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* LIVE ISO SECTION */}
+      <section id="iso" className="py-32">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Live ISO{' '}
+              <span className="gradient-text">Variants</span>
+            </h2>
+            <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+              Boot and deploy in minutes with our pre-configured live environments
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-5 gap-6">
+            {isoVariants.map((iso, i) => (
+              <div key={i} className="glass-card p-6 text-center hover:scale-105 transition-transform cursor-pointer">
+                <iso.icon className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+                <h3 className="font-bold text-white mb-2">{iso.name}</h3>
+                <div className="flex justify-center gap-2 mb-4">
+                  <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-gray-400">{iso.version}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-gray-400">{iso.size}</span>
+                </div>
+                <Link
+                  href="/iso"
+                  className="text-sm text-blue-400 hover:text-blue-300"
+                >
+                  Download →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* DEPLOY SECTION */}
+      <section id="deploy" className="py-32 bg-black/20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Deploy{' '}
+              <span className="gradient-text">Your Way</span>
+            </h2>
+            <p className="text-gray-400 text-xl max-w-2xl mx-auto">
+              Multiple deployment options to fit your infrastructure
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              { icon: Server, title: 'Bare Metal', desc: 'Direct hardware deployment', color: 'blue' },
+              { icon: Layers, title: 'Docker', desc: 'Containerized quickstart', color: 'purple' },
+              { icon: Cloud, title: 'Kubernetes', desc: 'Cloud-native orchestration', color: 'cyan' },
+              { icon: Globe, title: 'Cloud', desc: 'AWS, Azure, GCP ready', color: 'green' },
+            ].map((option, i) => (
+              <div key={i} className="glass-card p-8 text-center hover:scale-105 transition-transform cursor-pointer">
+                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-${option.color}-500/20 flex items-center justify-center`}>
+                  <option.icon className={`w-8 h-8 text-${option.color}-400`} />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">{option.title}</h3>
+                <p className="text-gray-400">{option.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link
+              href="/deploy"
+              className="btn-primary px-8 py-4 rounded-xl font-semibold inline-flex items-center gap-2"
+            >
+              View all deployment methods <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECURITY SECTION */}
+      <section id="security" className="py-32">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Enterprise-Grade{' '}
+                <span className="gradient-text">Security</span>
+              </h2>
+              <p className="text-gray-300 text-lg mb-8">
+                FreeAI implements defense-in-depth security with encrypted storage, 
+                RBAC, and compliance-ready logging.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: Lock, label: 'AES-256 Encryption' },
+                  { icon: Shield, label: 'RBAC Access Control' },
+                  { icon: Activity, label: 'Audit Logging' },
+                  { icon: Eye, label: 'Threat Detection' },
+                ].map((feat, i) => (
+                  <div key={i} className="flex items-center gap-3 p-4 bg-white/5 rounded-xl">
+                    <feat.icon className="w-6 h-6 text-blue-400" />
+                    <span className="text-sm text-gray-300">{feat.label}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Deep Features Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white/5">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Everything you need. <span className="gradient-text">Nothing you don't.</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all hover:bg-white/10"
-              >
-                <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-4">
-                  {feature.icon}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-3xl blur-3xl" />
+              <div className="relative glass-card p-8">
+                <div className="space-y-4">
+                  {['Network Security: Active', 'Threat Detection: Enabled', 'Encryption: AES-256', 'RBAC: Configured'].map((item, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-xl">
+                      <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-gray-300">{item}</span>
+                    </div>
+                  ))}
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Live ISO Variants */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              FreeAIOS — <span className="gradient-text">Live ISO</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Bootable workstations for any purpose. No install required.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {isoVariants.map((iso, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
-              >
-                <div className="text-3xl mb-3">{iso.icon}</div>
-                <h3 className="text-lg font-semibold text-white mb-2">{iso.name}</h3>
-                <p className="text-gray-400 text-sm">{iso.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-6 rounded-xl bg-white/5 border border-white/10"
-          >
-            <h3 className="text-lg font-semibold text-white mb-4">Build Your Own ISO</h3>
-            <pre className="bg-black/50 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono">
-{`# Requirements
-sudo apt-get install -y xorriso isolinux
-
-# Build from Ubuntu ISO
-UBUNTU_ISO=ubuntu-24.04.2-live-server-amd64.iso \\
-./live/build-live.sh
-
-# Optional: bake repo into ISO for offline install
-REPO_TARBALL=../dist/freeai-v1.2.0.tar.gz \\
-./live/build-live.sh`}
-            </pre>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* OS Support Matrix */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white/5">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Works on <span className="gradient-text">any OS</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Linux, macOS, and Windows — all supported.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {osSupport.map((os, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-xl bg-white/5 border border-white/10"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <Server className="w-6 h-6 text-blue-400" />
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{os.os}</h3>
-                    <span className="text-xs text-gray-500">{os.method}</span>
-                  </div>
-                </div>
-                <pre className="bg-black/50 rounded-lg p-3 text-xs text-green-400 overflow-x-auto font-mono">
-                  {os.steps}
-                </pre>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Architecture Diagram */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Architecture</h2>
-          </motion.div>
-
-          <motion.pre
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="bg-black/50 rounded-xl p-6 text-sm text-gray-300 overflow-x-auto font-mono"
-          >
-{`                    ┌───────────────────────────────────────────────────────┐
-                    │              FreeAI Dashboard (:8030)                 │
-                    │        Flask + Chart.js + SSE + Authentication        │
-                    ├───────────────────────────┬────────────────┬──────────┤
-                    │  Router  │ Agents    │ Workflow │      Autonomous     │
-                    │  :8010   │ :8020     │  :8040   │       :8050         │
-                    │          │           │          │                     │
-                    │ classify │ plan→code │ chain    │   7-phase SDLC      │
-                    │ fallback │ verify    │ validate │   real compilation  │
-                    │ cache    │ fix       │ template │   auto-package      │
-                    ├───────────────────────────┴────────────────┴──────────┤
-                    │              MCP Registry (40+ servers)               │
-                    │    Aikido · SendGrid · Twilio · Telegram · WhatsApp   │
-                    ├───────────────────────────────────────────────────────┤
-                    │                  GPU Inference Layer                  │
-                    │ llama.cpp  (:9001) · vLLM (:9002) · FreeToken (:9100) │
-                    └───────────────────────────────────────────────────────┘`}
-          </motion.pre>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="p-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready for an autonomous workplace?
-            </h2>
-            <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Deploy FreeAI in minutes. Local models, autonomous agents, full SDLC automation — on your hardware, your rules.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/deploy"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-hover text-white rounded-lg font-semibold transition-all hover:scale-105"
-              >
-                <Download size={20} />
-                Open Deploy Guide
-              </Link>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 text-white rounded-lg font-semibold transition-all border border-white/10"
-              >
-                <Terminal size={20} />
-                Launch Dashboard
-              </Link>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
+
+      {/* FAQ SECTION */}
+      <section id="faq" className="py-32 bg-black/20">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Frequently Asked{' '}
+              <span className="gradient-text">Questions</span>
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <FAQItem key={i} question={faq.q} answer={faq.a} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-32 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="hero-shape w-96 h-96 bg-blue-500/20 top-0 left-1/4 animate-float" />
+          <div className="hero-shape w-64 h-64 bg-purple-500/20 bottom-0 right-1/4 animate-float-reverse" />
+        </div>
+        
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            Ready to Deploy Your{' '}
+            <span className="gradient-text-animated">Workforce</span>?
+          </h2>
+          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+            Join thousands of security professionals using FreeAI to automate their security operations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/deploy"
+              className="btn-primary px-10 py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2"
+            >
+              <Download className="w-5 h-5" />
+              Download Now
+            </Link>
+            <Link
+              href="/docs"
+              className="px-10 py-4 rounded-xl text-lg font-semibold border border-white/20 hover:bg-white/10 transition-all"
+            >
+              Read Documentation
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
-  )
+  );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className="glass-card overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-6 text-left flex justify-between items-center hover:bg-white/5 transition-colors"
+      >
+        <span className="font-semibold text-white">{question}</span>
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && (
+        <div className="px-6 pb-6 text-gray-400">
+          {answer}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="py-12 border-t border-white/10">
+      <div className="container mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+              <span className="text-white font-bold text-sm">F</span>
+            </div>
+            <span className="font-bold text-xl">FreeAI</span>
+          </div>
+          
+          <div className="flex gap-8 text-sm text-gray-400">
+            <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
+            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+            <Link href="/agents" className="hover:text-white transition-colors">Agents</Link>
+            <Link href="/security" className="hover:text-white transition-colors">Security</Link>
+            <Link href="https://github.com/ProjectZeroDays" className="hover:text-white transition-colors">GitHub</Link>
+          </div>
+          
+          <div className="text-sm text-gray-500">
+            © 2024 FreeAI. GPL-3.0 License.
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

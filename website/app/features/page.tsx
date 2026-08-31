@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { motion } from 'framer-motion'
 
 const features = [
   {
@@ -119,29 +118,18 @@ export default function Features() {
           Back to Home
         </Link>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
+        <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             174 <span className="gradient-text">Features</span>
           </h1>
           <p className="text-gray-400 text-lg">
             Everything you need for a production-grade AI inference workstation.
           </p>
-        </motion.div>
+        </div>
 
         <div className="space-y-12">
           {features.map((category, i) => (
-            <motion.div
-              key={category.category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+            <div key={category.category} className="p-6 rounded-xl bg-white/5 border border-white/10">
               <h2 className="text-xl font-semibold text-white mb-4">{category.category}</h2>
               <ul className="space-y-2">
                 {category.items.map((item, j) => (
@@ -151,7 +139,7 @@ export default function Features() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
