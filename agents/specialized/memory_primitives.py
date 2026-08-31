@@ -373,7 +373,7 @@ class MemoryPrimitivesAgent:
                     "description": "Accessing array or buffer indices outside valid range。",
                     "subtypes": ["oob_read", "oob_write", "off_by_one", "negative_index"],
                     "exploitation_mechanics": "Access memory beyond array bounds to leak sensitive data (read) or corrupt adjacent structures (write)。",
-                    "real_world_cves": ["CVE-2021-44228", "CVE-2019-5736", "CVE-2021-21148", "CVE-2024-21762", "CVE-2021-26855", "CVE-2021-34527", "CVE-2023-36884", "CVE-2019-8641", "CVE-2020-9918"],
+                    "real_world_cves": ["CVE-2021-44228", "CVE-2019-5736", "CVE-2021-21148", "CVE-2024-21762", "CVE-2021-26855", "CVE-2021-34527", "CVE-2023-36884", "CVE-2019-8641", "CVE-2020-9918", "CVE-2022-0847"],
                     "mitigations": ["Bounds Checking", "ASan", "Memory Safe Languages", "Index Validation"],
                     "ai_selection_score": 78,
                     "difficulty": "low-medium",
