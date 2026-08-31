@@ -1,0 +1,202 @@
+{
+  "campaign_id": "CAMP-20260831-001",
+  "generated_at": "2026-08-31T11:39:20.823341",
+  "stats": {
+    "total_sent": 0,
+    "total_opened": 9,
+    "total_clicked": 5,
+    "total_submitted": 3,
+    "by_variant": {
+      "variant_1": {
+        "sent": 0,
+        "opened": 4,
+        "clicked": 4,
+        "submitted": 3
+      },
+      "variant_2": {
+        "sent": 0,
+        "opened": 2,
+        "clicked": 0,
+        "submitted": 0
+      },
+      "variant_3": {
+        "sent": 0,
+        "opened": 3,
+        "clicked": 1,
+        "submitted": 0
+      }
+    }
+  },
+  "results": [
+    {
+      "timestamp": "2026-08-31T11:39:20.823184",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "jdoe@company.com",
+      "recipient_name": "John Doe",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823192",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "jdoe@company.com",
+      "recipient_name": "John Doe",
+      "action": "clicked",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823196",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "jdoe@company.com",
+      "recipient_name": "John Doe",
+      "action": "submitted",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823203",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_2",
+      "recipient_email": "jsmith@company.com",
+      "recipient_name": "Jane Smith",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823209",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_3",
+      "recipient_email": "bjones@company.com",
+      "recipient_name": "Bob Jones",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823213",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "awilliams@company.com",
+      "recipient_name": "Alice Williams",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823215",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "awilliams@company.com",
+      "recipient_name": "Alice Williams",
+      "action": "clicked",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823217",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "awilliams@company.com",
+      "recipient_name": "Alice Williams",
+      "action": "submitted",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823221",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_2",
+      "recipient_email": "cmartin@company.com",
+      "recipient_name": "Charlie Martin",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823224",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_3",
+      "recipient_email": "dgarcia@company.com",
+      "recipient_name": "Diana Garcia",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823226",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_3",
+      "recipient_email": "dgarcia@company.com",
+      "recipient_name": "Diana Garcia",
+      "action": "clicked",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823232",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "emartinez@company.com",
+      "recipient_name": "Edward Martinez",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823234",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "emartinez@company.com",
+      "recipient_name": "Edward Martinez",
+      "action": "clicked",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823239",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_3",
+      "recipient_email": "ghernandez@company.com",
+      "recipient_name": "Grace Hernandez",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823243",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "hlopez@company.com",
+      "recipient_name": "Henry Lopez",
+      "action": "opened",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823244",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "hlopez@company.com",
+      "recipient_name": "Henry Lopez",
+      "action": "clicked",
+      "tracking_id": "",
+      "success": true
+    },
+    {
+      "timestamp": "2026-08-31T11:39:20.823246",
+      "campaign_id": "CAMP-20260831-001",
+      "variant_id": "variant_1",
+      "recipient_email": "hlopez@company.com",
+      "recipient_name": "Henry Lopez",
+      "action": "submitted",
+      "tracking_id": "",
+      "success": true
+    }
+  ]
+}
