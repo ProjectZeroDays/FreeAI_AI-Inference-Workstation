@@ -108,7 +108,12 @@ class CampaignResult:
     raw_metrics: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict:
-        return asdict(self)
+        d = asdict(self)
+        d["open_rate"] = self.open_rate
+        d["click_rate"] = self.click_rate
+        d["conversion_rate"] = self.conversion_rate
+        d["report_rate"] = self.report_rate
+        return d
 
     @property
     def open_rate(self) -> float:
