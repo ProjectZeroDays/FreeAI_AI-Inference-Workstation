@@ -2,30 +2,24 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-const posts = [
+const releases = [
   {
-    title: 'FreeAI v1.2.0 Released',
-    date: 'August 31, 2026',
-    excerpt: 'Autonomous SDLC agents, Aikido security scanning, and 174+ features.',
-    tag: 'Release',
+    version: 'v1.2.0',
+    date: '2026-08-31',
+    title: 'Autonomous SDLC Agents & Aikido Security',
+    features: ['7-phase SDLC automation', 'Aikido integration', '33 security skills', 'Live ISO builder'],
   },
   {
-    title: 'Building the Model Router',
-    date: 'August 28, 2026',
-    excerpt: 'How we built a classifier that routes prompts to the best backend automatically.',
-    tag: 'Technical',
+    version: 'v1.1.0',
+    date: '2026-08-28',
+    title: 'Model Router v2',
+    features: ['Confidence-scored routing', 'Fallback chains', 'LRU cache', 'Rate limiting'],
   },
   {
-    title: 'Security Through Automation',
-    date: 'August 25, 2026',
-    excerpt: 'Using AI agents for continuous security assessment and automatic patching.',
-    tag: 'Security',
-  },
-  {
-    title: 'Live ISO: FreeAIOS',
-    date: 'August 20, 2026',
-    excerpt: 'Bootable workstation with Ubuntu, Kali, Kodachi, Debian, and NixOS variants.',
-    tag: 'Product',
+    version: 'v1.0.0',
+    date: '2026-08-25',
+    title: 'Initial Release',
+    features: ['GPU inference layer', 'Agent API', 'Dashboard', 'Basic workflows'],
   },
 ]
 
@@ -40,34 +34,38 @@ export default function Blog() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            <span className="gradient-text">Blog</span>
+            Blog & <span className="gradient-text">Release Notes</span>
           </h1>
           <p className="text-gray-400 text-lg">
-            Latest updates, tutorials, and technical deep dives.
+            Latest updates and tutorials from the FreeAI team.
           </p>
         </motion.div>
 
-        <div className="space-y-6">
-          {posts.map((post, i) => (
+        <div className="space-y-8">
+          {releases.map((release, i) => (
             <motion.article
-              key={post.title}
+              key={release.version}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
+              className="p-6 rounded-xl bg-white/5 border border-white/10"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
-                  {post.tag}
+              <div className="flex items-center gap-4 mb-4">
+                <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-medium">
+                  {release.version}
                 </span>
-                <span className="text-gray-500 text-sm">{post.date}</span>
+                <span className="text-gray-500 text-sm">{release.date}</span>
               </div>
-              <h2 className="text-xl font-semibold text-white mb-2">{post.title}</h2>
-              <p className="text-gray-400 text-sm">{post.excerpt}</p>
-              <Link href="#" className="inline-block mt-4 text-primary hover:text-primary-hover text-sm font-medium transition-colors">
-                Read more →
-              </Link>
+              <h2 className="text-2xl font-semibold text-white mb-4">{release.title}</h2>
+              <ul className="space-y-2">
+                {release.features.map((feature, j) => (
+                  <li key={j} className="flex items-center gap-2 text-gray-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
             </motion.article>
           ))}
         </div>
