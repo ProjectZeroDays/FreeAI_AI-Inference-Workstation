@@ -1,0 +1,160 @@
+{
+  "_comment": "Red Team Campaign Manager Configuration",
+  "version": "1.0.0",
+  "default_settings": {
+    "confidence_level": 0.95,
+    "minimum_sample_size": 100,
+    "max_campaign_duration_hours": 72,
+    "escalation_timeout_hours": 4
+  },
+  "audience_segments": [
+    {
+      "name": "C-Level Executives",
+      "criteria": ["title_contains_ceo", "title_contains_cto", "title_contains_cfo", "director_or_above"],
+      "budget_percentage": 15,
+      "sample_size": 50,
+      "template": "executive_impersonation",
+      "urgency": "high"
+    },
+    {
+      "name": "IT Personnel",
+      "criteria": ["department_it", "title_contains_admin", "title_contains_sysadmin", "it_group_member"],
+      "budget_percentage": 20,
+      "sample_size": 100,
+      "template": "technical_pretext",
+      "urgency": "medium"
+    },
+    {
+      "name": "Finance Department",
+      "criteria": ["department_finance", "department_accounting", "fpna_group"],
+      "budget_percentage": 15,
+      "sample_size": 75,
+      "template": "invoice_fraud",
+      "urgency": "high"
+    },
+    {
+      "name": "Human Resources",
+      "criteria": ["department_hr", "hr_group_member"],
+      "budget_percentage": 10,
+      "sample_size": 50,
+      "template": "policy_document",
+      "urgency": "medium"
+    },
+    {
+      "name": "Engineering",
+      "criteria": ["department_engineering", "title_contains_eng", "title_contains_dev"],
+      "budget_percentage": 20,
+      "sample_size": 100,
+      "template": "code_deployment",
+      "urgency": "low"
+    },
+    {
+      "name": "General Staff",
+      "criteria": ["all_others"],
+      "budget_percentage": 20,
+      "sample_size": 200,
+      "template": "mixed",
+      "urgency": "medium"
+    }
+  ],
+  "templates": {
+    "phishing": {
+      "subjects": [
+        "URGENT: {action} Required",
+        "Your {service} Account Needs Verification",
+        "Security Alert: {action} Immediately",
+        "Invoice #{number} Attached",
+        "Meeting Invitation: {topic}"
+      ],
+      "landing_pages": [
+        "microsoft_login.html",
+        "google_workspace.html",
+        "adobe_sign.html",
+        "dropbox_share.html",
+        "slack_verify.html",
+        "zoom_login.html",
+        "office365_portal.html"
+      ],
+      "tracked_links": true,
+      "tracking_pixel": true
+    },
+    "vishing": {
+      "caller_identities": [
+        "IT Helpdesk",
+        "Security Operations Center",
+        "Vendor Support",
+        "Executive Assistant",
+        "HR Representative",
+        "Compliance Officer"
+      ],
+      "pretexts": [
+        "password_reset",
+        "account_lockout",
+        "malware_infection",
+        "verify_transaction",
+        "update_directory",
+        "benefit_enrollment"
+      ],
+      "max_call_duration_minutes": 10
+    },
+    "usb_drop": {
+      "labels": [
+        "Q4_Budget_2026.xlsx",
+        "Confidential_Merger_Docs.pdf",
+        "Employee_Salaries_2026.csv",
+        "IT_Security_Policy.docx",
+        "Layoff_List_Dec2026.txt",
+        "Executive_Comensation.pdf",
+        "Vendor_Contracts.xlsx"
+      ],
+      "placement_zones": [
+        "parking_lot_entrance",
+        "building_lobby",
+        "cafeteria",
+        "elevator_bank",
+        "printer_room",
+        "break_room"
+      ]
+    },
+    "rogue_ap": {
+      "ssid_options": [
+        "{company}_Guest",
+        "{company}_Secure",
+        "{company}_IT",
+        "Free_Office_WiFi",
+        "Corporate_VPN_Test",
+        "{company}_Conference"
+      ],
+      "encryption_options": ["open", "wep_fake", "wpa2_enterprise_fake"],
+      "passthrough_options": ["login_page", "certificate_warning", "mfa_challenge"]
+    }
+  },
+  "metrics": {
+    "primary": ["conversion_rate", "credential_submission"],
+    "secondary": ["open_rate", "click_rate", "hover_time", "report_rate"],
+    "avoidance": ["mark_as_phishing", "report_to_it", "delete_without_opening"],
+    "statistical_tests": ["chi_square", "t_test", "anova"]
+  },
+  "escalation_triggers": {
+    "real_user_reported": true,
+    "legal_impact": true,
+    "data_leak_detected": true,
+    "system_disruption": true,
+    "duration_exceeded_hours": 4,
+    "budget_exceeded": true,
+    "negative_media": true
+  },
+  "ethical_guardrails": {
+    "no_production_data": true,
+    "no_real_payment_processing": true,
+    "immediate_debrief_after": true,
+    "no_threats_or_coercion": true,
+    "opt_out_available": true,
+    "data_retention_days": 30
+  },
+  "reporting": {
+    "format": "markdown",
+    "distribution": ["red_team_lead", "ciso", "security_ops"],
+    "include": ["executive_summary", "detailed_metrics", "segment_analysis", "recommendations"]
+  }
+}

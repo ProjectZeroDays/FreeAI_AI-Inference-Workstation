@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign Framework — FreeAI</title>
+  <meta name="description" content="A/B testing and multi-variant campaign framework for authorized red team security assessments.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="_shared.css">
+  <style>
+    .hero-accent {
+      height: 3px;
+      background: linear-gradient(90deg, #f97316, #ef4444, #f97316);
+      background-size: 300% 100%;
+      animation: gradientShift 4s ease infinite;
+      margin-bottom: var(--space-8);
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .section-icon {
+      font-size: 24px;
+      margin-bottom: var(--space-3);
+      display: block;
+    }
+    .card.featured {
+      background: linear-gradient(135deg, rgba(249,115,22,.08), var(--bg-elev-1));
+      border-color: rgba(249,115,22,.25);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(249,115,22,.1);
+      border: 1px solid rgba(249,115,22,.25);
+      border-radius: 100px;
+      font-size: 12px;
+      color: #fb923c;
+      font-weight: 500;
+    }
+    .code-block {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--fs-small);
+      overflow-x: auto;
+      margin: var(--space-4) 0;
+    }
+    .code-block code {
+      color: var(--text-primary);
+    }
+    .metric-card {
+      text-align: center;
+      padding: var(--space-6);
+    }
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(108deg, #f97316 0%, #ef4444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-top: 4px;
+    }
+    .variant-row {
+      display: flex;
+      gap: var(--space-4);
+      margin: var(--space-4) 0;
+    }
+    .variant-col {
+      flex: 1;
+      padding: var(--space-4);
+      background: var(--bg-elev-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .variant-col h4 {
+      color: var(--primary);
+      margin-bottom: var(--space-2);
+    }
+    .alert-box {
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.25);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      margin: var(--space-4) 0;
+    }
+    .alert-box h4 {
+      color: #f87171;
+      margin-bottom: var(--space-2);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo">FreeAI</a>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <a href="../index.html" class="nav-back">← Back to site</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <div class="container narrow">
+      <div class="hero-accent animate-fade-in-up"></div>
+      
+      <div class="badge animate-fade-in-up animate-delay-1">⚔️ Red Team Operations</div>
+      <h1 class="animate-fade-in-up animate-delay-1">Campaign Framework</h1>
+      <p class="updated animate-fade-in-up animate-delay-2">A/B testing and multi-variant campaign framework for authorized red team security assessments.</p>
+
+      <div class="alert-box animate-fade-in-up animate-delay-2">
+        <h4>⚠️ Authorized Use Only</h4>
+        <p style="margin:0;font-size:14px;">This framework is designed for <strong>authorized red team testing</strong> against your own infrastructure. All campaigns require written ROE (Rules of Engagement) and proper authorization before execution.</p>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">Campaign Types</h2>
+      <div class="card-grid">
+        <div class="card animate-fade-in-up animate-delay-3">
+          <span class="section-icon">📧</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">Phishing Simulation</h3>
+          <p style="font-size:13px;margin:0;">Test email security awareness with A/B tested templates. Track open rates, click rates, and credential submission.</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-4">
+          <span class="section-icon">💾</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">USB Drop Test</h3>
+          <p style="font-size:13px;margin:0;">Physical security assessment using labeled USB drives in strategic locations.</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-5">
+          <span class="section-icon">📶</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">Rogue Wi-Fi AP</h3>
+          <p style="font-size:13px;margin:0;">Network security test using rogue access points to evaluate device connection behavior.</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-5">
+          <span class="section-icon">📞</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">Vishing (Voice)</h3>
+          <p style="font-size:13px;margin:0;">Social engineering via phone calls with tracked information disclosure rates.</p>
+        </div>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">A/B Testing Architecture</h2>
+      <div class="variant-row animate-fade-in-up animate-delay-3">
+        <div class="variant-col">
+          <h4>Variant A — Urgency</h4>
+          <p style="font-size:13px;margin:0;color:var(--text-secondary);">Subject: "URGENT: Password Expiration Notice"</p>
+          <p style="font-size:12px;margin:8px 0 0;color:var(--text-muted);">Weight: 50% | Budget: $500</p>
+        </div>
+        <div class="variant-col">
+          <h4>Variant B — Authority</h4>
+          <p style="font-size:13px;margin:0;color:var(--text-secondary);">Subject: "IT Security: Mandatory Update Required"</p>
+          <p style="font-size:12px;margin:8px 0 0;color:var(--text-muted);">Weight: 50% | Budget: $500</p>
+        </div>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">Audience Segments</h2>
+      <div class="card-grid">
+        <div class="card metric-card animate-fade-in-up animate-delay-3">
+          <div class="metric-value">15%</div>
+          <div class="metric-label">C-Level Executives</div>
+        </div>
+        <div class="card metric-card animate-fade-in-up animate-delay-4">
+          <div class="metric-value">20%</div>
+          <div class="metric-label">IT Personnel</div>
+        </div>
+        <div class="card metric-card animate-fade-in-up animate-delay-5">
+          <div class="metric-value">20%</div>
+          <div class="metric-label">Engineering</div>
+        </div>
+        <div class="card metric-card animate-fade-in-up animate-delay-5">
+          <div class="metric-value">15%</div>
+          <div class="metric-label">Finance</div>
+        </div>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">Quick Start</h2>
+      <div class="code-block animate-fade-in-up animate-delay-3">
+        <code>
+# Generate an A/B test campaign<br>
+python scripts/campaign_manager.py --command generate --type ab --variants 2 --budget 1000 --audience 500<br><br>
+# View budget allocation stats<br>
+python scripts/campaign_manager.py --command allocate --variants 3 --budget 1000<br><br>
+# Analyze segment distribution<br>
+python scripts/campaign_manager.py --command analyze --budget 5000
+        </code>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">Statistical Analysis</h2>
+      <p class="animate-fade-in-up animate-delay-3">Built-in statistical testing with chi-square, t-test, and UCB1 multi-armed bandit for dynamic budget allocation. Minimum sample size calculated automatically based on expected conversion rates and confidence levels.</p>
+      
+      <div class="card-grid animate-fade-in-up animate-delay-4">
+        <div class="card animate-fade-in-up animate-delay-4">
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">📊 Sample Size Calculator</h3>
+          <p style="font-size:13px;margin:0;">Auto-calculates minimum sample for 95% confidence and 5% margin of error</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-5">
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">🎯 Dynamic Budgeting</h3>
+          <p style="font-size:13px;margin:0;">UCB1 algorithm reallocates budget to best-performing variants in real-time</p>
+        </div>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">Files & Resources</h2>
+      <div class="card animate-fade-in-up animate-delay-4">
+        <p style="font-size:13px;margin:0;"><strong>📄 Framework Documentation:</strong> <code>docs/redteam-campaign-framework.md</code></p>
+        <p style="font-size:13px;margin:8px 0 0;"><strong>🔧 Python Tool:</strong> <code>scripts/campaign_manager.py</code></p>
+        <p style="font-size:13px;margin:8px 0 0;"><strong>⚙️ Configuration:</strong> <code>config/campaign-config.json</code></p>
+        <p style="font-size:13px;margin:8px 0 0;"><strong>📋 Example Campaigns:</strong> <code>config/campaign-examples.json</code></p>
+      </div>
+
+      <h2 class="animate-fade-in-up animate-delay-3">Ethical Guardrails</h2>
+      <div class="card-grid">
+        <div class="card animate-fade-in-up animate-delay-3">
+          <span class="section-icon">✅</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">Written Authorization</h3>
+          <p style="font-size:13px;margin:0;">ROE documented and approved before any campaign begins</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-4">
+          <span class="section-icon">🎯</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">Scope Control</h3>
+          <p style="font-size:13px;margin:0;">Only test infrastructure you own or have explicit permission</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-5">
+          <span class="section-icon">🔕</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">SOC Notification</h3>
+          <p style="font-size:13px;margin:0;">Notify internal security before campaigns to avoid real incidents</p>
+        </div>
+        <div class="card animate-fade-in-up animate-delay-5">
+          <span class="section-icon">🛑</span>
+          <h3 style="color:var(--text-primary);margin-bottom:8px;font-size:15px;">Escape Hatch</h3>
+          <p style="font-size:13px;margin:0;">Immediate halt on any escalation trigger (report, legal, disruption)</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer animate-fade-in">
+      <div>
+        <a href="../index.html">Home</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="security.html">Security</a>
+        <a href="campaign.html">Campaigns</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <p style="margin-top:12px;">© 2026 FreeAI · MIT License</p>
+    </footer>
+  </div>
+
+  <script>
+    const html = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('theme');
+    if (saved) html.dataset.theme = saved;
+    toggle.addEventListener('click', () => {
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
