@@ -13,10 +13,6 @@ const navLinks = [
   { href: '/deploy', label: 'Deploy' },
   { href: '/providers', label: 'Providers' },
   { href: '/iso', label: 'Live ISO' },
-  { href: '/api', label: 'API' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/security', label: 'Security' },
 ]
 
 export default function Header() {

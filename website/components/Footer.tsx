@@ -50,6 +50,10 @@ export default function Footer() {
             <h3 className="font-semibold text-white mb-4">Resources</h3>
             <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/deploy" className="hover:text-white transition-colors">Deploy Guide</Link></li>
+              <li><Link href="/api" className="hover:text-white transition-colors">API</Link></li>
+              <li><Link href="/docs" className="hover:text-white transition-colors">Docs</Link></li>
+              <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/security" className="hover:text-white transition-colors">Security</Link></li>
               <li>
                 <a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation"
                    className="hover:text-white transition-colors flex items-center gap-1"
@@ -62,7 +66,6 @@ export default function Footer() {
                    className="hover:text-white transition-colors"
                    target="_blank" rel="noopener noreferrer">Forum</a>
               </li>
-              <li><Link href="/docs" className="hover:text-white transition-colors">About</Link></li>
               <li><Link href="/legal/contact" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
