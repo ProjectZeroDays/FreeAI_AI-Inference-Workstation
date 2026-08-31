@@ -8,75 +8,110 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../legal/_shared.css">
   <style>
-    :root {
-      --primary: #5c8bff; --bg: #060a18; --bg-elev-1: #0e1630;
-      --text-primary: #f1f6ff; --text-secondary: #c9d3e8; --text-muted: #8a98ba;
-      --border: rgba(150,170,255,.13); --font-sans: "Outfit", system-ui, sans-serif;
+    .hero-accent {
+      height: 3px;
+      background: linear-gradient(90deg, #5c8bff, #8a70f6, #5c8bff);
+      background-size: 200% 100%;
+      animation: gradientShift 3s ease infinite;
+      margin-bottom: var(--space-8);
     }
-    [data-theme="light"] {
-      --primary: #0241e3; --bg: #FFFFFF; --bg-elev-1: #FFFFFF;
-      --text-primary: #010258; --text-secondary: #2A3866; --text-muted: #8A98BA;
-      --border: #E2E8F4;
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text-secondary); font-family: var(--font-sans); line-height: 1.6; }
-    a { color: var(--primary); text-decoration: none; }
-    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--bg-elev-1); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; }
-    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 24px; width: 100%; }
-    .nav-logo { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-    .nav-back { font-size: 13px; color: var(--text-muted); }
-    .nav-back:hover { color: var(--primary); text-decoration: none; }
-    .container { max-width: 800px; margin: 0 auto; padding: 100px 24px 60px; }
-    h1 { font-size: 32px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-    .updated { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
-    h2 { font-size: 20px; font-weight: 600; color: var(--text-primary); margin: 32px 0 12px; }
-    p { margin-bottom: 16px; }
-    .footer { padding: 40px 24px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--text-muted); }
-    .footer a { margin: 0 12px; }
+    .section-icon {
+      font-size: 24px;
+      margin-bottom: var(--space-3);
+      display: block;
+    }
+    .card.featured {
+      background: linear-gradient(135deg, var(--bg-elev-1), var(--bg-elev-2));
+      border-color: var(--border-strong);
+    }
   </style>
 </head>
 <body>
   <nav class="nav">
     <div class="nav-inner">
-      <a href="index.html" class="nav-logo">FreeAI</a>
-      <a href="index.html" class="nav-back">← Back to site</a>
+      <a href="../index.html" class="nav-logo">FreeAI</a>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <a href="../index.html" class="nav-back">← Back to site</a>
+      </div>
     </div>
   </nav>
 
-  <div class="container">
-    <h1>Terms of Service</h1>
-    <p class="updated">Last updated: January 2026</p>
+  <div class="page-wrapper">
+    <div class="container narrow">
+      <div class="hero-accent animate-fade-in-up"></div>
+      
+      <h1 class="animate-fade-in-up animate-delay-1">Terms of Service</h1>
+      <p class="updated animate-fade-in-up animate-delay-2">Last updated: January 2026</p>
 
-    <h2>1. License</h2>
-    <p>FreeAI is licensed under the MIT License. You are free to use, modify, and distribute the software for any purpose, including commercial use.</p>
+      <div class="card featured animate-fade-in-up animate-delay-2">
+        <span class="section-icon">⚖️</span>
+        <p><strong>Open source, no strings attached.</strong> FreeAI is MIT licensed — use it however you want, commercial or personal.</p>
+      </div>
 
-    <h2>2. No Warranty</h2>
-    <p>FreeAI is provided "as is" without warranty of any kind, express or implied. The authors are not liable for any damages arising from use of this software.</p>
+      <h2 class="animate-fade-in-up animate-delay-3">1. License</h2>
+      <p class="animate-fade-in-up animate-delay-3">FreeAI is licensed under the MIT License. You are free to use, modify, and distribute the software for any purpose, including commercial use.</p>
 
-    <h2>3. Responsibility</h2>
-    <p>As a self-hosted solution, you are responsible for:</p>
-    <ul>
-      <li>Securing your own infrastructure</li>
-      <li>Managing API keys and credentials</li>
-      <li>Compliance with applicable laws in your jurisdiction</li>
-      <li>Proper use of AI capabilities within your organization</li>
-    </ul>
+      <h2 class="animate-fade-in-up animate-delay-3">2. No Warranty</h2>
+      <p class="animate-fade-in-up animate-delay-4">FreeAI is provided "as is" without warranty of any kind, express or implied. The authors are not liable for any damages arising from use of this software.</p>
 
-    <h2>4. Community Guidelines</h2>
-    <p>When participating in GitHub discussions or community forums, you agree to treat others with respect and follow GitHub's Community Guidelines.</p>
+      <h2 class="animate-fade-in-up animate-delay-3">3. Responsibility</h2>
+      <p class="animate-fade-in-up animate-delay-4">As a self-hosted solution, you are responsible for:</p>
+      <ul class="animate-fade-in-up animate-delay-4">
+        <li>Securing your own infrastructure</li>
+        <li>Managing API keys and credentials</li>
+        <li>Compliance with applicable laws in your jurisdiction</li>
+        <li>Proper use of AI capabilities within your organization</li>
+      </ul>
 
-    <h2>5. Contact</h2>
-    <p>For legal inquiries, contact us via <a href="mailto:legal@projectzerodays.github.io">legal@projectzerodays.github.io</a> or open a GitHub issue.</p>
+      <h2 class="animate-fade-in-up animate-delay-3">4. Community Guidelines</h2>
+      <p class="animate-fade-in-up animate-delay-4">When participating in GitHub discussions or community forums, you agree to treat others with respect and follow GitHub's Community Guidelines.</p>
+
+      <h2 class="animate-fade-in-up animate-delay-4">5. Contact</h2>
+      <p class="animate-fade-in-up animate-delay-5">For legal inquiries, contact us via <a href="mailto:legal@projectzerodays.github.io">legal@projectzerodays.github.io</a> or open a GitHub issue.</p>
+    </div>
+
+    <footer class="footer animate-fade-in">
+      <div>
+        <a href="../index.html">Home</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="security.html">Security</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <p style="margin-top:12px;">© 2026 FreeAI · MIT License</p>
+    </footer>
   </div>
 
-  <footer class="footer">
-    <a href="index.html">Home</a>
-    <a href="privacy.html">Privacy</a>
-    <a href="security.html">Security</a>
-    <a href="contact.html">Contact</a>
-    <p style="margin-top:16px">&copy; 2026 FreeAI · MIT License</p>
-  </footer>
+  <script>
+    // Theme toggle
+    const html = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('theme');
+    if (saved) html.dataset.theme = saved;
+    toggle.addEventListener('click', () => {
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
