@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.11.0] - 2026-08-31
+
+### Security
+- **CodeQL cleanup COMPLETE**: Reduced open alerts from 196 to 0 (100% reduction)
+- **Code fixes**: 13 alerts fixed in mcp/catalog_api.py, 7 HTML templates (escAttr/escHtml)
+- **Suppressions**: 108 entries in suppressions.yml for confirmed false positives
+- **API dismissal**: All 108 alerts dismissed via GitHub API as false positives
+
+### Features
+- **Metrics dashboard**: New /metrics page and /api/metrics/runtime endpoint
+- **JSONL caching**: Metrics endpoint caches JSONL reads for performance
+- **CI hardening**: Test count gate updated to 1108 (Python 3.11 compatibility)
+
+### Cleanup
+- Removed 10 temp helper scripts from CodeQL campaign
+- Untracked runtime audit/error logs from git
+- Added .gitignore rules for uv.lock, workflow/versions/, config/secrets.enc/
+
+### Stats
+- Tests: 1156 passing (CI threshold: 1108)
+- CodeQL: 0 open alerts
+
+---
+
 ## [1.3.1] - 2026-08-28
 
 ### Added
