@@ -74,3 +74,8 @@ take_screenshot.py
 
 # GPU benchmark results (runtime-generated)
 scripts/gpu-benchmark-results.json
+"website/node_modules/"  
+"website/.next/"  
+"*.pack.gz"  
+"test_*.py"  
+"capture_demo.py"  
