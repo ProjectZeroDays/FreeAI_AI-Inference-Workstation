@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "urgency": {
+      "header_title": "Password Expiration Notice",
+      "alert_title": "URGENT: Password Expires in 24 Hours",
+      "alert_text": "Your account will be locked if you do not reset your password within the next 24 hours.",
+      "body_text": "Hi {{ recipient_name }},<br><br>Our security system has detected that your password is about to expire. To ensure uninterrupted access to your account, please reset your password immediately.<br><br>If you do not complete this action within 24 hours, your account will be temporarily locked.",
+      "cta_text": "Reset Password Now",
+      "landing_url": "/templates/landing_pages/microsoft_login.html",
+      "timer": "23:59:47",
+      "timer_seconds": 86387,
+      "disclaimer": "This is an authorized security awareness test. If you did not expect this email, please contact IT Security.",
+      "subject": "URGENT: Password Expiration Notice - Action Required"
+    },
+    "authority": {
+      "header_title": "IT Security Alert",
+      "alert_title": "Mandatory Security Update Required",
+      "alert_text": "Per new organizational policy, all users must complete this security update within 48 hours.",
+      "body_text": "Hi {{ recipient_name }},<br><br>As part of our updated security policy, all users are required to complete a mandatory credential update. This is not optional and must be completed within 48 hours.<br><br>Failure to comply will result in restricted account access.",
+      "cta_text": "Complete Security Update",
+      "landing_url": "/templates/landing_pages/google_workspace.html",
+      "timer": "47:59:59",
+      "timer_seconds": 172799,
+      "disclaimer": "This is an authorized security awareness test. If you have questions, contact the IT Security team.",
+      "subject": "IT Security: Mandatory Credential Update Required"
+    },
+    "social": {
+      "header_title": "Document Awaiting Your Signature",
+      "alert_title": "Action Required: Sign Document",
+      "alert_text": "You have 24 hours to sign this document before it expires.",
+      "body_text": "Hi {{ recipient_name }},<br><br>{{ sender_name }} has sent you a document for your electronic signature. This document requires your attention and must be signed within 24 hours.<br><br>Please review and sign the document using the button below.",
+      "cta_text": "Sign Document",
+      "landing_url": "/templates/landing_pages/adobe_sign.html",
+      "timer": "23:59:00",
+      "timer_seconds": 86340,
+      "disclaimer": "This is an authorized security awareness test. No real document was sent.",
+      "subject": "Document Awaiting Your Signature - Action Required"
+    }
+  }
+}

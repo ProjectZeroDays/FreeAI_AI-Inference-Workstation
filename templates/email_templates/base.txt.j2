@@ -1,0 +1,15 @@
+{{ header_title }}
+{{ '=' * len(header_title) }}
+
+{{ body_text | replace('<br>', '\n') | replace('<strong>', '') | replace('</strong>', '') | replace('<p>', '') | replace('</p>', '') }}
+
+---
+ACTION REQUIRED: {{ cta_text }}
+{{ tracking_url }}
+
+Time remaining: {{ timer }}
+
+{{ disclaimer }}
+
+© 2026 {{ company }} - IT Security Team
+{{ unsubscribe_text }}

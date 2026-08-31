@@ -1,0 +1,59 @@
+{
+  "_comment": "Email Campaign Sender Configuration",
+  "version": "1.0.0",
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": 587,
+    "username": "",
+    "password": "",
+    "use_tls": true,
+    "timeout_seconds": 30
+  },
+  "sender": {
+    "name": "IT Security Team",
+    "email": "security@company.com"
+  },
+  "tracking": {
+    "server_port": 9090,
+    "pixel_path": "/track/pixel",
+    "link_rewrite_base": "https://tracking.test/redirect",
+    "store_results": true,
+    "results_dir": "data/campaign_results"
+  },
+  "campaign_defaults": {
+    "subject_prefix": "[Security Notice]",
+    "unsubscribe_text": "If you received this email in error, please contact IT Security.",
+    "disclaimer": "This is an authorized security awareness test. Do not reply to this email."
+  },
+  "variants": {
+    "urgency": {
+      "id": "urgency",
+      "name": "Urgency-Based",
+      "weight": 40,
+      "email_template": "urgency.html",
+      "landing_page": "microsoft_login.html",
+      "subject_prefix": "URGENT:"
+    },
+    "authority": {
+      "id": "authority",
+      "name": "Authority-Based",
+      "weight": 35,
+      "email_template": "authority.html",
+      "landing_page": "google_workspace.html",
+      "subject_prefix": "IT Security:"
+    },
+    "social": {
+      "id": "social",
+      "name": "Social-Engineering",
+      "weight": 25,
+      "email_template": "social.html",
+      "landing_page": "adobe_sign.html",
+      "subject_prefix": "Meeting Invitation:"
+    }
+  },
+  "recipients": {
+    "_comment": "Load from CSV or JSON file",
+    "source_file": "data/recipients.csv",
+    "fields": ["email", "name", "department", "role"]
+  }
+}
