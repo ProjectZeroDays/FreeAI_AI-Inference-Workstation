@@ -369,22 +369,28 @@ class CampaignAgent:
                     variant_stats[variant_id]["sent"] += 1
 
         # Phase 5: Analyze results
-        stats = sender.get_summary()
+        # Compute aggregate metrics from variant_stats
+        total_sent = sum(s["sent"] for s in variant_stats.values())
+        total_opened = sum(s["opened"] for s in variant_stats.values())
+        total_clicked = sum(s["clicked"] for s in variant_stats.values())
+        total_converted = sum(s["converted"] for s in variant_stats.values())
+        total_reported = sum(s["reported"] for s in variant_stats.values())
+
         result = CampaignResult(
             campaign_id=campaign_id,
             status=CampaignStatus.COMPLETED.value,
             variants=blueprint["variants"],
-            total_sent=stats.get("total_sent", 0),
-            total_opened=stats.get("total_opened", 0),
-            total_clicked=stats.get("total_clicked", 0),
-            total_converted=stats.get("total_converted", 0),
-            total_reported=stats.get("total_reported", 0),
+            total_sent=total_sent,
+            total_opened=total_opened,
+            total_clicked=total_clicked,
+            total_converted=total_converted,
+            total_reported=total_reported,
             winner_variant=self._determine_winner(variant_stats),
             confidence=self._calculate_confidence(variant_stats),
             recommendations=self._generate_recommendations(variant_stats),
             started_at=blueprint["created_at"],
             completed_at=datetime.now().isoformat(),
-            raw_metrics=stats,
+            raw_metrics={"variant_stats": variant_stats, "sender_summary": sender.get_summary()},
         )
 
         # Clean up
