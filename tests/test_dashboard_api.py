@@ -1047,12 +1047,14 @@ def test_metrics_runtime_with_data(tmp_path, client, monkeypatch):
                      "step": "exec", "agent": "orchestrate", "attempt": 3}) + "\n",
         encoding="utf-8"
     )
-    # Write sample error log
+    # Write sample error log (with dedup keys — last entry wins)
     err_path.write_text(
-        json.dumps({"service": "dashboard", "exception_type": "RuntimeError",
+        json.dumps({"dedup_key": "dk1", "service": "dashboard", "exception_type": "RuntimeError",
                      "count": 3, "acknowledged": False, "ts": 1234567890}) + "\n"
-        + json.dumps({"service": "router", "exception_type": "ConnectionError",
-                     "count": 1, "acknowledged": True, "ts": 1234567891}) + "\n",
+        + json.dumps({"dedup_key": "dk1", "service": "dashboard", "exception_type": "RuntimeError",
+                       "count": 5, "acknowledged": False, "ts": 1234567899}) + "\n"
+        + json.dumps({"dedup_key": "dk2", "service": "router", "exception_type": "ConnectionError",
+                       "count": 1, "acknowledged": True, "ts": 1234567891}) + "\n",
         encoding="utf-8"
     )
 
@@ -1076,11 +1078,11 @@ def test_metrics_runtime_with_data(tmp_path, client, monkeypatch):
     assert body["workflows"]["by_agent"]["orchestrate"] == 1
     assert body["workflows"]["errors"]["timeout"] == 1
 
-    assert body["errors"]["total"] == 4
-    assert body["errors"]["unacked"] == 3
-    assert body["errors"]["by_service"]["dashboard"] == 3
+    assert body["errors"]["total"] == 6
+    assert body["errors"]["unacked"] == 5
+    assert body["errors"]["by_service"]["dashboard"] == 5
     assert body["errors"]["by_service"]["router"] == 1
-    assert body["errors"]["by_type"]["RuntimeError"] == 3
+    assert body["errors"]["by_type"]["RuntimeError"] == 5
     assert body["errors"]["by_type"]["ConnectionError"] == 1
 
     assert body["system"]["audit_log_entries"] == 3
