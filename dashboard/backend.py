@@ -735,26 +735,33 @@ _AUDIT_LOG_PATH = CONFIG_DIR / "audit.jsonl"
 _WORKFLOW_AUDIT_PATH = ROOT.parent / "workflow" / "audit.jsonl"
 _ERRORS_LOG_PATH = CONFIG_DIR / "errors.jsonl"
 
+# Cache: path_string -> (mtime, entries_list)
+_metrics_cache: dict = {}
 
-def _safe_count_jsonl(path: Path) -> int:
+
+def _load_jsonl_cached(path: Path):
+    """Load JSONL with mtime-based caching."""
     try:
-        return sum(1 for _ in open(path, encoding="utf-8"))
+        mtime = os.path.getmtime(path)
     except OSError:
-        return 0
-
-
-def _read_jsonl(path: Path):
+        return []
+    cached = _metrics_cache.get(str(path))
+    if cached and cached[0] == mtime:
+        return cached[1]
+    entries = []
     try:
         with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line:
                     try:
-                        yield json.loads(line)
+                        entries.append(json.loads(line))
                     except (json.JSONDecodeError, OSError):
                         continue
     except OSError:
-        return
+        pass
+    _metrics_cache[str(path)] = (mtime, entries)
+    return entries
 
 
 @app.route("/api/metrics/runtime")
@@ -766,13 +773,14 @@ def api_metrics_runtime():
         app.config["_start_time"] = now
 
     # ── Audit log stats ──────────────────────────────────────
+    audit_entries = _load_jsonl_cached(_AUDIT_LOG_PATH)
     action_counts: dict = {}
     result_counts = {"ok": 0, "error": 0, "forbidden": 0, "skip": 0}
     duration_sum = 0.0
     duration_count = 0
     user_counts: dict = {}
 
-    for entry in _read_jsonl(_AUDIT_LOG_PATH):
+    for entry in audit_entries:
         action = entry.get("action", "unknown")
         result = entry.get("result", "unknown")
         duration = entry.get("details", {}).get("duration_ms")
@@ -790,11 +798,12 @@ def api_metrics_runtime():
     total_requests = sum(result_counts.values())
 
     # ── Workflow audit stats ─────────────────────────────────
+    wf_entries = _load_jsonl_cached(_WORKFLOW_AUDIT_PATH)
     wf_status_counts: dict = {}
     wf_error_counts: dict = {}
     wf_agent_counts: dict = {}
 
-    for entry in _read_jsonl(_WORKFLOW_AUDIT_PATH):
+    for entry in wf_entries:
         status = entry.get("status", "unknown")
         error = entry.get("error")
         agent = entry.get("agent", "unknown")
@@ -805,14 +814,21 @@ def api_metrics_runtime():
         if error:
             wf_error_counts[error] = wf_error_counts.get(error, 0) + 1
 
-    # ── Error log stats ──────────────────────────────────────
+    # ── Error log stats (dedup by dedup_key, use last entry's count) ─
+    err_entries = _load_jsonl_cached(_ERRORS_LOG_PATH)
+    _error_dedup: dict = {}
+    for entry in err_entries:
+        dk = entry.get("dedup_key") or entry.get("id", "")
+        if dk:
+            _error_dedup[dk] = entry  # last entry wins (has latest count)
+
     error_service_counts: dict = {}
     error_type_counts: dict = {}
     total_errors = 0
     unacked_errors = 0
     errors_by_service: dict = {}
 
-    for entry in _read_jsonl(_ERRORS_LOG_PATH):
+    for entry in _error_dedup.values():
         service = entry.get("service", "unknown")
         exc_type = entry.get("exception_type", "Unknown")
         ack = entry.get("acknowledged", False)
@@ -832,7 +848,7 @@ def api_metrics_runtime():
         errors_by_service[service]["types"][exc_type] = errors_by_service[service]["types"].get(exc_type, 0) + count
 
     # ── Activity log count ───────────────────────────────────
-    activity_count = _safe_count_jsonl(ACTIVITY_LOG)
+    activity_count = len(list(_load_jsonl_cached(ACTIVITY_LOG)))
 
     # ── Skill count ──────────────────────────────────────────
     skills_count = len(list(SKILLS_DIR.iterdir())) if SKILLS_DIR.exists() else 0
@@ -864,8 +880,8 @@ def api_metrics_runtime():
         "system": {
             "skills_total": skills_count,
             "activity_entries": activity_count,
-            "audit_log_entries": _safe_count_jsonl(_AUDIT_LOG_PATH),
-            "workflow_audit_entries": _safe_count_jsonl(_WORKFLOW_AUDIT_PATH),
+            "audit_log_entries": len(audit_entries),
+            "workflow_audit_entries": len(wf_entries),
         },
     })
 
