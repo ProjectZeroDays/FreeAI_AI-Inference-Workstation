@@ -60,3 +60,14 @@ agents/specialized/*/__pycache__/
 # Aggregate test caches
 aggregate_tests/__pycache__/
 aggregate_tests/.pytest_cache/
+
+# Lock files
+uv.lock
+
+# Runtime workflow versions
+workflow/versions/
+config/secrets.enc/
+
+# Screenshot artifacts
+metrics_screenshot.png
+take_screenshot.py
