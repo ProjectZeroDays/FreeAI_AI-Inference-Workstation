@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Runtime Metrics</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .metrics-layout { display: flex; flex-direction: column; height: calc(100vh - 68px); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .kpi-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; }
+    .kpi-card .kpi-label { font-size: 10px; color: var(--muted-2); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+    .kpi-card .kpi-value { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+    .kpi-card.ok .kpi-value { color: #22C55E; }
+    .kpi-card.warn .kpi-value { color: #F59E0B; }
+    .kpi-card.danger .kpi-value { color: #EF4444; }
+    .kpi-card.accent .kpi-value { color: var(--accent-2); }
+    .panels { flex: 1; overflow-y: auto; padding: 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2); }
+    .panel-head h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0; }
+    .panel-head .last-updated { font-size: 11px; color: var(--muted-2); font-family: monospace; }
+    .panel-body { padding: 12px 16px; }
+    .metric-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(148,163,184,.06); font-size: 13px; }
+    .metric-row:last-child { border-bottom: none; }
+    .metric-label { color: var(--muted); }
+    .metric-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text); }
+    .metric-val.green { color: #22C55E; }
+    .metric-val.red { color: #EF4444; }
+    .metric-val.yellow { color: #F59E0B; }
+    .bar-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; font-size: 12px; }
+    .bar-label { width: 140px; color: var(--muted); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { flex: 1; height: 14px; background: rgba(148,163,184,.08); border-radius: 999px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width .5s ease; }
+    .bar-fill.green { background: linear-gradient(90deg, #22C55E, #16A34A); }
+    .bar-fill.red { background: linear-gradient(90deg, #EF4444, #DC2626); }
+    .bar-fill.yellow { background: linear-gradient(90deg, #F59E0B, #D97706); }
+    .bar-fill.blue { background: linear-gradient(90deg, #0EA5E9, #0284C7); }
+    .bar-count { width: 60px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted-2); flex-shrink: 0; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+    .refresh-btn { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12px; font-weight: 600; cursor: pointer; }
+    .refresh-btn:hover { border-color: var(--accent-2); }
+    .empty-state { text-align: center; padding: 40px; color: var(--muted-2); }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Runtime Metrics</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Overview</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/metrics" class="nav-item active"><span class="nav-dot"></span> Metrics</a>
+        <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Operations</span>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
+        <a href="/audit" class="nav-item"><span class="nav-dot"></span> Audit</a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Control</span>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="refresh-btn" onclick="loadMetrics()" title="Refresh">↻ Refresh</button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+
+    <div class="metrics-layout">
+      <header class="topbar" style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <h1>Runtime Metrics</h1>
+          <p style="font-size:12px;color:var(--muted);margin:4px 0 0;">Aggregated stats from audit, workflow, and error logs</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="last-updated" id="last-updated">—</span>
+          <button class="refresh-btn" onclick="loadMetrics()">↻ Refresh</button>
+        </div>
+      </header>
+
+      <!-- KPI Row -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card accent"><div class="kpi-label">Total Requests</div><div class="kpi-value" id="kpi-requests">—</div></div>
+        <div class="kpi-card ok"><div class="kpi-label">Successful</div><div class="kpi-value" id="kpi-ok">—</div></div>
+        <div class="kpi-card danger"><div class="kpi-label">Failed</div><div class="kpi-value" id="kpi-failed">—</div></div>
+        <div class="kpi-card warn"><div class="kpi-label">Avg Latency</div><div class="kpi-value" id="kpi-latency">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Uptime</div><div class="kpi-value" id="kpi-uptime">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Unacked Errors</div><div class="kpi-value" id="kpi-unacked">—</div></div>
+      </div>
+
+      <div class="panels">
+        <div class="two-col">
+          <!-- Request Results -->
+          <div class="panel">
+            <div class="panel-head"><h3>Request Results</h3><span class="last-updated" id="req-updated">—</span></div>
+            <div class="panel-body" id="req-results"></div>
+          </div>
+          <!-- Request Actions -->
+          <div class="panel">
+            <div class="panel-head"><h3>Top Actions</h3></div>
+            <div class="panel-body" id="req-actions"></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- Top Users -->
+          <div class="panel">
+            <div class="panel-head"><h3>Top Users</h3></div>
+            <div class="panel-body" id="req-users"></div>
+          </div>
+          <!-- Workflow Status -->
+          <div class="panel">
+            <div class="panel-head"><h3>Workflow Executions</h3></div>
+            <div class="panel-body" id="wf-status"></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- Workflow Agents -->
+          <div class="panel">
+            <div class="panel-head"><h3>Workflow Agents</h3></div>
+            <div class="panel-body" id="wf-agents"></div>
+          </div>
+          <!-- Workflow Errors -->
+          <div class="panel">
+            <div class="panel-head"><h3>Workflow Errors</h3></div>
+            <div class="panel-body" id="wf-errors"></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- Error Types -->
+          <div class="panel">
+            <div class="panel-head"><h3>Error Types</h3></div>
+            <div class="panel-body" id="err-types"></div>
+          </div>
+          <!-- Error Services -->
+          <div class="panel">
+            <div class="panel-head"><h3>Errors by Service</h3></div>
+            <div class="panel-body" id="err-services"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>System Overview</h3></div>
+          <div class="panel-body" id="sys-overview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BAR_COLORS = ['blue', 'green', 'yellow', 'red'];
+    function barRow(label, count, max) {
+      const pct = max > 0 ? Math.round(count / max * 100) : 0;
+      const color = pct > 70 ? 'red' : pct > 40 ? 'yellow' : 'green';
+      return `<div class="bar-row">
+        <span class="bar-label" title="${esc(label)}">${esc(label)}</span>
+        <div class="bar-track"><div class="bar-fill ${color}" style="width:${pct}%"></div></div>
+        <span class="bar-count">${count.toLocaleString()}</span>
+      </div>`;
+    }
+    function metricRow(label, value, cls) {
+      return `<div class="metric-row"><span class="metric-label">${esc(label)}</span><span class="metric-val ${cls || ''}">${typeof value === 'number' ? value.toLocaleString() : esc(String(value))}</span></div>`;
+    }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function fmtUptime(sec) {
+      if (sec < 60) return sec + 's';
+      if (sec < 3600) return Math.floor(sec/60) + 'm ' + (sec%60) + 's';
+      if (sec < 86400) return Math.floor(sec/3600) + 'h ' + Math.floor((sec%3600)/60) + 'm';
+      return Math.floor(sec/86400) + 'd ' + Math.floor((sec%86400)/3600) + 'h';
+    }
+
+    async function loadMetrics() {
+      try {
+        const r = await fetch('/api/metrics/runtime');
+        const d = await r.json();
+        render(d);
+      } catch(e) {
+        document.getElementById('kpi-requests').textContent = 'ERR';
+      }
+    }
+
+    function render(d) {
+      const now = new Date().toLocaleTimeString();
+      document.getElementById('last-updated').textContent = now;
+
+      // KPIs
+      const total = d.requests?.total || 0;
+      const ok = d.requests?.by_result?.ok || 0;
+      const failed = d.requests?.by_result?.error || 0;
+      const avgDur = d.requests?.avg_duration_ms ?? 0;
+      const uptime = d.uptime_seconds ?? 0;
+      const unacked = d.errors?.unacked ?? 0;
+
+      document.getElementById('kpi-requests').textContent = total.toLocaleString();
+      document.getElementById('kpi-ok').textContent = ok.toLocaleString();
+      document.getElementById('kpi-failed').textContent = failed.toLocaleString();
+      document.getElementById('kpi-latency').textContent = avgDur.toFixed(1) + 'ms';
+      document.getElementById('kpi-uptime').textContent = fmtUptime(uptime);
+      document.getElementById('kpi-unacked').textContent = unacked.toLocaleString();
+
+      // Request results
+      const byResult = d.requests?.by_result || {};
+      const maxResult = Math.max(...Object.values(byResult), 1);
+      document.getElementById('req-results').innerHTML =
+        Object.entries(byResult).map(([k,v]) => barRow(k, v, maxResult)).join('') ||
+        '<div class="empty-state">No request data</div>';
+      document.getElementById('req-updated').textContent = now;
+
+      // Request actions
+      const byAction = d.requests?.by_action || {};
+      const maxAction = Math.max(...Object.values(byAction), 1);
+      document.getElementById('req-actions').innerHTML =
+        Object.entries(byAction).sort((a,b) => b[1]-a[1]).map(([k,v]) => barRow(k, v, maxAction)).join('') ||
+        '<div class="empty-state">No action data</div>';
+
+      // Top users
+      const byUser = d.requests?.by_user || {};
+      const maxUser = Math.max(...Object.values(byUser), 1);
+      document.getElementById('req-users').innerHTML =
+        Object.entries(byUser).sort((a,b) => b[1]-a[1]).slice(0, 8).map(([k,v]) => barRow(k, v, maxUser)).join('') ||
+        '<div class="empty-state">No user data</div>';
+
+      // Workflow status
+      const wfStatus = d.workflows?.by_status || {};
+      const maxWf = Math.max(...Object.values(wfStatus), 1);
+      document.getElementById('wf-status').innerHTML =
+        Object.entries(wfStatus).map(([k,v]) => barRow(k, v, maxWf)).join('') ||
+        '<div class="empty-state">No workflow data</div>';
+
+      // Workflow agents
+      const wfAgents = d.workflows?.by_agent || {};
+      const maxAgent = Math.max(...Object.values(wfAgents), 1);
+      document.getElementById('wf-agents').innerHTML =
+        Object.entries(wfAgents).sort((a,b) => b[1]-a[1]).map(([k,v]) => barRow(k, v, maxAgent)).join('') ||
+        '<div class="empty-state">No agent data</div>';
+
+      // Workflow errors
+      const wfErrs = d.workflows?.errors || {};
+      const maxWfErr = Math.max(...Object.values(wfErrs), 1);
+      document.getElementById('wf-errors').innerHTML =
+        Object.entries(wfErrs).sort((a,b) => b[1]-a[1]).map(([k,v]) => barRow(k, v, maxWfErr)).join('') ||
+        '<div class="empty-state">No workflow errors</div>';
+
+      // Error types
+      const errTypes = d.errors?.by_type || {};
+      const maxErrType = Math.max(...Object.values(errTypes), 1);
+      document.getElementById('err-types').innerHTML =
+        Object.entries(errTypes).sort((a,b) => b[1]-a[1]).slice(0, 10).map(([k,v]) => barRow(k, v, maxErrType)).join('') ||
+        '<div class="empty-state">No error data</div>';
+
+      // Error services
+      const errSvcs = d.errors?.by_service || {};
+      const maxSvc = Math.max(...Object.values(errSvcs), 1);
+      document.getElementById('err-services').innerHTML =
+        Object.entries(errSvcs).sort((a,b) => b[1]-a[1]).map(([k,v]) => barRow(k, v, maxSvc)).join('') ||
+        '<div class="empty-state">No service data</div>';
+
+      // System overview
+      const sys = d.system || {};
+      const maxSys = Math.max(sys.audit_log_entries || 0, sys.workflow_audit_entries || 0, sys.activity_entries || 0, sys.skills_total || 1, 1);
+      document.getElementById('sys-overview').innerHTML =
+        metricRow('Skills', sys.skills_total, 'green') +
+        metricRow('Audit Log Entries', sys.audit_log_entries) +
+        metricRow('Workflow Audit Entries', sys.workflow_audit_entries) +
+        metricRow('Activity Log Entries', sys.activity_entries) +
+        metricRow('Total Workflow Executions', d.workflows?.total_executions ?? 0) +
+        metricRow('Total Errors', d.errors?.total ?? 0) +
+        metricRow('Unacknowledged Errors', d.errors?.unacked ?? 0, d.errors?.unacked > 0 ? 'red' : 'green');
+    }
+
+    loadMetrics();
+    setInterval(loadMetrics, 30000);
+  </script>
+</body>
+</html>

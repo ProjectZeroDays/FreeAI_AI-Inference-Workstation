@@ -1106,6 +1106,11 @@ def files_page():
     return render_template("files.html")
 
 
+@app.route("/metrics")
+def metrics_page():
+    return render_template("metrics.html")
+
+
 # ── API: Subagents ────────────────────────────────────────────────
 _SUBAGENTS = []
 _SUBAGENT_LOCK = threading.Lock()
