@@ -547,6 +547,83 @@
     </div>
   </div>
 
+  <!-- Chat Panel -->
+  <div class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat with FreeAI">
+    <div class="chat-panel-header">
+      <div class="chat-panel-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg>
+      </div>
+      <div>
+        <div class="chat-panel-title">FreeAI Chat</div>
+        <div class="chat-panel-status">Online</div>
+      </div>
+      <button class="chat-settings-btn" id="chatSettingsBtn" title="Bot training settings" aria-label="Bot training settings" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="chat-panel-tabs" role="tablist">
+      <button class="chat-tab-btn active" data-tab="assistant" role="tab" aria-selected="true">Assistant</button>
+    </div>
+    <div class="chat-panel-body" id="chatPanelBody" aria-live="polite">
+      <div class="chat-tab-content" id="tab-assistant">
+        <div class="chat-msg">
+          <div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg></div>
+          <div class="chat-msg-bubble">How can I help you today?</div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-panel-input">
+      <div class="chat-input-wrap">
+        <textarea class="chat-input-field" id="chatInputField" rows="2" placeholder="Ask FreeAI anything..."></textarea>
+        <button class="chat-send-btn" id="chatSendBtn" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 11 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating chat launcher -->
+  <button class="chat-launcher" id="chatLauncher" aria-label="Chat with FreeAI Chat" title="Chat with FreeAI" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </button>
+
+  <!-- Bot Training Settings Modal -->
+  <div class="chat-settings-modal" id="chatSettingsModal">
+    <div class="chat-settings-backdrop" id="chatSettingsBackdrop"></div>
+    <div class="chat-settings-box">
+      <button class="chat-settings-close" id="chatSettingsClose">✕</button>
+      <h3>Bot Training Settings</h3>
+      <div class="train-setting-group">
+        <label>Knowledge Sources</label>
+        <div class="train-checkbox"><input type="checkbox" id="trainRepo" checked><span>📁 Repository source code</span></div>
+        <div class="train-checkbox"><input type="checkbox" id="trainDocs" checked><span>📚 Documentation &amp; wiki</span></div>
+        <div class="train-checkbox"><input type="checkbox" id="trainAppSource" checked><span>⚙ App itself / framework</span></div>
+      </div>
+      <div class="train-setting-group">
+        <label>Context Window Size</label>
+        <div class="train-range-wrap">
+          <input type="range" id="trainContextRange" min="1000" max="32000" step="1000" value="8000">
+          <span class="train-range-val" id="trainContextVal">8000</span>
+        </div>
+        <div class="train-setting-desc">Max characters of source context sent per query</div>
+      </div>
+      <div class="train-setting-group">
+        <label>Model</label>
+        <select class="train-select" id="trainModel">
+          <option value="agnes-2.0-flash">Agnes 2.0 Flash (default)</option>
+          <option value="agnes-2.0">Agnes 2.0</option>
+        </select>
+      </div>
+      <button class="train-save-btn" id="trainSaveBtn">Save Settings</button>
+      <div class="train-save-status" id="trainSaveStatus"></div>
+    </div>
+  </div>
+
   <!-- Toast container -->
   <div id="notif-toasts"></div>
 
@@ -897,6 +974,212 @@
     }
     document.getElementById('dep-scan-btn')?.addEventListener('click', loadDependencyCard);
     loadDependencyCard();
+
+    // ── Chat Panel ────────────────────────────────────────────────
+    const chatPanel = document.getElementById('chatPanel');
+    const chatLauncher = document.getElementById('chatLauncher');
+    const chatPanelClose = document.getElementById('chatPanelClose');
+    const chatPanelBody = document.getElementById('chatPanelBody');
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatInputField = document.getElementById('chatInputField');
+    const chatSettingsBtn = document.getElementById('chatSettingsBtn');
+    const chatSettingsModal = document.getElementById('chatSettingsModal');
+    const chatSettingsClose = document.getElementById('chatSettingsClose');
+    const chatSettingsBackdrop = document.getElementById('chatSettingsBackdrop');
+
+    const AGNES_API_KEY = localStorage.getItem('agnes_api_key') || 'sk-gE940pJBd02SRt3c8hBZPvQ3RsnM2gM14EuWJO3DkXeSbtb4';
+    const AGNES_BASE_URL = 'https://apihub.agnes-ai.com/v1';
+    const AGNES_MODEL = 'agnes-2.0-flash';
+
+    function openChat() {
+      chatPanel.classList.add('open');
+      chatLauncher.style.display = 'none';
+      chatInputField.focus();
+    }
+    function closeChat() {
+      chatPanel.classList.remove('open');
+      chatLauncher.style.display = 'flex';
+    }
+    function showTyping() {
+      const t = document.createElement('div');
+      t.className = 'chat-msg';
+      t.id = 'typingIndicator';
+      t.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+      chatPanelBody.appendChild(t);
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+    }
+    function hideTyping() {
+      const t = document.getElementById('typingIndicator');
+      if (t) t.remove();
+    }
+
+    let chatMsgHistory = [];
+    async function sendChatMsg() {
+      const text = chatInputField.value.trim();
+      if (!text) return;
+      chatInputField.value = '';
+      chatInputField.style.height = 'auto';
+
+      const row = document.createElement('div');
+      row.className = 'chat-msg';
+      row.style.justifyContent = 'flex-end';
+      row.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-left-radius:3px;">' + escAttr(text) + '</div>';
+      chatPanelBody.appendChild(row);
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      chatMsgHistory.push({ role: 'user', content: text });
+
+      showTyping();
+      try {
+        // Build system prompt from bot training sources
+        const sources = getBotTrainingSources();
+        const sysPrompt = buildSystemPrompt(sources);
+        const resp = await fetch(AGNES_BASE_URL + '/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + AGNES_API_KEY },
+          body: JSON.stringify({
+            model: AGNES_MODEL,
+            messages: [{ role: 'system', content: sysPrompt }, ...chatMsgHistory.slice(-10)],
+            max_tokens: 500,
+            temperature: 0.7
+          })
+        });
+        hideTyping();
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          chatMsgHistory.push({ role: 'assistant', content: 'Error: ' + (err.error?.message || resp.status) });
+          const errRow = document.createElement('div');
+          errRow.className = 'chat-msg';
+          errRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble" style="background:#dc2626;">Error: ' + escAttr(err.error?.message || resp.status) + '</div>';
+          chatPanelBody.appendChild(errRow);
+          return;
+        }
+        const data = await resp.json();
+        const reply = data.choices?.[0]?.message?.content || 'No response';
+        chatMsgHistory.push({ role: 'assistant', content: reply });
+        const respRow = document.createElement('div');
+        respRow.className = 'chat-msg';
+        respRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">' + escAttr(reply) + '</div>';
+        chatPanelBody.appendChild(respRow);
+        chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      } catch (e) {
+        hideTyping();
+        const errRow = document.createElement('div');
+        errRow.className = 'chat-msg';
+        errRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble" style="background:#dc2626;">Connection error: ' + escAttr(e.message) + '</div>';
+        chatPanelBody.appendChild(errRow);
+        chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      }
+    }
+
+    function escAttr(s) { return (s || '').replace(/[&>'"\\/]/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;', '\\': '&#92;', '/': '&#x2F;' }[c]; }); }
+
+    // ── Bot Training Sources ──────────────────────────────────────
+    let botTrainingSettings = { sources: { repo: true, docs: true, app_source: true }, max_context_chars: 8000, model: 'agnes-2.0-flash' };
+
+    function getBotTrainingSources() {
+      return botTrainingSettings.sources || { repo: true, docs: true, app_source: true };
+    }
+
+    function buildSystemPrompt(sources) {
+      const parts = ['You are FreeAI Chat, a security and AI inference assistant.'];
+      if (sources.repo) parts.push('You have access to the FreeAI repository source code. Use it to answer questions about the project architecture, agents, exploits, and internals.');
+      if (sources.docs) parts.push('You have access to the FreeAI documentation and wiki. Reference docs when answering configuration, deployment, and usage questions.');
+      if (sources.app_source) parts.push('You can reference the FreeAI application itself (dashboard, routers, services) to provide accurate answers about the running system.');
+      return parts.join('\n');
+    }
+
+    async function loadBotTrainingSettings() {
+      try {
+        const r = await fetch('/api/bot-training/settings');
+        if (r.ok) {
+          botTrainingSettings = await r.json();
+          syncSettingsUI();
+        }
+      } catch (e) { /* use defaults */ }
+    }
+
+    function syncSettingsUI() {
+      const s = botTrainingSettings.sources || {};
+      document.getElementById('trainRepo').checked = !!s.repo;
+      document.getElementById('trainDocs').checked = !!s.docs;
+      document.getElementById('trainAppSource').checked = !!s.app_source;
+      document.getElementById('trainContextRange').value = botTrainingSettings.max_context_chars || 8000;
+      document.getElementById('trainContextVal').textContent = botTrainingSettings.max_context_chars || 8000;
+      document.getElementById('trainModel').value = botTrainingSettings.model || 'agnes-2.0-flash';
+    }
+
+    chatSettingsBtn?.addEventListener('click', () => { chatSettingsModal.classList.add('open'); });
+    chatSettingsClose?.addEventListener('click', () => { chatSettingsModal.classList.remove('open'); });
+    chatSettingsBackdrop?.addEventListener('click', () => { chatSettingsModal.classList.remove('open'); });
+
+    document.getElementById('trainContextRange')?.addEventListener('input', function () {
+      document.getElementById('trainContextVal').textContent = this.value;
+    });
+
+    document.getElementById('trainSaveBtn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('trainSaveBtn');
+      const status = document.getElementById('trainSaveStatus');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        const r = await fetch('/api/bot-training/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sources: {
+              repo: document.getElementById('trainRepo').checked,
+              docs: document.getElementById('trainDocs').checked,
+              app_source: document.getElementById('trainAppSource').checked,
+            },
+            max_context_chars: parseInt(document.getElementById('trainContextRange').value),
+            model: document.getElementById('trainModel').value,
+          })
+        });
+        if (r.ok) {
+          botTrainingSettings = await r.json().then(d => d.settings || d);
+          status.textContent = 'Settings saved successfully.';
+          status.style.color = '#22c55e';
+        } else {
+          const err = await r.json().catch(() => ({}));
+          status.textContent = 'Error: ' + (err.error || 'Failed to save');
+          status.style.color = '#ef4444';
+        }
+      } catch (e) {
+        status.textContent = 'Error: ' + e.message;
+        status.style.color = '#ef4444';
+      }
+      setTimeout(() => { btn.disabled = false; btn.textContent = 'Save Settings'; }, 1500);
+    });
+
+    chatSendBtn?.addEventListener('click', sendChatMsg);
+    chatInputField?.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); } });
+    chatInputField?.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    });
+    chatPanelClose?.addEventListener('click', closeChat);
+    chatLauncher?.addEventListener('click', openChat);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (chatSettingsModal.classList.contains('open')) chatSettingsModal.classList.remove('open'); else if (chatPanel.classList.contains('open')) closeChat(); } });
+
+    // Show chat launcher only for logged-in users; show settings gear only for admin
+    function updateChatUI() {
+      const user = window.FreeAIAuth?.getUser();
+      if (user) {
+        chatLauncher.style.display = 'flex';
+        if (user.role === 'admin') {
+          chatSettingsBtn.style.display = 'flex';
+        } else {
+          chatSettingsBtn.style.display = 'none';
+        }
+        loadBotTrainingSettings();
+      } else {
+        chatLauncher.style.display = 'none';
+        chatSettingsBtn.style.display = 'none';
+      }
+    }
+    // Check auth on load and after auth changes
+    updateChatUI();
+    setInterval(updateChatUI, 3000);
   </script>
 </body>
 </html>

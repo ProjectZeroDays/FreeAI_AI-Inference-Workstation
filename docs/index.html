@@ -1154,6 +1154,32 @@
     }
     .join-btn:hover { background: #033ad1; }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+    /* ── Bot Training Settings Modal ── */
+    .chat-settings-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 7px; color: rgba(241,246,255,.4); cursor: pointer; transition: all .15s; margin-left: auto; }
+    .chat-settings-btn:hover { background: rgba(255,255,255,.1); color: #f1f6ff; }
+    .chat-settings-btn svg { width: 12px; height: 12px; }
+    .chat-settings-modal { display: none; position: fixed; inset: 0; z-index: 200; align-items: center; justify-content: center; }
+    .chat-settings-modal.open { display: flex; }
+    .chat-settings-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
+    .chat-settings-box { position: relative; background: #0c1530; border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 24px; width: 420px; max-width: calc(100vw - 48px); box-shadow: 0 24px 64px rgba(0,0,0,.6); }
+    .chat-settings-box h3 { font-size: 16px; font-weight: 600; color: #f1f6ff; margin: 0 0 16px; }
+    .chat-settings-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 7px; color: rgba(241,246,255,.4); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all .15s; }
+    .chat-settings-close:hover { background: rgba(255,255,255,.1); color: #f1f6ff; }
+    .train-setting-group { margin-bottom: 16px; }
+    .train-setting-group label { display: block; font-size: 12px; color: rgba(241,246,255,.5); margin-bottom: 6px; font-weight: 500; }
+    .train-setting-desc { font-size: 11px; color: rgba(241,246,255,.3); margin-top: 3px; }
+    .train-checkbox { display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; }
+    .train-checkbox input[type="checkbox"] { width: 16px; height: 16px; accent-color: #0241e3; cursor: pointer; }
+    .train-checkbox span { font-size: 13px; color: #f1f6ff; }
+    .train-select { width: 100%; background: #111b3a; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; color: #f1f6ff; font-size: 13px; padding: 8px 10px; outline: none; cursor: pointer; }
+    .train-select:focus { border-color: rgba(92,139,255,.4); }
+    .train-range-wrap { display: flex; align-items: center; gap: 10px; }
+    .train-range-wrap input[type="range"] { flex: 1; accent-color: #0241e3; }
+    .train-range-val { font-size: 12px; color: rgba(241,246,255,.5); min-width: 40px; text-align: right; }
+    .train-save-btn { width: 100%; padding: 10px; background: #0241e3; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; margin-top: 4px; }
+    .train-save-btn:hover { background: #033ad1; }
+    .train-save-status { font-size: 11px; color: #22c55e; text-align: center; margin-top: 8px; min-height: 16px; }
   </style>
 </head>
 <body>
@@ -1784,11 +1810,14 @@ docker compose --profile allinone up -d
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg>
       </div>
       <div>
-        <div class="chat-panel-title">FreeAI Intelligence</div>
+        <div class="chat-panel-title">FreeAI Chat</div>
         <div class="chat-panel-status">Online</div>
       </div>
       <button class="chat-panel-close" id="chatPanelClose" aria-label="Close chat">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <button class="chat-panel-close chat-settings-btn" id="chatSettingsBtnDesktop" title="Bot training settings" aria-label="Bot training settings" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
     </div>
     <div class="chat-panel-tabs" role="tablist" aria-label="What do you need?">
@@ -1858,11 +1887,43 @@ docker compose --profile allinone up -d
   </div>
 
   <!-- Floating chat launcher -->
-  <button class="chat-launcher" id="chatLauncher" aria-label="Chat with FreeAI Intelligence" title="Chat with FreeAI">
+  <button class="chat-launcher" id="chatLauncher" aria-label="Chat with FreeAI Chat" title="Chat with FreeAI">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
     </svg>
   </button>
+
+  <!-- Bot Training Settings Modal (docs site) -->
+  <div class="chat-settings-modal" id="chatSettingsModalDocs">
+    <div class="chat-settings-backdrop" id="chatSettingsBackdropDocs"></div>
+    <div class="chat-settings-box">
+      <button class="chat-settings-close" id="chatSettingsCloseDocs">✕</button>
+      <h3>Bot Training Settings</h3>
+      <div class="train-setting-group">
+        <label>Knowledge Sources</label>
+        <div class="train-checkbox"><input type="checkbox" id="trainRepoDocs" checked><span>📁 Repository source code</span></div>
+        <div class="train-checkbox"><input type="checkbox" id="trainDocsDocs" checked><span>📚 Documentation &amp; wiki</span></div>
+        <div class="train-checkbox"><input type="checkbox" id="trainAppSourceDocs" checked><span>⚙ App itself / framework</span></div>
+      </div>
+      <div class="train-setting-group">
+        <label>Context Window Size</label>
+        <div class="train-range-wrap">
+          <input type="range" id="trainContextRangeDocs" min="1000" max="32000" step="1000" value="8000">
+          <span class="train-range-val" id="trainContextValDocs">8000</span>
+        </div>
+        <div class="train-setting-desc">Max characters of source context sent per query</div>
+      </div>
+      <div class="train-setting-group">
+        <label>Model</label>
+        <select class="train-select" id="trainModelDocs">
+          <option value="agnes-2.0-flash">Agnes 2.0 Flash (default)</option>
+          <option value="agnes-2.0">Agnes 2.0</option>
+        </select>
+      </div>
+      <button class="train-save-btn" id="trainSaveBtnDocs">Save Settings</button>
+      <div class="train-save-status" id="trainSaveStatusDocs"></div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="footer-inner">
@@ -2454,6 +2515,147 @@ docker compose --profile allinone up -d
       nav.style.boxShadow = window.scrollY > 10 ? '0 1px 0 var(--border), 0 4px 24px rgba(0,0,0,.12)' : 'none';
     }, { passive: true });
       function escHtml(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+      // ── Bot Training Settings ──
+      const chatSettingsBtnDesktop = document.getElementById('chatSettingsBtnDesktop');
+      const chatSettingsModalDocs = document.getElementById('chatSettingsModalDocs');
+      const chatSettingsCloseDocs = document.getElementById('chatSettingsCloseDocs');
+      const chatSettingsBackdropDocs = document.getElementById('chatSettingsBackdropDocs');
+      let botTrainingSettingsDocs = { sources: { repo: true, docs: true, app_source: true }, max_context_chars: 8000, model: 'agnes-2.0-flash' };
+
+      chatSettingsBtnDesktop?.addEventListener('click', () => { chatSettingsModalDocs.classList.add('open'); syncDocSettingsUI(); });
+      chatSettingsCloseDocs?.addEventListener('click', () => { chatSettingsModalDocs.classList.remove('open'); });
+      chatSettingsBackdropDocs?.addEventListener('click', () => { chatSettingsModalDocs.classList.remove('open'); });
+
+      document.getElementById('trainContextRangeDocs')?.addEventListener('input', function() {
+        document.getElementById('trainContextValDocs').textContent = this.value;
+      });
+
+      document.getElementById('trainSaveBtnDocs')?.addEventListener('click', async () => {
+        const btn = document.getElementById('trainSaveBtnDocs');
+        const status = document.getElementById('trainSaveStatusDocs');
+        btn.disabled = true; btn.textContent = 'Saving...';
+        try {
+          const r = await fetch('/api/bot-training/settings', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sources: {
+                repo: document.getElementById('trainRepoDocs').checked,
+                docs: document.getElementById('trainDocsDocs').checked,
+                app_source: document.getElementById('trainAppSourceDocs').checked,
+              },
+              max_context_chars: parseInt(document.getElementById('trainContextRangeDocs').value),
+              model: document.getElementById('trainModelDocs').value,
+            })
+          });
+          if (r.ok) {
+            botTrainingSettingsDocs = await r.json().then(d => d.settings || d);
+            status.textContent = 'Settings saved successfully.';
+            status.style.color = '#22c55e';
+          } else {
+            const err = await r.json().catch(() => ({}));
+            status.textContent = 'Error: ' + (err.error || 'Failed to save');
+            status.style.color = '#ef4444';
+          }
+        } catch(e) { status.textContent = 'Error: ' + e.message; status.style.color = '#ef4444'; }
+        setTimeout(() => { btn.disabled = false; btn.textContent = 'Save Settings'; }, 1500);
+      });
+
+      function syncDocSettingsUI() {
+        const s = botTrainingSettingsDocs.sources || {};
+        document.getElementById('trainRepoDocs').checked = !!s.repo;
+        document.getElementById('trainDocsDocs').checked = !!s.docs;
+        document.getElementById('trainAppSourceDocs').checked = !!s.app_source;
+        document.getElementById('trainContextRangeDocs').value = botTrainingSettingsDocs.max_context_chars || 8000;
+        document.getElementById('trainContextValDocs').textContent = botTrainingSettingsDocs.max_context_chars || 8000;
+        document.getElementById('trainModelDocs').value = botTrainingSettingsDocs.model || 'agnes-2.0-flash';
+      }
+
+      async function loadBotTrainingSettingsDocs() {
+        try {
+          const r = await fetch('/api/bot-training/settings');
+          if (r.ok) { botTrainingSettingsDocs = await r.json(); syncDocSettingsUI(); }
+        } catch(e) { /* defaults */ }
+      }
+
+      // Show settings gear only for admin users on docs site
+      function updateDocChatSettings() {
+        const user = window.FreeAIAuth?.getUser();
+        if (user && user.role === 'admin') {
+          chatSettingsBtnDesktop.style.display = 'flex';
+          loadBotTrainingSettingsDocs();
+        } else {
+          chatSettingsBtnDesktop.style.display = 'none';
+        }
+      }
+      // Run on load and periodically
+      updateDocChatSettings();
+      setInterval(updateDocChatSettings, 5000);
+
+      // Override sendChatMsg to use bot training sources
+      const _origSendChatMsg = sendChatMsg;
+      async function sendChatMsg() {
+        const text = chatInputField.value.trim();
+        if (!text || isTyping) return;
+        chatInputField.value = '';
+        chatInputField.style.height = 'auto';
+        const row = document.createElement('div');
+        row.className = 'chat-msg';
+        row.style.justifyContent = 'flex-end';
+        row.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-left-radius:3px;">' + escHtml(text) + '</div>';
+        chatPanelBody.appendChild(row);
+        chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+        chatMsgHistory.push({ role: 'user', content: text });
+        showTyping();
+        const sources = botTrainingSettingsDocs.sources || { repo: true, docs: true, app_source: true };
+        const sysPrompt = buildDocSystemPrompt(sources);
+        try {
+          const resp = await fetch(AGNES_BASE_URL + '/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + AGNES_API_KEY },
+            body: JSON.stringify({
+              model: AGNES_MODEL,
+              messages: [{ role: 'system', content: sysPrompt }, ...chatMsgHistory.slice(-10)],
+              max_tokens: 500, temperature: 0.7
+            })
+          });
+          hideTyping();
+          if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            chatMsgHistory.push({ role: 'assistant', content: 'Sorry, error: ' + (err.error?.message || resp.status) });
+            const errRow = document.createElement('div');
+            errRow.className = 'chat-msg';
+            errRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble" style="background:#dc2626;">Error: ' + escHtml(err.error?.message || resp.status) + '</div>';
+            chatPanelBody.appendChild(errRow);
+            chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+            return;
+          }
+          const data = await resp.json();
+          const reply = data.choices?.[0]?.message?.content || 'No response';
+          chatMsgHistory.push({ role: 'assistant', content: reply });
+          const respRow = document.createElement('div');
+          respRow.className = 'chat-msg';
+          respRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">' + escHtml(reply) + '</div>';
+          chatPanelBody.appendChild(respRow);
+          chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+        } catch (e) {
+          hideTyping();
+          const errRow = document.createElement('div');
+          errRow.className = 'chat-msg';
+          errRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble" style="background:#dc2626;">Connection error: ' + escHtml(e.message) + '</div>';
+          chatPanelBody.appendChild(errRow);
+          chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+        }
+      }
+
+      function buildDocSystemPrompt(sources) {
+        const parts = ['You are FreeAI Chat, a security and AI inference assistant.'];
+        if (sources.repo) parts.push('You have access to the FreeAI repository source code. Use it to answer questions about architecture, agents, exploits, and internals.');
+        if (sources.docs) parts.push('You have access to the FreeAI documentation and wiki. Reference docs for configuration, deployment, and usage questions.');
+        if (sources.app_source) parts.push('You can reference the FreeAI application (dashboard, routers, services) to provide accurate answers about the running system.');
+        return parts.join('\n');
+      }
+
   </script>
 
 </body></html>
