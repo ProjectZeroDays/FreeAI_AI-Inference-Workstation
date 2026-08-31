@@ -359,7 +359,7 @@
           <div class="catalog-actions">
             ${installed
               ? '<span style="font-size:12px;color:var(--accent);align-self:center">✓ Installed</span>'
-              : `<button class="btn btn-sm btn-primary" onclick="installSkill('${escapeHtml(s.id)}','${escapeHtml((s.name||'').replace(/'/g,"\\'"))}','${escapeHtml((s.description||'').replace(/'/g,"\\'"))}','${escapeHtml((s.category||'general').replace(/'/g,"\\'"))}',${JSON.stringify(s.triggers||[])})">Install</button>`
+              : `<button class="btn btn-sm btn-primary" onclick="installSkill('${escapeHtml(s.id)}','${escapeHtml((s.name||'').replace(/[\\']/g, function(c){return c=='\\' ? '\\\\' : '\\'';}))}','${escapeHtml((s.description||'').replace(/[\\']/g, function(c){return c=='\\' ? '\\\\' : '\\'';}))}','${escapeHtml((s.category||'general').replace(/[\\']/g, function(c){return c=='\\' ? '\\\\' : '\\'';}))}',${JSON.stringify(s.triggers||[])})">Install</button>`
             }
           </div>
         </div>`;

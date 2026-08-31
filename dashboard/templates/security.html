@@ -334,7 +334,7 @@
           ${f.snippet ? `<div class="finding-snippet">${escHtml(f.snippet)}</div>` : ''}
           <div class="finding-actions">
             <button onclick="copyFinding(${i})">📋 Copy</button>
-            <button onclick="viewOnDisk('${escHtml(f.file)}')">📁 Open File</button>
+            <button onclick="viewOnDisk(' + escAttr(escHtml(f.file)) + ')">📁 Open File</button>
           </div>
         </div>
       `).join('');

@@ -263,9 +263,9 @@
             ${d.partition_info ? 'Info: <code>' + escHtml(d.partition_info) + '</code>' : ''}
           </div>
           <div class="disk-actions">
-            ${!d.encrypted ? '<button onclick="openEncryptModal(\'' + escHtml(d.name) + '\')">Encrypt Disk</button>' : ''}
-            <button onclick="refreshDisk('${escHtml(d.name)}')">Refresh</button>
-            ${d.encrypted ? '<button onclick="openPassCheckModal(\'' + escHtml(d.name) + '\')">Check Passphrase</button>' : ''}
+            ${!d.encrypted ? '<button onclick="openEncryptModal(' + escAttr(escHtml(d.name)) + ')">Encrypt Disk</button>' : ''}
+            <button onclick="refreshDisk(' + escAttr(escHtml(d.name)) + ')">Refresh</button>
+            ${d.encrypted ? '<button onclick="openPassCheckModal(' + escAttr(escHtml(d.name)) + ')">Check Passphrase</button>' : ''}
           </div>
         </div>`;
       }).join('');

@@ -226,8 +226,8 @@ if HAS_FASTAPI:
     def test_mcp_endpoint(mcp_id: str):
         try:
             return test_mcp(mcp_id)
-        except Exception as e:
-            return {"error": str(e)}, 500
+        except Exception:
+            return {"error": "test failed"}, 500
 
     @app.get("/api/catalog/mcps/stats")
     def stats_endpoint():
