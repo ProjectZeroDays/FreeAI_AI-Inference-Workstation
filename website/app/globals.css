@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 241, 246, 255;
+  --background-start-rgb: 6, 10, 24;
+  --background-end-rgb: 2, 6, 20;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 241, 246, 255;
+    --background-start-rgb: 6, 10, 24;
+    --background-end-rgb: 2, 6, 20;
+  }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(92, 139, 255, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(92, 139, 255, 0.3);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(92, 139, 255, 0.5);
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(var(--background-end-rgb))
+  )
+  rgb(var(--background-start-rgb));
+}
+
+.gradient-text {
+  background: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(92, 139, 255, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
