@@ -8,22 +8,13 @@
   --background-end-rgb: 2, 6, 20;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 241, 246, 255;
-    --background-start-rgb: 6, 10, 24;
-    --background-end-rgb: 2, 6, 20;
-  }
-}
-
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(92, 139, 255, 0.3) transparent;
 }
 
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
 }
 
 *::-webkit-scrollbar-track {
@@ -31,22 +22,13 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(92, 139, 255, 0.3);
-  border-radius: 4px;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(92, 139, 255, 0.5);
+  background: rgba(92, 139, 255, 0.2);
+  border-radius: 3px;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgb(var(--background-end-rgb))
-  )
-  rgb(var(--background-start-rgb));
+  background: #060a18;
 }
 
 .gradient-text {
@@ -56,9 +38,19 @@ body {
   background-clip: text;
 }
 
-.dot-grid {
-  background-image: radial-gradient(circle, rgba(92, 139, 255, 0.15) 1px, transparent 1px);
-  background-size: 24px 24px;
+.gradient-text-animated {
+  background: linear-gradient(90deg, #6bd5ff, #5c8bff, #8a70f6, #6bd5ff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes pulse-glow {
@@ -66,15 +58,16 @@ body {
   50% { opacity: 0.5; }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+/* Applivery-style section spacing */
+.applivery-section {
+  padding: 5rem 1.5rem;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+/* Prompt card hover */
+.prompt-card {
+  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+.prompt-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(92, 139, 255, 0.3);
 }
