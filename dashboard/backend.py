@@ -93,6 +93,7 @@ app = Flask(__name__,
             static_folder=str(STATIC_DIR),
             template_folder=str(TEMPLATES_DIR))
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", uuid.uuid4().hex)
+app.config["_start_time"] = int(time.time())
 
 # ── i18n Jinja2 extensions ────────────────────────────────────────
 add_jinja_extensions(app)
@@ -726,6 +727,146 @@ def stats():
         "skills_total": skills_count,
         "activity_entries": activity_count,
         "uptime": int(time.time()),
+    })
+
+
+# ── API: Runtime Metrics ────────────────────────────────────────
+_AUDIT_LOG_PATH = CONFIG_DIR / "audit.jsonl"
+_WORKFLOW_AUDIT_PATH = ROOT.parent / "workflow" / "audit.jsonl"
+_ERRORS_LOG_PATH = CONFIG_DIR / "errors.jsonl"
+
+
+def _safe_count_jsonl(path: Path) -> int:
+    try:
+        return sum(1 for _ in open(path, encoding="utf-8"))
+    except OSError:
+        return 0
+
+
+def _read_jsonl(path: Path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    try:
+                        yield json.loads(line)
+                    except (json.JSONDecodeError, OSError):
+                        continue
+    except OSError:
+        return
+
+
+@app.route("/api/metrics/runtime")
+def api_metrics_runtime():
+    """Aggregated runtime stats from all logging sources."""
+    now = int(time.time())
+    uptime = now - int(app.config.get("_start_time", now)) if "_start_time" in app.config else 0
+    if "_start_time" not in app.config:
+        app.config["_start_time"] = now
+
+    # ── Audit log stats ──────────────────────────────────────
+    action_counts: dict = {}
+    result_counts = {"ok": 0, "error": 0, "forbidden": 0, "skip": 0}
+    duration_sum = 0.0
+    duration_count = 0
+    user_counts: dict = {}
+
+    for entry in _read_jsonl(_AUDIT_LOG_PATH):
+        action = entry.get("action", "unknown")
+        result = entry.get("result", "unknown")
+        duration = entry.get("details", {}).get("duration_ms")
+        user = entry.get("user", "anonymous")
+
+        action_counts[action] = action_counts.get(action, 0) + 1
+        if result in result_counts:
+            result_counts[result] += 1
+        if isinstance(duration, (int, float)):
+            duration_sum += duration
+            duration_count += 1
+        user_counts[user] = user_counts.get(user, 0) + 1
+
+    avg_duration = round(duration_sum / duration_count, 2) if duration_count else 0.0
+    total_requests = sum(result_counts.values())
+
+    # ── Workflow audit stats ─────────────────────────────────
+    wf_status_counts: dict = {}
+    wf_error_counts: dict = {}
+    wf_agent_counts: dict = {}
+
+    for entry in _read_jsonl(_WORKFLOW_AUDIT_PATH):
+        status = entry.get("status", "unknown")
+        error = entry.get("error")
+        agent = entry.get("agent", "unknown")
+
+        wf_status_counts[status] = wf_status_counts.get(status, 0) + 1
+        if agent != "unknown":
+            wf_agent_counts[agent] = wf_agent_counts.get(agent, 0) + 1
+        if error:
+            wf_error_counts[error] = wf_error_counts.get(error, 0) + 1
+
+    # ── Error log stats ──────────────────────────────────────
+    error_service_counts: dict = {}
+    error_type_counts: dict = {}
+    total_errors = 0
+    unacked_errors = 0
+    errors_by_service: dict = {}
+
+    for entry in _read_jsonl(_ERRORS_LOG_PATH):
+        service = entry.get("service", "unknown")
+        exc_type = entry.get("exception_type", "Unknown")
+        ack = entry.get("acknowledged", False)
+        count = entry.get("count", 1)
+
+        total_errors += count
+        if not ack:
+            unacked_errors += count
+
+        error_service_counts[service] = error_service_counts.get(service, 0) + count
+        error_type_counts[exc_type] = error_type_counts.get(exc_type, 0) + count
+        if service not in errors_by_service:
+            errors_by_service[service] = {"total": 0, "unacked": 0, "types": {}}
+        errors_by_service[service]["total"] += count
+        if not ack:
+            errors_by_service[service]["unacked"] += count
+        errors_by_service[service]["types"][exc_type] = errors_by_service[service]["types"].get(exc_type, 0) + count
+
+    # ── Activity log count ───────────────────────────────────
+    activity_count = _safe_count_jsonl(ACTIVITY_LOG)
+
+    # ── Skill count ──────────────────────────────────────────
+    skills_count = len(list(SKILLS_DIR.iterdir())) if SKILLS_DIR.exists() else 0
+
+    # ── Build response ───────────────────────────────────────
+    return jsonify({
+        "timestamp": now,
+        "uptime_seconds": uptime,
+        "requests": {
+            "total": total_requests,
+            "by_result": result_counts,
+            "by_action": action_counts,
+            "by_user": dict(sorted(user_counts.items(), key=lambda x: -x[1])[:10]),
+            "avg_duration_ms": avg_duration,
+        },
+        "workflows": {
+            "total_executions": sum(wf_status_counts.values()),
+            "by_status": wf_status_counts,
+            "by_agent": dict(sorted(wf_agent_counts.items(), key=lambda x: -x[1])),
+            "errors": dict(sorted(wf_error_counts.items(), key=lambda x: -x[1])[:10]),
+        },
+        "errors": {
+            "total": total_errors,
+            "unacked": unacked_errors,
+            "by_service": dict(sorted(error_service_counts.items(), key=lambda x: -x[1])),
+            "by_type": dict(sorted(error_type_counts.items(), key=lambda x: -x[1])[:15]),
+            "per_service": dict(sorted(errors_by_service.items(), key=lambda x: -x[1]["total"])[:10]),
+        },
+        "system": {
+            "skills_total": skills_count,
+            "activity_entries": activity_count,
+            "audit_log_entries": _safe_count_jsonl(_AUDIT_LOG_PATH),
+            "workflow_audit_entries": _safe_count_jsonl(_WORKFLOW_AUDIT_PATH),
+        },
     })
 
 

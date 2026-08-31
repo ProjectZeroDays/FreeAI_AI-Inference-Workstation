@@ -994,3 +994,95 @@ def test_evals_results_from_report(client, tmp_path, monkeypatch):
     assert body["overall_score"] == 0.85
     assert len(body["results"]) == 2
 
+
+# ── Runtime Metrics API ────────────────────────────────────────
+
+def test_metrics_runtime_empty(tmp_path, client, monkeypatch):
+    # Point at empty temp files
+    monkeypatch.setattr(dash, "_AUDIT_LOG_PATH", tmp_path / "audit.jsonl")
+    monkeypatch.setattr(dash, "_WORKFLOW_AUDIT_PATH", tmp_path / "workflow_audit.jsonl")
+    monkeypatch.setattr(dash, "_ERRORS_LOG_PATH", tmp_path / "errors.jsonl")
+    res = client.get("/api/metrics/runtime")
+    assert res.status_code == 200
+    body = res.get_json()
+    assert "timestamp" in body
+    assert "uptime_seconds" in body
+    assert "requests" in body
+    assert "workflows" in body
+    assert "errors" in body
+    assert "system" in body
+    assert body["requests"]["total"] == 0
+    assert body["errors"]["total"] == 0
+
+
+def test_metrics_runtime_with_data(tmp_path, client, monkeypatch):
+    # Point at temp files
+    audit_path = tmp_path / "audit.jsonl"
+    wf_dir = tmp_path / "workflow"
+    wf_dir.mkdir(exist_ok=True)
+    wf_audit = wf_dir / "audit.jsonl"
+    err_path = tmp_path / "errors.jsonl"
+    monkeypatch.setattr(dash, "_AUDIT_LOG_PATH", audit_path)
+    monkeypatch.setattr(dash, "_WORKFLOW_AUDIT_PATH", wf_audit)
+    monkeypatch.setattr(dash, "_ERRORS_LOG_PATH", err_path)
+    # Write sample audit log entries
+    audit_path.write_text(
+        json.dumps({"timestamp": "2026-01-01T00:00:00Z", "user": "alice",
+                     "action": "login", "resource": "auth", "result": "ok",
+                     "ip": "127.0.0.1", "details": {"method": "GET", "status": 200, "duration_ms": 50}}) + "\n"
+        + json.dumps({"timestamp": "2026-01-01T00:00:00Z", "user": "bob",
+                     "action": "agent_call", "resource": "agent:test", "result": "error",
+                     "ip": "127.0.0.1", "details": {"method": "POST", "status": 500, "duration_ms": 200}}) + "\n"
+        + json.dumps({"timestamp": "2026-01-01T00:00:00Z", "user": "alice",
+                     "action": "login", "resource": "auth", "result": "ok",
+                     "ip": "127.0.0.1", "details": {"method": "GET", "status": 200, "duration_ms": 30}}) + "\n",
+        encoding="utf-8"
+    )
+    # Write sample workflow audit
+    wf_audit.write_text(
+        json.dumps({"ts": "2026-01-01T00:00:00Z", "workflow_id": "w1",
+                     "status": "ok", "step": "probe", "agent": "debug"}) + "\n"
+        + json.dumps({"ts": "2026-01-01T00:00:00Z", "workflow_id": "w2",
+                     "status": "failed", "error": "timeout",
+                     "step": "exec", "agent": "orchestrate", "attempt": 3}) + "\n",
+        encoding="utf-8"
+    )
+    # Write sample error log
+    err_path.write_text(
+        json.dumps({"service": "dashboard", "exception_type": "RuntimeError",
+                     "count": 3, "acknowledged": False, "ts": 1234567890}) + "\n"
+        + json.dumps({"service": "router", "exception_type": "ConnectionError",
+                     "count": 1, "acknowledged": True, "ts": 1234567891}) + "\n",
+        encoding="utf-8"
+    )
+
+    res = client.get("/api/metrics/runtime")
+    assert res.status_code == 200
+    body = res.get_json()
+
+    assert body["requests"]["total"] == 3
+    assert body["requests"]["by_result"]["ok"] == 2
+    assert body["requests"]["by_result"]["error"] == 1
+    assert body["requests"]["by_action"]["login"] == 2
+    assert body["requests"]["by_action"]["agent_call"] == 1
+    assert body["requests"]["avg_duration_ms"] == 93.33
+    assert body["requests"]["by_user"]["alice"] == 2
+    assert body["requests"]["by_user"]["bob"] == 1
+
+    assert body["workflows"]["total_executions"] == 2
+    assert body["workflows"]["by_status"]["ok"] == 1
+    assert body["workflows"]["by_status"]["failed"] == 1
+    assert body["workflows"]["by_agent"]["debug"] == 1
+    assert body["workflows"]["by_agent"]["orchestrate"] == 1
+    assert body["workflows"]["errors"]["timeout"] == 1
+
+    assert body["errors"]["total"] == 4
+    assert body["errors"]["unacked"] == 3
+    assert body["errors"]["by_service"]["dashboard"] == 3
+    assert body["errors"]["by_service"]["router"] == 1
+    assert body["errors"]["by_type"]["RuntimeError"] == 3
+    assert body["errors"]["by_type"]["ConnectionError"] == 1
+
+    assert body["system"]["audit_log_entries"] == 3
+    assert body["system"]["workflow_audit_entries"] == 2
+
