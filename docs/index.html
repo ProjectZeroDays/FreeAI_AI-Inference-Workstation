@@ -2096,7 +2096,13 @@ docker compose --profile allinone up -d
     const chatSendBtn = document.getElementById('chatSendBtn');
     const chatInputField = document.getElementById('chatInputField');
     const tabBtns = document.querySelectorAll('.chat-tab-btn');
+    const chatMsgHistory = [];
     let chatOpen = false;
+    let isTyping = false;
+
+    const AGNES_API_KEY = 'sk-gE940pJBd02SRt3c8hBZPvQ3RsnM2gM14EuWJO3DkXeSbtb4';
+    const AGNES_BASE_URL = 'https://apihub.agnes-ai.com/v1';
+    const AGNES_MODEL = 'agnes-2.0-flash';
 
     function openChat() {
       chatOpen = true;
@@ -2114,22 +2120,87 @@ docker compose --profile allinone up -d
       setTimeout(() => { chatLauncher.style.opacity = '1'; chatLauncher.style.pointerEvents = ''; }, 10);
     }
 
-    function sendChatMsg() {
+    function showTyping() {
+      if (isTyping) return;
+      isTyping = true;
+      const t = document.createElement('div');
+      t.className = 'chat-msg';
+      t.id = 'typingIndicator';
+      t.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+      chatPanelBody.appendChild(t);
+      chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+    }
+
+    function hideTyping() {
+      isTyping = false;
+      const t = document.getElementById('typingIndicator');
+      if (t) t.remove();
+    }
+
+    async function sendChatMsg() {
       const text = chatInputField.value.trim();
-      if (!text) return;
+      if (!text || isTyping) return;
+      chatInputField.value = '';
+      chatInputField.style.height = 'auto';
+
+      // Add user message
       const row = document.createElement('div');
       row.className = 'chat-msg';
-      row.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:3px;">' + escHtml(text) + '</div>';
+      row.style.justifyContent = 'flex-end';
+      row.innerHTML = '<div class="chat-msg-bubble" style="background:#0241e3;border-top-left-radius:3px;">' + escHtml(text) + '</div>';
       chatPanelBody.appendChild(row);
-      chatInputField.value = '';
       chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-      setTimeout(() => {
-        const resp = document.createElement('div');
-        resp.className = 'chat-msg';
-        resp.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">Thanks! We\'ll be in touch shortly.</div>';
-        chatPanelBody.appendChild(resp);
+
+      chatMsgHistory.push({ role: 'user', content: text });
+
+      showTyping();
+
+      try {
+        const resp = await fetch(AGNES_BASE_URL + '/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + AGNES_API_KEY
+          },
+          body: JSON.stringify({
+            model: AGNES_MODEL,
+            messages: chatMsgHistory.slice(-10),
+            max_tokens: 500,
+            temperature: 0.7
+          })
+        });
+
+        hideTyping();
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          chatMsgHistory.push({ role: 'assistant', content: 'Sorry, I encountered an error: ' + (err.error?.message || resp.status) });
+          const errRow = document.createElement('div');
+          errRow.className = 'chat-msg';
+          errRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble" style="background:#dc2626;">Error: ' + escHtml(err.error?.message || resp.status) + '</div>';
+          chatPanelBody.appendChild(errRow);
+          chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+          return;
+        }
+
+        const data = await resp.json();
+        const reply = data.choices?.[0]?.message?.content || 'No response';
+        chatMsgHistory.push({ role: 'assistant', content: reply });
+
+        const respRow = document.createElement('div');
+        respRow.className = 'chat-msg';
+        respRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble">' + escHtml(reply) + '</div>';
+        chatPanelBody.appendChild(respRow);
         chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
-      }, 600);
+
+      } catch (e) {
+        hideTyping();
+        const errRow = document.createElement('div');
+        errRow.className = 'chat-msg';
+        errRow.innerHTML = '<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg></div><div class="chat-msg-bubble" style="background:#dc2626;">Connection error: ' + escHtml(e.message) + '</div>';
+        chatPanelBody.appendChild(errRow);
+        chatPanelBody.scrollTop = chatPanelBody.scrollHeight;
+      }
     }
 
     chatSendBtn.addEventListener('click', sendChatMsg);
