@@ -337,7 +337,7 @@ class CampaignAgent:
 
         all_results: List[EmailResult] = []
         variant_stats: Dict[str, Dict[str, int]] = {
-            v["id"]: {"sent": 0, "opened": 0, "clicked": 0, "converted": 0}
+            v["id"]: {"sent": 0, "opened": 0, "clicked": 0, "converted": 0, "reported": 0}
             for v in blueprint["variants"]
         }
 
