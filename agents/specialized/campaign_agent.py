@@ -342,9 +342,29 @@ class CampaignAgent:
         }
 
         for variant_id, variant_recipients in variant_assignments.items():
+            if not variant_recipients:
+                continue
+            # Build a temporary sender for this variant
+            variant_sender_config = EmailConfig(
+                smtp_server=config.smtp_server,
+                smtp_port=config.smtp_port,
+                from_name=config.sender_name,
+                from_email=config.sender_email,
+                campaign_id=campaign_id,
+                tracking_enabled=True,
+                test_mode=self.test_mode,
+            )
+            variant_sender = CampaignEmailSender(variant_sender_config)
+            # Tag recipients with this variant
             for rec in variant_recipients:
-                result = sender.send_single(rec, variant_id, blueprint["landing_page"]["url"])
-                all_results.append(result)
+                rec.variant_id = variant_id
+            variant_results = variant_sender.send_campaign(
+                variant_recipients,
+                variant_type=variant_id,
+                landing_page=blueprint["landing_page"]["url"],
+            )
+            all_results.extend(variant_results)
+            for result in variant_results:
                 if result.success:
                     variant_stats[variant_id]["sent"] += 1
 
