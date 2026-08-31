@@ -1,0 +1,87 @@
+{
+  "campaign": {
+    "campaign_id": "CAMP-20260831-001",
+    "type": "ab_test",
+    "title": "Phishing-3V",
+    "created": "2026-08-31T11:35:30.468049",
+    "status": "draft",
+    "duration_hours": 48,
+    "variants": [
+      {
+        "id": "variant_1",
+        "name": "Urgency-Based",
+        "weight": 40,
+        "budget": 666.6666666666666,
+        "payload": {
+          "subject": "URGENT: Password Expiration Notice",
+          "cta": "Reset Password Now"
+        },
+        "max_allocation": Infinity
+      },
+      {
+        "id": "variant_2",
+        "name": "Authority-Based",
+        "weight": 35,
+        "budget": 666.6666666666666,
+        "payload": {
+          "subject": "IT Security: Mandatory Update Required",
+          "cta": "Update Credentials"
+        },
+        "max_allocation": Infinity
+      },
+      {
+        "id": "variant_3",
+        "name": "Social-Engineering",
+        "weight": 25,
+        "budget": 666.6666666666666,
+        "payload": {
+          "subject": "Meeting Invitation: Q4 Review",
+          "cta": "RSVP Now"
+        },
+        "max_allocation": Infinity
+      }
+    ],
+    "audience": {
+      "total_size": 1000,
+      "segments": []
+    },
+    "budget": {
+      "total": 2000,
+      "currency": "test_credits",
+      "allocated": 2000.0
+    },
+    "metrics": {
+      "primary": "conversion_rate",
+      "secondary": [
+        "open_rate",
+        "click_rate",
+        "report_rate"
+      ],
+      "target_confidence": 0.95,
+      "minimum_sample_size": 72
+    }
+  },
+  "budget_stats": {
+    "V0": {
+      "budget_spent": 0.0,
+      "conversions": 0,
+      "conversion_rate": 0,
+      "budget_remaining": 666.6666666666666,
+      "ucb_score": Infinity
+    },
+    "V1": {
+      "budget_spent": 0.0,
+      "conversions": 0,
+      "conversion_rate": 0,
+      "budget_remaining": 666.6666666666666,
+      "ucb_score": Infinity
+    },
+    "V2": {
+      "budget_spent": 0.0,
+      "conversions": 0,
+      "conversion_rate": 0,
+      "budget_remaining": 666.6666666666666,
+      "ucb_score": Infinity
+    }
+  }
+}

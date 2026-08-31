@@ -1,0 +1,23 @@
+{
+  "recipients": [
+    {"email": "alice.johnson@company.com", "first_name": "Alice", "last_name": "Johnson", "department": "IT", "role": "SysAdmin", "segment": "it_staff"},
+    {"email": "bob.smith@company.com", "first_name": "Bob", "last_name": "Smith", "department": "Finance", "role": "CFO", "segment": "c_level"},
+    {"email": "carol.white@company.com", "first_name": "Carol", "last_name": "White", "department": "Engineering", "role": "Lead Engineer", "segment": "engineering"},
+    {"email": "david.brown@company.com", "first_name": "David", "last_name": "Brown", "department": "HR", "role": "HR Manager", "segment": "hr"},
+    {"email": "eve.davis@company.com", "first_name": "Eve", "last_name": "Davis", "department": "Finance", "role": "Accountant", "segment": "finance"},
+    {"email": "frank.miller@company.com", "first_name": "Frank", "last_name": "Miller", "department": "IT", "role": "Security Analyst", "segment": "it_staff"},
+    {"email": "grace.wilson@company.com", "first_name": "Grace", "last_name": "Wilson", "department": "Executive", "role": "VP Operations", "segment": "c_level"},
+    {"email": "henry.taylor@company.com", "first_name": "Henry", "last_name": "Taylor", "department": "Engineering", "role": "Software Engineer", "segment": "engineering"},
+    {"email": "irene.anderson@company.com", "first_name": "Irene", "last_name": "Anderson", "department": "General", "role": "Manager", "segment": "general"},
+    {"email": "jack.thomas@company.com", "first_name": "Jack", "last_name": "Thomas", "department": "Finance", "role": "Controller", "segment": "finance"}
+  ],
+  "total": 10,
+  "segments": {
+    "c_level": 2,
+    "it_staff": 2,
+    "finance": 3,
+    "hr": 1,
+    "engineering": 2,
+    "general": 1
+  }
+}

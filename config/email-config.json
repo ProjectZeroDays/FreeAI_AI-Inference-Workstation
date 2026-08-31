@@ -1,0 +1,15 @@
+{
+  "smtp_server": "smtp.office365.com",
+  "smtp_port": 587,
+  "smtp_user": "",
+  "smtp_password": "",
+  "use_tls": true,
+  "api_provider": "",
+  "api_key": "",
+  "from_name": "IT Security Team",
+  "from_email": "it-support@company.com",
+  "reply_to": "",
+  "campaign_id": "CAMP-20260831-001",
+  "tracking_enabled": true,
+  "test_mode": true
+}
