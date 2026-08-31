@@ -760,6 +760,120 @@ export default function Home() {
         </div>
       </section>
 
+      {/* PRICING */}
+      <section id="pricing" className="ap-section">
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+              Simple, <span className="gradient-text">transparent pricing</span>
+            </h2>
+            <p className="text-lg text-slate-500">
+              Start free. Scale when you're ready. No hidden fees.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Self-Hosted */}
+            <div className="ap-card flex flex-col">
+              <div className="mb-6">
+                <div className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Self-Hosted</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-black text-slate-900">$0</span>
+                  <span className="text-slate-500 text-sm">/forever</span>
+                </div>
+                <p className="text-sm text-slate-500 mt-2">GPL-3.0 · unlimited agents · all features</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  '24 autonomous agents',
+                  'All security skills (14 Red, 12 Blue, 7 Purple)',
+                  '21+ AI providers',
+                  'Live ISO variants',
+                  'GPU inference (llama.cpp, vLLM)',
+                  'Full API access',
+                  'Community support',
+                ].map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-700">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/deploy" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-blue-500 hover:text-blue-600 transition-all">
+                Get started free
+              </Link>
+            </div>
+
+            {/* Enterprise Support */}
+            <div className="ap-card flex flex-col relative border-blue-500 shadow-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
+                MOST POPULAR
+              </div>
+              <div className="mb-6">
+                <div className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-2">Enterprise Support</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-black text-slate-900">$299</span>
+                  <span className="text-slate-500 text-sm">/month</span>
+                </div>
+                <p className="text-sm text-slate-500 mt-2">Per workspace · priority support · SLA</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  'Everything in Self-Hosted',
+                  '99.9% uptime SLA',
+                  'Priority email & chat support',
+                  'Custom integrations',
+                  'Dedicated account manager',
+                  'Compliance reporting (SOC 2, ISO 27001)',
+                  'Training & onboarding',
+                ].map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-700">
+                    <Check className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all">
+                Contact sales
+              </Link>
+            </div>
+
+            {/* Cloud Managed */}
+            <div className="ap-card flex flex-col">
+              <div className="mb-6">
+                <div className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-2">Cloud Managed</div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-5xl font-black text-slate-900">$499</span>
+                  <span className="text-slate-500 text-sm">/month</span>
+                </div>
+                <p className="text-sm text-slate-500 mt-2">Fully hosted · zero infrastructure</p>
+              </div>
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  'Everything in Enterprise Support',
+                  'Hosted on AWS / Azure / GCP',
+                  'Auto-scaling & HA',
+                  'Automated backups',
+                  'Managed model updates',
+                  'Multi-region deployment',
+                  'Custom compliance certs',
+                ].map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-700">
+                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-blue-500 hover:text-blue-600 transition-all">
+                Request demo
+              </Link>
+            </div>
+          </div>
+          <p className="text-center text-sm text-slate-400 mt-8">
+            All plans include a 14-day free trial. No credit card required.
+          </p>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section id="faq" className="ap-section bg-slate-50">
         <div className="container mx-auto px-6 max-w-3xl">
