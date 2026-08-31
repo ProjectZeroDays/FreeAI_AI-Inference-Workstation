@@ -7,7 +7,7 @@
 [![version](https://img.shields.io/badge/version-1.3.1-blue)](https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/releases)
 [![python](https://img.shields.io/badge/python-3.10%2B-informational)](https://www.python.org/)
 [![cuda](https://img.shields.io/badge/CUDA-12.x-76B900)](https://developer.nvidia.com/cuda)
-[![tests](https://img.shields.io/badge/tests-570_passing-brightgreen)](#15-testing-and-validation)
+[![tests](https://img.shields.io/badge/tests-1156_passing-brightgreen)](#15-testing-and-validation)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![docker](https://img.shields.io/badge/docker-ghcr.io%2Ffreeai-blue?logo=docker)](https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/pkgs/container/freeai)
 
