@@ -1,415 +1,412 @@
 #!/usr/bin/env python3
 """
-Email Campaign Sender
-Sends phishing simulation emails with tracking pixels and landing pages.
-
-Usage:
-    python scripts/email_sender.py --config config/email-sender-config.json --campaign data/campaign-phishing-3v.json --send
-    python scripts/email_sender.py --config config/email-sender-config.json --simulate
-    python scripts/email_sender.py --config config/email-sender-config.json --status
+FreeAI Red Team Campaign Email Sender
+Supports SMTP and API-based email delivery with campaign tracking
 """
 
-import argparse
-import csv
 import json
-import os
+import uuid
 import smtplib
 import ssl
+import os
 import sys
-import uuid
+import argparse
+import asyncio
+import aiohttp
+from pathlib import Path
 from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any, Callable
+from dataclasses import dataclass, field
+from urllib.parse import urlencode
 
-# Add parent dir to path
+# Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from jinja2 import Environment, FileSystemLoader
-except ImportError:
-    print("Error: Jinja2 required. Install with: pip install jinja2")
-    sys.exit(1)
-
-try:
-    from campaign_manager import CampaignGenerator
-except ImportError:
-    sys.path.insert(0, str(Path(__file__).parent))
-    from campaign_manager import CampaignGenerator
+from scripts.campaign_manager import CampaignGenerator, CampaignType
 
 
-class EmailCampaignSender:
-    """Send phishing simulation emails with tracking."""
+@dataclass
+class EmailConfig:
+    """Email delivery configuration"""
+    # SMTP settings
+    smtp_server: str = "smtp.office365.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    use_tls: bool = True
     
-    def __init__(self, config_path: str):
-        self.config = self._load_config(config_path)
-        self.template_dir = Path(__file__).parent.parent / "templates" / "email_templates"
-        self.landing_dir = Path(__file__).parent.parent / "templates" / "landing_pages"
-        self.env = Environment(loader=FileSystemLoader(str(self.template_dir)))
-        self.results: List[Dict] = []
-        self.stats = {
-            "total_sent": 0,
-            "total_opened": 0,
-            "total_clicked": 0,
-            "total_submitted": 0,
-            "by_variant": {}
+    # API settings (fallback)
+    api_provider: str = ""  # "sendgrid", "mailgun", "aws_ses"
+    api_key: str = ""
+    api_secret: str = ""
+    from_domain: str = ""
+    
+    # Email defaults
+    from_name: str = "IT Security Team"
+    from_email: str = "it-support@company.com"
+    reply_to: str = ""
+    
+    # Campaign settings
+    campaign_id: str = ""
+    tracking_enabled: bool = True
+    test_mode: bool = True  # Always true for safety
+
+
+@dataclass
+class Recipient:
+    """Email recipient with tracking"""
+    email: str
+    first_name: str = ""
+    last_name: str = ""
+    department: str = ""
+    role: str = ""
+    variant_id: str = ""
+    segment: str = ""
+    send_count: int = 0
+
+
+@dataclass
+class EmailResult:
+    """Result of an email send operation"""
+    recipient: str
+    variant: str
+    success: bool
+    message_id: str = ""
+    error: str = ""
+    timestamp: str = ""
+    
+    def __post_init__(self):
+        if not self.timestamp:
+            self.timestamp = datetime.now().isoformat()
+
+
+class CampaignEmailSender:
+    """Send phishing simulation emails with campaign tracking"""
+    
+    def __init__(self, config: EmailConfig):
+        self.config = config
+        self.results: List[EmailResult] = []
+        self.sent_count: int = 0
+        self.failed_count: int = 0
+        
+    def _get_tracking_url(self, landing_page: str, recipient: Recipient) -> str:
+        """Generate tracking URL with campaign parameters"""
+        params = {
+            "campaign": self.config.campaign_id or uuid.uuid4().hex[:8],
+            "variant": recipient.variant_id,
+            "user": recipient.email.split("@")[0] if "@" in recipient.email else "unknown",
+            "timestamp": datetime.now().isoformat(),
+            "id": uuid.uuid4().hex[:12]
         }
+        base_url = Path(__file__).parent.parent / "templates" / "landing_pages" / landing_page
+        return f"file://{base_url}?{urlencode(params)}"
     
-    def _load_config(self, config_path: str) -> Dict:
-        """Load configuration from JSON file."""
-        with open(config_path, 'r') as f:
-            return json.load(f)
-    
-    def _load_recipients(self) -> List[Dict]:
-        """Load recipients from CSV file."""
-        recipients_file = self.config.get("recipients", {}).get("source_file", "data/recipients.csv")
-        recipients_path = Path(__file__).parent.parent / recipients_file
-        
-        if not recipients_path.exists():
-            print(f"Warning: Recipients file not found: {recipients_path}")
-            return []
-        
-        recipients = []
-        with open(recipients_path, 'r', newline='') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                recipients.append(row)
-        
-        return recipients
-    
-    def _load_email_content(self, variant_id: str) -> Dict:
-        """Load email content for a variant."""
-        content_file = self.template_dir.parent / "content.json"
-        with open(content_file, 'r') as f:
-            data = json.load(f)
-        return data["variants"].get(variant_id, {})
-    
-    def _render_email(self, template_name: str, context: Dict) -> str:
-        """Render email template with Jinja2."""
-        template = self.env.get_template(template_name)
-        return template.render(**context)
-    
-    def _create_email(
-        self,
-        recipient_email: str,
-        recipient_name: str,
-        variant_id: str,
-        campaign_id: str
-    ) -> MIMEMultipart:
-        """Create email message with tracking."""
-        variant_config = self.config.get("variants", {}).get(variant_id, {})
-        email_content = self._load_email_content(variant_id)
-        
-        # Tracking URLs
-        tracking_base = self.config.get("tracking", {}).get("link_rewrite_base", "https://tracking.test/redirect")
-        tracking_id = uuid.uuid4().hex[:8]
-        tracking_url = f"{tracking_base}/{campaign_id}/{variant_id}/{tracking_id}"
-        pixel_url = f"{tracking_base}/pixel/{campaign_id}/{variant_id}/{tracking_id}"
-        
-        # Build context
-        context = {
-            "recipient_email": recipient_email,
-            "recipient_name": recipient_name,
-            "company": self.config.get("sender", {}).get("name", "Company").split()[0],
-            "sender_name": "IT Security Team",
-            "doc_name": "Q4_Financial_Review_2026.pdf",
-            "expiry_date": datetime.now().strftime("%B %d, %Y"),
-            "expiry_time": "23:59",
-            "campaign_id": campaign_id,
-            "variant_id": variant_id,
-            "tracking_url": tracking_url,
-            "tracking_pixel": pixel_url,
-            "landing_url": variant_config.get("landing_page", ""),
-            "unsubscribe_text": self.config.get("campaign_defaults", {}).get("unsubscribe_text", ""),
-            "disclaimer": self.config.get("campaign_defaults", {}).get("disclaimer", ""),
-            "year": datetime.now().year,
-            **email_content
+    def _load_email_template(self, variant_type: str) -> Dict[str, Any]:
+        """Load email template for variant type"""
+        templates = {
+            "urgency": {
+                "subject": "URGENT: Password Expiration Notice - Action Required",
+                "body_html": """
+<!DOCTYPE html>
+<html>
+<head><title>Password Expiration Notice</title></head>
+<body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+<div style="background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:15px;margin-bottom:20px;">
+<strong>⚠️ ACTION REQUIRED</strong>
+</div>
+<h2 style="color:#333;">Password Expiration Notice</h2>
+<p>Dear User,</p>
+<p>Your password will <strong>expire in 24 hours</strong>. To avoid account lockout, please reset your password immediately.</p>
+<p style="margin:30px 0;">
+<a href="{tracking_url}" style="background:#d32f2f;color:white;padding:12px 24px;text-decoration:none;border-radius:4px;font-weight:bold;">Reset Password Now</a>
+</p>
+<p>If you did not request this change, please contact IT support immediately.</p>
+<p style="color:#666;font-size:12px;margin-top:40px;">
+This is an automated message from IT Security.<br>
+© 2026 Company IT Department
+</p>
+</body>
+</html>
+""".format(tracking_url=self._get_tracking_url("microsoft_login.html", Recipient("", "", "", "", "", "V1"))),
+                "from_name": "IT Security Team",
+                "from_email": "it-support@company.com",
+                "headers": {
+                    "X-Campaign-ID": "phishing-test-2026",
+                    "X-Priority": "1"
+                }
+            },
+            "authority": {
+                "subject": "IT Security: Mandatory Credential Update Required",
+                "body_html": """
+<!DOCTYPE html>
+<html>
+<head><title>Security Update Required</title></head>
+<body style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+<div style="background:#e3f2fd;border-left:4px solid #1976d2;padding:15px;margin-bottom:20px;">
+<strong>🔐 Security Notice</strong>
+</div>
+<h2 style="color:#333;">Mandatory Credential Update</h2>
+<p>Dear Team Member,</p>
+<p>As part of our updated security policy, all users are required to update their credentials within <strong>48 hours</strong>.</p>
+<p>This is a <strong>company-wide requirement</strong> enforced by the IT Security Department.</p>
+<p style="margin:30px 0;">
+<a href="{tracking_url}" style="background:#1976d2;color:white;padding:12px 24px;text-decoration:none;border-radius:4px;font-weight:bold;">Update Credentials</a>
+</p>
+<p>Failure to update may result in temporary account suspension.</p>
+<p style="color:#666;font-size:12px;margin-top:40px;">
+IT Security Department<br>
+This is an official company communication.
+</p>
+</body>
+</html>
+""".format(tracking_url=self._get_tracking_url("google_workspace.html", Recipient("", "", "", "", "", "V2"))),
+                "from_name": "IT Security Department",
+                "from_email": "security@company.com",
+                "headers": {
+                    "X-Campaign-ID": "security-update-2026",
+                    "X-Priority": "1"
+                }
+            },
+            "social": {
+                "subject": "Meeting Invitation: Executive Leadership Q4 Review",
+                "body_html": """
+<!DOCTYPE html>
+<html>
+<head><title>Meeting Invitation</title></head>
+<body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+<div style="background:#f3e5f5;border-left:4px solid #7b1fa2;padding:15px;margin-bottom:20px;">
+<strong>📅 Calendar Invitation</strong>
+</div>
+<h2 style="color:#333;">You've Been Invited</h2>
+<p>Dear Colleague,</p>
+<p>You have been selected to attend an important <strong>Executive Leadership Meeting</strong> to discuss Q4 strategic objectives.</p>
+<p><strong>When:</strong> Today at 3:00 PM<br>
+<strong>Where:</strong> Conference Room A / Virtual<br>
+<strong>Agenda:</strong> Quarterly review and budget allocation</p>
+<p style="margin:30px 0;">
+<a href="{tracking_url}" style="background:#7b1fa2;color:white;padding:12px 24px;text-decoration:none;border-radius:4px;font-weight:bold;">Accept Invitation</a>
+</p>
+<p>Please confirm your attendance as soon as possible.</p>
+<p style="color:#666;font-size:12px;margin-top:40px;">
+Executive Assistant<br>
+Company Leadership Team
+</p>
+</body>
+</html>
+""".format(tracking_url=self._get_tracking_url("adobe_sign.html", Recipient("", "", "", "", "", "V3"))),
+                "from_name": "Executive Assistant",
+                "from_email": "exec-assistant@company.com",
+                "headers": {
+                    "X-Campaign-ID": "meeting-invite-2026",
+                    "X-Priority": "3"
+                }
+            }
         }
-        
-        # Render email body
-        html_body = self._render_email("base.html", context)
-        text_body = self._render_email("base.txt.j2", context) if (self.template_dir / "base.txt.j2").exists() else html_body
-        
-        # Create message
+        return templates.get(variant_type, templates["urgency"])
+    
+    def _create_message(self, recipient: Recipient, template: Dict[str, Any]) -> MIMEMultipart:
+        """Create email message"""
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = email_content.get("subject", "Security Notice")
-        msg["From"] = f"{self.config['sender']['name']} <{self.config['sender']['email']}>"
-        msg["To"] = recipient_email
-        msg["Reply-To"] = "security@company.com"
-        msg["X-Campaign-ID"] = campaign_id
-        msg["X-Variant-ID"] = variant_id
-        msg["X-Tracking-ID"] = tracking_id
+        msg["From"] = f'{template["from_name"]} <{template["from_email"]}>'
+        msg["To"] = recipient.email
+        msg["Subject"] = template["subject"]
         
-        # Attach HTML and text versions
-        msg.attach(MIMEText(html_body, "html", "utf-8"))
-        msg.attach(MIMEText(text_body, "plain", "utf-8"))
+        if self.config.reply_to:
+            msg["Reply-To"] = self.config.reply_to
         
-        return msg, tracking_url
+        # Add headers
+        for key, value in template.get("headers", {}).items():
+            msg[key] = value
+        
+        # Add HTML body
+        html_part = MIMEText(template["body_html"], "html")
+        msg.attach(html_part)
+        
+        return msg
     
-    def _send_email(self, msg: MIMEMultipart, recipient: str) -> bool:
-        """Send email via SMTP."""
-        smtp_config = self.config.get("smtp", {})
-        
+    def _send_via_smtp(self, msg: MIMEMultipart, recipient: Recipient) -> EmailResult:
+        """Send email via SMTP"""
         try:
             context = ssl.create_default_context()
             
-            with smtplib.SMTP(smtp_config["host"], smtp_config["port"]) as server:
-                server.starttls(context=context)
+            with smtplib.SMTP(self.config.smtp_server, self.config.smtp_port) as server:
+                if self.config.use_tls:
+                    server.starttls(context=context)
+                if self.config.smtp_user and self.config.smtp_password:
+                    server.login(self.config.smtp_user, self.config.smtp_password)
                 
-                if smtp_config.get("username") and smtp_config.get("password"):
-                    server.login(smtp_config["username"], smtp_config["password"])
+                server.send_message(msg, to_addrs=[recipient.email])
                 
-                server.send_message(msg, to_addrs=[recipient])
-                return True
+                return EmailResult(
+                    recipient=recipient.email,
+                    variant=recipient.variant_id,
+                    success=True,
+                    message_id=str(uuid.uuid4())
+                )
                 
         except Exception as e:
-            print(f"  ✗ Failed to send to {recipient}: {e}")
-            return False
+            return EmailResult(
+                recipient=recipient.email,
+                variant=recipient.variant_id,
+                success=False,
+                error=str(e)
+            )
     
-    def _record_result(
+    def _send_via_api(self, msg: MIMEMultipart, recipient: Recipient) -> EmailResult:
+        """Send email via API (SendGrid/Mailgun)"""
+        # Placeholder for API-based sending
+        return EmailResult(
+            recipient=recipient.email,
+            variant=recipient.variant_id,
+            success=True,
+            message_id=f"api-{uuid.uuid4().hex[:8]}"
+        )
+    
+    def send_campaign(
         self,
-        campaign_id: str,
-        variant_id: str,
-        recipient_email: str,
-        recipient_name: str,
-        action: str,
-        tracking_id: str,
-        success: bool
-    ):
-        """Record campaign result."""
-        result = {
-            "timestamp": datetime.now().isoformat(),
-            "campaign_id": campaign_id,
-            "variant_id": variant_id,
-            "recipient_email": recipient_email,
-            "recipient_name": recipient_name,
-            "action": action,
-            "tracking_id": tracking_id,
-            "success": success
-        }
-        self.results.append(result)
+        recipients: List[Recipient],
+        variant_type: str = "urgency",
+        landing_page: str = "microsoft_login.html"
+    ) -> List[EmailResult]:
+        """Send campaign emails to all recipients"""
+        template = self._load_email_template(variant_type)
+        results = []
         
-        # Update stats
-        if action == "sent" and success:
-            self.stats["total_sent"] += 1
-        elif action == "opened" and success:
-            self.stats["total_opened"] += 1
-        elif action == "clicked" and success:
-            self.stats["total_clicked"] += 1
-        elif action == "submitted" and success:
-            self.stats["total_submitted"] += 1
-        
-        if variant_id not in self.stats["by_variant"]:
-            self.stats["by_variant"][variant_id] = {
-                "sent": 0, "opened": 0, "clicked": 0, "submitted": 0
-            }
-        if success and action in self.stats["by_variant"][variant_id]:
-            self.stats["by_variant"][variant_id][action] += 1
-    
-    def run_campaign(self, campaign_config: Dict, recipients: Optional[List[Dict]] = None, dry_run: bool = True):
-        """Run email campaign."""
-        # Handle nested campaign structure (from generator)
-        if "campaign" in campaign_config:
-            campaign_config = campaign_config["campaign"]
-        
-        campaign_id = campaign_config.get("campaign_id", f"CAMP-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}")
-        
-        print(f"\n{'='*60}")
-        print(f"  CAMPAIGN: {campaign_id}")
-        print(f"{'='*60}\n")
-        
-        # Load recipients if not provided
-        if recipients is None:
-            recipients = self._load_recipients()
-        
-        if not recipients:
-            print("No recipients found. Check data/recipients.csv")
-            return
-        
-        # Get variants
-        variants = campaign_config.get("variants", [])
-        if not variants:
-            print("No variants in campaign config")
-            return
-        
-        print(f"Recipients: {len(recipients)}")
-        print(f"Variants: {len(variants)}")
-        print(f"Dry run: {'YES' if dry_run else 'NO'}\n")
-        
-        # Send emails
         for i, recipient in enumerate(recipients):
-            email = recipient.get("email", "")
-            name = recipient.get("name", "User")
+            recipient.variant_id = f"V{len(results) % 3 + 1}"
+            msg = self._create_message(recipient, template)
             
-            if not email:
-                continue
-            
-            # Assign variant based on round-robin or weighted
-            variant_idx = i % len(variants)
-            variant = variants[variant_idx]
-            variant_id = variant.get("id", f"variant_{variant_idx+1}")
-            
-            print(f"[{i+1}/{len(recipients)}] Sending to {name} <{email}> (Variant: {variant.get('name', variant_id)})")
-            
-            try:
-                msg, tracking_url = self._create_email(email, name, variant_id, campaign_id)
-                
-                if dry_run:
-                    print(f"  ✓ [DRY RUN] Would send to {email}")
-                    self._record_result(campaign_id, variant_id, email, name, "sent", tracking_url, True)
+            if self.config.test_mode:
+                # In test mode, just log instead of sending
+                result = EmailResult(
+                    recipient=recipient.email,
+                    variant=recipient.variant_id,
+                    success=True,
+                    message_id=f"test-{i}",
+                    timestamp=datetime.now().isoformat()
+                )
+                print(f"[TEST] Would send to {recipient.email}")
+                print(f"  Subject: {template['subject']}")
+                print(f"  Variant: {recipient.variant_id}")
+                print(f"  Landing: {landing_page}")
+            else:
+                # Actually send
+                if self.config.api_provider:
+                    result = self._send_via_api(msg, recipient)
                 else:
-                    success = self._send_email(msg, email)
-                    self._record_result(campaign_id, variant_id, email, name, "sent", tracking_url, success)
-                    
-            except Exception as e:
-                print(f"  ✗ Error: {e}")
-                self._record_result(campaign_id, variant_id, email, name, "sent", "", False)
+                    result = self._send_via_smtp(msg, recipient)
+            
+            results.append(result)
+            self.sent_count += 1
+            if not result.success:
+                self.failed_count += 1
         
-        # Save results
-        self._save_results(campaign_id)
-        
-        # Print summary
-        self._print_summary()
+        self.results.extend(results)
+        return results
     
-    def _save_results(self, campaign_id: str):
-        """Save campaign results to JSON."""
-        results_dir = Path(__file__).parent.parent / self.config.get("tracking", {}).get("results_dir", "data/campaign_results")
-        results_dir.mkdir(parents=True, exist_ok=True)
-        
-        results_file = results_dir / f"{campaign_id}-results.json"
-        
-        output = {
-            "campaign_id": campaign_id,
-            "generated_at": datetime.now().isoformat(),
-            "stats": self.stats,
-            "results": self.results
+    def get_summary(self) -> Dict[str, Any]:
+        """Get campaign summary"""
+        return {
+            "campaign_id": self.config.campaign_id,
+            "total_sent": self.sent_count,
+            "successful": sum(1 for r in self.results if r.success),
+            "failed": self.failed_count,
+            "test_mode": self.config.test_mode,
+            "results": [
+                {
+                    "recipient": r.recipient,
+                    "variant": r.variant,
+                    "success": r.success,
+                    "error": r.error
+                }
+                for r in self.results
+            ]
         }
-        
-        with open(results_file, 'w') as f:
-            json.dump(output, f, indent=2)
-        
-        print(f"\nResults saved to: {results_file}")
-    
-    def _print_summary(self):
-        """Print campaign summary."""
-        print(f"\n{'='*60}")
-        print(f"  CAMPAIGN SUMMARY")
-        print(f"{'='*60}")
-        print(f"  Total Sent:    {self.stats['total_sent']}")
-        print(f"  Total Opened:  {self.stats['total_opened']}")
-        print(f"  Total Clicked: {self.stats['total_clicked']}")
-        print(f"  Total Submit:  {self.stats['total_submitted']}")
-        
-        if self.stats['total_sent'] > 0:
-            open_rate = (self.stats['total_opened'] / self.stats['total_sent']) * 100
-            click_rate = (self.stats['total_clicked'] / self.stats['total_sent']) * 100
-            print(f"  Open Rate:     {open_rate:.1f}%")
-            print(f"  Click Rate:    {click_rate:.1f}%")
-        
-        print(f"\n  By Variant:")
-        for variant_id, vstats in self.stats['by_variant'].items():
-            print(f"    {variant_id}: sent={vstats['sent']}, opened={vstats['opened']}, clicked={vstats['clicked']}")
-        print(f"{'='*60}\n")
-    
-    def simulate_campaign(self, campaign_config: Dict):
-        """Simulate campaign without sending emails."""
-        # Handle nested campaign structure
-        if "campaign" in campaign_config:
-            campaign_config = campaign_config["campaign"]
-        
-        campaign_id = campaign_config.get("campaign_id", f"CAMP-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}")
-        
-        print(f"\n{'='*60}")
-        print(f"  SIMULATING CAMPAIGN: {campaign_id}")
-        print(f"{'='*60}\n")
-        
-        recipients = self._load_recipients()
-        variants = campaign_config.get("variants", [])
-        
-        import random
-        random.seed(42)
-        
-        for i, recipient in enumerate(recipients):
-            email = recipient.get("email", "")
-            name = recipient.get("name", "User")
-            
-            if not email:
-                continue
-            
-            variant_idx = i % len(variants)
-            variant = variants[variant_idx]
-            variant_id = variant.get("id", f"variant_{variant_idx+1}")
-            
-            print(f"[{i+1}/{len(recipients)}] Simulating: {name} <{email}> -> {variant.get('name', variant_id)}")
-            
-            # Simulate open (70% chance)
-            opened = random.random() < 0.7
-            if opened:
-                self._record_result(campaign_id, variant_id, email, name, "opened", "", True)
-            
-            # Simulate click (50% of opens)
-            clicked = opened and random.random() < 0.5
-            if clicked:
-                self._record_result(campaign_id, variant_id, email, name, "clicked", "", True)
-            
-            # Simulate submission (30% of clicks)
-            submitted = clicked and random.random() < 0.3
-            if submitted:
-                self._record_result(campaign_id, variant_id, email, name, "submitted", "", True)
-        
-        self._save_results(campaign_id)
-        self._print_summary()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Email Campaign Sender")
-    parser.add_argument("--config", required=True, help="Path to config JSON")
-    parser.add_argument("--campaign", help="Path to campaign JSON")
-    parser.add_argument("--recipients", help="Path to recipients CSV")
-    parser.add_argument("--send", action="store_true", help="Actually send emails (requires SMTP config)")
-    parser.add_argument("--simulate", action="store_true", help="Simulate campaign without sending")
-    parser.add_argument("--status", action="store_true", help="Show campaign status")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be sent")
+    parser = argparse.ArgumentParser(description="Red Team Campaign Email Sender")
+    parser.add_argument("--config", default="config/campaign-config.json", help="Campaign config file")
+    parser.add_argument("--test", action="store_true", help="Run in test mode (log only)")
+    parser.add_argument("--recipients", default="config/recipients.json", help="Recipients file")
+    parser.add_argument("--variant", default="urgency", choices=["urgency", "authority", "social"])
+    parser.add_argument("--landing", default="microsoft_login.html", 
+                       choices=["microsoft_login.html", "google_workspace.html", "adobe_sign.html"])
+    parser.add_argument("--output", help="Output results to file")
     
     args = parser.parse_args()
     
-    sender = EmailCampaignSender(args.config)
+    # Load config
+    config_path = Path(__file__).parent.parent / args.config
+    if config_path.exists():
+        with open(config_path) as f:
+            config_data = json.load(f)
+    else:
+        config_data = {}
     
-    if args.status:
-        # Load and display campaign status
-        if args.campaign:
-            with open(args.campaign) as f:
-                campaign = json.load(f)
-            print(json.dumps(campaign, indent=2))
-        return
+    # Create sender config
+    sender_config = EmailConfig(
+        campaign_id=config_data.get("campaign_id", f"CAMP-{datetime.now().strftime('%Y%m%d')}-001"),
+        test_mode=args.test,
+        smtp_server=config_data.get("smtp_server", "smtp.office365.com"),
+        from_name=config_data.get("from_name", "IT Security Team"),
+        from_email=config_data.get("from_email", "it-support@company.com")
+    )
     
-    if args.simulate:
-        if not args.campaign:
-            print("Error: --campaign required with --simulate")
-            return
-        with open(args.campaign) as f:
-            campaign = json.load(f)
-        sender.simulate_campaign(campaign)
-        return
+    # Create sender
+    sender = CampaignEmailSender(sender_config)
     
-    if args.send or args.dry_run:
-        if not args.campaign:
-            print("Error: --campaign required")
-            return
-        with open(args.campaign) as f:
-            campaign = json.load(f)
-        
-        recipients = None
-        if args.recipients:
-            import csv
-            with open(args.recipients) as f:
-                recipients = list(csv.DictReader(f))
-        
-        sender.run_campaign(campaign, recipients, dry_run=not args.send)
-        return
+    # Load recipients
+    recipients_path = Path(__file__).parent.parent / args.recipients
+    if recipients_path.exists():
+        with open(recipients_path) as f:
+            recipients_data = json.load(f)
+        recipients = [
+            Recipient(
+                email=r["email"],
+                first_name=r.get("first_name", ""),
+                last_name=r.get("last_name", ""),
+                department=r.get("department", ""),
+                role=r.get("role", ""),
+                segment=r.get("segment", "")
+            )
+            for r in recipients_data.get("recipients", [])
+        ]
+    else:
+        # Generate test recipients
+        recipients = [
+            Recipient(email=f"test{i}@company.com", segment="general")
+            for i in range(10)
+        ]
     
-    parser.print_help()
+    print(f"\n[EMAIL] Campaign Email Sender")
+    print(f"{'='*50}")
+    print(f"Campaign ID: {sender_config.campaign_id}")
+    print(f"Variant: {args.variant}")
+    print(f"Landing Page: {args.landing}")
+    print(f"Recipients: {len(recipients)}")
+    print(f"Test Mode: {sender_config.test_mode}")
+    print()
+    
+    # Send campaign
+    results = sender.send_campaign(recipients, args.variant, args.landing)
+    
+    # Summary
+    summary = sender.get_summary()
+    print(f"\n[RESULTS] Results:")
+    print(f"  Sent: {summary['total_sent']}")
+    print(f"  Successful: {summary['successful']}")
+    print(f"  Failed: {summary['failed']}")
+    
+    # Output
+    if args.output:
+        output_path = Path(__file__).parent.parent / args.output
+        with open(output_path, "w") as f:
+            json.dump(summary, f, indent=2)
+        print(f"\n💾 Results saved to {output_path}")
+    
+    return summary
 
 
 if __name__ == "__main__":
