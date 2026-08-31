@@ -71,3 +71,6 @@ config/secrets.enc/
 # Screenshot artifacts
 metrics_screenshot.png
 take_screenshot.py
+
+# GPU benchmark results (runtime-generated)
+scripts/gpu-benchmark-results.json
