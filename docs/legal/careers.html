@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Careers — FreeAI</title>
+  <meta name="description" content="Join the FreeAI team.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5c8bff; --bg: #060a18; --bg-elev-1: #0e1630;
+      --text-primary: #f1f6ff; --text-secondary: #c9d3e8; --text-muted: #8a98ba;
+      --border: rgba(150,170,255,.13); --font-sans: "Outfit", system-ui, sans-serif;
+    }
+    [data-theme="light"] {
+      --primary: #0241e3; --bg: #FFFFFF; --bg-elev-1: #FFFFFF;
+      --text-primary: #010258; --text-secondary: #2A3866; --text-muted: #8A98BA;
+      --border: #E2E8F4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-secondary); font-family: var(--font-sans); line-height: 1.6; }
+    a { color: var(--primary); text-decoration: none; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--bg-elev-1); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 24px; width: 100%; }
+    .nav-logo { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .nav-back { font-size: 13px; color: var(--text-muted); }
+    .nav-back:hover { color: var(--primary); text-decoration: none; }
+    .container { max-width: 800px; margin: 0 auto; padding: 100px 24px 60px; }
+    h1 { font-size: 32px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .subtitle { color: var(--text-muted); margin-bottom: 32px; }
+    .job-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+    .job-card h3 { font-size: 18px; color: var(--text-primary); margin-bottom: 8px; }
+    .job-card p { font-size: 14px; color: var(--text-secondary); margin: 0 0 16px; }
+    .tag { display: inline-block; padding: 4px 12px; background: var(--primary-soft); color: var(--primary); border-radius: 100px; font-size: 12px; margin-right: 8px; }
+    .footer { padding: 40px 24px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--text-muted); }
+    .footer a { margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">FreeAI</a>
+      <a href="index.html" class="nav-back">← Back to site</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Careers</h1>
+    <p class="subtitle">Join us in building the future of AI infrastructure</p>
+
+    <p>FreeAI is a community-driven, open-source project. We welcome contributors at all levels — from documentation writers to core engine developers.</p>
+
+    <div class="job-card">
+      <h3>Open Source Contributor</h3>
+      <p>No formal positions, but we always need help with:</p>
+      <p><span class="tag">Documentation</span><span class="tag">Skills</span><span class="tag">MCP Servers</span><span class="tag">Bug Fixes</span></p>
+    </div>
+
+    <div class="job-card">
+      <h3>How to Get Involved</h3>
+      <p>1. Star the <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" target="_blank">GitHub repo</a><br>
+         2. Check <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/issues" target="_blank">open issues</a> for beginner-friendly tasks<br>
+         3. Read our <a href="CONTRIBUTING.md">Contributing Guide</a><br>
+         4. Submit a PR!</p>
+    </div>
+
+    <div class="job-card">
+      <h3>Enterprise Support</h3>
+      <p>For organizations needing dedicated support, SLAs, or custom integrations, contact us at <a href="mailto:enterprise@projectzerodays.github.io">enterprise@projectzerodays.github.io</a>.</p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+    <p style="margin-top:16px">&copy; 2026 FreeAI · MIT License</p>
+  </footer>
+</body>
+</html>

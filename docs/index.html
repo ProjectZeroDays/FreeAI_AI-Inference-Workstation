@@ -1085,6 +1085,15 @@
     .cta-section::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 50% 80% at 20% 50%,rgba(92,139,255,.12) 0%,transparent 60%),radial-gradient(ellipse 50% 80% at 80% 50%,rgba(138,112,246,.10) 0%,transparent 60%); pointer-events:none; }
     .cta-section > * { position:relative; z-index:1; }
 
+    /* ── Chat Section Styles ── */
+    .chat-section { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .chat-partner { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.25); border-radius: 10px; font-size: 12px; }
+    .partner-code { font-weight: 600; color: #f1f6ff; font-family: var(--font-mono); }
+    .partner-status { color: #4ade80; }
+    .chat-messages { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding: 8px; background: rgba(255,255,255,.02); border-radius: 10px; }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+
     /* ── Messenger Panel Styles ── */
     .chat-tab-content { display: flex; flex-direction: column; gap: 10px; }
     .messenger-intro { text-align: center; padding: 12px 0; }
@@ -1180,6 +1189,144 @@
     .train-save-btn { width: 100%; padding: 10px; background: #0241e3; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; margin-top: 4px; }
     .train-save-btn:hover { background: #033ad1; }
     .train-save-status { font-size: 11px; color: #22c55e; text-align: center; margin-top: 8px; min-height: 16px; }
+
+    /* ── Applivery-style: Ask Agents ── */
+    .ask-section { padding: 80px 0 60px; background: var(--bg-canvas); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .ask-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+    .ask-title { font-size: clamp(28px,4vw,44px); font-weight: 700; letter-spacing: -.02em; color: var(--text-primary); margin-bottom: 8px; }
+    .ask-sub { font-size: 16px; color: var(--text-tertiary); margin-bottom: 40px; }
+    .prompt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+    .prompt-grid-secondary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .prompt-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; text-align: left; cursor: pointer; transition: all .2s; font-size: 14px; color: var(--text-secondary); line-height: 1.4; }
+    .prompt-card:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--text-primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .prompt-card svg { width: 14px; height: 14px; float: right; opacity: .4; margin-top: 2px; }
+    @media (max-width: 768px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr; } }
+
+    /* ── Applivery-style: Artifacts ── */
+    .artifacts-section { padding: 80px 0; background: var(--bg); }
+    [data-theme="dark"] .artifacts-section { background: var(--bg-canvas); }
+    .artifact-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
+    .artifact-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: all .25s; position: relative; overflow: hidden; }
+    .artifact-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
+    .artifact-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--border-strong); }
+    .artifact-card--exposure::before { background: linear-gradient(90deg, #f87171, #ef4444); }
+    .artifact-card--compare::before { background: linear-gradient(90deg, #5c8bff, #7c5cf0); }
+    .artifact-card--anomaly::before { background: linear-gradient(90deg, #fbbf24, #f97316); }
+    .artifact-card--receipt::before { background: linear-gradient(90deg, #4ade80, #22c55e); }
+    .artifact-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 4px 10px; border-radius: 20px; margin-bottom: 14px; }
+    .artifact-pill--red { background: rgba(248,113,113,.12); color: #f87171; }
+    .artifact-pill--blue { background: rgba(92,139,255,.12); color: #5c8bff; }
+    .artifact-pill--amber { background: rgba(251,191,36,.12); color: #fbbf24; }
+    .artifact-pill--green { background: rgba(74,222,128,.12); color: #4ade80; }
+    .artifact-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; line-height: 1.3; }
+    .artifact-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .artifact-row-metric { font-size: 13px; color: var(--text-secondary); padding: 8px 0; border-top: 1px solid var(--border); margin-top: 4px; }
+    .artifact-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .artifact-btn { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-elev-2); color: var(--text-secondary); cursor: pointer; transition: all .15s; text-decoration: none; }
+    .artifact-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+    .artifact-btn--primary { background: #0241e3; color: #fff; border-color: #0241e3; }
+    .artifact-btn--primary:hover { background: #0137c4; border-color: #0137c4; }
+    @media (max-width: 900px) { .artifact-row { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .artifact-row { grid-template-columns: 1fr; } }
+
+    /* ── Applivery-style: Problem ── */
+    .problem-section { padding: 80px 0; background: var(--bg-canvas); border-top: 1px solid var(--border); }
+    [data-theme="light"] .problem-section { background: var(--navy-50); }
+    .problem-title { font-size: clamp(28px,4vw,48px); font-weight: 700; letter-spacing: -.02em; text-align: center; color: var(--text-primary); margin-bottom: 48px; line-height: 1.2; }
+    .problem-title .grad { background: linear-gradient(108deg, #f87171 0%, #fbbf24 50%, #4ade80 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .problem-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 800px; margin: 0 auto 56px; }
+    .problem-item { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 22px; font-size: 15px; font-weight: 500; color: var(--text-secondary); transition: all .2s; }
+    .problem-item:hover { border-color: #f87171; color: #f87171; background: rgba(248,113,113,.06); }
+    .solution-callout { max-width: 720px; margin: 0 auto; text-align: center; background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 20px; padding: 40px; }
+    .solution-callout h3 { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; }
+    .solution-callout h3 .grad { background: var(--ai-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .solution-attrs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .solution-attr { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 24px; font-size: 14px; font-weight: 500; background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(92,139,255,.2); }
+    .solution-attr svg { width: 14px; height: 14px; }
+
+    /* ── Applivery-style: One Brain / Q&A ── */
+    .one-brain-section { padding: 80px 0; background: var(--bg); }
+    [data-theme="dark"] .one-brain-section { background: var(--bg-canvas); }
+    .qa-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 32px; max-width: 1000px; margin: 0 auto; align-items: start; }
+    .qa-questions { display: flex; flex-direction: column; gap: 10px; }
+    .qa-question { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; cursor: pointer; transition: all .2s; font-size: 14px; color: var(--text-secondary); text-align: left; width: 100%; }
+    .qa-question:hover, .qa-question.active { border-color: var(--primary); background: var(--primary-soft); color: var(--text-primary); }
+    .qa-question .qa-q-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--primary); margin-bottom: 4px; }
+    .qa-answer-panel { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 16px; padding: 28px; min-height: 300px; }
+    .qa-answer-panel h4 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
+    .qa-answer-panel p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+    .qa-artifact-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .qa-artifact-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: var(--bg-elev-3); color: var(--text-tertiary); border: 1px solid var(--border); }
+    @media (max-width: 768px) { .qa-layout { grid-template-columns: 1fr; } }
+
+    /* ── Deploy Paths ── */
+    .deploy-section { padding: 80px 0; background: var(--bg-canvas); border-top: 1px solid var(--border); }
+    [data-theme="light"] .deploy-section { background: var(--navy-50); }
+    .deploy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto 48px; }
+    .deploy-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: all .25s; }
+    .deploy-card:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .deploy-card-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .deploy-card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .deploy-card-icon--metal { background: rgba(92,139,255,.12); }
+    .deploy-card-icon--docker { background: rgba(34,197,94,.12); }
+    .deploy-card-icon--k8s { background: rgba(138,112,246,.12); }
+    .deploy-card-icon--cloud { background: rgba(251,191,36,.12); }
+    .deploy-card-icon--iso { background: rgba(6,182,212,.12); }
+    .deploy-card-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .deploy-card-body { padding: 20px 24px; }
+    .deploy-card-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+    .code-chrome { background: #0d1117; border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+    .code-chrome-bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-dot--red { background: #ff5f57; }
+    .code-dot--yellow { background: #febc2e; }
+    .code-dot--green { background: #28c840; }
+    .code-chrome-title { font-size: 11px; color: rgba(255,255,255,.4); margin-left: 8px; font-family: var(--font-mono); }
+    .code-chrome pre { padding: 12px 16px; margin: 0; font-size: 12px; font-family: var(--font-mono); color: #e6edf3; line-height: 1.6; overflow-x: auto; white-space: pre; }
+    .code-chrome code { font-family: inherit; }
+
+    /* ── Live ISO ── */
+    .iso-section { padding: 80px 0; background: var(--bg); }
+    [data-theme="dark"] .iso-section { background: var(--bg-canvas); }
+    .iso-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; max-width: 1200px; margin: 0 auto 40px; }
+    .iso-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: all .25s; }
+    .iso-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .iso-card-icon { font-size: 28px; margin-bottom: 14px; }
+    .iso-card h3 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .iso-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+    .iso-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--primary-soft); color: var(--primary); margin-right: 6px; margin-bottom: 6px; }
+
+    /* ── OS Support ── */
+    .os-section { padding: 60px 0 80px; background: var(--bg-canvas); border-top: 1px solid var(--border); }
+    [data-theme="light"] .os-section { background: var(--navy-50); }
+    .os-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1000px; margin: 0 auto; }
+    .os-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 14px; padding: 28px; transition: all .25s; }
+    .os-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+    .os-card-icon { font-size: 32px; margin-bottom: 14px; }
+    .os-card h3 { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .os-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+    .os-steps { list-style: none; padding: 0; margin: 0; }
+    .os-steps li { font-size: 12px; color: var(--text-tertiary); padding: 4px 0; padding-left: 16px; position: relative; }
+    .os-steps li::before { content: '→'; position: absolute; left: 0; color: var(--primary); }
+    @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
+
+    /* ── Updated CTA ── */
+    .cta-applivery { padding: 100px 0; background: linear-gradient(135deg, #0b1530 0%, #1a1f3a 50%, #0b1530 100%); text-align: center; position: relative; overflow: hidden; }
+    .cta-applivery::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,139,255,.08) 0%, transparent 70%); pointer-events: none; }
+    .cta-applivery > * { position: relative; z-index: 1; }
+    .cta-applivery h2 { font-size: clamp(28px,4vw,48px); font-weight: 700; color: #f1f6ff; margin-bottom: 16px; letter-spacing: -.02em; }
+    .cta-applivery p { font-size: 17px; color: rgba(241,246,255,.6); max-width: 500px; margin: 0 auto 36px; line-height: 1.6; }
+    .cta-applivery .btn--primary { background: #0241e3; color: #fff; box-shadow: 0 4px 20px rgba(2,65,227,.4); }
+    .cta-applivery .btn--primary:hover { background: #0137c4; transform: translateY(-1px); }
+    .cta-applivery .btn--ghost { background: rgba(255,255,255,.08); color: #f1f6ff; border: 1px solid rgba(255,255,255,.2); }
+    .cta-applivery .btn--ghost:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); }
+
+    /* ── Updated Footer ── */
+    .footer-tagline { font-size: 15px; color: rgba(241,246,255,.4); text-align: center; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+    .footer-badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); }
+    .footer-badge svg { width: 12px; height: 12px; }
   </style>
 </head>
 <body>
@@ -1192,14 +1339,15 @@
         <span class="nav-brand-sub">AI Intelligence</span>
       </a>
        <div class="nav-links">
-         <a href="#why-now" class="nav-link" data-i18n="nav-why-now">AI Intelligence</a>
-         <a href="#capabilities" class="nav-link" data-i18n="nav-capabilities">Features</a>
-         <a href="#agents" class="nav-link" data-i18n="nav-agents">Integrations</a>
-         <a href="#how-it-works" class="nav-link" data-i18n="nav-how-works">AI Agents</a>
-         <a href="deploy.html" class="nav-link" data-i18n="nav-deploy">Deploy</a>
-         <a href="#install" class="nav-link" data-i18n="nav-install">Install</a>
-         <a href="#faq" class="nav-link" data-i18n="nav-faq">FAQ</a>
-       </div>
+          <a href="#ask-agents" class="nav-link" data-i18n="nav-ask">Ask Agents</a>
+          <a href="#artifacts" class="nav-link" data-i18n="nav-artifacts">Artifacts</a>
+          <a href="#capabilities" class="nav-link" data-i18n="nav-capabilities">Features</a>
+          <a href="#agents" class="nav-link" data-i18n="nav-agents">Integrations</a>
+          <a href="#deploy" class="nav-link" data-i18n="nav-deploy">Deploy</a>
+          <a href="#live-iso" class="nav-link" data-i18n="nav-iso">Live ISO</a>
+          <a href="#install" class="nav-link" data-i18n="nav-install">Install</a>
+          <a href="#faq" class="nav-link" data-i18n="nav-faq">FAQ</a>
+        </div>
       <div class="nav-actions">
         <!-- Language dropdown -->
         <div class="lang-dropdown" id="langDropdown">
@@ -1243,15 +1391,17 @@
   <!-- ── Mobile Panel ── -->
   <div class="mobile-panel" id="mobilePanel" role="navigation" aria-label="Mobile">
     <nav class="mobile-nav">
-      <a href="#dashboards" class="mobile-link" data-i18n="nav-dashboards">Dashboards</a>
-      <a href="#skills" class="mobile-link" data-i18n="nav-skills">Skills</a>
-      <a href="#plugins" class="mobile-link" data-i18n="nav-plugins">Plugins</a>
-      <a href="#mcps" class="mobile-link" data-i18n="nav-mcps">MCPs</a>
-      <a href="#extensions" class="mobile-link" data-i18n="nav-extensions">Extensions</a>
-      <a href="#workflows" class="mobile-link" data-i18n="nav-workflows">Workflows</a>
-      <a href="deploy.html" class="mobile-link" data-i18n="nav-deploy">Deploy</a>
-      <a href="#install" class="mobile-link" data-i18n="nav-install">Install</a>
-      <a href="#faq" class="mobile-link" data-i18n="nav-faq">FAQ</a>
+      <a href="#ask-agents" class="mobile-link">Ask Agents</a>
+      <a href="#artifacts" class="mobile-link">Artifacts</a>
+      <a href="#dashboards-orig" class="mobile-link">Dashboards</a>
+      <a href="#skills" class="mobile-link">Skills</a>
+      <a href="#plugins" class="mobile-link">Plugins</a>
+      <a href="#mcps" class="mobile-link">MCPs</a>
+      <a href="#agents" class="mobile-link">Agents</a>
+      <a href="#deploy" class="mobile-link">Deploy</a>
+      <a href="#live-iso" class="mobile-link">Live ISO</a>
+      <a href="#install" class="mobile-link">Install</a>
+      <a href="#faq" class="mobile-link">FAQ</a>
     </nav>
     <div class="mobile-actions">
       <div class="lang-dropdown" id="langDropdownMobile">
@@ -1281,44 +1431,221 @@
     </div>
   </div>
 
-  <!-- ── Hero ── -->
-  <section class="hero" style="position:relative;overflow:hidden;">
+  <!-- ── Hero: Applivery-style two-column ── -->
+  <section class="hero" style="position:relative;overflow:hidden;padding:140px 0 100px;">
     <div class="hero-orb hero-orb--1"></div>
     <div class="hero-orb hero-orb--2"></div>
-    <div class="hero-orb hero-orb--3"></div>
-    <div class="container">
-      <div class="eyebrow">
-        <span class="dot" style="background:var(--success)"></span>
-        v1.2.0 — Autonomous SDLC Agents &amp; Aikido Security
+    <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;text-align:left;">
+      <div>
+        <div class="eyebrow" style="text-align:left;margin-bottom:20px;">
+          <span class="dot" style="background:var(--success)"></span>
+          v1.2.0 — Autonomous SDLC Agents &amp; Aikido Security
+        </div>
+        <h1 class="reveal is-visible" style="font-size:clamp(36px,5vw,58px);font-weight:700;line-height:1.1;letter-spacing:-.03em;color:var(--text-primary);margin-bottom:20px;" data-i18n="hero-tagline">The AI workstation<br><span class="grad">that thinks ahead.</span></h1>
+        <p class="reveal is-visible" style="font-size:18px;color:var(--text-secondary);max-width:480px;margin-bottom:32px;line-height:1.6;" data-i18n="hero-sub">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
+        <div class="hero-actions reveal is-visible" style="justify-content:flex-start;gap:12px;" style="transition-delay:.2s">
+          <a href="#install" class="btn btn--primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span data-i18n="hero-btn-install">Install FreeAI</span>
+          </a>
+          <a href="deploy.html" class="btn btn--secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"></path></svg>
+            <span data-i18n="hero-btn-docs">Deploy Guide</span>
+          </a>
+        </div>
+        <div class="hero-proof" style="margin-top:24px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+          ISO 27001 · GDPR-ready · DOD IL4 · FedRAMP-ready
+        </div>
       </div>
-      <h1 class="reveal is-visible" data-i18n="hero-tagline">The AI workstation<br><span class="grad">that thinks ahead.</span></h1>
-      <p class="reveal is-visible" style="transition-delay:.1s" data-i18n="hero-sub">FreeAI unifies GPU-optimized model serving, autonomous SDLC agents, security scanning, and builder tools — all in one self-hosted stack.</p>
-      <div class="hero-actions reveal is-visible" style="transition-delay:.2s">
-        <a href="#install" class="btn btn--primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span data-i18n="hero-btn-install">Install FreeAI</span>
-        </a>
-        <a href="docs/" class="btn btn--secondary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7a3 3 0 0 0-3-3z"></path></svg>
-          <span data-i18n="hero-btn-docs">Read Docs</span>
-        </a>
-      </div>
-      <div class="hero-stats reveal is-visible" style="transition-delay:.3s">
-        <div class="hero-stat"><div class="num">174</div><div class="label">Features</div></div>
-        <div class="hero-stat"><div class="num">55+</div><div class="label">Skills</div></div>
-        <div class="hero-stat"><div class="num">5</div><div class="label">MCP Servers</div></div>
-        <div class="hero-stat"><div class="num">24</div><div class="label">Agents</div></div>
-        <div class="hero-stat"><div class="num">22</div><div class="label">Integrations</div></div>
-        <div class="hero-stat"><div class="num">3</div><div class="label">Plugins</div></div>
-        <div class="hero-stat"><div class="num">6</div><div class="label">Extensions</div></div>
-        <div class="hero-stat"><div class="num">40+</div><div class="label">MCPs</div></div>
-        <div class="hero-stat"><div class="num">100+</div><div class="label">Settings</div></div>
+      <div class="hero-visual" style="position:relative;">
+        <div style="background:var(--bg-elev-1);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow-lg);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px #4ade80;"></div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);">FreeAI Agent Orchestrator</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--text-muted);">36 agents active</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:var(--bg-elev-2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">GPU Cluster</div>
+              <div style="font-size:24px;font-weight:700;color:#4ade80;">8× A100</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">94% utilization</div>
+            </div>
+            <div style="background:var(--bg-elev-2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Models Loaded</div>
+              <div style="font-size:24px;font-weight:700;color:#5c8bff;">12</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">llama, mistral, codex</div>
+            </div>
+            <div style="background:var(--bg-elev-2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Active Agents</div>
+              <div style="font-size:24px;font-weight:700;color:#fbbf24;">24</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">8 standing by</div>
+            </div>
+            <div style="background:var(--bg-elev-2);border-radius:10px;padding:14px;border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Security Score</div>
+              <div style="font-size:24px;font-weight:700;color:#4ade80;">A+</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">0 open alerts</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:12px;background:rgba(92,139,255,.06);border:1px solid rgba(92,139,255,.15);border-radius:10px;font-size:12px;color:var(--text-secondary);font-family:var(--font-mono);">
+            <span style="color:#4ade80;">✓</span> ORCH → RECON → EXPLOIT → POSTEX pipeline complete
+          </div>
+        </div>
+        <div style="position:absolute;top:-12px;right:-12px;background:var(--bg-elev-1);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:12px;color:var(--text-secondary);box-shadow:var(--shadow-md);">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;"></span>
+            Cloud providers synced
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Lead Dialog (Applivery-style) ── -->
-  
+  <!-- ── Ask Agents (Applivery-style prompt grid) ── -->
+  <section class="ask-section" id="ask-agents">
+    <div class="ask-inner">
+      <div class="eyebrow">Intelligence Agents</div>
+      <h2 class="ask-title">Ask FreeAI Agents</h2>
+      <p class="ask-sub">Anything you'd hand a senior sysadmin.</p>
+      <div class="prompt-grid">
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Show me current GPU utilization';},300);">
+          Show me current GPU utilization
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Generate a deployment plan for Ubuntu + NVIDIA GPU';},300);">
+          Generate deployment plan for Ubuntu + NVIDIA GPU
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Scan my repo for security issues';},300);">
+          Scan repo for security issues
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Draft a CI/CD pipeline for my microservice';},300);">
+          Draft CI/CD pipeline for microservice
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Compare bare metal vs Docker vs Kubernetes deployment';},300);">
+          Compare bare metal vs Docker vs Kubernetes
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='What CVEs affect my current setup?';},300);">
+          What CVEs affect my current setup?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="prompt-grid-secondary">
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Build a FastAPI notes service with auth and tests';},300);">
+          Build a FastAPI notes service with auth and tests
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Show me how to build the Live ISO';},300);">
+          Show me how to build the Live ISO
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="prompt-card" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Explain the FreeAI architecture';},300);">
+          Explain the FreeAI architecture
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Artifacts (Applivery-style) ── -->
+  <section class="artifacts-section" id="artifacts">
+    <div class="section-head reveal is-visible">
+      <div class="eyebrow">Every answer, an artifact.</div>
+      <h2 class="section-title">Reports, comparisons, insights —<br><span class="grad">and a receipt for every action.</span></h2>
+      <p class="section-sub">From CVE exposure reports to deploy receipts, every agent output is actionable and auditable.</p>
+    </div>
+    <div class="artifact-row">
+      <div class="artifact-card artifact-card--exposure reveal is-visible">
+        <div class="artifact-pill artifact-pill--red">⚠ Exposure report</div>
+        <div class="artifact-title">CVE-2024-3094 — Fleet exposure</div>
+        <div class="artifact-meta">6 agents consulted · just now</div>
+        <div class="artifact-row-metric">17 CVEs tracked across all primitives</div>
+        <div class="artifact-row-metric">0 open CodeQL alerts · 281 fixed</div>
+        <div class="artifact-actions">
+          <a href="#security" class="artifact-btn artifact-btn--primary">View report</a>
+          <a href="deploy.html" class="artifact-btn">Remediate</a>
+        </div>
+      </div>
+      <div class="artifact-card artifact-card--compare reveal is-visible" style="transition-delay:.1s">
+        <div class="artifact-pill artifact-pill--blue">◈ Policy compare</div>
+        <div class="artifact-title">Bare Metal vs Docker vs K8s</div>
+        <div class="artifact-meta">DEPLOYMENT.md · v1.2.0</div>
+        <div class="artifact-row-metric">3 deployment paths compared</div>
+        <div class="artifact-row-metric">GPU passthrough: Metal ✓ / Docker △ / K8s ✓</div>
+        <div class="artifact-actions">
+          <a href="deploy.html" class="artifact-btn artifact-btn--primary">Open comparison</a>
+          <a href="#install" class="artifact-btn">Apply plan</a>
+        </div>
+      </div>
+      <div class="artifact-card artifact-card--anomaly reveal is-visible" style="transition-delay:.2s">
+        <div class="artifact-pill artifact-pill--amber">◉ Anomaly detected</div>
+        <div class="artifact-title">GPU utilization spike — node-3</div>
+        <div class="artifact-meta">today · 14:32 UTC</div>
+        <div class="artifact-row-metric">94% → 99% in 5 min · 4× baseline</div>
+        <div class="artifact-row-metric">Agent ORCH flagged · contained</div>
+        <div class="artifact-actions">
+          <a href="#agents" class="artifact-btn artifact-btn--primary">Investigate</a>
+          <a href="#security" class="artifact-btn">Alert rule</a>
+        </div>
+      </div>
+      <div class="artifact-card artifact-card--receipt reveal is-visible" style="transition-delay:.3s">
+        <div class="artifact-pill artifact-pill--green">✓ Action receipt</div>
+        <div class="artifact-title">Deploy pipeline #241 — completed</div>
+        <div class="artifact-meta">approved · logged 02:14 · reversible</div>
+        <div class="artifact-row-metric">✓ 24/24 devices patched</div>
+        <div class="artifact-row-metric">✓ 0 regressions detected</div>
+        <div class="artifact-actions">
+          <a href="#workflows" class="artifact-btn artifact-btn--primary">View in history</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Problem Framing (Applivery-style) ── -->
+  <section class="problem-section" id="why-now">
+    <div class="container">
+      <h2 class="problem-title reveal is-visible">The workplace became digital.<br><span class="grad">Operations stayed manual.</span></h2>
+      <div class="problem-grid reveal is-visible">
+        <div class="problem-item">Too many tools</div>
+        <div class="problem-item">Too many policies</div>
+        <div class="problem-item">Too many manual workflows</div>
+        <div class="problem-item">Too much reactive IT</div>
+        <div class="problem-item">Too little operational intelligence</div>
+      </div>
+      <div class="solution-callout reveal is-visible">
+        <h3>The next step: the <span class="grad">Autonomous Workstation.</span></h3>
+        <div class="solution-attrs">
+          <span class="solution-attr">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Context-aware
+          </span>
+          <span class="solution-attr">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Policy-driven
+          </span>
+          <span class="solution-attr">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4c0 2-2 4-4 8-2-4-4-6-4-8a4 4 0 0 1 4-4z"/></svg>
+            AI-assisted
+          </span>
+          <span class="solution-attr">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Security-integrated
+          </span>
+          <span class="solution-attr">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Developer-centric
+          </span>
+          <span class="solution-attr">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            Continuously optimized
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ── Provider Logo Marquee ── -->
   <div class="logo-marquee-wrap">
@@ -1340,8 +1667,278 @@
     </div>
   </div>
 
+  <!-- ── One Brain: Interactive Q&A (Applivery-style) ── -->
+  <section class="one-brain-section" id="capabilities">
+    <div class="section-head reveal is-visible">
+      <div class="eyebrow">One brain. Your whole fleet.</div>
+      <h2 class="section-title">It sees. It simulates. It acts.<br><span class="grad">You approve.</span></h2>
+      <p class="section-sub">Ask in plain language. Get answers with charts, tables, and actions — every response is an artifact you can act on.</p>
+    </div>
+    <div class="qa-layout reveal is-visible">
+      <div class="qa-questions">
+        <button class="qa-question active" data-q="1">
+          <div class="qa-q-label">Query</div>
+          Which models are non-compliant right now?
+        </button>
+        <button class="qa-question" data-q="2">
+          <div class="qa-q-label">Query</div>
+          Show me current GPU utilization
+        </button>
+        <button class="qa-question" data-q="3">
+          <div class="qa-q-label">Query</div>
+          Draft a CI/CD pipeline for microservice X
+        </button>
+        <button class="qa-question" data-q="4">
+          <div class="qa-q-label">Query</div>
+          What CVEs affect my current setup?
+        </button>
+        <button class="qa-question" data-q="5">
+          <div class="qa-q-label">Query</div>
+          Compare bare metal vs Docker vs K8s deployment
+        </button>
+      </div>
+      <div class="qa-answer-panel" id="qaAnswerPanel">
+        <h4>60 models scanned · 12 non-compliant</h4>
+        <p>Models failing policy checks are mostly outdated versions without signed attestations. 8 can be auto-updated; 4 require manual review due to custom fine-tuning.</p>
+        <div style="background:var(--bg-elev-2);border-radius:10px;padding:14px;margin:12px 0;font-size:13px;color:var(--text-secondary);font-family:var(--font-mono);">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
+            <span>llama-3.1-70b</span><span style="color:#f87171;">✗ unsigned</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
+            <span>mistral-7b-instruct</span><span style="color:#fbbf24;">△ outdated</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;">
+            <span>codestral-22b</span><span style="color:#4ade80;">✓ compliant</span>
+          </div>
+        </div>
+        <div class="qa-artifact-row">
+          <span class="qa-artifact-tag">12 non-compliant</span>
+          <span class="qa-artifact-tag">8 auto-fixable</span>
+          <span class="qa-artifact-tag">4 need review</span>
+        </div>
+        <div class="artifact-actions" style="margin-top:16px;">
+          <button class="artifact-btn artifact-btn--primary" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Fix the non-compliant models';},300);">Fix all</button>
+          <button class="artifact-btn" onclick="document.getElementById('chatLauncher').click();setTimeout(()=>{document.getElementById('chatInputField').value='Show me the compliance report';},300);">View report</button>
+          <button class="artifact-btn">Alert rule</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Deploy Paths ── -->
+  <section class="deploy-section" id="deploy">
+    <div class="section-head reveal is-visible">
+      <div class="eyebrow">Deploy</div>
+      <h2 class="section-title">Choose your path.</h2>
+      <p class="section-sub">Local, Docker, or cloud — same stack, different runtime.</p>
+    </div>
+    <div class="deploy-grid">
+      <div class="deploy-card reveal is-visible">
+        <div class="deploy-card-header">
+          <div class="deploy-card-icon deploy-card-icon--metal">🐧</div>
+          <div class="deploy-card-title">Bare Metal</div>
+        </div>
+        <div class="deploy-card-body">
+          <p>Auto-detects GPU (4090/Z790), installs drivers, CUDA, Docker, and the full stack. Production-ready systemd service.</p>
+          <div class="code-chrome">
+            <div class="code-chrome-bar">
+              <span class="code-dot code-dot--red"></span>
+              <span class="code-dot code-dot--yellow"></span>
+              <span class="code-dot code-dot--green"></span>
+              <span class="code-chrome-title">install.sh</span>
+            </div>
+            <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
+sudo ./hardware/install-stack.sh
+bash models/auto-download-models.sh</code></pre>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);">Dashboard: <a href="http://localhost:8030" style="color:var(--primary);">localhost:8030</a> · Agent API: <a href="http://localhost:8050" style="color:var(--primary);">localhost:8050</a></p>
+        </div>
+      </div>
+      <div class="deploy-card reveal is-visible" style="transition-delay:.1s">
+        <div class="deploy-card-header">
+          <div class="deploy-card-icon deploy-card-icon--docker">🐳</div>
+          <div class="deploy-card-title">Docker Compose</div>
+        </div>
+        <div class="deploy-card-body">
+          <p>Any host with NVIDIA Docker. Split or all-in-one profiles. Zero host dependency management.</p>
+          <div class="code-chrome">
+            <div class="code-chrome-bar">
+              <span class="code-dot code-dot--red"></span>
+              <span class="code-dot code-dot--yellow"></span>
+              <span class="code-dot code-dot--green"></span>
+              <span class="code-chrome-title">docker-compose.yml</span>
+            </div>
+            <pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
+docker compose --profile allinone up -d
+# Open http://localhost:8030</code></pre>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);">Profiles: <code>allinone</code>, <code>gpu</code>, <code>cpu</code>, <code>agents</code></p>
+        </div>
+      </div>
+      <div class="deploy-card reveal is-visible" style="transition-delay:.2s">
+        <div class="deploy-card-header">
+          <div class="deploy-card-icon deploy-card-icon--k8s">☸</div>
+          <div class="deploy-card-title">Kubernetes</div>
+        </div>
+        <div class="deploy-card-body">
+          <p>Production-grade with GPU operator, autoscaling, and service mesh. Full manifest in <code>k8s/freeai-deployment.yaml</code>.</p>
+          <div class="code-chrome">
+            <div class="code-chrome-bar">
+              <span class="code-dot code-dot--red"></span>
+              <span class="code-dot code-dot--yellow"></span>
+              <span class="code-dot code-dot--green"></span>
+              <span class="code-chrome-title">kubectl apply</span>
+            </div>
+            <pre><code>kubectl apply -f k8s/freeai-deployment.yaml
+# Services: 8030 (dashboard), 8050 (agent API)</code></pre>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);">GPU operator · HPA · PVC for models</p>
+        </div>
+      </div>
+      <div class="deploy-card reveal is-visible" style="transition-delay:.3s">
+        <div class="deploy-card-header">
+          <div class="deploy-card-icon deploy-card-icon--cloud">☁️</div>
+          <div class="deploy-card-title">Cloud &amp; GPU Rental</div>
+        </div>
+        <div class="deploy-card-body">
+          <p>Salad, Vast.ai, RunPod, Hetzner, Hostinger, DigitalOcean. Same stack, pre-configured templates.</p>
+          <div class="code-chrome">
+            <div class="code-chrome-bar">
+              <span class="code-dot code-dot--red"></span>
+              <span class="code-dot code-dot--yellow"></span>
+              <span class="code-dot code-dot--green"></span>
+              <span class="code-chrome-title">cloud.sh</span>
+            </div>
+            <pre><code>docker pull ghcr.io/freeai/freeai:latest
+# or use cloud provider templates</code></pre>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);">From $0.20/hr on Salad GPU clusters</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Live ISO Variants ── -->
+  <section class="iso-section" id="live-iso">
+    <div class="section-head reveal is-visible">
+      <div class="eyebrow">Live ISO</div>
+      <h2 class="section-title">Boot. Test. Deploy.<br><span class="grad">No install required.</span></h2>
+      <p class="section-sub">FreeAIOS — a bootable Live ISO with FreeAI tools pre-installed. Try it before you commit.</p>
+    </div>
+    <div class="iso-grid">
+      <div class="iso-card reveal is-visible">
+        <div class="iso-card-icon">🐧</div>
+        <h3>FreeAI Ubuntu XFCE Live</h3>
+        <p>Default variant. Full XFCE desktop, FreeAI stack pre-loaded, NVIDIA driver ready. Best for general use.</p>
+        <div>
+          <span class="iso-tag">24.04 LTS</span>
+          <span class="iso-tag">XFCE</span>
+          <span class="iso-tag">NVIDIA ready</span>
+        </div>
+      </div>
+      <div class="iso-card reveal is-visible" style="transition-delay:.1s">
+        <div class="iso-card-icon">⚔</div>
+        <h3>FreeAI Kali Rolling Live</h3>
+        <p>Penetration testing focus. Kali tools + FreeAI agents for security assessment on any target machine.</p>
+        <div>
+          <span class="iso-tag">Rolling</span>
+          <span class="iso-tag">XFCE</span>
+          <span class="iso-tag"> pentest</span>
+        </div>
+      </div>
+      <div class="iso-card reveal is-visible" style="transition-delay:.2s">
+        <div class="iso-card-icon">👻</div>
+        <h3>FreeAI Kodachi Live</h3>
+        <p>Privacy-first distro. Encrypted workspace, anonymous browsing, FreeAI security agents pre-configured.</p>
+        <div>
+          <span class="iso-tag">Debian-based</span>
+          <span class="iso-tag">privacy</span>
+          <span class="iso-tag">encrypted</span>
+        </div>
+      </div>
+      <div class="iso-card reveal is-visible" style="transition-delay:.3s">
+        <div class="iso-card-icon">❄️</div>
+        <h3>FreeAI NixOS Minimum Live</h3>
+        <p>Reproducible infrastructure. Declarative config, atomic rolls back, ideal for CI/CD environments.</p>
+        <div>
+          <span class="iso-tag">NixOS</span>
+          <span class="iso-tag">declarative</span>
+          <span class="iso-tag">reproducible</span>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="max-width:800px;">
+      <div class="solution-callout reveal is-visible" style="margin-top:24px;">
+        <h3>Build your own ISO</h3>
+        <div class="code-chrome" style="margin-top:16px;">
+          <div class="code-chrome-bar">
+            <span class="code-dot code-dot--red"></span>
+            <span class="code-dot code-dot--yellow"></span>
+            <span class="code-dot code-dot--green"></span>
+            <span class="code-chrome-title">build-live.sh</span>
+          </div>
+          <pre><code># On an Ubuntu host:
+sudo apt-get install -y xorriso isolinux
+UBUNTU_ISO=ubuntu-24.04.2-live-server-amd64.iso ./live/build-live.sh
+
+# Optional: bake repo into ISO for offline install
+REPO_TARBALL=../dist/unified-ai-stack-v1.2.0.tar.gz ./live/build-live.sh
+
+# Result: freeaios-amd64.iso — boot from USB</code></pre>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:12px;">Boot menu: Try Live · Install to disk · Rescue shell · Memory test</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── OS Support Matrix ── -->
+  <section class="os-section" id="os-support">
+    <div class="section-head reveal is-visible">
+      <div class="eyebrow">Platform Support</div>
+      <h2 class="section-title">Works everywhere you do.</h2>
+      <p class="section-sub">Linux, macOS, and Windows — each with its recommended deployment path.</p>
+    </div>
+    <div class="os-grid">
+      <div class="os-card reveal is-visible">
+        <div class="os-card-icon">🐧</div>
+        <h3>Linux</h3>
+        <p>Native support. Ubuntu, Debian, Kali, Kodachi, NixOS. GPU acceleration via CUDA / ROCm.</p>
+        <ul class="os-steps">
+          <li>Clone repo</li>
+          <li>Run <code>sudo ./hardware/install-stack.sh</code></li>
+          <li>Auto-detects GPU, installs drivers</li>
+          <li>Dashboard at <code>:8030</code></li>
+        </ul>
+      </div>
+      <div class="os-card reveal is-visible" style="transition-delay:.1s">
+        <div class="os-card-icon">🍎</div>
+        <h3>macOS</h3>
+        <p>Via Docker Desktop or Colima. CPU mode natively; GPU offload to Linux hosts or cloud GPUs.</p>
+        <ul class="os-steps">
+          <li>Install Docker Desktop</li>
+          <li>Clone repo</li>
+          <li><code>docker compose --profile allinone up -d</code></li>
+          <li>Dashboard at <code>:8030</code></li>
+        </ul>
+      </div>
+      <div class="os-card reveal is-visible" style="transition-delay:.2s">
+        <div class="os-card-icon">🪟</div>
+        <h3>Windows 10/11</h3>
+        <p>via WSL2 + Docker Desktop, or native Docker with NVIDIA drivers. Full GPU passthrough in WSL2.</p>
+        <ul class="os-steps">
+          <li>Enable WSL2, install Ubuntu</li>
+          <li>Install Docker in WSL2</li>
+          <li>Clone repo inside Ubuntu</li>
+          <li><code>docker compose --profile allinone up -d</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- ── Dashboards ── -->
-  <section class="section dot-grid" id="dashboards">
+  <section class="section dot-grid" id="dashboards-orig">
     <div class="section-head reveal is-visible">
       <div class="eyebrow">Dashboards</div>
       <h2 class="section-title">Every operational view,<br><span class="grad">one dashboard.</span></h2>
@@ -1791,14 +2388,15 @@ docker compose --profile allinone up -d
   </section>
 
   <!-- ── CTA ── -->
-  <section class="cta-section">
+  <section class="cta-applivery" id="cta-bottom">
     <div class="container">
-      <h2 data-i18n="cta-title">Ready to build with AI?</h2>
-      <p data-i18n="cta-sub">Join developers using FreeAI to build, secure, and scale AI applications — on their own hardware.</p>
-      <div class="hero-actions">
-        <a href="#install" class="btn btn--primary" data-i18n="cta-btn-primary">Get Started Free</a>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--ghost" target="_blank" data-i18n="cta-btn-secondary">Star on GitHub</a>
+      <h2>Ready for an autonomous workstation?</h2>
+      <p>Deploy FreeAI in minutes. Local LLMs, autonomous agents, full SDLC automation — on your hardware, your terms.</p>
+      <div class="hero-actions" style="justify-content:center;">
+        <a href="#install" class="btn btn--primary">Deploy FreeAI</a>
+        <a href="deploy.html" class="btn btn--ghost">Open Deploy Guide</a>
       </div>
+      <p style="margin-top:20px;font-size:13px;color:rgba(241,246,255,.35);">Fully integrated · works with the stack you already run</p>
     </div>
   </section>
 
@@ -1927,34 +2525,37 @@ docker compose --profile allinone up -d
 
   <footer class="footer">
     <div class="footer-inner">
+      <p class="footer-tagline">Unified AI inference workstation with a brain. Manage, secure, and automate every model — automatically.</p>
       <div class="footer-grid">
         <!-- Brand column -->
         <div class="footer-brand-area">
           <div class="footer-brand">FreeAI</div>
-          <p class="footer-tagline">Unified AI inference workstation. Manage, secure, and automate every model — automatically.</p>
-          <a href="deploy.html" class="footer-cta-btn">
-            Get FreeAI
+          <a href="#install" class="footer-cta-btn">
+            Deploy FreeAI
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
           </a>
         </div>
         <!-- On this page -->
         <div class="footer-col">
-          <h2>On this page</h2>
+          <h2>Product</h2>
           <ul class="footer-links">
-            <li><a href="#why-now">Why now</a></li>
-            <li><a href="#capabilities">Capabilities</a></li>
-            <li><a href="#agents">Agents</a></li>
-            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#ask-agents">Ask Agents</a></li>
+            <li><a href="#artifacts">Artifacts</a></li>
+            <li><a href="#capabilities">Features</a></li>
+            <li><a href="#agents">Integrations</a></li>
+            <li><a href="#deploy">Deploy</a></li>
+            <li><a href="#live-iso">Live ISO</a></li>
           </ul>
         </div>
-        <!-- Community -->
+        <!-- Resources -->
         <div class="footer-col">
-          <h2>Community</h2>
+          <h2>Resources</h2>
           <ul class="footer-links">
-            <li><a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation/discussions" target="_blank">Forum</a></li>
+            <li><a href="deploy.html">Deploy Guide</a></li>
+            <li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" target="_blank">GitHub</a></li>
+            <li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/discussions" target="_blank">Forum</a></li>
             <li><a href="pages/about.html">About</a></li>
             <li><a href="legal/contact.html">Contact</a></li>
-            <li><a href="https://github.com/ProjectZeroDays" target="_blank">GitHub Org</a></li>
           </ul>
         </div>
         <!-- Legal -->
@@ -1968,6 +2569,32 @@ docker compose --profile allinone up -d
             <li><a href="legal/careers.html">Careers</a></li>
           </ul>
         </div>
+      </div>
+      <div class="footer-badges">
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          ISO 27001
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          GDPR-ready
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          DOD IL4
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          FedRAMP-ready
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          NIST 800-53
+        </span>
+        <span class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          CMMC Level 2 &amp; 3
+        </span>
       </div>
       <!-- Bottom bar -->
       <div class="footer-bottom">
@@ -2422,12 +3049,117 @@ docker compose --profile allinone up -d
       return code;
     }
 
+    // ── Mock Backend for Messenger ──
+    const mockBackend = {
+      codes: new Map(),       // code -> { owner, timestamp, active }
+      connections: new Map(), // code -> [{ from, to, status, messages }]
+      myCode: null,
+      currentChat: null,
+      
+      registerCode(code) {
+        this.codes.set(code, { owner: 'You', timestamp: Date.now(), active: true });
+        this.connections.set(code, { requests: [], chats: [] });
+      },
+      
+      unregisterCode(code) {
+        this.codes.delete(code);
+        this.connections.delete(code);
+      },
+      
+      hasCode(code) {
+        return this.codes.has(code) && this.codes.get(code).active;
+      },
+      
+      getCodeOwner(code) {
+        const c = this.codes.get(code);
+        return c ? c.owner : null;
+      },
+      
+      sendRequest(fromCode, toCode) {
+        if (!this.hasCode(toCode)) return { success: false, error: 'Code not found or expired' };
+        const conn = this.connections.get(toCode);
+        conn.requests.push({ from: fromCode, status: 'pending', timestamp: Date.now() });
+        return { success: true, status: 'pending' };
+      },
+      
+      acceptRequest(fromCode, toCode) {
+        const conn = this.connections.get(toCode);
+        const req = conn.requests.find(r => r.from === fromCode && r.status === 'pending');
+        if (req) {
+          req.status = 'accepted';
+          conn.chats.push({ participants: [fromCode, toCode], messages: [], created: Date.now() });
+          return { success: true };
+        }
+        return { success: false, error: 'No pending request' };
+      },
+      
+      rejectRequest(fromCode, toCode) {
+        const conn = this.connections.get(toCode);
+        const req = conn.requests.find(r => r.from === fromCode && r.status === 'pending');
+        if (req) {
+          req.status = 'rejected';
+          return { success: true };
+        }
+        return { success: false };
+      },
+      
+      sendMessage(fromCode, toCode, message) {
+        const conn = this.connections.get(toCode);
+        const chat = conn.chats.find(c => c.participants.includes(fromCode) && c.participants.includes(toCode));
+        if (chat) {
+          chat.messages.push({ from: fromCode, text: message, time: Date.now() });
+          return { success: true };
+        }
+        return { success: false };
+      },
+      
+      getPendingRequests(toCode) {
+        const conn = this.connections.get(toCode);
+        return conn ? conn.requests.filter(r => r.status === 'pending') : [];
+      },
+      
+      getChats(fromCode) {
+        const result = [];
+        this.connections.forEach((conn, code) => {
+          conn.chats.forEach(chat => {
+            if (chat.participants.includes(fromCode)) {
+              result.push({ code, chat });
+            }
+          });
+        });
+        return result;
+      }
+    };
+    
+    // Expose to window for testing
+    window.mockBackend = mockBackend;
+
+    let myConnectCode = null;
+
+    function generateConnectCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = 'FREEAI-';
+      for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      code += '-';
+      for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
     if (generateCodeBtn) {
       generateCodeBtn.addEventListener('click', () => {
+        // Deactivate previous code if any
+        if (myConnectCode) {
+          mockBackend.unregisterCode(myConnectCode);
+        }
+        
+        const newCode = generateConnectCode();
+        mockBackend.registerCode(newCode);
+        myConnectCode = newCode;
+        
         codeDisplay.style.display = 'block';
         codeInputArea.style.display = 'none';
-        generatedCode.textContent = generateConnectCode();
-        messengerStatus.innerHTML = '<div class="status-dot" style="background:#fbbf24;"></div><span>Code ready — share with your team</span>';
+        generatedCode.textContent = newCode;
+        messengerStatus.innerHTML = '<div class="status-dot" style="background:#4ade80;"></div><span>Active — sharing code</span>';
       });
     }
 
@@ -2452,17 +3184,113 @@ docker compose --profile allinone up -d
     if (joinBtn) {
       joinBtn.addEventListener('click', () => {
         const code = joinCodeInput.value.trim().toUpperCase();
-        if (code.startsWith('FREEAI-') && code.length >= 12) {
-          messengerStatus.innerHTML = '<div class="status-dot" style="background:#4ade80;"></div><span>Connecting to ' + code + '...</span>';
-          setTimeout(() => {
-            messengerStatus.innerHTML = '<div class="status-dot"></div><span>Request sent — waiting for acceptance</span>';
+        
+        if (!code.startsWith('FREEAI-') || code.length < 12) {
+          messengerStatus.innerHTML = '<div class="status-dot" style="background:#f87171;"></div><span>Invalid code format</span>';
+          return;
+        }
+        
+        if (!mockBackend.hasCode(code)) {
+          messengerStatus.innerHTML = '<div class="status-dot" style="background:#f87171;"></div><span>Code not found — may have expired</span>';
+          return;
+        }
+        
+        // Send connection request
+        messengerStatus.innerHTML = '<div class="status-dot" style="background:#fbbf24;"></div><span>Sending request to ' + code + '...</span>';
+        
+        setTimeout(() => {
+          const result = mockBackend.sendRequest('You', code);
+          
+          if (result.success) {
+            messengerStatus.innerHTML = '<div class="status-dot" style="background:#fbbf24;"></div><span>Request sent — waiting for ' + code + ' to accept</span>';
             joinCodeInput.value = '';
             codeInputArea.style.display = 'none';
-          }, 1500);
-        } else {
-          messengerStatus.innerHTML = '<div class="status-dot" style="background:#f87171;"></div><span>Invalid code format</span>';
-        }
+            
+            // Simulate acceptance after 3 seconds
+            setTimeout(() => {
+              mockBackend.acceptRequest('You', code);
+              messengerStatus.innerHTML = '<div class="status-dot" style="background:#4ade80;"></div><span>Connected! Start chatting with ' + code + '</span>';
+              
+              // Add chat input
+              setTimeout(() => showChatInterface(code), 500);
+            }, 3000);
+          }
+        }, 1000);
       });
+    }
+
+    function showChatInterface(partnerCode) {
+      const chatBody = document.getElementById('chatPanelBody');
+      const chatInputWrap = document.querySelector('.chat-panel-input');
+      
+      // Add chat area
+      const chatSection = document.createElement('div');
+      chatSection.className = 'chat-section';
+      chatSection.innerHTML = `
+        <div class="chat-partner">
+          <span class="partner-code">${partnerCode}</span>
+          <span class="partner-status">● Connected</span>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+      `;
+      
+      // Insert before input
+      chatBody.appendChild(chatSection);
+      
+      // Update input area
+      chatInputWrap.innerHTML = `
+        <div class="chat-input-wrap">
+          <textarea class="chat-input-field" id="chatMsgInput" rows="2" placeholder="Type a message..."></textarea>
+          <button class="chat-send-btn" id="chatMsgSend">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 11 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+        <div class="chat-privacy">Message encrypted end-to-end</div>
+      `;
+      
+      const msgInput = document.getElementById('chatMsgInput');
+      const msgSend = document.getElementById('chatMsgSend');
+      const chatMessages = document.getElementById('chatMessages');
+      
+      msgSend.addEventListener('click', sendChatMessage);
+      msgInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+      });
+      
+      function sendChatMessage() {
+        const text = msgInput.value.trim();
+        if (!text) return;
+        
+        // Add to messages
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-msg user';
+        msgDiv.innerHTML = `<div class="chat-msg-bubble" style="background:#0241e3;border-top-right-radius:3px;">${escHtml(text)}</div>`;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        mockBackend.sendMessage('You', partnerCode, text);
+        
+        msgInput.value = '';
+        
+        // Simulate reply after 1-2 seconds
+        setTimeout(() => {
+          const replies = [
+            'Got it! Thanks for connecting.',
+            'Great to meet you on FreeAI!',
+            'What kind of projects are you working on?',
+            'Can you share your setup details?',
+            'Nice! I am running FreeAI on Ubuntu with vLLM.',
+            'Let us know if you need help with deployment!'
+          ];
+          const reply = replies[Math.floor(Math.random() * replies.length)];
+          
+          const replyDiv = document.createElement('div');
+          replyDiv.className = 'chat-msg';
+          replyDiv.innerHTML = `<div class="chat-msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg></div><div class="chat-msg-bubble">${reply}</div>`;
+          chatMessages.appendChild(replyDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000 + Math.random() * 1000);
+      }
     }
 
     chatLauncher.addEventListener('click', openChat);
@@ -2655,6 +3483,90 @@ docker compose --profile allinone up -d
         if (sources.app_source) parts.push('You can reference the FreeAI application (dashboard, routers, services) to provide accurate answers about the running system.');
         return parts.join('\n');
       }
+
+    // ── One Brain Q&A interactivity ──
+    const qaAnswers = {
+      1: {
+        title: '60 models scanned · 12 non-compliant',
+        text: 'Models failing policy checks are mostly outdated versions without signed attestations. 8 can be auto-updated; 4 require manual review due to custom fine-tuning.',
+        code: [
+          ['llama-3.1-70b', '✗ unsigned', '#f87171'],
+          ['mistral-7b-instruct', '△ outdated', '#fbbf24'],
+          ['codestral-22b', '✓ compliant', '#4ade80']
+        ],
+        tags: ['12 non-compliant', '8 auto-fixable', '4 need review'],
+        actions: ['Fix all', 'View report', 'Alert rule']
+      },
+      2: {
+        title: 'GPU Utilization — Real-time',
+        text: '8× NVIDIA A100 instances. Current utilization at 94% across the cluster. Node-3 spiked to 99% at 14:32 UTC — agent ORCH flagged and contained the anomaly.',
+        code: [
+          ['A100 #1', '92%', '#4ade80'],
+          ['A100 #2', '88%', '#4ade80'],
+          ['A100 #3', '99%', '#fbbf24']
+        ],
+        tags: ['8 GPUs', '94% avg', '1 anomaly'],
+        actions: ['View dashboard', 'Scale up', 'Alert rule']
+      },
+      3: {
+        title: 'CI/CD Pipeline — Drafted',
+        text: 'Generated a production-ready pipeline for microservice X: build → test → security scan → deploy. Includes Semgrep, Bandit, Trivy gates with auto-patch on failure.',
+        code: [
+          ['build', '✓ passed', '#4ade80'],
+          ['test', '✓ 14/14 passed', '#4ade80'],
+          ['security', '△ 2 low CVEs', '#fbbf24']
+        ],
+        tags: ['7 stages', 'auto-patch on', '92% coverage'],
+        actions: ['Review pipeline', 'Deploy', 'Modify gates']
+      },
+      4: {
+        title: 'CVE Exposure Report — Fleet-wide',
+        text: '17 CVEs tracked across all primitives. CVE-2024-3094 (XZ Utils backdoor, CVSS 10.0) and CVE-2023-36884 (Print Spooler RCE) are the highest priority. 0 open CodeQL alerts.',
+        code: [
+          ['CVE-2024-3094', 'CVSS 10.0', '#f87171'],
+          ['CVE-2023-36884', 'CVSS 8.8', '#f97316'],
+          ['CVE-2024-21762', 'CVSS 8.7', '#f97316']
+        ],
+        tags: ['17 tracked', '0 open alerts', '281 fixed'],
+        actions: ['Full report', 'Patch all', 'View details']
+      },
+      5: {
+        title: 'Deployment Comparison — 3 Paths',
+        text: 'Bare metal offers best GPU performance with auto-driver detection. Docker provides portability with split profiles. Kubernetes adds autoscaling and service mesh for production fleets.',
+        code: [
+          ['Bare Metal', 'best perf', '#4ade80'],
+          ['Docker', 'most portable', '#5c8bff'],
+          ['Kubernetes', 'auto-scale', '#8a70f6']
+        ],
+        tags: ['3 paths', 'same stack', 'choose freely'],
+        actions: ['Bare metal guide', 'Docker guide', 'K8s guide']
+      }
+    };
+
+    document.querySelectorAll('.qa-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.qa-question').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const qId = btn.dataset.q;
+        const data = qaAnswers[qId];
+        if (!data) return;
+        const panel = document.getElementById('qaAnswerPanel');
+        let codeHtml = data.code.map(([name, status, color]) =>
+          `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);"><span>${name}</span><span style="color:${color};">${status}</span></div>`
+        ).join('');
+        let tagsHtml = data.tags.map(t => `<span class="qa-artifact-tag">${t}</span>`).join('');
+        let actionsHtml = data.actions.map((a, i) =>
+          `<button class="artifact-btn${i === 0 ? ' artifact-btn--primary' : ''}">${a}</button>`
+        ).join('');
+        panel.innerHTML = `
+          <h4>${data.title}</h4>
+          <p>${data.text}</p>
+          <div style="background:var(--bg-elev-2);border-radius:10px;padding:14px;margin:12px 0;font-size:13px;color:var(--text-secondary);font-family:var(--font-mono);">${codeHtml}</div>
+          <div class="qa-artifact-row">${tagsHtml}</div>
+          <div class="artifact-actions" style="margin-top:16px;">${actionsHtml}</div>
+        `;
+      });
+    });
 
   </script>
 

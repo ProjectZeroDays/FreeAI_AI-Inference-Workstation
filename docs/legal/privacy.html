@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy — FreeAI</title>
+  <meta name="description" content="FreeAI Privacy Policy — how we handle your data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #5c8bff; --primary-hover: #7da2ff; --primary-soft: rgba(92,139,255,.13);
+      --bg: #060a18; --bg-elev-1: #0e1630; --bg-elev-2: #121b3a;
+      --text-primary: #f1f6ff; --text-secondary: #c9d3e8; --text-muted: #8a98ba;
+      --border: rgba(150,170,255,.13); --radius-lg: 14px;
+      --font-sans: "Outfit", system-ui, sans-serif;
+    }
+    [data-theme="light"] {
+      --primary: #0241e3; --primary-soft: rgba(2,65,227,.1);
+      --bg: #FFFFFF; --bg-elev-1: #FFFFFF; --bg-elev-2: #F6F9FF;
+      --text-primary: #010258; --text-secondary: #2A3866; --text-muted: #8A98BA;
+      --border: #E2E8F4;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-secondary); font-family: var(--font-sans); line-height: 1.6; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--bg-elev-1); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); height: 60px; display: flex; align-items: center; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 24px; width: 100%; }
+    .nav-logo { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .nav-back { font-size: 13px; color: var(--text-muted); }
+    .nav-back:hover { color: var(--primary); text-decoration: none; }
+    .container { max-width: 800px; margin: 0 auto; padding: 100px 24px 60px; }
+    h1 { font-size: 32px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .updated { font-size: 13px; color: var(--text-muted); margin-bottom: 32px; }
+    h2 { font-size: 20px; font-weight: 600; color: var(--text-primary); margin: 32px 0 12px; }
+    p { margin-bottom: 16px; }
+    ul { margin-bottom: 16px; padding-left: 24px; }
+    li { margin-bottom: 8px; }
+    .footer { padding: 40px 24px; border-top: 1px solid var(--border); text-align: center; font-size: 13px; color: var(--text-muted); }
+    .footer a { margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">FreeAI</a>
+      <a href="index.html" class="nav-back">← Back to site</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: January 2026</p>
+
+    <p>FreeAI is a self-hosted AI inference workstation. This privacy policy explains how we handle data when you use our documentation, website, and community resources.</p>
+
+    <h2>Data We Collect</h2>
+    <ul>
+      <li><strong>Usage Analytics:</strong> Anonymous page views and feature usage to improve documentation</li>
+      <li><strong>GitHub Data:</strong> Public repository interactions (stars, forks, issues)</li>
+      <li><strong>Contact Information:</strong> Email and details you voluntarily provide via contact forms</li>
+    </ul>
+
+    <h2>Self-Hosted Nature</h2>
+    <p>FreeAI is designed to be fully self-hosted. All AI model inference, agent execution, and data processing happens on YOUR infrastructure. We do not have access to your:</p>
+    <ul>
+      <li>AI models or model weights</li>
+      <li>Code repositories or source code</li>
+      <li>API keys or credentials</li>
+      <li>Prompt data or conversation history</li>
+      <li>System logs or telemetry (unless you configure it)</li>
+    </ul>
+
+    <h2>Cookies & Tracking</h2>
+    <p>Our documentation site uses minimal cookies for theme preference (dark/light mode) and language selection. No third-party analytics or tracking pixels are employed.</p>
+
+    <h2>Data Sharing</h2>
+    <p>We do not sell, rent, or share your personal data. Any community contributions (GitHub issues, discussions) are public by design.</p>
+
+    <h2>Your Rights</h2>
+    <ul>
+      <li>Request deletion of any personal data we hold</li>
+      <li>Opt out of anonymous analytics</li>
+      <li>Access our complete source code (MIT licensed)</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>For privacy inquiries, email <a href="mailto:privacy@projectzerodays.github.io">privacy@projectzerodays.github.io</a> or open a GitHub issue.</p>
+  </div>
+
+  <footer class="footer">
+    <a href="index.html">Home</a>
+    <a href="terms.html">Terms</a>
+    <a href="security.html">Security</a>
+    <a href="contact.html">Contact</a>
+    <p style="margin-top:16px">&copy; 2026 FreeAI · MIT License</p>
+  </footer>
+</body>
+</html>
