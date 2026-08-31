@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { X, Send } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 
 export default function Chat() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('early-access');
   const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,8 +23,12 @@ export default function Chat() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
-      alert(`Thanks! We'll send your early-access invite to ${email}`);
-      setEmail('');
+      setSubmitted(true);
+      setTimeout(() => {
+        alert(`Thanks! We'll send your early-access invite to ${email}`);
+        setEmail('');
+        setSubmitted(false);
+      }, 800);
     }
   };
 
@@ -41,131 +46,224 @@ export default function Chat() {
         </svg>
       </button>
 
-      {/* Chat panel */}
+      {/* Lead box panel */}
       {isOpen && (
         <div
           ref={panelRef}
           className="fixed bottom-20 right-6 z-50 w-full max-w-sm bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden animate-slide-up"
           role="dialog"
           aria-label="Chat with FreeAI"
+          style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
         >
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-xs">F</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold text-slate-900 text-sm">FreeAI Intelligence</div>
-              <div className="flex items-center gap-1.5 text-xs text-green-600">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                Online
-              </div>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-colors"
-              aria-label="Close"
-            >
-              <X size={14} />
-            </button>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex border-b border-slate-100">
-            <button
-              className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors ${
-                activeTab === 'early-access'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-              onClick={() => setActiveTab('early-access')}
-            >
-              Early access
-            </button>
-            <button
-              className={`flex-1 px-4 py-2.5 text-sm font-medium transition-colors ${
-                activeTab === 'specialist'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-              onClick={() => setActiveTab('specialist')}
-            >
-              Talk to a specialist
-            </button>
-          </div>
-
-          {/* Chat content */}
-          <div className="px-4 py-4 min-h-[180px] max-h-[320px] overflow-y-auto">
-            {activeTab === 'early-access' ? (
-              <div className="space-y-3">
-                <div className="flex gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs font-bold">F</span>
-                  </div>
-                  <div className="bg-slate-100 rounded-xl rounded-tl-none px-3.5 py-2.5 text-sm text-slate-700 max-w-[85%]">
-                    Hi — let&apos;s get you into this summer&apos;s rollout. Three taps and your email, about 30 seconds.
+          {/* Lead box container */}
+          <div className="lead-box" style={{ background: 'white' }}>
+            {/* Header */}
+            <header className="lead-head" style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="lead-head-top" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="lead-orb" aria-hidden="true" style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1d4ed8' }}>
+                    <svg width="17" height="15.88" viewBox="0 0 197 184" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '20px', height: '18.66px' }}>
+                      <path fillRule="evenodd" clipRule="evenodd" d="M88.2715 10.0268L176 184L87.9999 162.759L0 184L88.2446 10.0268L88.2579 10L88.2715 10.0268Z" fill="currentColor"></path>
+                      <path d="M164 25C164 25 165.821 41.9948 172.913 49.087C180.005 56.1792 197 58 197 58C197 58 180.005 59.8208 172.913 66.913C165.821 74.0052 164 91 164 91C164 91 162.179 74.0052 155.087 66.913C147.995 59.8208 131 58 131 58C131 58 147.995 56.1792 155.087 49.087C162.179 41.9948 164 25 164 25Z" fill="currentColor"></path>
+                      <path d="M143 4C143 4 144.048 13.7849 148.132 17.8683C152.215 21.9517 162 23 162 23C162 23 152.215 24.0483 148.132 28.1317C144.048 32.2151 143 42 143 42C143 42 141.952 32.2151 137.868 28.1317C133.785 24.0483 124 23 124 23C124 23 133.785 21.9517 137.868 17.8683C141.952 13.7849 143 4 143 4Z" fill="currentColor"></path>
+                      <path d="M178 0C178 0 178.662 6.17992 181.241 8.75891C183.82 11.3379 190 12 190 12C190 12 183.82 12.6621 181.241 15.2411C178.662 17.8201 178 24 178 24C178 24 177.338 17.8201 174.759 15.2411C172.18 12.6621 166 12 166 12C166 12 172.18 11.3379 174.759 8.75891C177.338 6.17992 178 0 178 0Z" fill="currentColor"></path>
+                    </svg>
+                  </span>
+                  <div className="lead-id">
+                    <h3 id="lead-title" className="lead-title" style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+                      FreeAI Intelligence
+                    </h3>
+                    <p className="lead-status" style={{ margin: '2px 0 0', fontSize: '12px', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }} />
+                      Online
+                    </p>
                   </div>
                 </div>
-                <div className="flex gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs font-bold">F</span>
-                  </div>
-                  <div className="bg-slate-100 rounded-xl rounded-tl-none px-3.5 py-2.5 text-sm text-slate-700 max-w-[85%]">
-                    First things first — where should we send your early-access invite?
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  className="lead-close"
+                  aria-label="Close"
+                  onClick={() => setIsOpen(false)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#64748b', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.15s, background 0.15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#0f172a'; e.currentTarget.style.background = '#f1f5f9'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#64748b'; e.currentTarget.style.background = 'none'; }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m14.5 9.5l-5 5m0-5l5 5"></path>
+                  </svg>
+                </button>
               </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex gap-2.5">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs font-bold">F</span>
+              {/* Tabs */}
+              <div className="lead-tabs" role="tablist" aria-label="What do you need?" style={{ display: 'flex', gap: '4px' }}>
+                <button
+                  type="button"
+                  role="tab"
+                  className={`lead-tab ${activeTab === 'early-access' ? 'lead-tab--active' : ''}`}
+                  aria-selected={activeTab === 'early-access'}
+                  onClick={() => setActiveTab('early-access')}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    fontWeight: activeTab === 'early-access' ? 600 : 500,
+                    color: activeTab === 'early-access' ? '#1d4ed8' : '#64748b',
+                    background: activeTab === 'early-access' ? '#eff6ff' : 'transparent',
+                    border: 'none',
+                    borderRadius: activeTab === 'early-access' ? '8px 8px 0 0' : '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  Early access
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  className={`lead-tab ${activeTab === 'specialist' ? 'lead-tab--active' : ''}`}
+                  aria-selected={activeTab === 'specialist'}
+                  onClick={() => setActiveTab('specialist')}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    fontWeight: activeTab === 'specialist' ? 600 : 500,
+                    color: activeTab === 'specialist' ? '#1d4ed8' : '#64748b',
+                    background: activeTab === 'specialist' ? '#eff6ff' : 'transparent',
+                    border: 'none',
+                    borderRadius: activeTab === 'specialist' ? '8px 8px 0 0' : '8px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  Talk to a specialist
+                </button>
+              </div>
+            </header>
+
+            {/* Chat content */}
+            <div className="chat" aria-live="polite" style={{ padding: '16px 20px', minHeight: '160px', maxHeight: '240px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {activeTab === 'early-access' ? (
+                <>
+                  {/* Bot message 1 */}
+                  <div className="msg msg--bot">
+                    <span className="msg-orb" aria-hidden="true" style={{ flexShrink: 0, width: '20px', height: '18px', color: '#1d4ed8' }}>
+                      <svg width="12" height="11.86" viewBox="0 0 176 174" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M88.2715 0.0267731L176 174L87.9999 152.759L0 174L88.2446 0.0267731L88.2579 0L88.2715 0.0267731Z" fill="currentColor"></path>
+                      </svg>
+                    </span>
+                    <p className="msg-bubble" style={{ margin: 0, padding: '10px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', color: '#334155', lineHeight: 1.5 }}>
+                      Hi — let&apos;s get you into this summer&apos;s Europe rollout. Three taps and your email, about 30 seconds.
+                    </p>
                   </div>
-                  <div className="bg-slate-100 rounded-xl rounded-tl-none px-3.5 py-2.5 text-sm text-slate-700 max-w-[85%]">
+                  {/* Bot message 2 */}
+                  <div className="msg msg--bot">
+                    <span className="msg-orb" aria-hidden="true" style={{ flexShrink: 0, width: '20px', height: '18px', color: '#1d4ed8' }}>
+                      <svg width="12" height="11.86" viewBox="0 0 176 174" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M88.2715 0.0267731L176 174L87.9999 152.759L0 174L88.2446 0.0267731L88.2579 0L88.2715 0.0267731Z" fill="currentColor"></path>
+                      </svg>
+                    </span>
+                    <p className="msg-bubble" style={{ margin: 0, padding: '10px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', color: '#334155', lineHeight: 1.5 }}>
+                      First things first — where should we send your early-access invite?
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="msg msg--bot">
+                  <span className="msg-orb" aria-hidden="true" style={{ flexShrink: 0, width: '20px', height: '18px', color: '#1d4ed8' }}>
+                    <svg width="12" height="11.86" viewBox="0 0 176 174" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M88.2715 0.0267731L176 174L87.9999 152.759L0 174L88.2446 0.0267731L88.2579 0L88.2715 0.0267731Z" fill="currentColor"></path>
+                    </svg>
+                  </span>
+                  <p className="msg-bubble" style={{ margin: 0, padding: '10px 14px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '13px', color: '#334155', lineHeight: 1.5 }}>
                     I&apos;d be happy to connect you with a specialist. What&apos;s your name and company?
-                  </div>
+                  </p>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* Input */}
-          <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <input
-                type={activeTab === 'early-access' ? 'email' : 'text'}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder={activeTab === 'early-access' ? 'you@company.com' : 'Your name & company'}
-                className="flex-1 px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-blue-400"
-                aria-label={activeTab === 'early-access' ? 'Work email' : 'Name and company'}
-              />
-              <button
-                type="submit"
-                className="w-9 h-9 bg-blue-600 hover:bg-blue-700 rounded-xl flex items-center justify-center text-white transition-colors"
-                aria-label="Send"
-              >
-                <Send size={16} />
-              </button>
-            </form>
-            <p className="text-[11px] text-slate-400 mt-2">
-              {activeTab === 'early-access'
-                ? 'Only to contact you about your invite'
-                : 'A specialist will reach out within 24 hours'}
+            {/* Input tray */}
+            <div className="tray" style={{ padding: '12px 20px 16px', borderTop: '1px solid #e2e8f0', background: '#f8fafc' }}>
+              {!submitted ? (
+                <form className="composer composer--compact" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input
+                      data-v-1e24ae2f=""
+                      type={activeTab === 'early-access' ? 'email' : 'text'}
+                      required
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={activeTab === 'early-access' ? 'you@company.com' : 'Your name & company'}
+                      aria-label="Work email"
+                      style={{
+                        flex: 1,
+                        padding: '10px 14px',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: '#334155',
+                        background: 'white',
+                        outline: 'none',
+                        transition: 'border-color 0.15s',
+                      }}
+                      onFocus={e => e.currentTarget.style.borderColor = '#93c5fd'}
+                      onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
+                    />
+                    <button
+                      type="submit"
+                      className="composer-send"
+                      aria-label="Send"
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        background: '#1d4ed8',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: 'white',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'background 0.15s',
+                        flexShrink: 0,
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#1e40af'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#1d4ed8'}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 19V5M5 12l7-7 7 7"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="composer-note" style={{ margin: 0, fontSize: '11px', color: '#94a3b8', lineHeight: 1.4 }}>
+                    {activeTab === 'early-access'
+                      ? 'Only to contact you about your invite'
+                      : 'A specialist will reach out within 24 hours'}
+                  </p>
+                </form>
+              ) : (
+                <div style={{ padding: '12px 0', textAlign: 'center' }}>
+                  <p style={{ margin: 0, fontSize: '14px', color: '#16a34a', fontWeight: 500 }}>
+                    ✓ Thanks! We&apos;ll be in touch shortly.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Fine print */}
+            <p className="lead-fine" style={{ padding: '10px 20px 14px', fontSize: '11px', color: '#94a3b8', lineHeight: 1.5, display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '1px' }}>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+              <span>
+                FreeAI will use your details only to answer this request.{' '}
+                <a href="/legal/privacy" className="lead-privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#1d4ed8', textDecoration: 'underline' }}>
+                  Privacy Policy
+                </a>
+              </span>
             </p>
-          </div>
-
-          {/* Privacy */}
-          <div className="px-4 py-2.5 border-t border-slate-100 flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-slate-400 flex-shrink-0">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
-            <span className="text-[11px] text-slate-400">
-              FreeAI will use your details only to answer this request.{' '}
-              <a href="/legal/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
-            </span>
           </div>
         </div>
       )}
