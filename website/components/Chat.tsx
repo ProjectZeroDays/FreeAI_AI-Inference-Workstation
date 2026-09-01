@@ -37,11 +37,11 @@ export default function Chat() {
       {/* Floating launcher button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg flex items-center justify-center transition-all hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-xl shadow-blue-500/30 flex items-center justify-center transition-all hover:scale-110"
         aria-label="Chat with FreeAI"
         title="Chat with FreeAI"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
       </button>
@@ -50,7 +50,7 @@ export default function Chat() {
       {isOpen && (
         <div
           ref={panelRef}
-          className="fixed bottom-20 right-6 z-50 w-full max-w-sm bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden animate-slide-up"
+          className="fixed bottom-24 right-6 z-50 w-full max-w-sm bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-slate-900/20 overflow-hidden animate-slide-up"
           role="dialog"
           aria-label="Chat with FreeAI"
           style={{ fontFamily: "'Inter', system-ui, sans-serif" }}

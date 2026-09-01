@@ -81,10 +81,10 @@ export default function Header() {
             </a>
             <Link
               href="/deploy"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105"
+              className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
             >
               <Download size={14} />
-              Deploy
+              Deploy FreeAI
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
