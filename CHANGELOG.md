@@ -1,3 +1,20 @@
+## 1.3.3 - 2026-09-01
+
+### Added
+- **Streaming chat demo**: `examples/demos/streaming_chat.py` — SSE token streaming via Agnes API
+- **DarkWeb Scanner agent**: `agents/specialized/darkweb_scanner/` with skill at `skills/red_teaming/darkweb_scanner/`
+- **Skills catalog entry**: darkweb_scanner added to `skills/catalog.json` (299 total skills)
+
+### Fixed
+- **Router import fix**: `router/__init__.py` now imports `app, _sse_frames` instead of `app, router` (was causing ImportError)
+- **website/out/ git tracking**: removed from tracking, added to `.gitignore`
+
+### Infrastructure
+- **Full dark theme**: all website sections converted to dark slate-950 palette
+- **GitHub Pages**: workflow fixed (`cancel-in-progress`, `cache-dependency-path`)
+
+---
+
 ## 0.9.3 - 2026-08-29
 
 ### Security
