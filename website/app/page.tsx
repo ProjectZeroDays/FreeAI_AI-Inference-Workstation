@@ -144,29 +144,31 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* HERO */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-32 pb-20 overflow-hidden bg-slate-900">
         {/* Subtle grid background */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #1d4ed8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-        
+        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle, #60a5fa 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        {/* Gradient glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/10 rounded-full blur-3xl" />
+
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             {/* Badge */}
-            <div className="ap-hero-badge animate-fade-in-up">
+            <div className="ap-hero-badge-dark animate-fade-in-up">
               <Star className="w-4 h-4" />
               <span>The #1 Open Source AI Security Platform</span>
             </div>
 
             {/* Main heading */}
-            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-[1.08] tracking-tight animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-[1.08] tracking-tight animate-fade-in-up text-white" style={{ animationDelay: '0.1s' }}>
               Endpoint management
               <br />
               <span className="gradient-text">that thinks ahead.</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <strong className="text-slate-900">FreeAI.</strong> The AI operational layer for your entire fleet.
-              Deploy <strong className="text-slate-900">24 autonomous agents</strong> for offensive security, 
+            <p className="text-xl md:text-2xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <strong className="text-white">FreeAI.</strong> The AI operational layer for your entire fleet.
+              Deploy <strong className="text-white">24 autonomous agents</strong> for offensive security, 
               vulnerability research, and AI-powered attack simulation.
             </p>
 
@@ -175,16 +177,16 @@ export default function Home() {
               <Link href="/deploy" className="ap-btn-primary">
                 Get FreeAI <ArrowRight size={18} />
               </Link>
-              <Link href="/docs" className="ap-btn-secondary">
+              <Link href="/docs" className="ap-btn-secondary-dark">
                 <Play size={16} />
                 Watch Demo
               </Link>
             </div>
 
             {/* Trust badges */}
-            <div className="flex flex-wrap justify-center gap-3 mb-16 text-sm text-slate-500 animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
+            <div className="flex flex-wrap justify-center gap-3 mb-16 text-sm animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
               {['GPL-3.0', 'SOC 2 Ready', 'ISO 27001', 'NIST 800-53', 'CMMC L2', 'G2 High Performer'].map((b) => (
-                <span key={b} className="px-3 py-1.5 bg-slate-100 rounded-full text-xs font-medium text-slate-600 border border-slate-200">
+                <span key={b} className="px-3 py-1.5 bg-slate-800/80 rounded-full text-xs font-medium text-slate-300 border border-slate-700">
                   {b}
                 </span>
               ))}
@@ -192,51 +194,51 @@ export default function Home() {
 
             {/* Dashboard mockup */}
             <div className="relative max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.08)] overflow-hidden">
+              <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
                 {/* Mock browser chrome */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 border-b border-slate-200">
+                <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <div className="flex-1 mx-4 h-7 bg-white rounded-md border border-slate-200 flex items-center px-3">
-                    <span className="text-xs text-slate-400">freeai.projectzerodays.com/dashboard</span>
+                  <div className="flex-1 mx-4 h-7 bg-slate-800 rounded-md border border-slate-700 flex items-center px-3">
+                    <span className="text-xs text-slate-500">freeai.projectzerodays.com/dashboard</span>
                   </div>
                 </div>
                 {/* Dashboard content */}
-                <div className="p-6 bg-slate-50">
+                <div className="p-6 bg-slate-900/50">
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     {[
                       { label: 'Red Team Active', value: '8', sub: 'agents online', color: '#ef4444' },
                       { label: 'Blue Team', value: '11', sub: 'monitors running', color: '#3b82f6' },
                       { label: 'Purple Coord', value: '5', sub: 'joint ops', color: '#8b5cf6' },
                     ].map((kpi, i) => (
-                      <div key={i} className="bg-white rounded-xl p-4 border border-slate-200">
+                      <div key={i} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 rounded-full" style={{ background: kpi.color }} />
-                          <span className="text-xs text-slate-500 font-medium">{kpi.label}</span>
+                          <span className="text-xs text-slate-400 font-medium">{kpi.label}</span>
                         </div>
-                        <div className="text-3xl font-bold text-slate-900">{kpi.value}</div>
-                        <div className="text-xs text-slate-400 mt-1">{kpi.sub}</div>
+                        <div className="text-3xl font-bold text-white">{kpi.value}</div>
+                        <div className="text-xs text-slate-500 mt-1">{kpi.sub}</div>
                       </div>
                     ))}
                   </div>
                   {/* Fake chat prompt */}
-                  <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <div className="bg-slate-800 rounded-xl border border-slate-700 p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span className="text-white font-bold text-xs">F</span>
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-slate-900">FreeAI Chat</div>
-                        <div className="text-xs text-slate-400">24 agents online</div>
+                        <div className="text-sm font-semibold text-white">FreeAI Chat</div>
+                        <div className="text-xs text-slate-500">24 agents online</div>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-slate-100 rounded-lg px-3 py-2 text-sm text-slate-600 max-w-xs">
+                      <div className="bg-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 max-w-xs">
                         Scan all endpoints for CVE-2024-3094
                       </div>
-                      <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-sm text-slate-700 max-w-md ml-auto">
-                        <span className="font-semibold text-blue-700">Red Orchestrator:</span> 
+                      <div className="bg-blue-900/30 border border-blue-800 rounded-lg px-3 py-2 text-sm text-slate-300 max-w-md ml-auto">
+                        <span className="font-semibold text-blue-400">Red Orchestrator:</span> 
                         Found 3 affected devices. XZ Utils backdoor detected on ubuntu-prod-02, kali-test-01, debian-build-03. Recommended: isolate & patch immediately.
                       </div>
                     </div>
@@ -249,7 +251,7 @@ export default function Home() {
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-slate-300" />
+          <ChevronDown className="w-6 h-6 text-slate-600" />
         </div>
       </section>
 

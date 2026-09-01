@@ -149,6 +149,40 @@ body {
   transform: translateY(-1px);
 }
 
+.ap-btn-secondary-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: transparent;
+  color: #e2e8f0;
+  border: 1.5px solid #475569;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.ap-btn-secondary-dark:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #64748b;
+}
+
+.ap-hero-badge-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #93c5fd;
+  margin-bottom: 32px;
+}
+
 .ap-btn-secondary {
   display: inline-flex;
   align-items: center;
