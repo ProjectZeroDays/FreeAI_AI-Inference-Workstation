@@ -8,7 +8,7 @@ import {
   ArrowRight, Download, Play, Star, Award, Lock, Eye,
   Terminal, Activity, GitBranch, Layers, Monitor, Bug,
   ChevronRight, Clock, BarChart3, UserCheck, RefreshCw,
-  AlertTriangle, Mic, ArrowUpRight, Brain
+  AlertTriangle, Mic, ArrowUpRight
 } from 'lucide-react';
 
 export default function Home() {
@@ -29,6 +29,22 @@ export default function Home() {
     window.addEventListener('scroll', checkStats);
     return () => window.removeEventListener('scroll', checkStats);
   }, [statsVisible]);
+
+  // Scroll-triggered reveal for all sections
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+    );
+    document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   const animateCounters = () => {
     const targets = { downloads: 671000, agents: 24, countries: 50, vulns: 21 };
@@ -186,7 +202,9 @@ export default function Home() {
             </div>
 
             <div className="relative max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-              <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+              {/* Animated gradient border glow */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-blue-500/30 rounded-3xl blur opacity-50 animate-pulse-glow" />
+              <div className="relative bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
@@ -244,7 +262,7 @@ export default function Home() {
       </section>
 
       {/* STATS */}
-      <section ref={statsRef} className="py-20 bg-slate-900 border-y border-slate-800">
+      <section ref={statsRef} className="py-20 bg-slate-900 border-y border-slate-800 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -263,7 +281,7 @@ export default function Home() {
       </section>
 
       {/* ASK AGENTS */}
-      <section id="ask-agents" className="ap-section">
+      <section id="ask-agents" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -284,7 +302,7 @@ export default function Home() {
       </section>
 
       {/* ARTIFACTS */}
-      <section id="artifacts" className="ap-section bg-slate-900">
+      <section id="artifacts" className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -360,7 +378,7 @@ export default function Home() {
       </section>
 
       {/* TRUSTED BY */}
-      <section className="ap-section border-y border-slate-800">
+      <section className="ap-section border-y border-slate-800 scroll-reveal">
         <div className="container mx-auto px-6">
           <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Trusted by security teams at</p>
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 items-center">
@@ -372,7 +390,7 @@ export default function Home() {
       </section>
 
       {/* RATINGS */}
-      <section className="ap-section bg-slate-900">
+      <section className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Rated by the people who run IT</p>
           <div className="flex flex-wrap justify-center gap-4">
@@ -394,7 +412,7 @@ export default function Home() {
       </section>
 
       {/* PROBLEM FRAMING */}
-      <section id="why-now" className="ap-section">
+      <section id="why-now" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
@@ -421,7 +439,7 @@ export default function Home() {
       </section>
 
       {/* FOUR PILLARS */}
-      <section id="capabilities" className="ap-section bg-slate-900">
+      <section id="capabilities" className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -446,7 +464,7 @@ export default function Home() {
       </section>
 
       {/* ONE BRAIN / ASK ANYTHING */}
-      <section id="ask-anything" className="ap-section">
+      <section id="ask-anything" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
@@ -528,7 +546,7 @@ export default function Home() {
       </section>
 
       {/* SEVEN MINDS */}
-      <section className="ap-section bg-slate-900">
+      <section className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -578,7 +596,7 @@ export default function Home() {
       </section>
 
       {/* LIVE IN MINUTES */}
-      <section id="deploy" className="ap-section">
+      <section id="deploy" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -602,7 +620,7 @@ export default function Home() {
       </section>
 
       {/* OPERATIONAL LAYER IN NUMBERS */}
-      <section className="ap-section bg-slate-900">
+      <section className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">The operational layer, in numbers.</h2>
@@ -640,7 +658,7 @@ export default function Home() {
       </section>
 
       {/* MCP & A2A */}
-      <section className="ap-section">
+      <section className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="ap-card-dark">
@@ -687,7 +705,7 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="ap-section bg-slate-900">
+      <section id="pricing" className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -763,7 +781,7 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="ap-section bg-slate-900">
+      <section id="faq" className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6 max-w-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">
@@ -779,7 +797,7 @@ export default function Home() {
       </section>
 
       {/* LIVE ISO */}
-      <section id="live-iso" className="ap-section">
+      <section id="live-iso" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -806,7 +824,7 @@ export default function Home() {
       </section>
 
       {/* DEPLOY */}
-      <section className="ap-section bg-slate-900">
+      <section className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -839,7 +857,7 @@ export default function Home() {
       </section>
 
       {/* AI PROVIDERS */}
-      <section id="providers" className="ap-section">
+      <section id="providers" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -867,7 +885,7 @@ export default function Home() {
       </section>
 
       {/* SECURITY */}
-      <section id="security" className="ap-section bg-slate-900">
+      <section id="security" className="ap-section bg-slate-900 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
             <div>
@@ -910,7 +928,7 @@ export default function Home() {
       </section>
 
       {/* AGENTS */}
-      <section id="agents" className="ap-section">
+      <section id="agents" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -940,31 +958,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-slate-950 border-t border-slate-800 py-12">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-white">FreeAI</div>
-                <div className="text-xs text-slate-500">Unified AI inference workstation</div>
-              </div>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-400">
-              <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
-              <Link href="/deploy" className="hover:text-white transition-colors">Deploy</Link>
-              <Link href="/security" className="hover:text-white transition-colors">Security</Link>
-              <Link href="/legal/contact" className="hover:text-white transition-colors">Contact</Link>
-            </div>
-            <div className="text-sm text-slate-500">
-              GPL-3.0 · © 2026 Project Zero Days
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* FOOTER — handled by layout.tsx Footer component */}
     </div>
   );
 }

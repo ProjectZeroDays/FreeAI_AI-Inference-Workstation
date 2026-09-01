@@ -39,17 +39,17 @@ export default function Header() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled 
-        ? 'bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm' 
+      scrolled
+        ? 'bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shadow-lg shadow-black/20'
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
               <span className="text-white font-bold text-sm">F</span>
             </div>
-            <span className="font-bold text-lg text-slate-900">FreeAI</span>
+            <span className="font-bold text-lg text-white">FreeAI</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -57,7 +57,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-2 rounded-md text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                className="px-3 py-2 rounded-md text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
               >
                 {link.label}
               </Link>
@@ -67,7 +67,7 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -75,20 +75,20 @@ export default function Header() {
               href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
             >
               <Github size={20} />
             </a>
             <Link
               href="/deploy"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
+              className="hidden md:inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-all hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
             >
               <Download size={14} />
               Deploy FreeAI
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+              className="md:hidden p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -97,14 +97,14 @@ export default function Header() {
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-md border-b border-slate-200">
+        <div className="md:hidden bg-slate-950/95 backdrop-blur-md border-b border-slate-800">
           <nav className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                className="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
               >
                 {link.label}
               </Link>
@@ -112,7 +112,7 @@ export default function Header() {
             <Link
               href="/deploy"
               onClick={() => setIsOpen(false)}
-              className="block px-3 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-center font-medium transition-colors mt-2"
+              className="block px-3 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-center font-medium transition-colors mt-2"
             >
               Deploy FreeAI
             </Link>
