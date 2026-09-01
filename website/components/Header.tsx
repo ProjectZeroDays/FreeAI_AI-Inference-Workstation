@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { Menu, X, Moon, Sun, Github, Download } from 'lucide-react'
+import { Menu, X, Github, Download } from 'lucide-react'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -17,13 +17,9 @@ const navLinks = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isDark, setIsDark] = useState(true)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme')
-    if (saved) setIsDark(saved === 'dark')
-
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
     }
@@ -31,16 +27,10 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const toggleTheme = () => {
-    const newTheme = !isDark
-    setIsDark(newTheme)
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light')
-  }
-
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled
-        ? 'bg-slate-950/95 backdrop-blur-md border-b border-slate-800 shadow-lg shadow-black/20'
+        ? 'bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-lg shadow-black/20'
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +47,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-2 rounded-md text-sm text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+                className="px-3 py-2 rounded-md text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 {link.label}
               </Link>
@@ -65,17 +55,11 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
             <a
               href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+              className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             >
               <Github size={20} />
             </a>
@@ -88,7 +72,7 @@ export default function Header() {
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800/60"
+              className="md:hidden p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -104,7 +88,7 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+                className="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               >
                 {link.label}
               </Link>
