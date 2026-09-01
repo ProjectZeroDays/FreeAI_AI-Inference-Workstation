@@ -1,18 +1,7 @@
 {
   "version": "1.0",
-  "generated_at": "2026-08-28T03:58:17Z",
-  "sources": [
-    {
-      "name": "ohmyopencodeslim",
-      "url": "https://ohmyopencodeslim.com/skills",
-      "fetched_at": "2026-08-28T03:58:17Z"
-    },
-    {
-      "name": "mimocode",
-      "url": "local",
-      "fetched_at": "2026-08-28T03:58:17Z"
-    }
-  ],
+  "generated_at": "2026-09-01T00:00:00Z",
+  "sources": [],
   "fetch_errors": [],
   "skills": [
     {
@@ -3849,7 +3838,2334 @@
       "path": "skills/red_teaming/darkweb_scanner/SKILL.md",
       "local": true,
       "enabled": true
+    },
+    {
+      "id": "agent-teams-simplify-and-harden",
+      "name": "Agent Teams Simplify And Harden",
+      "description": "Skill: agent-teams-simplify-and-harden",
+      "source": "local",
+      "category": "agent-teams-simplify-and-harden",
+      "triggers": [
+        "agent-teams-simplify-and-harden"
+      ],
+      "path": "skills/agent-teams-simplify-and-harden/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "agent-transcript",
+      "name": "Agent Transcript",
+      "description": "Skill: agent-transcript",
+      "source": "local",
+      "category": "agent-transcript",
+      "triggers": [
+        "agent-transcript"
+      ],
+      "path": "skills/agent-transcript/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "apple/apple-notes",
+      "name": "Apple/Apple Notes",
+      "description": "Skill: apple/apple-notes",
+      "source": "local",
+      "category": "apple",
+      "triggers": [
+        "apple/apple-notes"
+      ],
+      "path": "skills/apple/apple-notes/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "apple/apple-reminders",
+      "name": "Apple/Apple Reminders",
+      "description": "Skill: apple/apple-reminders",
+      "source": "local",
+      "category": "apple",
+      "triggers": [
+        "apple/apple-reminders"
+      ],
+      "path": "skills/apple/apple-reminders/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "apple/findmy",
+      "name": "Apple/Findmy",
+      "description": "Skill: apple/findmy",
+      "source": "local",
+      "category": "apple",
+      "triggers": [
+        "apple/findmy"
+      ],
+      "path": "skills/apple/findmy/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "apple/imessage",
+      "name": "Apple/Imessage",
+      "description": "Skill: apple/imessage",
+      "source": "local",
+      "category": "apple",
+      "triggers": [
+        "apple/imessage"
+      ],
+      "path": "skills/apple/imessage/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "apple/macos-computer-use",
+      "name": "Apple/Macos Computer Use",
+      "description": "Skill: apple/macos-computer-use",
+      "source": "local",
+      "category": "apple",
+      "triggers": [
+        "apple/macos-computer-use"
+      ],
+      "path": "skills/apple/macos-computer-use/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "aspnet-core",
+      "name": "Aspnet Core",
+      "description": "Skill: aspnet-core",
+      "source": "local",
+      "category": "aspnet-core",
+      "triggers": [
+        "aspnet-core"
+      ],
+      "path": "skills/aspnet-core/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "autonomous-ai-agents/claude-code",
+      "name": "Autonomous Ai Agents/Claude Code",
+      "description": "Skill: autonomous-ai-agents/claude-code",
+      "source": "local",
+      "category": "autonomous-ai-agents",
+      "triggers": [
+        "autonomous-ai-agents/claude-code"
+      ],
+      "path": "skills/autonomous-ai-agents/claude-code/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "autonomous-ai-agents/codex",
+      "name": "Autonomous Ai Agents/Codex",
+      "description": "Skill: autonomous-ai-agents/codex",
+      "source": "local",
+      "category": "autonomous-ai-agents",
+      "triggers": [
+        "autonomous-ai-agents/codex"
+      ],
+      "path": "skills/autonomous-ai-agents/codex/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "autonomous-ai-agents/hermes-agent",
+      "name": "Autonomous Ai Agents/Hermes Agent",
+      "description": "Skill: autonomous-ai-agents/hermes-agent",
+      "source": "local",
+      "category": "autonomous-ai-agents",
+      "triggers": [
+        "autonomous-ai-agents/hermes-agent"
+      ],
+      "path": "skills/autonomous-ai-agents/hermes-agent/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "autonomous-ai-agents/opencode",
+      "name": "Autonomous Ai Agents/Opencode",
+      "description": "Skill: autonomous-ai-agents/opencode",
+      "source": "local",
+      "category": "autonomous-ai-agents",
+      "triggers": [
+        "autonomous-ai-agents/opencode"
+      ],
+      "path": "skills/autonomous-ai-agents/opencode/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "autoreview",
+      "name": "Autoreview",
+      "description": "Skill: autoreview",
+      "source": "local",
+      "category": "autoreview",
+      "triggers": [
+        "autoreview"
+      ],
+      "path": "skills/autoreview/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "backend-export",
+      "name": "Backend Export",
+      "description": "Skill: backend-export",
+      "source": "local",
+      "category": "backend-export",
+      "triggers": [
+        "backend-export"
+      ],
+      "path": "skills/backend-export/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "beam",
+      "name": "Beam",
+      "description": "Skill: beam",
+      "source": "local",
+      "category": "beam",
+      "triggers": [
+        "beam"
+      ],
+      "path": "skills/beam/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "behavior-validator",
+      "name": "Behavior Validator",
+      "description": "Skill: behavior-validator",
+      "source": "local",
+      "category": "behavior-validator",
+      "triggers": [
+        "behavior-validator"
+      ],
+      "path": "skills/behavior-validator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "complete-this-project",
+      "name": "Complete This Project",
+      "description": "Skill: complete-this-project",
+      "source": "local",
+      "category": "complete-this-project",
+      "triggers": [
+        "complete-this-project"
+      ],
+      "path": "skills/complete-this-project/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "context-surfing",
+      "name": "Context Surfing",
+      "description": "Skill: context-surfing",
+      "source": "local",
+      "category": "context-surfing",
+      "triggers": [
+        "context-surfing"
+      ],
+      "path": "skills/context-surfing/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "control-session-orchestrator",
+      "name": "Control Session Orchestrator",
+      "description": "Skill: control-session-orchestrator",
+      "source": "local",
+      "category": "control-session-orchestrator",
+      "triggers": [
+        "control-session-orchestrator"
+      ],
+      "path": "skills/control-session-orchestrator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "crabbox",
+      "name": "Crabbox",
+      "description": "Skill: crabbox",
+      "source": "local",
+      "category": "crabbox",
+      "triggers": [
+        "crabbox"
+      ],
+      "path": "skills/crabbox/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/architecture-diagram",
+      "name": "Creative/Architecture Diagram",
+      "description": "Skill: creative/architecture-diagram",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/architecture-diagram"
+      ],
+      "path": "skills/creative/architecture-diagram/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/ascii-art",
+      "name": "Creative/Ascii Art",
+      "description": "Skill: creative/ascii-art",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/ascii-art"
+      ],
+      "path": "skills/creative/ascii-art/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/ascii-video",
+      "name": "Creative/Ascii Video",
+      "description": "Skill: creative/ascii-video",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/ascii-video"
+      ],
+      "path": "skills/creative/ascii-video/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/baoyu-comic",
+      "name": "Creative/Baoyu Comic",
+      "description": "Skill: creative/baoyu-comic",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/baoyu-comic"
+      ],
+      "path": "skills/creative/baoyu-comic/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/baoyu-infographic",
+      "name": "Creative/Baoyu Infographic",
+      "description": "Skill: creative/baoyu-infographic",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/baoyu-infographic"
+      ],
+      "path": "skills/creative/baoyu-infographic/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/claude-design",
+      "name": "Creative/Claude Design",
+      "description": "Skill: creative/claude-design",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/claude-design"
+      ],
+      "path": "skills/creative/claude-design/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/comfyui",
+      "name": "Creative/Comfyui",
+      "description": "Skill: creative/comfyui",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/comfyui"
+      ],
+      "path": "skills/creative/comfyui/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/creative-ideation",
+      "name": "Creative/Creative Ideation",
+      "description": "Skill: creative/creative-ideation",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/creative-ideation"
+      ],
+      "path": "skills/creative/creative-ideation/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/design-md",
+      "name": "Creative/Design Md",
+      "description": "Skill: creative/design-md",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/design-md"
+      ],
+      "path": "skills/creative/design-md/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/excalidraw",
+      "name": "Creative/Excalidraw",
+      "description": "Skill: creative/excalidraw",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/excalidraw"
+      ],
+      "path": "skills/creative/excalidraw/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/humanizer",
+      "name": "Creative/Humanizer",
+      "description": "Skill: creative/humanizer",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/humanizer"
+      ],
+      "path": "skills/creative/humanizer/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/manim-video",
+      "name": "Creative/Manim Video",
+      "description": "Skill: creative/manim-video",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/manim-video"
+      ],
+      "path": "skills/creative/manim-video/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/p5js",
+      "name": "Creative/P5Js",
+      "description": "Skill: creative/p5js",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/p5js"
+      ],
+      "path": "skills/creative/p5js/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/pixel-art",
+      "name": "Creative/Pixel Art",
+      "description": "Skill: creative/pixel-art",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/pixel-art"
+      ],
+      "path": "skills/creative/pixel-art/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/popular-web-designs",
+      "name": "Creative/Popular Web Designs",
+      "description": "Skill: creative/popular-web-designs",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/popular-web-designs"
+      ],
+      "path": "skills/creative/popular-web-designs/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/pretext",
+      "name": "Creative/Pretext",
+      "description": "Skill: creative/pretext",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/pretext"
+      ],
+      "path": "skills/creative/pretext/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/sketch",
+      "name": "Creative/Sketch",
+      "description": "Skill: creative/sketch",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/sketch"
+      ],
+      "path": "skills/creative/sketch/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/songwriting-and-ai-music",
+      "name": "Creative/Songwriting And Ai Music",
+      "description": "Skill: creative/songwriting-and-ai-music",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/songwriting-and-ai-music"
+      ],
+      "path": "skills/creative/songwriting-and-ai-music/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "creative/touchdesigner-mcp",
+      "name": "Creative/Touchdesigner Mcp",
+      "description": "Skill: creative/touchdesigner-mcp",
+      "source": "local",
+      "category": "creative",
+      "triggers": [
+        "creative/touchdesigner-mcp"
+      ],
+      "path": "skills/creative/touchdesigner-mcp/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "cyber-fullstack",
+      "name": "Cyber Fullstack",
+      "description": "Skill: cyber-fullstack",
+      "source": "local",
+      "category": "cyber-fullstack",
+      "triggers": [
+        "cyber-fullstack"
+      ],
+      "path": "skills/cyber-fullstack/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "data-science/jupyter-live-kernel",
+      "name": "Data Science/Jupyter Live Kernel",
+      "description": "Skill: data-science/jupyter-live-kernel",
+      "source": "local",
+      "category": "data-science",
+      "triggers": [
+        "data-science/jupyter-live-kernel"
+      ],
+      "path": "skills/data-science/jupyter-live-kernel/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "deploy-checklist",
+      "name": "Deploy Checklist",
+      "description": "Skill: deploy-checklist",
+      "source": "local",
+      "category": "deploy-checklist",
+      "triggers": [
+        "deploy-checklist"
+      ],
+      "path": "skills/deploy-checklist/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "devops/kanban-orchestrator",
+      "name": "Devops/Kanban Orchestrator",
+      "description": "Skill: devops/kanban-orchestrator",
+      "source": "local",
+      "category": "devops",
+      "triggers": [
+        "devops/kanban-orchestrator"
+      ],
+      "path": "skills/devops/kanban-orchestrator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "devops/kanban-worker",
+      "name": "Devops/Kanban Worker",
+      "description": "Skill: devops/kanban-worker",
+      "source": "local",
+      "category": "devops",
+      "triggers": [
+        "devops/kanban-worker"
+      ],
+      "path": "skills/devops/kanban-worker/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "devops/webhook-subscriptions",
+      "name": "Devops/Webhook Subscriptions",
+      "description": "Skill: devops/webhook-subscriptions",
+      "source": "local",
+      "category": "devops",
+      "triggers": [
+        "devops/webhook-subscriptions"
+      ],
+      "path": "skills/devops/webhook-subscriptions/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "doc-generator",
+      "name": "Doc Generator",
+      "description": "Skill: doc-generator",
+      "source": "local",
+      "category": "doc-generator",
+      "triggers": [
+        "doc-generator"
+      ],
+      "path": "skills/doc-generator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "email/himalaya",
+      "name": "Email/Himalaya",
+      "description": "Skill: email/himalaya",
+      "source": "local",
+      "category": "email",
+      "triggers": [
+        "email/himalaya"
+      ],
+      "path": "skills/email/himalaya/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "eval-creator",
+      "name": "Eval Creator",
+      "description": "Skill: eval-creator",
+      "source": "local",
+      "category": "eval-creator",
+      "triggers": [
+        "eval-creator"
+      ],
+      "path": "skills/eval-creator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma",
+      "name": "Figma",
+      "description": "Skill: figma",
+      "source": "local",
+      "category": "figma",
+      "triggers": [
+        "figma"
+      ],
+      "path": "skills/figma/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-code-connect-components",
+      "name": "Figma Code Connect Components",
+      "description": "Skill: figma-code-connect-components",
+      "source": "local",
+      "category": "figma-code-connect-components",
+      "triggers": [
+        "figma-code-connect-components"
+      ],
+      "path": "skills/figma-code-connect-components/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-create-design-system-rules",
+      "name": "Figma Create Design System Rules",
+      "description": "Skill: figma-create-design-system-rules",
+      "source": "local",
+      "category": "figma-create-design-system-rules",
+      "triggers": [
+        "figma-create-design-system-rules"
+      ],
+      "path": "skills/figma-create-design-system-rules/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-create-new-file",
+      "name": "Figma Create New File",
+      "description": "Skill: figma-create-new-file",
+      "source": "local",
+      "category": "figma-create-new-file",
+      "triggers": [
+        "figma-create-new-file"
+      ],
+      "path": "skills/figma-create-new-file/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-generate-design",
+      "name": "Figma Generate Design",
+      "description": "Skill: figma-generate-design",
+      "source": "local",
+      "category": "figma-generate-design",
+      "triggers": [
+        "figma-generate-design"
+      ],
+      "path": "skills/figma-generate-design/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-generate-library",
+      "name": "Figma Generate Library",
+      "description": "Skill: figma-generate-library",
+      "source": "local",
+      "category": "figma-generate-library",
+      "triggers": [
+        "figma-generate-library"
+      ],
+      "path": "skills/figma-generate-library/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-implement-design",
+      "name": "Figma Implement Design",
+      "description": "Skill: figma-implement-design",
+      "source": "local",
+      "category": "figma-implement-design",
+      "triggers": [
+        "figma-implement-design"
+      ],
+      "path": "skills/figma-implement-design/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "figma-use",
+      "name": "Figma Use",
+      "description": "Skill: figma-use",
+      "source": "local",
+      "category": "figma-use",
+      "triggers": [
+        "figma-use"
+      ],
+      "path": "skills/figma-use/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "gaming/minecraft-modpack-server",
+      "name": "Gaming/Minecraft Modpack Server",
+      "description": "Skill: gaming/minecraft-modpack-server",
+      "source": "local",
+      "category": "gaming",
+      "triggers": [
+        "gaming/minecraft-modpack-server"
+      ],
+      "path": "skills/gaming/minecraft-modpack-server/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "gaming/pokemon-player",
+      "name": "Gaming/Pokemon Player",
+      "description": "Skill: gaming/pokemon-player",
+      "source": "local",
+      "category": "gaming",
+      "triggers": [
+        "gaming/pokemon-player"
+      ],
+      "path": "skills/gaming/pokemon-player/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "gh-address-comments",
+      "name": "Gh Address Comments",
+      "description": "Skill: gh-address-comments",
+      "source": "local",
+      "category": "gh-address-comments",
+      "triggers": [
+        "gh-address-comments"
+      ],
+      "path": "skills/gh-address-comments/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "gh-fix-ci",
+      "name": "Gh Fix Ci",
+      "description": "Skill: gh-fix-ci",
+      "source": "local",
+      "category": "gh-fix-ci",
+      "triggers": [
+        "gh-fix-ci"
+      ],
+      "path": "skills/gh-fix-ci/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "github/codebase-inspection",
+      "name": "Github/Codebase Inspection",
+      "description": "Skill: github/codebase-inspection",
+      "source": "local",
+      "category": "github",
+      "triggers": [
+        "github/codebase-inspection"
+      ],
+      "path": "skills/github/codebase-inspection/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "github/github-auth",
+      "name": "Github/Github Auth",
+      "description": "Skill: github/github-auth",
+      "source": "local",
+      "category": "github",
+      "triggers": [
+        "github/github-auth"
+      ],
+      "path": "skills/github/github-auth/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "github/github-code-review",
+      "name": "Github/Github Code Review",
+      "description": "Skill: github/github-code-review",
+      "source": "local",
+      "category": "github",
+      "triggers": [
+        "github/github-code-review"
+      ],
+      "path": "skills/github/github-code-review/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "github/github-issues",
+      "name": "Github/Github Issues",
+      "description": "Skill: github/github-issues",
+      "source": "local",
+      "category": "github",
+      "triggers": [
+        "github/github-issues"
+      ],
+      "path": "skills/github/github-issues/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "github/github-pr-workflow",
+      "name": "Github/Github Pr Workflow",
+      "description": "Skill: github/github-pr-workflow",
+      "source": "local",
+      "category": "github",
+      "triggers": [
+        "github/github-pr-workflow"
+      ],
+      "path": "skills/github/github-pr-workflow/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "github/github-repo-management",
+      "name": "Github/Github Repo Management",
+      "description": "Skill: github/github-repo-management",
+      "source": "local",
+      "category": "github",
+      "triggers": [
+        "github/github-repo-management"
+      ],
+      "path": "skills/github/github-repo-management/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "godmode",
+      "name": "Godmode",
+      "description": "Skill: godmode",
+      "source": "local",
+      "category": "godmode",
+      "triggers": [
+        "godmode"
+      ],
+      "path": "skills/godmode/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "handoff",
+      "name": "Handoff",
+      "description": "Skill: handoff",
+      "source": "local",
+      "category": "handoff",
+      "triggers": [
+        "handoff"
+      ],
+      "path": "skills/handoff/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "hatch-pet",
+      "name": "Hatch Pet",
+      "description": "Skill: hatch-pet",
+      "source": "local",
+      "category": "hatch-pet",
+      "triggers": [
+        "hatch-pet"
+      ],
+      "path": "skills/hatch-pet/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "incident-response",
+      "name": "Incident Response",
+      "description": "Skill: incident-response",
+      "source": "local",
+      "category": "incident-response",
+      "triggers": [
+        "incident-response"
+      ],
+      "path": "skills/incident-response/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "jupyter-notebook",
+      "name": "Jupyter Notebook",
+      "description": "Skill: jupyter-notebook",
+      "source": "local",
+      "category": "jupyter-notebook",
+      "triggers": [
+        "jupyter-notebook"
+      ],
+      "path": "skills/jupyter-notebook/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "knight-shade-browser",
+      "name": "Knight Shade Browser",
+      "description": "Skill: knight-shade-browser",
+      "source": "local",
+      "category": "knight-shade-browser",
+      "triggers": [
+        "knight-shade-browser"
+      ],
+      "path": "skills/knight-shade-browser/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "learning-aggregator",
+      "name": "Learning Aggregator",
+      "description": "Skill: learning-aggregator",
+      "source": "local",
+      "category": "learning-aggregator",
+      "triggers": [
+        "learning-aggregator"
+      ],
+      "path": "skills/learning-aggregator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "mcp/native-mcp",
+      "name": "Mcp/Native Mcp",
+      "description": "Skill: mcp/native-mcp",
+      "source": "local",
+      "category": "mcp",
+      "triggers": [
+        "mcp/native-mcp"
+      ],
+      "path": "skills/mcp/native-mcp/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "media/gif-search",
+      "name": "Media/Gif Search",
+      "description": "Skill: media/gif-search",
+      "source": "local",
+      "category": "media",
+      "triggers": [
+        "media/gif-search"
+      ],
+      "path": "skills/media/gif-search/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "media/heartmula",
+      "name": "Media/Heartmula",
+      "description": "Skill: media/heartmula",
+      "source": "local",
+      "category": "media",
+      "triggers": [
+        "media/heartmula"
+      ],
+      "path": "skills/media/heartmula/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "media/songsee",
+      "name": "Media/Songsee",
+      "description": "Skill: media/songsee",
+      "source": "local",
+      "category": "media",
+      "triggers": [
+        "media/songsee"
+      ],
+      "path": "skills/media/songsee/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "media/spotify",
+      "name": "Media/Spotify",
+      "description": "Skill: media/spotify",
+      "source": "local",
+      "category": "media",
+      "triggers": [
+        "media/spotify"
+      ],
+      "path": "skills/media/spotify/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "media/youtube-content",
+      "name": "Media/Youtube Content",
+      "description": "Skill: media/youtube-content",
+      "source": "local",
+      "category": "media",
+      "triggers": [
+        "media/youtube-content"
+      ],
+      "path": "skills/media/youtube-content/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "migrate-to-codex",
+      "name": "Migrate To Codex",
+      "description": "Skill: migrate-to-codex",
+      "source": "local",
+      "category": "migrate-to-codex",
+      "triggers": [
+        "migrate-to-codex"
+      ],
+      "path": "skills/migrate-to-codex/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "mlops/huggingface-hub",
+      "name": "Mlops/Huggingface Hub",
+      "description": "Skill: mlops/huggingface-hub",
+      "source": "local",
+      "category": "mlops",
+      "triggers": [
+        "mlops/huggingface-hub"
+      ],
+      "path": "skills/mlops/huggingface-hub/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "netlify-deploy",
+      "name": "Netlify Deploy",
+      "description": "Skill: netlify-deploy",
+      "source": "local",
+      "category": "netlify-deploy",
+      "triggers": [
+        "netlify-deploy"
+      ],
+      "path": "skills/netlify-deploy/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "note-taking/obsidian",
+      "name": "Note Taking/Obsidian",
+      "description": "Skill: note-taking/obsidian",
+      "source": "local",
+      "category": "note-taking",
+      "triggers": [
+        "note-taking/obsidian"
+      ],
+      "path": "skills/note-taking/obsidian/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "notion-knowledge-capture",
+      "name": "Notion Knowledge Capture",
+      "description": "Skill: notion-knowledge-capture",
+      "source": "local",
+      "category": "notion-knowledge-capture",
+      "triggers": [
+        "notion-knowledge-capture"
+      ],
+      "path": "skills/notion-knowledge-capture/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "notion-meeting-intelligence",
+      "name": "Notion Meeting Intelligence",
+      "description": "Skill: notion-meeting-intelligence",
+      "source": "local",
+      "category": "notion-meeting-intelligence",
+      "triggers": [
+        "notion-meeting-intelligence"
+      ],
+      "path": "skills/notion-meeting-intelligence/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "notion-research-documentation",
+      "name": "Notion Research Documentation",
+      "description": "Skill: notion-research-documentation",
+      "source": "local",
+      "category": "notion-research-documentation",
+      "triggers": [
+        "notion-research-documentation"
+      ],
+      "path": "skills/notion-research-documentation/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "notion-spec-to-implementation",
+      "name": "Notion Spec To Implementation",
+      "description": "Skill: notion-spec-to-implementation",
+      "source": "local",
+      "category": "notion-spec-to-implementation",
+      "triggers": [
+        "notion-spec-to-implementation"
+      ],
+      "path": "skills/notion-spec-to-implementation/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "pdf",
+      "name": "Pdf",
+      "description": "Skill: pdf",
+      "source": "local",
+      "category": "pdf",
+      "triggers": [
+        "pdf"
+      ],
+      "path": "skills/pdf/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "perf-audit",
+      "name": "Perf Audit",
+      "description": "Skill: perf-audit",
+      "source": "local",
+      "category": "perf-audit",
+      "triggers": [
+        "perf-audit"
+      ],
+      "path": "skills/perf-audit/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "playwright-interactive",
+      "name": "Playwright Interactive",
+      "description": "Skill: playwright-interactive",
+      "source": "local",
+      "category": "playwright-interactive",
+      "triggers": [
+        "playwright-interactive"
+      ],
+      "path": "skills/playwright-interactive/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "ppp-planner",
+      "name": "Ppp Planner",
+      "description": "Skill: ppp-planner",
+      "source": "local",
+      "category": "ppp-planner",
+      "triggers": [
+        "ppp-planner"
+      ],
+      "path": "skills/ppp-planner/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "ppp-v2",
+      "name": "Ppp V2",
+      "description": "Skill: ppp-v2",
+      "source": "local",
+      "category": "ppp-v2",
+      "triggers": [
+        "ppp-v2"
+      ],
+      "path": "skills/ppp-v2/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/airtable",
+      "name": "Productivity/Airtable",
+      "description": "Skill: productivity/airtable",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/airtable"
+      ],
+      "path": "skills/productivity/airtable/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/google-workspace",
+      "name": "Productivity/Google Workspace",
+      "description": "Skill: productivity/google-workspace",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/google-workspace"
+      ],
+      "path": "skills/productivity/google-workspace/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/linear",
+      "name": "Productivity/Linear",
+      "description": "Skill: productivity/linear",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/linear"
+      ],
+      "path": "skills/productivity/linear/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/maps",
+      "name": "Productivity/Maps",
+      "description": "Skill: productivity/maps",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/maps"
+      ],
+      "path": "skills/productivity/maps/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/nano-pdf",
+      "name": "Productivity/Nano Pdf",
+      "description": "Skill: productivity/nano-pdf",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/nano-pdf"
+      ],
+      "path": "skills/productivity/nano-pdf/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/notion",
+      "name": "Productivity/Notion",
+      "description": "Skill: productivity/notion",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/notion"
+      ],
+      "path": "skills/productivity/notion/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/ocr-and-documents",
+      "name": "Productivity/Ocr And Documents",
+      "description": "Skill: productivity/ocr-and-documents",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/ocr-and-documents"
+      ],
+      "path": "skills/productivity/ocr-and-documents/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/powerpoint",
+      "name": "Productivity/Powerpoint",
+      "description": "Skill: productivity/powerpoint",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/powerpoint"
+      ],
+      "path": "skills/productivity/powerpoint/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "productivity/teams-meeting-pipeline",
+      "name": "Productivity/Teams Meeting Pipeline",
+      "description": "Skill: productivity/teams-meeting-pipeline",
+      "source": "local",
+      "category": "productivity",
+      "triggers": [
+        "productivity/teams-meeting-pipeline"
+      ],
+      "path": "skills/productivity/teams-meeting-pipeline/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quality_gate",
+      "name": "Quality Gate",
+      "description": "Skill: quality_gate",
+      "source": "local",
+      "category": "quality_gate",
+      "triggers": [
+        "quality_gate"
+      ],
+      "path": "skills/quality_gate/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/ai-agent-manager",
+      "name": "Quantum C2/Ai Agent Manager",
+      "description": "Skill: quantum-c2/ai-agent-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/ai-agent-manager"
+      ],
+      "path": "skills/quantum-c2/ai-agent-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/botnet-manager",
+      "name": "Quantum C2/Botnet Manager",
+      "description": "Skill: quantum-c2/botnet-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/botnet-manager"
+      ],
+      "path": "skills/quantum-c2/botnet-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/exploit-payload-manager",
+      "name": "Quantum C2/Exploit Payload Manager",
+      "description": "Skill: quantum-c2/exploit-payload-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/exploit-payload-manager"
+      ],
+      "path": "skills/quantum-c2/exploit-payload-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/group-policy-manager",
+      "name": "Quantum C2/Group Policy Manager",
+      "description": "Skill: quantum-c2/group-policy-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/group-policy-manager"
+      ],
+      "path": "skills/quantum-c2/group-policy-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/keylogger-rat-manager",
+      "name": "Quantum C2/Keylogger Rat Manager",
+      "description": "Skill: quantum-c2/keylogger-rat-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/keylogger-rat-manager"
+      ],
+      "path": "skills/quantum-c2/keylogger-rat-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/network-configurator",
+      "name": "Quantum C2/Network Configurator",
+      "description": "Skill: quantum-c2/network-configurator",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/network-configurator"
+      ],
+      "path": "skills/quantum-c2/network-configurator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/network-evasion-tactics",
+      "name": "Quantum C2/Network Evasion Tactics",
+      "description": "Skill: quantum-c2/network-evasion-tactics",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/network-evasion-tactics"
+      ],
+      "path": "skills/quantum-c2/network-evasion-tactics/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/network-scanning-configurator",
+      "name": "Quantum C2/Network Scanning Configurator",
+      "description": "Skill: quantum-c2/network-scanning-configurator",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/network-scanning-configurator"
+      ],
+      "path": "skills/quantum-c2/network-scanning-configurator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/network-security-hardening",
+      "name": "Quantum C2/Network Security Hardening",
+      "description": "Skill: quantum-c2/network-security-hardening",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/network-security-hardening"
+      ],
+      "path": "skills/quantum-c2/network-security-hardening/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/rootkit-manager",
+      "name": "Quantum C2/Rootkit Manager",
+      "description": "Skill: quantum-c2/rootkit-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/rootkit-manager"
+      ],
+      "path": "skills/quantum-c2/rootkit-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/self-healing-configurator",
+      "name": "Quantum C2/Self Healing Configurator",
+      "description": "Skill: quantum-c2/self-healing-configurator",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/self-healing-configurator"
+      ],
+      "path": "skills/quantum-c2/self-healing-configurator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/self-troubleshooting-configurator",
+      "name": "Quantum C2/Self Troubleshooting Configurator",
+      "description": "Skill: quantum-c2/self-troubleshooting-configurator",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/self-troubleshooting-configurator"
+      ],
+      "path": "skills/quantum-c2/self-troubleshooting-configurator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/self-updating-configurator",
+      "name": "Quantum C2/Self Updating Configurator",
+      "description": "Skill: quantum-c2/self-updating-configurator",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/self-updating-configurator"
+      ],
+      "path": "skills/quantum-c2/self-updating-configurator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/system-hardening-configurator",
+      "name": "Quantum C2/System Hardening Configurator",
+      "description": "Skill: quantum-c2/system-hardening-configurator",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/system-hardening-configurator"
+      ],
+      "path": "skills/quantum-c2/system-hardening-configurator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/wire-harness-manager",
+      "name": "Quantum C2/Wire Harness Manager",
+      "description": "Skill: quantum-c2/wire-harness-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/wire-harness-manager"
+      ],
+      "path": "skills/quantum-c2/wire-harness-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "quantum-c2/workflow-manager",
+      "name": "Quantum C2/Workflow Manager",
+      "description": "Skill: quantum-c2/workflow-manager",
+      "source": "local",
+      "category": "quantum-c2",
+      "triggers": [
+        "quantum-c2/workflow-manager"
+      ],
+      "path": "skills/quantum-c2/workflow-manager/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "readme-standard",
+      "name": "Readme Standard",
+      "description": "Skill: readme-standard",
+      "source": "local",
+      "category": "readme-standard",
+      "triggers": [
+        "readme-standard"
+      ],
+      "path": "skills/readme-standard/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red-teaming/godmode",
+      "name": "Red Teaming/Godmode",
+      "description": "Skill: red-teaming/godmode",
+      "source": "local",
+      "category": "red-teaming",
+      "triggers": [
+        "red-teaming/godmode"
+      ],
+      "path": "skills/red-teaming/godmode/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/api_sniffer",
+      "name": "Red Teaming/Api Sniffer",
+      "description": "Skill: red_teaming/api_sniffer",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/api_sniffer"
+      ],
+      "path": "skills/red_teaming/api_sniffer/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/brute_force",
+      "name": "Red Teaming/Brute Force",
+      "description": "Skill: red_teaming/brute_force",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/brute_force"
+      ],
+      "path": "skills/red_teaming/brute_force/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/chained_zero_day",
+      "name": "Red Teaming/Chained Zero Day",
+      "description": "Skill: red_teaming/chained_zero_day",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/chained_zero_day"
+      ],
+      "path": "skills/red_teaming/chained_zero_day/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/cookie_harvester",
+      "name": "Red Teaming/Cookie Harvester",
+      "description": "Skill: red_teaming/cookie_harvester",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/cookie_harvester"
+      ],
+      "path": "skills/red_teaming/cookie_harvester/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/darkweb_scanner",
+      "name": "Red Teaming/Darkweb Scanner",
+      "description": "Skill: red_teaming/darkweb_scanner",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/darkweb_scanner"
+      ],
+      "path": "skills/red_teaming/darkweb_scanner/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/deserialization",
+      "name": "Red Teaming/Deserialization",
+      "description": "Skill: red_teaming/deserialization",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/deserialization"
+      ],
+      "path": "skills/red_teaming/deserialization/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_android",
+      "name": "Red Teaming/Exploit Android",
+      "description": "Skill: red_teaming/exploit_android",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_android"
+      ],
+      "path": "skills/red_teaming/exploit_android/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_automobile",
+      "name": "Red Teaming/Exploit Automobile",
+      "description": "Skill: red_teaming/exploit_automobile",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_automobile"
+      ],
+      "path": "skills/red_teaming/exploit_automobile/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_bluetooth",
+      "name": "Red Teaming/Exploit Bluetooth",
+      "description": "Skill: red_teaming/exploit_bluetooth",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_bluetooth"
+      ],
+      "path": "skills/red_teaming/exploit_bluetooth/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_ios",
+      "name": "Red Teaming/Exploit Ios",
+      "description": "Skill: red_teaming/exploit_ios",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_ios"
+      ],
+      "path": "skills/red_teaming/exploit_ios/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_iot",
+      "name": "Red Teaming/Exploit Iot",
+      "description": "Skill: red_teaming/exploit_iot",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_iot"
+      ],
+      "path": "skills/red_teaming/exploit_iot/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_linux",
+      "name": "Red Teaming/Exploit Linux",
+      "description": "Skill: red_teaming/exploit_linux",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_linux"
+      ],
+      "path": "skills/red_teaming/exploit_linux/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_nfc",
+      "name": "Red Teaming/Exploit Nfc",
+      "description": "Skill: red_teaming/exploit_nfc",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_nfc"
+      ],
+      "path": "skills/red_teaming/exploit_nfc/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_osx",
+      "name": "Red Teaming/Exploit Osx",
+      "description": "Skill: red_teaming/exploit_osx",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_osx"
+      ],
+      "path": "skills/red_teaming/exploit_osx/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploit_windows",
+      "name": "Red Teaming/Exploit Windows",
+      "description": "Skill: red_teaming/exploit_windows",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploit_windows"
+      ],
+      "path": "skills/red_teaming/exploit_windows/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/exploitation",
+      "name": "Red Teaming/Exploitation",
+      "description": "Skill: red_teaming/exploitation",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/exploitation"
+      ],
+      "path": "skills/red_teaming/exploitation/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/file_parse_exploit",
+      "name": "Red Teaming/File Parse Exploit",
+      "description": "Skill: red_teaming/file_parse_exploit",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/file_parse_exploit"
+      ],
+      "path": "skills/red_teaming/file_parse_exploit/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/media_exploit",
+      "name": "Red Teaming/Media Exploit",
+      "description": "Skill: red_teaming/media_exploit",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/media_exploit"
+      ],
+      "path": "skills/red_teaming/media_exploit/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/memory_corruption",
+      "name": "Red Teaming/Memory Corruption",
+      "description": "Skill: red_teaming/memory_corruption",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/memory_corruption"
+      ],
+      "path": "skills/red_teaming/memory_corruption/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/memory_primitives",
+      "name": "Red Teaming/Memory Primitives",
+      "description": "Skill: red_teaming/memory_primitives",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/memory_primitives"
+      ],
+      "path": "skills/red_teaming/memory_primitives/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/messaging_rce",
+      "name": "Red Teaming/Messaging Rce",
+      "description": "Skill: red_teaming/messaging_rce",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/messaging_rce"
+      ],
+      "path": "skills/red_teaming/messaging_rce/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/payload_engine",
+      "name": "Red Teaming/Payload Engine",
+      "description": "Skill: red_teaming/payload_engine",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/payload_engine"
+      ],
+      "path": "skills/red_teaming/payload_engine/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/ssrf_exploit",
+      "name": "Red Teaming/Ssrf Exploit",
+      "description": "Skill: red_teaming/ssrf_exploit",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/ssrf_exploit"
+      ],
+      "path": "skills/red_teaming/ssrf_exploit/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "red_teaming/vuln_scanner",
+      "name": "Red Teaming/Vuln Scanner",
+      "description": "Skill: red_teaming/vuln_scanner",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "red_teaming/vuln_scanner"
+      ],
+      "path": "skills/red_teaming/vuln_scanner/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "refactor-assistant",
+      "name": "Refactor Assistant",
+      "description": "Skill: refactor-assistant",
+      "source": "local",
+      "category": "refactor-assistant",
+      "triggers": [
+        "refactor-assistant"
+      ],
+      "path": "skills/refactor-assistant/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "render-deploy",
+      "name": "Render Deploy",
+      "description": "Skill: render-deploy",
+      "source": "local",
+      "category": "render-deploy",
+      "triggers": [
+        "render-deploy"
+      ],
+      "path": "skills/render-deploy/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "screenshot",
+      "name": "Screenshot",
+      "description": "Skill: screenshot",
+      "source": "local",
+      "category": "screenshot",
+      "triggers": [
+        "screenshot"
+      ],
+      "path": "skills/screenshot/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "security-ownership-map",
+      "name": "Security Ownership Map",
+      "description": "Skill: security-ownership-map",
+      "source": "local",
+      "category": "security-ownership-map",
+      "triggers": [
+        "security-ownership-map"
+      ],
+      "path": "skills/security-ownership-map/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "security-threat-model",
+      "name": "Security Threat Model",
+      "description": "Skill: security-threat-model",
+      "source": "local",
+      "category": "security-threat-model",
+      "triggers": [
+        "security-threat-model"
+      ],
+      "path": "skills/security-threat-model/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "self-improvement",
+      "name": "Self Improvement",
+      "description": "Skill: self-improvement",
+      "source": "local",
+      "category": "self-improvement",
+      "triggers": [
+        "self-improvement"
+      ],
+      "path": "skills/self-improvement/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "session-viewer",
+      "name": "Session Viewer",
+      "description": "Skill: session-viewer",
+      "source": "local",
+      "category": "session-viewer",
+      "triggers": [
+        "session-viewer"
+      ],
+      "path": "skills/session-viewer/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "simplify-and-harden",
+      "name": "Simplify And Harden",
+      "description": "Skill: simplify-and-harden",
+      "source": "local",
+      "category": "simplify-and-harden",
+      "triggers": [
+        "simplify-and-harden"
+      ],
+      "path": "skills/simplify-and-harden/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "skill-pipeline",
+      "name": "Skill Pipeline",
+      "description": "Skill: skill-pipeline",
+      "source": "local",
+      "category": "skill-pipeline",
+      "triggers": [
+        "skill-pipeline"
+      ],
+      "path": "skills/skill-pipeline/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "skill-tester",
+      "name": "Skill Tester",
+      "description": "Skill: skill-tester",
+      "source": "local",
+      "category": "skill-tester",
+      "triggers": [
+        "skill-tester"
+      ],
+      "path": "skills/skill-tester/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "smart-home/openhue",
+      "name": "Smart Home/Openhue",
+      "description": "Skill: smart-home/openhue",
+      "source": "local",
+      "category": "smart-home",
+      "triggers": [
+        "smart-home/openhue"
+      ],
+      "path": "skills/smart-home/openhue/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "social-media/xurl",
+      "name": "Social Media/Xurl",
+      "description": "Skill: social-media/xurl",
+      "source": "local",
+      "category": "social-media",
+      "triggers": [
+        "social-media/xurl"
+      ],
+      "path": "skills/social-media/xurl/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/binary-patching-for-ai-providers",
+      "name": "Software Development/Binary Patching For Ai Providers",
+      "description": "Skill: software-development/binary-patching-for-ai-providers",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/binary-patching-for-ai-providers"
+      ],
+      "path": "skills/software-development/binary-patching-for-ai-providers/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/debugging-hermes-tui-commands",
+      "name": "Software Development/Debugging Hermes Tui Commands",
+      "description": "Skill: software-development/debugging-hermes-tui-commands",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/debugging-hermes-tui-commands"
+      ],
+      "path": "skills/software-development/debugging-hermes-tui-commands/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/gui-component-integration",
+      "name": "Software Development/Gui Component Integration",
+      "description": "Skill: software-development/gui-component-integration",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/gui-component-integration"
+      ],
+      "path": "skills/software-development/gui-component-integration/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/hermes-agent-skill-authoring",
+      "name": "Software Development/Hermes Agent Skill Authoring",
+      "description": "Skill: software-development/hermes-agent-skill-authoring",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/hermes-agent-skill-authoring"
+      ],
+      "path": "skills/software-development/hermes-agent-skill-authoring/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/node-inspect-debugger",
+      "name": "Software Development/Node Inspect Debugger",
+      "description": "Skill: software-development/node-inspect-debugger",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/node-inspect-debugger"
+      ],
+      "path": "skills/software-development/node-inspect-debugger/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/plan",
+      "name": "Software Development/Plan",
+      "description": "Skill: software-development/plan",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/plan"
+      ],
+      "path": "skills/software-development/plan/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/python-debugpy",
+      "name": "Software Development/Python Debugpy",
+      "description": "Skill: software-development/python-debugpy",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/python-debugpy"
+      ],
+      "path": "skills/software-development/python-debugpy/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/requesting-code-review",
+      "name": "Software Development/Requesting Code Review",
+      "description": "Skill: software-development/requesting-code-review",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/requesting-code-review"
+      ],
+      "path": "skills/software-development/requesting-code-review/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/simplify-code",
+      "name": "Software Development/Simplify Code",
+      "description": "Skill: software-development/simplify-code",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/simplify-code"
+      ],
+      "path": "skills/software-development/simplify-code/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/spike",
+      "name": "Software Development/Spike",
+      "description": "Skill: software-development/spike",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/spike"
+      ],
+      "path": "skills/software-development/spike/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/subagent-driven-development",
+      "name": "Software Development/Subagent Driven Development",
+      "description": "Skill: software-development/subagent-driven-development",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/subagent-driven-development"
+      ],
+      "path": "skills/software-development/subagent-driven-development/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/systematic-debugging",
+      "name": "Software Development/Systematic Debugging",
+      "description": "Skill: software-development/systematic-debugging",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/systematic-debugging"
+      ],
+      "path": "skills/software-development/systematic-debugging/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/test-driven-development",
+      "name": "Software Development/Test Driven Development",
+      "description": "Skill: software-development/test-driven-development",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/test-driven-development"
+      ],
+      "path": "skills/software-development/test-driven-development/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "software-development/writing-plans",
+      "name": "Software Development/Writing Plans",
+      "description": "Skill: software-development/writing-plans",
+      "source": "local",
+      "category": "software-development",
+      "triggers": [
+        "software-development/writing-plans"
+      ],
+      "path": "skills/software-development/writing-plans/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "speech",
+      "name": "Speech",
+      "description": "Skill: speech",
+      "source": "local",
+      "category": "speech",
+      "triggers": [
+        "speech"
+      ],
+      "path": "skills/speech/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "swarm-orchestrator",
+      "name": "Swarm Orchestrator",
+      "description": "Skill: swarm-orchestrator",
+      "source": "local",
+      "category": "swarm-orchestrator",
+      "triggers": [
+        "swarm-orchestrator"
+      ],
+      "path": "skills/swarm-orchestrator/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "system-hardening",
+      "name": "System Hardening",
+      "description": "Skill: system-hardening",
+      "source": "local",
+      "category": "system-hardening",
+      "triggers": [
+        "system-hardening"
+      ],
+      "path": "skills/system-hardening/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "task_printer",
+      "name": "Task Printer",
+      "description": "Skill: task_printer",
+      "source": "local",
+      "category": "task_printer",
+      "triggers": [
+        "task_printer"
+      ],
+      "path": "skills/task_printer/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "transcribe",
+      "name": "Transcribe",
+      "description": "Skill: transcribe",
+      "source": "local",
+      "category": "transcribe",
+      "triggers": [
+        "transcribe"
+      ],
+      "path": "skills/transcribe/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "verify-gate",
+      "name": "Verify Gate",
+      "description": "Skill: verify-gate",
+      "source": "local",
+      "category": "verify-gate",
+      "triggers": [
+        "verify-gate"
+      ],
+      "path": "skills/verify-gate/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "winui-app",
+      "name": "Winui App",
+      "description": "Skill: winui-app",
+      "source": "local",
+      "category": "winui-app",
+      "triggers": [
+        "winui-app"
+      ],
+      "path": "skills/winui-app/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "yeet",
+      "name": "Yeet",
+      "description": "Skill: yeet",
+      "source": "local",
+      "category": "yeet",
+      "triggers": [
+        "yeet"
+      ],
+      "path": "skills/yeet/SKILL.md",
+      "local": true,
+      "enabled": true
+    },
+    {
+      "id": "zero-day-research",
+      "name": "Zero Day Research",
+      "description": "Skill: zero-day-research",
+      "source": "local",
+      "category": "zero-day-research",
+      "triggers": [
+        "zero-day-research"
+      ],
+      "path": "skills/zero-day-research/SKILL.md",
+      "local": true,
+      "enabled": true
     }
   ],
-  "total": 299
+  "total": 478
 }
