@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-directory: website
+          cache-dependency-path: website/package-lock.json
       - run: cd website && npm ci
       - run: cd website && npm run build
       - uses: actions/upload-pages-artifact@v3
