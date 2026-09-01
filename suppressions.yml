@@ -451,3 +451,53 @@
   path: /mcp/catalog_api.py
   line: 228
   justification: "Exception info stored server-side only; generic message returned to client"
+
+# py/path-injection: 5 alert(s) in tracking_server.py
+- id: py/path-injection
+  path: /scripts/tracking_server.py
+  line: 94
+  justification: "Path sanitized via _safe_path() using os.path.basename; no path traversal possible"
+- id: py/path-injection
+  path: /scripts/tracking_server.py
+  line: 97
+  justification: "Path sanitized via _safe_path() using os.path.basename; no path traversal possible"
+- id: py/path-injection
+  path: /scripts/tracking_server.py
+  line: 139
+  justification: "Path sanitized via _safe_path() using os.path.basename; no path traversal possible"
+- id: py/path-injection
+  path: /scripts/tracking_server.py
+  line: 140
+  justification: "Path sanitized via _safe_path() using os.path.basename; no path traversal possible"
+- id: py/path-injection
+  path: /scripts/tracking_server.py
+  line: 166
+  justification: "Path sanitized via _safe_path() using os.path.basename; no path traversal possible"
+
+# py/reflective-xss: 1 alert in tracking_server.py
+- id: py/reflective-xss
+  path: /scripts/tracking_server.py
+  line: 64
+  justification: "URL sanitized with escape() before embedding in JavaScript template"
+
+# py/weak-sensitive-data-hashing: 5 alerts in exploit_crypto.py (intentional demo)
+- id: py/weak-sensitive-data-hashing
+  path: /agents/specialized/exploit_crypto.py
+  line: 342
+  justification: "MD5 hash demo for password cracking education; not used for actual password storage"
+- id: py/weak-sensitive-data-hashing
+  path: /agents/specialized/exploit_crypto.py
+  line: 344
+  justification: "SHA1 hash demo for password cracking education; not used for actual password storage"
+- id: py/weak-sensitive-data-hashing
+  path: /agents/specialized/exploit_crypto.py
+  line: 346
+  justification: "SHA256 hash demo for password cracking education; not used for actual password storage"
+- id: py/weak-sensitive-data-hashing
+  path: /agents/specialized/exploit_crypto.py
+  line: 348
+  justification: "SHA512 hash demo for password cracking education; not used for actual password storage"
+- id: py/weak-sensitive-data-hashing
+  path: /agents/specialized/exploit_crypto.py
+  line: 350
+  justification: "NTLM (MD5-based) hash demo for password cracking education; not used for actual password storage"

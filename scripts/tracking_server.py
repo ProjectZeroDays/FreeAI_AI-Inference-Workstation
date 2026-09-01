@@ -18,6 +18,12 @@ RESULTS_DIR = Path(__file__).parent.parent / "data" / "campaign_results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def _safe_path(user_input: str) -> Path:
+    """Validate user input stays within RESULTS_DIR to prevent path traversal."""
+    sanitized = os.path.basename(user_input)
+    return RESULTS_DIR / sanitized
+
+
 @app.route("/track/pixel/<campaign_id>/<variant_id>/<tracking_id>")
 def track_pixel(campaign_id, variant_id, tracking_id):
     """Track email open via tracking pixel."""
@@ -60,8 +66,9 @@ def track_redirect(campaign_id, variant_id, tracking_id):
     
     _save_result(result)
     
-    # Redirect to target
-    return f"<html><body><script>window.location.href='{target_url}'</script></body></html>"
+    # Redirect to target (sanitize to prevent XSS)
+    safe_url = target_url.replace("'", "\\'").replace("<", "\\x3c").replace(">", "\\x3e")
+    return f"<html><body><script>window.location.href='{safe_url}'</script></body></html>"
 
 
 @app.route("/track/submit", methods=["POST"])
@@ -89,14 +96,14 @@ def track_submit():
 @app.route("/campaigns/<campaign_id>")
 def get_campaign(campaign_id):
     """Get campaign results."""
-    results_file = RESULTS_DIR / f"{campaign_id}-results.json"
-    
+    results_file = _safe_path(campaign_id)
+
     if not results_file.exists():
         return jsonify({"error": "Campaign not found"}), 404
-    
+
     with open(results_file) as f:
         data = json.load(f)
-    
+
     return jsonify(data)
 
 
@@ -134,8 +141,8 @@ def index():
 def _save_result(result: dict):
     """Save tracking result to file."""
     campaign_id = result.get("campaign_id", "unknown")
-    results_file = RESULTS_DIR / f"{campaign_id}-results.json"
-    
+    results_file = _safe_path(campaign_id)
+
     if results_file.exists():
         with open(results_file) as f:
             data = json.load(f)
@@ -151,9 +158,9 @@ def _save_result(result: dict):
             },
             "results": []
         }
-    
+
     data["results"].append(result)
-    
+
     # Update stats
     for r in data["results"]:
         if r["type"] == "open":
@@ -162,7 +169,7 @@ def _save_result(result: dict):
             data["stats"]["total_clicked"] += 1
         elif r["type"] == "submit":
             data["stats"]["total_submitted"] += 1
-    
+
     with open(results_file, "w") as f:
         json.dump(data, f, indent=2)
 
