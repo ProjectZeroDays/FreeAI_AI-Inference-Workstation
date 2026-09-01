@@ -3832,7 +3832,24 @@
       ],
       "path": "C:\\Users\\Project Zero\\FreeAI_AI_Inference_Workstation\\.agents\\skills\\zen-review\\SKILL.md",
       "local": true
+    },
+    {
+      "id": "darkweb_scanner",
+      "name": "DarkWeb Scanner",
+      "description": "Dark web (.onion) content scanner via Tor proxy -- safe read-only crawling, indexing, and structured result export for display in the dark web browser.",
+      "source": "local",
+      "category": "red_teaming",
+      "triggers": [
+        "darkweb",
+        "onion",
+        "tor",
+        "dark web crawler",
+        "DARKWEB_SCANNER"
+      ],
+      "path": "skills/red_teaming/darkweb_scanner/SKILL.md",
+      "local": true,
+      "enabled": true
     }
   ],
-  "total": 298
+  "total": 299
 }
