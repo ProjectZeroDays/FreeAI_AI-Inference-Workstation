@@ -1,0 +1,4515 @@
+{
+  "title": "FreeAI Dashboard API",
+  "version": "1.0",
+  "endpoints": [
+    {
+      "path": "/",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "index",
+      "docstring": ""
+    },
+    {
+      "path": "/admin/hot-models",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "admin_hot_models_page",
+      "docstring": ""
+    },
+    {
+      "path": "/admin/hot-models",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "admin_hot_models_load",
+      "docstring": ""
+    },
+    {
+      "path": "/admin/hot-models/<model_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "admin_hot_models_unload",
+      "docstring": ""
+    },
+    {
+      "path": "/admin/hot-models/health",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "admin_hot_models_health",
+      "docstring": ""
+    },
+    {
+      "path": "/admin/model-switch",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "admin_model_switch",
+      "docstring": ""
+    },
+    {
+      "path": "/ai-red-teaming",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_ai_red_teaming",
+      "docstring": ""
+    },
+    {
+      "path": "/ai-training",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "ai_training_page",
+      "docstring": ""
+    },
+    {
+      "path": "/aikido",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "aikido_page",
+      "docstring": ""
+    },
+    {
+      "path": "/api/agents/list",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_agents_list",
+      "docstring": "Return active agents."
+    },
+    {
+      "path": "/api/ai-redteam/campaigns",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ai_redteam_campaigns",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ai-redteam/remediate",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ai_redteam_remediate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ai-redteam/results",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ai_redteam_results",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ai-redteam/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ai_redteam_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/aikido",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_aikido",
+      "docstring": ""
+    },
+    {
+      "path": "/api/aikido/scan",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_aikido_scan",
+      "docstring": ""
+    },
+    {
+      "path": "/api/aikido/settings",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_aikido_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/aikido/settings",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_aikido_settings_save",
+      "docstring": ""
+    },
+    {
+      "path": "/api/aikido/test",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_aikido_test",
+      "docstring": ""
+    },
+    {
+      "path": "/api/alerts",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_alerts",
+      "docstring": "Return active alerts."
+    },
+    {
+      "path": "/api/analytics/alerts",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_analytics_alerts",
+      "docstring": ""
+    },
+    {
+      "path": "/api/analytics/predict",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_analytics_predict",
+      "docstring": ""
+    },
+    {
+      "path": "/api/analytics/risk-score",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_analytics_risk_score",
+      "docstring": ""
+    },
+    {
+      "path": "/api/analytics/trends",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_analytics_trends",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/bluetooth",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_android_exploit_bluetooth",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_android_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_android_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/image",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_android_exploit_image",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/kernel",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_android_exploit_kernel",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/mms",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_android_exploit_mms",
+      "docstring": ""
+    },
+    {
+      "path": "/api/android-exploit/nfc",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_android_exploit_nfc",
+      "docstring": ""
+    },
+    {
+      "path": "/api/apt/feed/refresh",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_apt_feed_refresh",
+      "docstring": ""
+    },
+    {
+      "path": "/api/apt/groups",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_apt_groups",
+      "docstring": ""
+    },
+    {
+      "path": "/api/apt/threats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_apt_threats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/apt/ttps",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_apt_ttps",
+      "docstring": ""
+    },
+    {
+      "path": "/api/audit/clear",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_audit_clear",
+      "docstring": ""
+    },
+    {
+      "path": "/api/audit/query",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_audit_query",
+      "docstring": ""
+    },
+    {
+      "path": "/api/audit/summary",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_audit_summary",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_automations_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automation_create",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations/<job_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_automation_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations/<job_id>/run",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automation_run_now",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations/<job_id>/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automation_toggle",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations/history",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_automation_history",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automations/stats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_automation_stats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/can-inject",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automobile_exploit_can_inject",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_automobile_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_automobile_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/infotainment",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automobile_exploit_infotainment",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/keyless",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automobile_exploit_keyless",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/obd2",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automobile_exploit_obd2",
+      "docstring": ""
+    },
+    {
+      "path": "/api/automobile-exploit/telematics",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_automobile_exploit_telematics",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bluetooth-exploit/ble-deauth",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_bluetooth_exploit_ble_deauth",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bluetooth-exploit/ble-sniff",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_bluetooth_exploit_ble_sniff",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bluetooth-exploit/blueborne",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_bluetooth_exploit_blueborne",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bluetooth-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_bluetooth_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bluetooth-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_bluetooth_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bluetooth-exploit/keyless",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_bluetooth_exploit_keyless",
+      "docstring": ""
+    },
+    {
+      "path": "/api/browser/reset",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "reset_browser_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/browser/settings",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "get_browser_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/browser/settings",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "save_browser_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/browser/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_browser_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/bt-scan/devices",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_bt_scan_devices",
+      "docstring": ""
+    },
+    {
+      "path": "/api/c2/events",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_c2_events",
+      "docstring": ""
+    },
+    {
+      "path": "/api/c2/scan",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_c2_scan",
+      "docstring": ""
+    },
+    {
+      "path": "/api/c2/shell",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_c2_shell",
+      "docstring": ""
+    },
+    {
+      "path": "/api/campaign",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_campaign",
+      "docstring": ""
+    },
+    {
+      "path": "/api/campaign/<campaign_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_campaign_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/campaign/<campaign_id>/run",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_campaign_run",
+      "docstring": ""
+    },
+    {
+      "path": "/api/campaign/create",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_campaign_create",
+      "docstring": ""
+    },
+    {
+      "path": "/api/campaigns",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_campaigns",
+      "docstring": "Return campaign list."
+    },
+    {
+      "path": "/api/campaigns/<id>/delete",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_campaigns_delete",
+      "docstring": "Delete a campaign."
+    },
+    {
+      "path": "/api/campaigns/<id>/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_campaigns_toggle",
+      "docstring": "Toggle campaign status."
+    },
+    {
+      "path": "/api/campaigns/create",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_campaigns_create",
+      "docstring": "Create a new campaign."
+    },
+    {
+      "path": "/api/cards/settings",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_cards_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/cards/settings/<card_name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_cards_settings_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/cards/settings/<card_name>",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_cards_settings_update",
+      "docstring": ""
+    },
+    {
+      "path": "/api/clients",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_clients",
+      "docstring": ""
+    },
+    {
+      "path": "/api/cloud/configs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_cloud_configs",
+      "docstring": ""
+    },
+    {
+      "path": "/api/cloud/exploit-sim",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_cloud_exploit_sim",
+      "docstring": ""
+    },
+    {
+      "path": "/api/cloud/iam",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_cloud_iam",
+      "docstring": ""
+    },
+    {
+      "path": "/api/cloud/scan",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_cloud_scan",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/config",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_get_config",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/config",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_save_config",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/messages",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_messages",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/messages/clear",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_clear_messages",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_list_providers",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/<pid>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_get_provider",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/<pid>/configure",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_configure_provider",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/<pid>/connect",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_connect_provider",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/<pid>/disconnect",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_disconnect_provider",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/<pid>/health",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_health_provider",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/<pid>/test",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_test_provider",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/providers/test-all",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_test_all",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/receive/<pid>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_receive",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/send",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "communications.comm_send",
+      "docstring": ""
+    },
+    {
+      "path": "/api/comm/stats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications.comm_stats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/config",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "get_config",
+      "docstring": ""
+    },
+    {
+      "path": "/api/configs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_configs_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/configs/<path:name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_configs_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/configs/<path:name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_configs_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/configs/backup",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_configs_backup",
+      "docstring": ""
+    },
+    {
+      "path": "/api/configs/backups/<path:name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_configs_backups_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/configs/backups/<path:name>/<path:backup_name>",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_configs_backup_restore",
+      "docstring": ""
+    },
+    {
+      "path": "/api/crashes",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_crashes",
+      "docstring": ""
+    },
+    {
+      "path": "/api/crashes/<filename>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_crash_detail",
+      "docstring": ""
+    },
+    {
+      "path": "/api/crashes/prune",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_crashes_prune",
+      "docstring": ""
+    },
+    {
+      "path": "/api/dashboard/jobs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_dashboard_jobs",
+      "docstring": "Return recent jobs for dashboard."
+    },
+    {
+      "path": "/api/dashboard/overview",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_dashboard_overview",
+      "docstring": "Return unified dashboard overview data."
+    },
+    {
+      "path": "/api/ddns/provision",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ddns_provision",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ddns/records",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ddns_records",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ddns/records/<record_id>",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_ddns_update_record",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ddns/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ddns_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ddns/sync",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ddns_sync",
+      "docstring": ""
+    },
+    {
+      "path": "/api/dependency/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_dependency_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/dependency/patch",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_dependency_patch",
+      "docstring": ""
+    },
+    {
+      "path": "/api/dependency/plugins",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_dependency_plugins",
+      "docstring": ""
+    },
+    {
+      "path": "/api/dependency/resources",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_dependency_resources",
+      "docstring": ""
+    },
+    {
+      "path": "/api/dependency/settings",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_dependency_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/encryption/check-passphrase",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_encryption_check_passphrase",
+      "docstring": ""
+    },
+    {
+      "path": "/api/encryption/disks",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_encryption_disks",
+      "docstring": "Return LUKS status and block device info for all disks."
+    },
+    {
+      "path": "/api/encryption/encrypt-disk",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_encryption_encrypt_disk",
+      "docstring": "Encrypt a disk with LUKS (dry-run safe on non-/dev/* paths)."
+    },
+    {
+      "path": "/api/encryption/recovery-key",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_encryption_recovery_key",
+      "docstring": "Generate a random recovery key for LUKS encryption."
+    },
+    {
+      "path": "/api/errors",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_errors",
+      "docstring": ""
+    },
+    {
+      "path": "/api/errors/ack/<err_id>",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_errors_ack",
+      "docstring": ""
+    },
+    {
+      "path": "/api/errors/clear",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_errors_clear",
+      "docstring": ""
+    },
+    {
+      "path": "/api/errors/export",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_errors_export",
+      "docstring": ""
+    },
+    {
+      "path": "/api/errors/stats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_errors_stats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/evals/history",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_evals_history",
+      "docstring": "Return raw history entries."
+    },
+    {
+      "path": "/api/evals/leaderboard",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_evals_leaderboard",
+      "docstring": "Return leaderboard summary from history."
+    },
+    {
+      "path": "/api/evals/results/<run_id>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_evals_results",
+      "docstring": "Return full results for a specific run."
+    },
+    {
+      "path": "/api/evals/run",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_evals_run",
+      "docstring": "Trigger a new eval run (sync or async)."
+    },
+    {
+      "path": "/api/evals/runs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_evals_runs",
+      "docstring": ""
+    },
+    {
+      "path": "/api/evals/tasks",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_evals_tasks",
+      "docstring": "Return the golden task definitions."
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/analyze-chain",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_analyze_chain",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/build-chain",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_build_chain",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/list-chains",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_list_chains",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/optimize-chain",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_optimize_chain",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/chained-zero-day/simulate-chain",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploit_cat_chained_zero_day_simulate_chain",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/deserialization-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_deserialization_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/deserialization-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_deserialization_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/deserialization-exploit/generate-payload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_deserialization_exploit_generate_payload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/deserialization-exploit/primitives",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_deserialization_exploit_primitives",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/deserialization-exploit/simulate-java",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_deserialization_exploit_simulate_java",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/deserialization-exploit/simulate-python",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_deserialization_exploit_simulate_python",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_file_parse_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_file_parse_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/generate-payload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_file_parse_exploit_generate_payload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/primitives",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_file_parse_exploit_primitives",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/simulate-email",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_file_parse_exploit_simulate_email",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/simulate-office",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_file_parse_exploit_simulate_office",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/simulate-pdf",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_file_parse_exploit_simulate_pdf",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/file-parse-exploit/simulate-xxe",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_file_parse_exploit_simulate_xxe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_media_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_media_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/generate-payload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_media_exploit_generate_payload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/primitives",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_media_exploit_primitives",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/simulate-audio",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_media_exploit_simulate_audio",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/simulate-image",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_media_exploit_simulate_image",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/media-exploit/simulate-video",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_media_exploit_simulate_video",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_memory_corruption_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_memory_corruption_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/generate-payload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_memory_corruption_generate_payload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/primitives",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_memory_corruption_primitives",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/simulate-buffer-overflow",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_memory_corruption_simulate_buffer_overflow",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/simulate-format-string",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_memory_corruption_simulate_format_string",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/simulate-heap-corruption",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_memory_corruption_simulate_heap_corruption",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-corruption/simulate-uaf",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_memory_corruption_simulate_uaf",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/<name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/list",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/map-to-exploit",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_map_to_exploit",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/mitigations/<name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_mitigations",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/memory-primitives/simulate",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploit_cat_memory_primitives_simulate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_messaging_rce_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_messaging_rce_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/generate-payload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_messaging_rce_generate_payload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/primitives",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_messaging_rce_primitives",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/simulate-imessage",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_messaging_rce_simulate_imessage",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/simulate-signal",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_messaging_rce_simulate_signal",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/simulate-telegram",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_messaging_rce_simulate_telegram",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/messaging-rce/simulate-whatsapp",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_messaging_rce_simulate_whatsapp",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/blind-ssrf",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ssrf_exploit_blind_ssrf",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/cloud-metadata",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ssrf_exploit_cloud_metadata",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ssrf_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ssrf_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/dns-rebinding",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ssrf_exploit_dns_rebinding",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/generate-payload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ssrf_exploit_generate_payload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/primitives",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ssrf_exploit_primitives",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploit-cat/ssrf-exploit/simulate",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ssrf_exploit_simulate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploits/chains",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploits_chains",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploits/cve/search",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploits_cve_search",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploits/db",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_exploits_db",
+      "docstring": ""
+    },
+    {
+      "path": "/api/exploits/poc",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_exploits_poc",
+      "docstring": ""
+    },
+    {
+      "path": "/api/external-providers",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_external_providers",
+      "docstring": "Return external provider list."
+    },
+    {
+      "path": "/api/files/list",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_files_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/files/read",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_files_read",
+      "docstring": ""
+    },
+    {
+      "path": "/api/files/upload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_files_upload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/fingerprint/compare",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_fingerprint_compare",
+      "docstring": ""
+    },
+    {
+      "path": "/api/fingerprint/detect",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_fingerprint_detect",
+      "docstring": ""
+    },
+    {
+      "path": "/api/fingerprint/tips",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_fingerprint_tips",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gateway_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/messages",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_gateway_messages",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/platforms",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gateway_platforms",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/platforms/<name>/connect",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gateway_connect",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/platforms/<name>/disconnect",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gateway_disconnect",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/stats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gateway_stats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/transfer",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gateway_transfer",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gateway/voice/transcribe",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gateway_voice_transcribe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_godmode_state",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode/campaign",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_godmode_campaign",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode/copy-skill",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_godmode_copy_skill",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode/disable",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_godmode_disable",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode/enable",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_godmode_enable",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode/fallback-chain",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_godmode_fallback_chain",
+      "docstring": ""
+    },
+    {
+      "path": "/api/godmode/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_godmode_toggle",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gpu",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu",
+      "docstring": "GPU telemetry endpoint \u2014 returns flat state (backward compat) plus"
+    },
+    {
+      "path": "/api/gpu-workstation",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_workstation",
+      "docstring": "Return GPU workstation telemetry."
+    },
+    {
+      "path": "/api/gpu-workstation/loss",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_workstation_loss",
+      "docstring": "Return training loss curve data."
+    },
+    {
+      "path": "/api/gpu/metrics",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_metrics",
+      "docstring": "Return GPU performance metrics (utilization, memory, temperature)."
+    },
+    {
+      "path": "/api/gpu/perf/disable",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gpu_perf_disable",
+      "docstring": "Disable GPU optimizations."
+    },
+    {
+      "path": "/api/gpu/perf/enable",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gpu_perf_enable",
+      "docstring": "Enable GPU optimizations (CUDA graphs, quantized KV)."
+    },
+    {
+      "path": "/api/gpu/perf/recommend",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_perf_recommend",
+      "docstring": "Get GPU optimization recommendations based on hardware."
+    },
+    {
+      "path": "/api/gpu/perf/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_perf_status",
+      "docstring": "Check which GPU optimizations are active."
+    },
+    {
+      "path": "/api/gpu/scan",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gpu_scan",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gpu/warmup",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_warmup_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gpu/warmup",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_gpu_warmup_run",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gpu/warmup/config",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_warmup_config",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gpu/warmup/detect",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_warmup_detect",
+      "docstring": ""
+    },
+    {
+      "path": "/api/gpu/warmup/results",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_gpu_warmup_results",
+      "docstring": ""
+    },
+    {
+      "path": "/api/health",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "health",
+      "docstring": ""
+    },
+    {
+      "path": "/api/health/alerts",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_health_alerts",
+      "docstring": "Return current alerts from alerts.json."
+    },
+    {
+      "path": "/api/health/full",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_health_full",
+      "docstring": "Return cached full health data (GPU, disk, memory, deps, alerts)."
+    },
+    {
+      "path": "/api/health/trigger",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_health_trigger",
+      "docstring": "Manually trigger a health check."
+    },
+    {
+      "path": "/api/hermes-status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_hermes_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/hermes/proxy/<path:subpath>",
+      "methods": [
+        "PUT",
+        "GET",
+        "DELETE",
+        "POST"
+      ],
+      "endpoint": "api_hermes_proxy",
+      "docstring": ""
+    },
+    {
+      "path": "/api/hot-models",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_hot_models",
+      "docstring": ""
+    },
+    {
+      "path": "/api/i18n/locales",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_i18n_locales",
+      "docstring": ""
+    },
+    {
+      "path": "/api/i18n/set",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_i18n_set",
+      "docstring": ""
+    },
+    {
+      "path": "/api/i18n/strings/<locale>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_i18n_strings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/identity/monitor",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_identity_monitor",
+      "docstring": ""
+    },
+    {
+      "path": "/api/identity/roles",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_identity_roles",
+      "docstring": ""
+    },
+    {
+      "path": "/api/identity/sessions",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_identity_sessions",
+      "docstring": ""
+    },
+    {
+      "path": "/api/identity/users",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_identity_users",
+      "docstring": ""
+    },
+    {
+      "path": "/api/incidents/<incident_id>/status",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_incidents_update_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/incidents/create",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_incidents_create",
+      "docstring": ""
+    },
+    {
+      "path": "/api/incidents/list",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_incidents_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/incidents/playbooks",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_incidents_playbooks",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ios-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ios_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ios-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_ios_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ios-exploit/image",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ios_exploit_image",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ios-exploit/imessage",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ios_exploit_imessage",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ios-exploit/kernel",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ios_exploit_kernel",
+      "docstring": ""
+    },
+    {
+      "path": "/api/ios-exploit/webkit",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_ios_exploit_webkit",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_iot_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-exploit/default-creds",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_iot_exploit_default_creds",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_iot_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-exploit/firmware",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_iot_exploit_firmware",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-exploit/hardware-debug",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_iot_exploit_hardware_debug",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-exploit/mqtt",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_iot_exploit_mqtt",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-scan/devices",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_iot_scan_devices",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot-scan/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_iot_scan_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot/assess",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_iot_assess",
+      "docstring": ""
+    },
+    {
+      "path": "/api/iot/firmware",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_iot_firmware",
+      "docstring": ""
+    },
+    {
+      "path": "/api/jobs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_jobs_list",
+      "docstring": "Return all scheduled jobs."
+    },
+    {
+      "path": "/api/jobs/<id>/delete",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_job_delete",
+      "docstring": "Delete a job."
+    },
+    {
+      "path": "/api/jobs/<id>/run",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_job_run",
+      "docstring": "Run a job immediately."
+    },
+    {
+      "path": "/api/jobs/<id>/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_job_toggle",
+      "docstring": "Toggle a job enabled/disabled."
+    },
+    {
+      "path": "/api/jobs/create",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_job_create",
+      "docstring": "Create a new job."
+    },
+    {
+      "path": "/api/linux-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_linux_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/linux-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_linux_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/linux-exploit/dirty-pipe",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_linux_exploit_dirty_pipe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/linux-exploit/docker-escape",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_linux_exploit_docker_escape",
+      "docstring": ""
+    },
+    {
+      "path": "/api/linux-exploit/glibc-heap",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_linux_exploit_glibc_heap",
+      "docstring": ""
+    },
+    {
+      "path": "/api/linux-exploit/systemd",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_linux_exploit_systemd",
+      "docstring": ""
+    },
+    {
+      "path": "/api/logs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_logs",
+      "docstring": ""
+    },
+    {
+      "path": "/api/logs/clear",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_logs_clear",
+      "docstring": ""
+    },
+    {
+      "path": "/api/logs/loki/label/<name>/values",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_logs_loki_label_values",
+      "docstring": ""
+    },
+    {
+      "path": "/api/logs/loki/labels",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_logs_loki_labels",
+      "docstring": ""
+    },
+    {
+      "path": "/api/logs/loki/query",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_logs_loki_query",
+      "docstring": ""
+    },
+    {
+      "path": "/api/loot",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_loot_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/loot/<category>/<idx>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_loot_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/loot/clear",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_loot_clear",
+      "docstring": ""
+    },
+    {
+      "path": "/api/macos-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_macos_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/macos-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_macos_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/macos-exploit/image",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_macos_exploit_image",
+      "docstring": ""
+    },
+    {
+      "path": "/api/macos-exploit/kernel",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_macos_exploit_kernel",
+      "docstring": ""
+    },
+    {
+      "path": "/api/macos-exploit/metal",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_macos_exploit_metal",
+      "docstring": ""
+    },
+    {
+      "path": "/api/macos-exploit/safari",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_macos_exploit_safari",
+      "docstring": ""
+    },
+    {
+      "path": "/api/malware/analyze",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_malware_analyze",
+      "docstring": ""
+    },
+    {
+      "path": "/api/malware/classes",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_malware_classes",
+      "docstring": ""
+    },
+    {
+      "path": "/api/malware/hash/<sample_hash>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_malware_hash",
+      "docstring": ""
+    },
+    {
+      "path": "/api/malware/yara",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_malware_yara",
+      "docstring": ""
+    },
+    {
+      "path": "/api/mcp",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_mcp",
+      "docstring": ""
+    },
+    {
+      "path": "/api/mcp/register",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_mcp_register",
+      "docstring": ""
+    },
+    {
+      "path": "/api/memory",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_memory_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/memory/learnings",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_memory_learnings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/memory/preferences",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_memory_preferences",
+      "docstring": ""
+    },
+    {
+      "path": "/api/memory/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_memory_projects",
+      "docstring": ""
+    },
+    {
+      "path": "/api/memory/projects/<name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_memory_delete_project",
+      "docstring": ""
+    },
+    {
+      "path": "/api/memory/stats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_memory_stats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/metrics",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_metrics",
+      "docstring": ""
+    },
+    {
+      "path": "/api/metrics/runtime",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_metrics_runtime",
+      "docstring": "Aggregated runtime stats from all logging sources."
+    },
+    {
+      "path": "/api/monitor/alerts",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_monitor_alerts",
+      "docstring": ""
+    },
+    {
+      "path": "/api/monitor/anomalies",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_monitor_anomalies",
+      "docstring": ""
+    },
+    {
+      "path": "/api/monitor/configure",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_monitor_configure",
+      "docstring": ""
+    },
+    {
+      "path": "/api/monitor/metrics",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_monitor_metrics",
+      "docstring": ""
+    },
+    {
+      "path": "/api/net-scan/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_net_scan_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/net-scan/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_net_scan_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/network/optimize",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_network_optimize",
+      "docstring": ""
+    },
+    {
+      "path": "/api/network/quality",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_network_quality",
+      "docstring": ""
+    },
+    {
+      "path": "/api/network/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_network_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/network/tor/circuit",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_network_tor_circuit",
+      "docstring": ""
+    },
+    {
+      "path": "/api/network/vpn/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_network_vpn_toggle",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_nfc_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_nfc_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/emv-clone",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_nfc_exploit_emv_clone",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/ndef-inject",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_nfc_exploit_ndef_inject",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/payment-intercept",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_nfc_exploit_payment_intercept",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/relay",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_nfc_exploit_relay",
+      "docstring": ""
+    },
+    {
+      "path": "/api/nfc-exploit/rfid-skim",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_nfc_exploit_rfid_skim",
+      "docstring": ""
+    },
+    {
+      "path": "/api/notifications",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_notifications",
+      "docstring": ""
+    },
+    {
+      "path": "/api/notifications/clear",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_notifications_clear",
+      "docstring": ""
+    },
+    {
+      "path": "/api/notifications/settings",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_notifications_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/permissions",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_permissions",
+      "docstring": ""
+    },
+    {
+      "path": "/api/permissions/check",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_permissions_check",
+      "docstring": ""
+    },
+    {
+      "path": "/api/permissions/list",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_permissions_list",
+      "docstring": "Return all agent permissions."
+    },
+    {
+      "path": "/api/permissions/set",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_permissions_set",
+      "docstring": "Set a permission toggle."
+    },
+    {
+      "path": "/api/presets",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_presets",
+      "docstring": ""
+    },
+    {
+      "path": "/api/presets/<path:name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_delete_preset",
+      "docstring": ""
+    },
+    {
+      "path": "/api/presets/<path:name>/apply",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_apply_preset",
+      "docstring": ""
+    },
+    {
+      "path": "/api/prompts",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_get_prompts",
+      "docstring": ""
+    },
+    {
+      "path": "/api/prompts",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_create_prompt",
+      "docstring": ""
+    },
+    {
+      "path": "/api/prompts/<int:prompt_id>",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_update_prompt",
+      "docstring": ""
+    },
+    {
+      "path": "/api/prompts/<int:prompt_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_delete_prompt",
+      "docstring": ""
+    },
+    {
+      "path": "/api/providers",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_providers",
+      "docstring": ""
+    },
+    {
+      "path": "/api/proxy-chain/configure",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_proxy_chain_configure",
+      "docstring": ""
+    },
+    {
+      "path": "/api/proxy-chain/health",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_proxy_chain_health",
+      "docstring": ""
+    },
+    {
+      "path": "/api/proxy-chain/rotate",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_proxy_chain_rotate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/proxy-chain/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_proxy_chain_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/check",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "rbac.check",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/godmode",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac.godmode_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/godmode/campaign",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "rbac.godmode_campaign",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/godmode/disable",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac.godmode_disable",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/godmode/enable",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac.godmode_enable",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/godmode/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "rbac.godmode_toggle",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/permissions",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac.get_permissions",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/permissions",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "rbac.set_permissions",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/roles",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac.list_roles",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/users",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac.list_users",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/users",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "rbac.add_user",
+      "docstring": ""
+    },
+    {
+      "path": "/api/rbac/users/<username>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "rbac.delete_user",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/ssh/keys",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_remote_access_ssh_keys",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/ssh/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_remote_access_ssh_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/ssh/stop",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_remote_access_ssh_stop",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_remote_access_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/vnc/password",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_remote_access_vnc_password",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/vnc/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_remote_access_vnc_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/remote-access/vnc/stop",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_remote_access_vnc_stop",
+      "docstring": ""
+    },
+    {
+      "path": "/api/salad",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_salad",
+      "docstring": ""
+    },
+    {
+      "path": "/api/salad/config",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_salad_config_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/salad/config",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_salad_config_post",
+      "docstring": ""
+    },
+    {
+      "path": "/api/salad/gpu",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_salad_gpu",
+      "docstring": ""
+    },
+    {
+      "path": "/api/salad/history",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_salad_history",
+      "docstring": ""
+    },
+    {
+      "path": "/api/sandbox",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_sandbox",
+      "docstring": ""
+    },
+    {
+      "path": "/api/sandbox/devices",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_sandbox_devices",
+      "docstring": "Return list of C2-connected devices."
+    },
+    {
+      "path": "/api/sandbox/devices/<device_id>/action",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_sandbox_device_action",
+      "docstring": "Execute action on C2 device."
+    },
+    {
+      "path": "/api/sandbox/resources",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_sandbox_resources",
+      "docstring": "Return system resource usage."
+    },
+    {
+      "path": "/api/sandbox/run",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_sandbox_run",
+      "docstring": ""
+    },
+    {
+      "path": "/api/sandbox/tools",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_sandbox_tools",
+      "docstring": "Return list of available security tools."
+    },
+    {
+      "path": "/api/sandbox/vms",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_sandbox_vms",
+      "docstring": "Return list of VMs in the sandbox."
+    },
+    {
+      "path": "/api/sandbox/vms/<vm_id>/console",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_sandbox_vm_console",
+      "docstring": "Get VM console access URL."
+    },
+    {
+      "path": "/api/sandbox/vms/<vm_id>/power",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_sandbox_vm_power",
+      "docstring": "Power on/off/restart a VM."
+    },
+    {
+      "path": "/api/scheduler",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_scheduler",
+      "docstring": ""
+    },
+    {
+      "path": "/api/scheduler/jobs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_scheduler_jobs",
+      "docstring": ""
+    },
+    {
+      "path": "/api/scheduler/jobs",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_scheduler_create_job",
+      "docstring": ""
+    },
+    {
+      "path": "/api/scheduler/jobs/<job_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_scheduler_delete_job",
+      "docstring": ""
+    },
+    {
+      "path": "/api/scheduler/jobs/<job_id>/toggle",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_scheduler_toggle",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_secrets_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_secrets_store",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets/<name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_secrets_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets/<name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_secrets_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets/<name>/rotate",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_secrets_rotate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets/export",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_secrets_export",
+      "docstring": ""
+    },
+    {
+      "path": "/api/secrets/import",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_secrets_import",
+      "docstring": ""
+    },
+    {
+      "path": "/api/services",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_services",
+      "docstring": ""
+    },
+    {
+      "path": "/api/settings",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint": "api_settings",
+      "docstring": ""
+    },
+    {
+      "path": "/api/shodan/health",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_shodan_health",
+      "docstring": ""
+    },
+    {
+      "path": "/api/shodan/host/<ip>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_shodan_host",
+      "docstring": ""
+    },
+    {
+      "path": "/api/shodan/key",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_shodan_key_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/shodan/key",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_shodan_key_save",
+      "docstring": ""
+    },
+    {
+      "path": "/api/shodan/search",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_shodan_search",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_skills",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/activity",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_activity",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/aggregated",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_skills_aggregated",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/available",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_skills_available",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/catalog",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_skills_catalog",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/catalog/install",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_skills_catalog_install",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/catalog/refresh",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_skills_catalog_refresh",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/delete/<name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_delete_skill",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/log",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_log_activity",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/save",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_save_skill",
+      "docstring": ""
+    },
+    {
+      "path": "/api/skills/scan",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_scan_skills",
+      "docstring": "Scan activity log and auto-create skills."
+    },
+    {
+      "path": "/api/social-eng/generate",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_social_eng_generate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/social-eng/quiz",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_social_eng_quiz",
+      "docstring": ""
+    },
+    {
+      "path": "/api/social-eng/templates",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_social_eng_templates",
+      "docstring": ""
+    },
+    {
+      "path": "/api/stats",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "stats",
+      "docstring": ""
+    },
+    {
+      "path": "/api/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/subagents",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_subagents",
+      "docstring": ""
+    },
+    {
+      "path": "/api/subagents",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_create_subagent",
+      "docstring": ""
+    },
+    {
+      "path": "/api/subagents/<sa_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_delete_subagent",
+      "docstring": ""
+    },
+    {
+      "path": "/api/subagents/<sa_id>/log",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_subagent_log",
+      "docstring": ""
+    },
+    {
+      "path": "/api/subagents/<sa_id>/pause",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_pause_subagent",
+      "docstring": ""
+    },
+    {
+      "path": "/api/subagents/<sa_id>/resume",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_resume_subagent",
+      "docstring": ""
+    },
+    {
+      "path": "/api/system",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_system",
+      "docstring": "Return system resource usage."
+    },
+    {
+      "path": "/api/threat-intel/actors",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_threat_intel_actors",
+      "docstring": ""
+    },
+    {
+      "path": "/api/threat-intel/feeds",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_threat_intel_feeds",
+      "docstring": ""
+    },
+    {
+      "path": "/api/threat-intel/iocs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_threat_intel_iocs",
+      "docstring": ""
+    },
+    {
+      "path": "/api/threat-intel/refresh",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_threat_intel_refresh",
+      "docstring": ""
+    },
+    {
+      "path": "/api/todos",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "todos.list_todos",
+      "docstring": "List all todos for the current user with pagination and filters."
+    },
+    {
+      "path": "/api/todos",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "todos.create_todo",
+      "docstring": "Create a new todo."
+    },
+    {
+      "path": "/api/todos/<int:todo_id>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "todos.get_todo",
+      "docstring": "Get a single todo by ID."
+    },
+    {
+      "path": "/api/todos/<int:todo_id>",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "todos.update_todo",
+      "docstring": "Update an existing todo."
+    },
+    {
+      "path": "/api/todos/<int:todo_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "todos.delete_todo",
+      "docstring": "Delete a todo."
+    },
+    {
+      "path": "/api/todos/<int:todo_id>/toggle",
+      "methods": [
+        "PATCH"
+      ],
+      "endpoint": "todos.toggle_todo",
+      "docstring": "Toggle the completed status of a todo."
+    },
+    {
+      "path": "/api/training",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_training_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/abliterate",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_abliterate",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/datasets",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_datasets",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/datasets",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_upload_dataset",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/datasets",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_training_datasets_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/datasets",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_training_dataset_create",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/datasets/<ds_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_delete_dataset",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/deploy",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_training_deploy",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/gpu-status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_training_gpu_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/jobs",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_create_job",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/jobs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_training_jobs_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/jobs/<job_id>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_training_job_detail",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/jobs/<job_id>/status",
+      "methods": [
+        "PUT"
+      ],
+      "endpoint": "api_training_job_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/models",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_models",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/models",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_training_models_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/models/<mid>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_delete_model",
+      "docstring": ""
+    },
+    {
+      "path": "/api/training/models/<mid>/deploy",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_deploy_model",
+      "docstring": ""
+    },
+    {
+      "path": "/api/upload",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_upload",
+      "docstring": ""
+    },
+    {
+      "path": "/api/uploads",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_uploads",
+      "docstring": ""
+    },
+    {
+      "path": "/api/vuln-scan/results",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_vuln_scan_results",
+      "docstring": ""
+    },
+    {
+      "path": "/api/vuln-scan/schedule",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_vuln_scan_schedule",
+      "docstring": ""
+    },
+    {
+      "path": "/api/vuln-scan/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_vuln_scan_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/vuln-scan/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_vuln_scan_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wifi-scan/start",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_wifi_scan_start",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wifi-scan/status",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_wifi_scan_status",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wiki/blog",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_wiki_blog",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wiki/content/<page>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_wiki_content",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wiki/forum",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_wiki_forum",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/cves",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_windows_exploit_cves",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/describe",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_windows_exploit_describe",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/doc",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_windows_exploit_doc",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/eternalblue",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_windows_exploit_eternalblue",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/exchange",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_windows_exploit_exchange",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/kernel-chain",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_windows_exploit_kernel_chain",
+      "docstring": ""
+    },
+    {
+      "path": "/api/windows-exploit/printnightmare",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_windows_exploit_printnightmare",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wireless/analyze",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_wireless_analyze",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wireless/evil-twin",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_wireless_evil_twin",
+      "docstring": ""
+    },
+    {
+      "path": "/api/wireless/handshakes",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_wireless_handshakes",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_workflow",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/templates",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_workflow_designer_templates",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/templates",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_workflow_designer_templates_save",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/templates/<template_id>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_workflow_designer_templates_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/workflows",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_workflow_designer_workflows_list",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/workflows",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_workflow_designer_workflows_save",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/workflows/<name>",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_workflow_designer_workflows_get",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow-designer/workflows/<name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_workflow_designer_workflows_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow/delete/<name>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "api_workflow_delete",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow/registries",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "api_workflow_registries",
+      "docstring": ""
+    },
+    {
+      "path": "/api/workflow/save",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "api_workflow_save",
+      "docstring": ""
+    },
+    {
+      "path": "/apt-intelligence",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_apt_intelligence",
+      "docstring": ""
+    },
+    {
+      "path": "/army/close-all",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "army_close_all",
+      "docstring": ""
+    },
+    {
+      "path": "/audit",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "audit_page",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/login",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "auth_login_page",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "auth_login",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "auth_logout",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/me",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "auth_me",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/refresh",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "auth_refresh",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/users",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "auth_list_users",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/users",
+      "methods": [
+        "POST"
+      ],
+      "endpoint": "auth_create_user",
+      "docstring": ""
+    },
+    {
+      "path": "/auth/users/<username>",
+      "methods": [
+        "DELETE"
+      ],
+      "endpoint": "auth_delete_user",
+      "docstring": ""
+    },
+    {
+      "path": "/automations",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "automations_page",
+      "docstring": ""
+    },
+    {
+      "path": "/blog",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "blog_page",
+      "docstring": ""
+    },
+    {
+      "path": "/browser-v2",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "browser_v2_page",
+      "docstring": ""
+    },
+    {
+      "path": "/c2",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "c2_page",
+      "docstring": ""
+    },
+    {
+      "path": "/campaign-manager",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "campaign_manager_page",
+      "docstring": ""
+    },
+    {
+      "path": "/campaign-settings",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "campaign_settings_page",
+      "docstring": ""
+    },
+    {
+      "path": "/cloud-exploitation",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_cloud_exploitation",
+      "docstring": ""
+    },
+    {
+      "path": "/communications",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "communications_page",
+      "docstring": ""
+    },
+    {
+      "path": "/config",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "config_page",
+      "docstring": ""
+    },
+    {
+      "path": "/dashboard",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "dashboard",
+      "docstring": ""
+    },
+    {
+      "path": "/dashboard",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "dashboard_page",
+      "docstring": ""
+    },
+    {
+      "path": "/ddns-manager",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "ddns_manager_page",
+      "docstring": ""
+    },
+    {
+      "path": "/dependency-agent",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "dependency_agent_page",
+      "docstring": ""
+    },
+    {
+      "path": "/desktop",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "desktop_page",
+      "docstring": ""
+    },
+    {
+      "path": "/device-fingerprint",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_device_fingerprint",
+      "docstring": ""
+    },
+    {
+      "path": "/encryption",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "encryption_page",
+      "docstring": ""
+    },
+    {
+      "path": "/errors",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "errors_page",
+      "docstring": ""
+    },
+    {
+      "path": "/extensions",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "extensions_page",
+      "docstring": ""
+    },
+    {
+      "path": "/external-providers",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "external_providers_page",
+      "docstring": ""
+    },
+    {
+      "path": "/files",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "files_page",
+      "docstring": ""
+    },
+    {
+      "path": "/forum",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "forum_page",
+      "docstring": ""
+    },
+    {
+      "path": "/gateway",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "gateway_page",
+      "docstring": ""
+    },
+    {
+      "path": "/godmode",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "godmode_page",
+      "docstring": ""
+    },
+    {
+      "path": "/gpu",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "gpu_page",
+      "docstring": ""
+    },
+    {
+      "path": "/gpu-warmup",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "gpu_warmup_page",
+      "docstring": ""
+    },
+    {
+      "path": "/gpu-workstation",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "gpu_workstation_page",
+      "docstring": ""
+    },
+    {
+      "path": "/health",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "health_page",
+      "docstring": ""
+    },
+    {
+      "path": "/hermes",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "hermes_page",
+      "docstring": ""
+    },
+    {
+      "path": "/identity-mgmt",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "identity_mgmt_page",
+      "docstring": ""
+    },
+    {
+      "path": "/incident-response",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_incident_response",
+      "docstring": ""
+    },
+    {
+      "path": "/iot-exploitation",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_iot_exploitation",
+      "docstring": ""
+    },
+    {
+      "path": "/jobs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "jobs_page",
+      "docstring": ""
+    },
+    {
+      "path": "/logs",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "logs_page",
+      "docstring": ""
+    },
+    {
+      "path": "/logs-stream",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "logs_stream_page",
+      "docstring": ""
+    },
+    {
+      "path": "/loot",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "loot_page",
+      "docstring": ""
+    },
+    {
+      "path": "/malware-analysis",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_malware_analysis",
+      "docstring": ""
+    },
+    {
+      "path": "/mcp",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "mcp_page",
+      "docstring": ""
+    },
+    {
+      "path": "/memory",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "memory_page",
+      "docstring": ""
+    },
+    {
+      "path": "/metrics",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "metrics_page",
+      "docstring": ""
+    },
+    {
+      "path": "/model-registry",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "model_registry_page",
+      "docstring": ""
+    },
+    {
+      "path": "/network",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "network_page",
+      "docstring": ""
+    },
+    {
+      "path": "/network-auto",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "network_auto_page",
+      "docstring": ""
+    },
+    {
+      "path": "/network-exploitation",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_network_exploitation",
+      "docstring": ""
+    },
+    {
+      "path": "/permissions",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "permissions_page",
+      "docstring": ""
+    },
+    {
+      "path": "/plugins-manage",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "plugins_manage_page",
+      "docstring": ""
+    },
+    {
+      "path": "/predictive-analytics",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_predictive_analytics",
+      "docstring": ""
+    },
+    {
+      "path": "/prompts",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "prompts_page",
+      "docstring": ""
+    },
+    {
+      "path": "/providers",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "providers_page",
+      "docstring": ""
+    },
+    {
+      "path": "/proxy-chain",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "proxy_chain_page",
+      "docstring": ""
+    },
+    {
+      "path": "/rbac",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "rbac_page",
+      "docstring": ""
+    },
+    {
+      "path": "/realtime-monitor",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "realtime_monitor_page",
+      "docstring": ""
+    },
+    {
+      "path": "/remote-access",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "remote_access_page",
+      "docstring": ""
+    },
+    {
+      "path": "/salad",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "salad_page",
+      "docstring": ""
+    },
+    {
+      "path": "/sandbox",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_sandbox",
+      "docstring": ""
+    },
+    {
+      "path": "/scheduler",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "scheduler_page",
+      "docstring": ""
+    },
+    {
+      "path": "/sdlc",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "sdlc_page",
+      "docstring": ""
+    },
+    {
+      "path": "/secrets",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "secrets_page",
+      "docstring": ""
+    },
+    {
+      "path": "/security",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "security_page",
+      "docstring": ""
+    },
+    {
+      "path": "/shodan",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "shodan_page",
+      "docstring": ""
+    },
+    {
+      "path": "/skills",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "skills_page",
+      "docstring": ""
+    },
+    {
+      "path": "/skills-catalog",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "skills_catalog_page",
+      "docstring": ""
+    },
+    {
+      "path": "/social-engineering",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_social_engineering",
+      "docstring": ""
+    },
+    {
+      "path": "/subagents",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "subagents_page",
+      "docstring": ""
+    },
+    {
+      "path": "/terminal",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "terminal_page",
+      "docstring": ""
+    },
+    {
+      "path": "/threat-intel",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "threat_intel_page",
+      "docstring": ""
+    },
+    {
+      "path": "/todos",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "todos_page",
+      "docstring": ""
+    },
+    {
+      "path": "/training",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "training_page",
+      "docstring": ""
+    },
+    {
+      "path": "/vuln-scanner",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "vuln_scanner_page",
+      "docstring": ""
+    },
+    {
+      "path": "/wiki-dashboard",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "wiki_dashboard_page",
+      "docstring": ""
+    },
+    {
+      "path": "/wireless-exploitation",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_wireless_exploitation",
+      "docstring": ""
+    },
+    {
+      "path": "/workflow-designer",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "workflow_designer_page",
+      "docstring": ""
+    },
+    {
+      "path": "/workflows",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "workflows_page",
+      "docstring": ""
+    },
+    {
+      "path": "/ws-test",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "ws_test_page",
+      "docstring": ""
+    },
+    {
+      "path": "/zero-day",
+      "methods": [
+        "GET"
+      ],
+      "endpoint": "page_zero_day",
+      "docstring": ""
+    }
+  ]
+}
