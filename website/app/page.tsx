@@ -8,7 +8,7 @@ import {
   ArrowRight, Download, Play, Star, Award, Lock, Eye,
   Terminal, Activity, GitBranch, Layers, Monitor, Bug,
   ChevronRight, Clock, BarChart3, UserCheck, RefreshCw,
-  AlertTriangle, Mic, ArrowUpRight
+  AlertTriangle, Mic, ArrowUpRight, Brain
 } from 'lucide-react';
 
 export default function Home() {
@@ -142,37 +142,31 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-950">
       {/* HERO */}
       <section className="relative pt-32 pb-20 overflow-hidden bg-slate-900">
-        {/* Subtle grid background */}
         <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle, #60a5fa 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-        {/* Gradient glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/10 rounded-full blur-3xl" />
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            {/* Badge */}
             <div className="ap-hero-badge-dark animate-fade-in-up">
               <Star className="w-4 h-4" />
               <span>The #1 Open Source AI Security Platform</span>
             </div>
 
-            {/* Main heading */}
             <h1 className="text-5xl md:text-7xl font-black mb-6 leading-[1.08] tracking-tight animate-fade-in-up text-white" style={{ animationDelay: '0.1s' }}>
               Endpoint management
               <br />
               <span className="gradient-text">that thinks ahead.</span>
             </h1>
 
-            {/* Subtitle */}
             <p className="text-xl md:text-2xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <strong className="text-white">FreeAI.</strong> The AI operational layer for your entire fleet.
-              Deploy <strong className="text-white">24 autonomous agents</strong> for offensive security, 
+              Deploy <strong className="text-white">24 autonomous agents</strong> for offensive security,
               vulnerability research, and AI-powered attack simulation.
             </p>
 
-            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <Link href="/deploy" className="ap-btn-primary">
                 Get FreeAI <ArrowRight size={18} />
@@ -183,7 +177,6 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Trust badges */}
             <div className="flex flex-wrap justify-center gap-3 mb-16 text-sm animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
               {['GPL-3.0', 'SOC 2 Ready', 'ISO 27001', 'NIST 800-53', 'CMMC L2', 'G2 High Performer'].map((b) => (
                 <span key={b} className="px-3 py-1.5 bg-slate-800/80 rounded-full text-xs font-medium text-slate-300 border border-slate-700">
@@ -192,10 +185,8 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Dashboard mockup */}
             <div className="relative max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
               <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
-                {/* Mock browser chrome */}
                 <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
@@ -204,7 +195,6 @@ export default function Home() {
                     <span className="text-xs text-slate-500">freeai.projectzerodays.com/dashboard</span>
                   </div>
                 </div>
-                {/* Dashboard content */}
                 <div className="p-6 bg-slate-900/50">
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     {[
@@ -222,7 +212,6 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  {/* Fake chat prompt */}
                   <div className="bg-slate-800 rounded-xl border border-slate-700 p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -238,7 +227,7 @@ export default function Home() {
                         Scan all endpoints for CVE-2024-3094
                       </div>
                       <div className="bg-blue-900/30 border border-blue-800 rounded-lg px-3 py-2 text-sm text-slate-300 max-w-md ml-auto">
-                        <span className="font-semibold text-blue-400">Red Orchestrator:</span> 
+                        <span className="font-semibold text-blue-400">Red Orchestrator:</span>
                         Found 3 affected devices. XZ Utils backdoor detected on ubuntu-prod-02, kali-test-01, debian-build-03. Recommended: isolate & patch immediately.
                       </div>
                     </div>
@@ -249,14 +238,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronDown className="w-6 h-6 text-slate-600" />
         </div>
       </section>
 
       {/* STATS */}
-      <section ref={statsRef} className="py-20 bg-slate-50 border-y border-slate-100">
+      <section ref={statsRef} className="py-20 bg-slate-900 border-y border-slate-800">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -266,9 +254,7 @@ export default function Home() {
               { label: 'CVEs Tracked', value: counters.vulns, suffix: '' },
             ].map((stat, i) => (
               <div key={i} className="text-center">
-                <div className="ap-stat-number">
-                  {stat.value > 0 ? formatNumber(stat.value) : '0'}{stat.suffix}
-                </div>
+                <div className="ap-stat-number">{stat.value > 0 ? formatNumber(stat.value) : '0'}{stat.suffix}</div>
                 <div className="ap-stat-label">{stat.label}</div>
               </div>
             ))}
@@ -280,18 +266,15 @@ export default function Home() {
       <section id="ask-agents" className="ap-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Ask <span className="gradient-text">Intelligence</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Anything you'd hand a senior admin.
-            </p>
+            <p className="text-lg text-slate-400">Anything you'd hand a senior admin.</p>
           </div>
-
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {prompts.map((p, i) => (
-                <div key={i} className="ap-prompt-chip">
+                <div key={i} className="ap-prompt-chip-dark">
                   <p className="flex-1">{p.text}</p>
                 </div>
               ))}
@@ -301,95 +284,73 @@ export default function Home() {
       </section>
 
       {/* ARTIFACTS */}
-      <section id="artifacts" className="ap-section bg-slate-50">
+      <section id="artifacts" className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Every answer, an <span className="gradient-text">artifact.</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Reports, comparisons, insights — and a receipt for every action taken.
-            </p>
+            <p className="text-lg text-slate-400">Reports, comparisons, insights — and a receipt for every action taken.</p>
           </div>
-
           <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
-            {/* Card 1: Patch status */}
-            <div className="ap-card">
+            <div className="ap-card-dark">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-slate-900">Patch status</span>
+                <span className="text-sm font-semibold text-white">Patch status</span>
                 <span className="ap-pill ap-pill-blue">Live</span>
               </div>
               <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Exposed</span>
-                  <span className="font-semibold text-red-600">27</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">macOS 14</span>
-                  <span className="font-semibold">11</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Windows 11</span>
-                  <span className="font-semibold">9</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Android 14</span>
-                  <span className="font-semibold">7</span>
-                </div>
-                <div className="pt-3 border-t border-slate-100">
-                  <span className="text-sm text-slate-600">
-                    <span className="font-semibold text-green-600">24</span> patchable tonight — no user impact
-                  </span>
+                <div className="flex justify-between text-sm"><span className="text-slate-400">Exposed</span><span className="font-semibold text-red-400">27</span></div>
+                <div className="flex justify-between text-sm"><span className="text-slate-400">macOS 14</span><span className="font-semibold text-white">11</span></div>
+                <div className="flex justify-between text-sm"><span className="text-slate-400">Windows 11</span><span className="font-semibold text-white">9</span></div>
+                <div className="flex justify-between text-sm"><span className="text-slate-400">Android 14</span><span className="font-semibold text-white">7</span></div>
+                <div className="pt-3 border-t border-slate-700">
+                  <span className="text-sm text-slate-400"><span className="font-semibold text-green-400">24</span> patchable tonight — no user impact</span>
                 </div>
               </div>
             </div>
-
-            {/* Card 2: Comparison */}
-            <div className="ap-card">
+            <div className="ap-card-dark">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-slate-900">Policy comparison</span>
+                <span className="text-sm font-semibold text-white">Policy comparison</span>
                 <span className="ap-pill">v16 vs v17</span>
               </div>
               <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <span className="w-5 h-5 rounded bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">=</span>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <span className="w-5 h-5 rounded bg-green-900/40 text-green-400 flex items-center justify-center text-xs font-bold">=</span>
                   <span>0/6 sections identical</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <span className="w-5 h-5 rounded bg-red-100 text-red-700 flex items-center justify-center text-xs font-bold">≠</span>
+                <div className="flex items-center gap-2 text-slate-400">
+                  <span className="w-5 h-5 rounded bg-red-900/40 text-red-400 flex items-center justify-center text-xs font-bold">≠</span>
                   <span>3 conflicts explained</span>
                 </div>
-                <div className="pt-3 border-t border-slate-100 mt-3">
-                  <div className="text-xs text-slate-400 mb-2">Staging vs Production</div>
+                <div className="pt-3 border-t border-slate-700 mt-3">
+                  <div className="text-xs text-slate-500 mb-2">Staging vs Production</div>
                   <div className="flex items-center gap-1">
                     <div className="h-2 w-16 bg-blue-500 rounded-full" />
-                    <div className="h-2 w-12 bg-blue-300 rounded-full" />
-                    <div className="h-2 w-8 bg-slate-200 rounded-full" />
+                    <div className="h-2 w-12 bg-blue-400 rounded-full" />
+                    <div className="h-2 w-8 bg-slate-600 rounded-full" />
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Card 3: Action receipt */}
-            <div className="ap-card">
+            <div className="ap-card-dark">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-slate-900">Action receipt</span>
+                <span className="text-sm font-semibold text-white">Action receipt</span>
                 <span className="ap-pill ap-pill-blue">Completed</span>
               </div>
               <div className="space-y-3">
                 <div className="text-sm">
-                  <div className="font-semibold text-slate-900">Patch rollout #241</div>
+                  <div className="font-semibold text-white">Patch rollout #241</div>
                   <div className="text-slate-500 text-xs mt-1">approved by cesar@projectzerodays.com · logged 02:14 · reversible</div>
                 </div>
                 <div className="space-y-1.5 text-sm">
                   {['24/24 devices patched', '0 regressions detected', '3 held for Sun 02:00'].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 text-slate-600">
-                      <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                    <div key={i} className="flex items-center gap-2 text-slate-400">
+                      <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))}
                 </div>
-                <button className="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center gap-1 mt-2">
+                <button className="text-sm text-blue-400 font-medium hover:text-blue-300 flex items-center gap-1 mt-2">
                   View in history <ArrowRight size={14} />
                 </button>
               </div>
@@ -399,27 +360,21 @@ export default function Home() {
       </section>
 
       {/* TRUSTED BY */}
-      <section className="ap-section border-y border-slate-100">
+      <section className="ap-section border-y border-slate-800">
         <div className="container mx-auto px-6">
-          <p className="text-center text-sm text-slate-400 font-medium uppercase tracking-widest mb-10">
-            Trusted by security teams at
-          </p>
+          <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Trusted by security teams at</p>
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 items-center">
             {['Netflix', 'BMW', "McDonald's", 'Michelin', 'Snapchat', 'Starbucks', 'Bosch', 'Lidl', 'Supercell', 'Mercedes-Benz', 'Lloyds Bank', 'Repsol'].map((name) => (
-              <div key={name} className="ap-logo">
-                <span className="text-xl font-bold text-slate-400 tracking-tight">{name}</span>
-              </div>
+              <div key={name} className="ap-logo-dark"><span className="text-xl font-bold text-slate-500 tracking-tight">{name}</span></div>
             ))}
           </div>
         </div>
       </section>
 
       {/* RATINGS */}
-      <section className="ap-section bg-slate-50">
+      <section className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
-          <p className="text-center text-sm text-slate-400 font-medium uppercase tracking-widest mb-10">
-            Rated by the people who run IT
-          </p>
+          <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Rated by the people who run IT</p>
           <div className="flex flex-wrap justify-center gap-4">
             {[
               { label: 'G2 High Performer', icon: Award },
@@ -429,9 +384,9 @@ export default function Home() {
               { label: 'Great Place to Work', icon: Users },
               { label: 'ISO 27001 Certified', icon: Shield },
             ].map((badge, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-3 bg-white rounded-xl border border-slate-200 shadow-sm">
-                <badge.icon className="w-5 h-5 text-blue-600" />
-                <span className="text-sm font-medium text-slate-700">{badge.label}</span>
+              <div key={i} className="flex items-center gap-3 px-5 py-3 bg-slate-800 rounded-xl border border-slate-700">
+                <badge.icon className="w-5 h-5 text-blue-400" />
+                <span className="text-sm font-medium text-slate-300">{badge.label}</span>
               </div>
             ))}
           </div>
@@ -442,27 +397,23 @@ export default function Home() {
       <section id="why-now" className="ap-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
               The workplace became digital.
-              <br />
-              <span className="text-slate-400">Operations stayed manual.</span>
+              <br /><span className="text-slate-500">Operations stayed manual.</span>
             </h2>
             <div className="flex flex-wrap justify-center gap-3 mt-8">
               {['Too many tools', 'Too many policies', 'Too many manual workflows', 'Too much reactive IT', 'Too little operational intelligence'].map((p, i) => (
-                <span key={i} className="px-4 py-2 bg-red-50 text-red-600 rounded-full text-sm font-medium border border-red-100">
-                  {p}
-                </span>
+                <span key={i} className="px-4 py-2 bg-red-900/30 text-red-400 rounded-full text-sm font-medium border border-red-800/50">{p}</span>
               ))}
             </div>
-            <p className="text-lg text-slate-500 mt-8">
-              The next step: the <strong className="text-slate-900">Autonomous Workplace</strong>.
+            <p className="text-lg text-slate-400 mt-8">
+              The next step: the <strong className="text-white">Autonomous Workplace</strong>.
             </p>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
             {['Context-aware', 'Policy-driven', 'AI-assisted', 'Security-integrated', 'Continuously optimized'].map((item, i) => (
-              <div key={i} className="text-center p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="text-sm font-semibold text-slate-700">{item}</div>
+              <div key={i} className="text-center p-4 bg-slate-800 rounded-xl border border-slate-700">
+                <div className="text-sm font-semibold text-slate-300">{item}</div>
               </div>
             ))}
           </div>
@@ -470,26 +421,23 @@ export default function Home() {
       </section>
 
       {/* FOUR PILLARS */}
-      <section id="capabilities" className="ap-section bg-slate-50">
+      <section id="capabilities" className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               One platform, <span className="gradient-text">four pillars.</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Built on what FreeAI already delivers today.
-            </p>
+            <p className="text-lg text-slate-400">Built on what FreeAI already delivers today.</p>
           </div>
-
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {pillars.map((p, i) => (
-              <div key={i} className="ap-card flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                  <p.icon className="w-6 h-6 text-blue-600" />
+              <div key={i} className="ap-card-dark flex gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                  <p.icon className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-1">{p.title}</h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{p.desc}</p>
+                  <h3 className="font-bold text-white mb-1">{p.title}</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">{p.desc}</p>
                 </div>
               </div>
             ))}
@@ -502,50 +450,44 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
-                One brain.
-                <br />
-                <span className="gradient-text">Your whole fleet.</span>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
+                One brain.<br /><span className="gradient-text">Your whole fleet.</span>
               </h2>
-              <p className="text-lg text-slate-500 mb-8">
-                It sees. It simulates. It acts. You approve.
-              </p>
+              <p className="text-lg text-slate-400 mb-8">It sees. It simulates. It acts. You approve.</p>
               <div className="space-y-4">
                 {[
                   { q: 'Which devices are non-compliant right now?', a: '60 devices, mostly outdated OS. Want a breakdown — or a workflow to fix it?' },
                   { q: 'What-if: move device → Logistics / Madrid', a: '3 survive · 0 drop · 1 new · No loss of coverage — safe to move' },
                   { q: 'Alert trigger: classify severity', a: 'LLM · Require approval · Notify Slack · Auto-remediate' },
                 ].map((item, i) => (
-                  <div key={i} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                  <div key={i} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
                     <div className="flex items-start gap-3 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-xs font-bold text-blue-600">{i + 1}</span>
+                      <div className="w-6 h-6 rounded-full bg-blue-900/60 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-xs font-bold text-blue-400">{i + 1}</span>
                       </div>
                       <div>
-                        <div className="font-semibold text-slate-900 text-sm">{item.q}</div>
-                        <div className="text-sm text-slate-500 mt-1">{item.a}</div>
+                        <div className="font-semibold text-white text-sm">{item.q}</div>
+                        <div className="text-sm text-slate-400 mt-1">{item.a}</div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-
             <div>
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.08)] overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 border-b border-slate-200">
+              <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="flex-1 text-center text-xs text-slate-400">FreeAI Intelligence — Ask AI</span>
+                  <span className="flex-1 text-center text-xs text-slate-500">FreeAI Intelligence — Ask AI</span>
                 </div>
                 <div className="p-4 space-y-4 min-h-[400px]">
-                  {/* Chat messages */}
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-xs font-bold">F</span>
                     </div>
-                    <div className="bg-slate-100 rounded-xl rounded-tl-none px-4 py-3 text-sm text-slate-700 max-w-xs">
+                    <div className="bg-slate-700 rounded-xl rounded-tl-none px-4 py-3 text-sm text-slate-300 max-w-xs">
                       Which devices are still on macOS 13?
                     </div>
                   </div>
@@ -563,18 +505,17 @@ export default function Home() {
                       <span className="text-white text-xs font-bold">F</span>
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-500">
-                        📊 <strong>Impact analysis</strong> — 14 devices, 3 segments
+                      <div className="bg-slate-700 rounded-lg px-3 py-2 text-xs text-slate-400">
+                        📊 <strong className="text-slate-300">Impact analysis</strong> — 14 devices, 3 segments
                       </div>
                       <div className="flex gap-2">
                         <button className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg font-medium">Draft upgrade</button>
-                        <button className="text-xs px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg font-medium">View details</button>
+                        <button className="text-xs px-3 py-1.5 bg-slate-700 border border-slate-600 text-slate-300 rounded-lg font-medium">View details</button>
                       </div>
                     </div>
                   </div>
-                  {/* Input */}
                   <div className="flex gap-2 mt-4">
-                    <input className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-blue-400" placeholder="Ask anything about your fleet..." disabled />
+                    <input className="flex-1 px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm text-slate-300 placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Ask anything about your fleet..." disabled />
                     <button className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
                       <ArrowRight size={16} />
                     </button>
@@ -587,54 +528,47 @@ export default function Home() {
       </section>
 
       {/* SEVEN MINDS */}
-      <section className="ap-section bg-slate-50">
+      <section className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              Seven minds.
-              <br />
-              <span className="gradient-text">One plan.</span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
+              Seven minds.<br /><span className="gradient-text">One plan.</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Every request is routed, researched and verified — before it reaches you.
-            </p>
+            <p className="text-lg text-slate-400">Every request is routed, researched and verified — before it reaches you.</p>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {sevenMinds.map((m, i) => (
-              <div key={i} className="ap-card text-center p-5">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
-                  <span className="text-sm font-bold text-blue-600">{i + 1}</span>
+              <div key={i} className="ap-card-dark text-center p-5">
+                <div className="w-10 h-10 rounded-xl bg-blue-900/40 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-sm font-bold text-blue-400">{i + 1}</span>
                 </div>
-                <div className="font-semibold text-slate-900 text-sm mb-1">{m.name}</div>
-                <div className="text-xs text-slate-500">{m.desc}</div>
+                <div className="font-semibold text-white text-sm mb-1">{m.name}</div>
+                <div className="text-xs text-slate-400">{m.desc}</div>
               </div>
             ))}
           </div>
-
-          {/* Agent collaboration mockup */}
           <div className="max-w-2xl mx-auto mt-10">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">F</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900 text-sm">New hire starts Monday — provision a MacBook + iPhone</div>
-                  <div className="text-xs text-slate-400">Coordinated by Red Orchestrator</div>
+                  <div className="font-semibold text-white text-sm">New hire starts Monday — provision a MacBook + iPhone</div>
+                  <div className="text-xs text-slate-500">Coordinated by Red Orchestrator</div>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {['IT Lead', 'Compliance', 'Security'].map((role, i) => (
-                  <div key={i} className="bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
-                    <div className="text-xs font-semibold text-slate-700">{role}</div>
-                    <div className="text-xs text-green-600 mt-1">✓ standing by</div>
+                  <div key={i} className="bg-slate-700/50 rounded-lg p-3 text-center border border-slate-600">
+                    <div className="text-xs font-semibold text-slate-300">{role}</div>
+                    <div className="text-xs text-green-400 mt-1">✓ standing by</div>
                   </div>
                 ))}
                 {['Insights', 'Impact', 'Policy', 'Scripts'].slice(0, 3).map((role, i) => (
-                  <div key={i} className="bg-slate-50 rounded-lg p-3 text-center border border-slate-100">
-                    <div className="text-xs font-semibold text-slate-700">{role}</div>
-                    <div className="text-xs text-green-600 mt-1">✓ standing by</div>
+                  <div key={i} className="bg-slate-700/50 rounded-lg p-3 text-center border border-slate-600">
+                    <div className="text-xs font-semibold text-slate-300">{role}</div>
+                    <div className="text-xs text-green-400 mt-1">✓ standing by</div>
                   </div>
                 ))}
               </div>
@@ -647,13 +581,10 @@ export default function Home() {
       <section id="deploy" className="ap-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              Live in minutes.
-              <br />
-              <span className="gradient-text">Smarter every week.</span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
+              Live in minutes.<br /><span className="gradient-text">Smarter every week.</span>
             </h2>
           </div>
-
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
               { step: '01', title: 'Intelligence enabled', desc: 'Flip the switch. Runs on the workspace you already use. Nothing to deploy.' },
@@ -662,8 +593,8 @@ export default function Home() {
             ].map((item, i) => (
               <div key={i} className="text-center">
                 <div className="ap-step-num mx-auto">{item.step}</div>
-                <h3 className="font-bold text-slate-900 text-lg mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                <h3 className="font-bold text-white text-lg mb-2">{item.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -671,14 +602,11 @@ export default function Home() {
       </section>
 
       {/* OPERATIONAL LAYER IN NUMBERS */}
-      <section className="ap-section bg-slate-50">
+      <section className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-              The operational layer, in numbers.
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">The operational layer, in numbers.</h2>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
               { value: '200+', label: 'Platform actions exposed to AI — via MCP' },
@@ -688,15 +616,13 @@ export default function Home() {
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="text-4xl md:text-5xl font-black gradient-text mb-2">{stat.value}</div>
-                <div className="text-sm text-slate-500 leading-snug">{stat.label}</div>
+                <div className="text-sm text-slate-400 leading-snug">{stat.label}</div>
               </div>
             ))}
           </div>
-
-          {/* Quote */}
           <div className="max-w-2xl mx-auto mt-16">
-            <div className="ap-quote">
-              <p className="text-lg text-slate-700 italic leading-relaxed mb-4">
+            <div className="ap-quote-dark">
+              <p className="text-lg text-slate-300 italic leading-relaxed mb-4">
                 AI is not just a chatbot — it's an operational layer.
               </p>
               <div className="flex items-center gap-3">
@@ -704,8 +630,8 @@ export default function Home() {
                   <span className="text-white font-bold text-sm">CT</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900">César Trigo</div>
-                  <div className="text-sm text-slate-500">Founder & CEO · Applivery</div>
+                  <div className="font-semibold text-white">César Trigo</div>
+                  <div className="text-sm text-slate-400">Founder & CEO · Applivery</div>
                 </div>
               </div>
             </div>
@@ -717,120 +643,93 @@ export default function Home() {
       <section className="ap-section">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="ap-card">
+            <div className="ap-card-dark">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 rounded-xl bg-blue-900/40 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900">MCP</div>
-                  <div className="text-xs text-slate-500">Model Context Protocol</div>
+                  <div className="font-bold text-white">MCP</div>
+                  <div className="text-xs text-slate-400">Model Context Protocol</div>
                 </div>
               </div>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                200+ platform actions exposed to AI. Everything FreeAI can see, it can do — with your permission. Agents coordinate across your entire stack.
+              <p className="text-sm text-slate-400 leading-relaxed">
+                200+ platform actions exposed to AI. Everything FreeAI can see, it can do — with your permission.
               </p>
             </div>
-            <div className="ap-card">
+            <div className="ap-card-dark">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
-                  <GitBranch className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 rounded-xl bg-purple-900/40 flex items-center justify-center">
+                  <GitBranch className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900">A2A</div>
-                  <div className="text-xs text-slate-500">Agent-to-Agent</div>
+                  <div className="font-bold text-white">A2A</div>
+                  <div className="text-xs text-slate-400">Agent-to-Agent</div>
                 </div>
               </div>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Agent orchestration across systems — FreeAI agents cooperate with the rest of your stack. Red, blue, and purple teams coordinate seamlessly.
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Agent orchestration across systems — FreeAI agents cooperate with the rest of your stack.
               </p>
             </div>
           </div>
-
-          {/* Autonomy dial */}
           <div className="max-w-2xl mx-auto mt-12 text-center">
-            <p className="text-sm text-slate-500 mb-6">Autonomy is a dial, not a switch.</p>
+            <p className="text-sm text-slate-400 mb-6">Autonomy is a dial, not a switch.</p>
             <div className="flex items-center justify-center gap-4">
               {['Suggest', 'Approve', 'Auto'].map((mode, i) => (
-                <div key={mode} className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${i === 1 ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-slate-100 text-slate-500'}`}>
+                <div key={mode} className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${i === 1 ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
                   {mode}
                 </div>
               ))}
             </div>
-            <p className="text-xs text-slate-400 mt-3">Set per workflow — recommend only, act after your approval, or run fully autonomous.</p>
+            <p className="text-xs text-slate-500 mt-3">Set per workflow — recommend only, act after your approval, or run fully autonomous.</p>
           </div>
         </div>
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="ap-section">
+      <section id="pricing" className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Simple, <span className="gradient-text">transparent pricing</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Start free. Scale when you're ready. No hidden fees.
-            </p>
+            <p className="text-lg text-slate-400">Start free. Scale when you're ready. No hidden fees.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Self-Hosted */}
-            <div className="ap-card flex flex-col">
+            <div className="ap-card-dark flex flex-col">
               <div className="mb-6">
-                <div className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Self-Hosted</div>
+                <div className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Self-Hosted</div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-slate-900">$0</span>
-                  <span className="text-slate-500 text-sm">/forever</span>
+                  <span className="text-5xl font-black text-white">$0</span>
+                  <span className="text-slate-400 text-sm">/forever</span>
                 </div>
-                <p className="text-sm text-slate-500 mt-2">GPL-3.0 · unlimited agents · all features</p>
+                <p className="text-sm text-slate-400 mt-2">GPL-3.0 · unlimited agents · all features</p>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  '24 autonomous agents',
-                  'All security skills (14 Red, 12 Blue, 7 Purple)',
-                  '21+ AI providers',
-                  'Live ISO variants',
-                  'GPU inference (llama.cpp, vLLM)',
-                  'Full API access',
-                  'Community support',
-                ].map((feat) => (
-                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-700">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    {feat}
+                {['24 autonomous agents', 'All security skills (14 Red, 12 Blue, 7 Purple)', '21+ AI providers', 'Live ISO variants', 'GPU inference (llama.cpp, vLLM)', 'Full API access', 'Community support'].map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-300">
+                    <Check className="w-4 h-4 text-green-400 flex-shrink-0" />{feat}
                   </li>
                 ))}
               </ul>
-              <Link href="/deploy" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-blue-500 hover:text-blue-600 transition-all">
+              <Link href="/deploy" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-600 text-slate-300 font-semibold hover:border-blue-500 hover:text-blue-400 transition-all">
                 Get started free
               </Link>
             </div>
-
-            {/* Enterprise Support */}
-            <div className="ap-card flex flex-col relative border-blue-500 shadow-lg">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">
-                MOST POPULAR
-              </div>
+            <div className="ap-card-dark flex flex-col relative border-blue-500 shadow-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">MOST POPULAR</div>
               <div className="mb-6">
-                <div className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-2">Enterprise Support</div>
+                <div className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-2">Enterprise Support</div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-slate-900">$299</span>
-                  <span className="text-slate-500 text-sm">/month</span>
+                  <span className="text-5xl font-black text-white">$299</span>
+                  <span className="text-slate-400 text-sm">/month</span>
                 </div>
-                <p className="text-sm text-slate-500 mt-2">Per workspace · priority support · SLA</p>
+                <p className="text-sm text-slate-400 mt-2">Per workspace · priority support · SLA</p>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  'Everything in Self-Hosted',
-                  '99.9% uptime SLA',
-                  'Priority email & chat support',
-                  'Custom integrations',
-                  'Dedicated account manager',
-                  'Compliance reporting (SOC 2, ISO 27001)',
-                  'Training & onboarding',
-                ].map((feat) => (
-                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-700">
-                    <Check className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                    {feat}
+                {['Everything in Self-Hosted', '99.9% uptime SLA', 'Priority email & chat support', 'Custom integrations', 'Dedicated account manager', 'Compliance reporting (SOC 2, ISO 27001)', 'Training & onboarding'].map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-300">
+                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />{feat}
                   </li>
                 ))}
               </ul>
@@ -838,49 +737,36 @@ export default function Home() {
                 Contact sales
               </Link>
             </div>
-
-            {/* Cloud Managed */}
-            <div className="ap-card flex flex-col">
+            <div className="ap-card-dark flex flex-col">
               <div className="mb-6">
-                <div className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-2">Cloud Managed</div>
+                <div className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-2">Cloud Managed</div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-slate-900">$499</span>
-                  <span className="text-slate-500 text-sm">/month</span>
+                  <span className="text-5xl font-black text-white">$499</span>
+                  <span className="text-slate-400 text-sm">/month</span>
                 </div>
-                <p className="text-sm text-slate-500 mt-2">Fully hosted · zero infrastructure</p>
+                <p className="text-sm text-slate-400 mt-2">Fully hosted · zero infrastructure</p>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
-                {[
-                  'Everything in Enterprise Support',
-                  'Hosted on AWS / Azure / GCP',
-                  'Auto-scaling & HA',
-                  'Automated backups',
-                  'Managed model updates',
-                  'Multi-region deployment',
-                  'Custom compliance certs',
-                ].map((feat) => (
-                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-700">
-                    <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                    {feat}
+                {['Everything in Enterprise Support', 'Hosted on AWS / Azure / GCP', 'Auto-scaling & HA', 'Automated backups', 'Managed model updates', 'Multi-region deployment', 'Custom compliance certs'].map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-300">
+                    <Check className="w-4 h-4 text-green-400 flex-shrink-0" />{feat}
                   </li>
                 ))}
               </ul>
-              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-blue-500 hover:text-blue-600 transition-all">
+              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-600 text-slate-300 font-semibold hover:border-blue-500 hover:text-blue-400 transition-all">
                 Request demo
               </Link>
             </div>
           </div>
-          <p className="text-center text-sm text-slate-400 mt-8">
-            All plans include a 14-day free trial. No credit card required.
-          </p>
+          <p className="text-center text-sm text-slate-500 mt-8">All plans include a 14-day free trial. No credit card required.</p>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="ap-section bg-slate-50">
+      <section id="faq" className="ap-section bg-slate-900">
         <div className="container mx-auto px-6 max-w-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">
               Frequently Asked <span className="gradient-text">Questions</span>
             </h2>
           </div>
@@ -896,24 +782,21 @@ export default function Home() {
       <section id="live-iso" className="ap-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Live <span className="gradient-text">ISO</span> variants
             </h2>
-            <p className="text-lg text-slate-500">
-              Boot and deploy in minutes with our pre-configured live environments
-            </p>
+            <p className="text-lg text-slate-400">Boot and deploy in minutes with our pre-configured live environments</p>
           </div>
-
           <div className="grid md:grid-cols-5 gap-4 max-w-4xl mx-auto">
             {isoVariants.map((iso, i) => (
-              <div key={i} className="ap-card text-center p-5 hover:scale-105 transition-transform cursor-pointer">
-                <iso.icon className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-                <h3 className="font-bold text-slate-900 text-sm mb-2">{iso.name}</h3>
+              <div key={i} className="ap-card-dark text-center p-5 hover:scale-105 transition-transform cursor-pointer">
+                <iso.icon className="w-10 h-10 text-blue-400 mx-auto mb-3" />
+                <h3 className="font-bold text-white text-sm mb-2">{iso.name}</h3>
                 <div className="flex justify-center gap-2 mb-4">
-                  <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-500">{iso.version}</span>
-                  <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-500">{iso.size}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-slate-700 text-slate-400">{iso.version}</span>
+                  <span className="text-xs px-2 py-1 rounded-full bg-slate-700 text-slate-400">{iso.size}</span>
                 </div>
-                <Link href="/iso" className="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center justify-center gap-1">
+                <Link href="/iso" className="text-sm text-blue-400 font-medium hover:text-blue-300 flex items-center justify-center gap-1">
                   Download <ArrowRight size={14} />
                 </Link>
               </div>
@@ -923,17 +806,14 @@ export default function Home() {
       </section>
 
       {/* DEPLOY */}
-      <section className="ap-section bg-slate-50">
+      <section className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Deploy <span className="gradient-text">your way</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Multiple deployment options to fit your infrastructure
-            </p>
+            <p className="text-lg text-slate-400">Multiple deployment options to fit your infrastructure</p>
           </div>
-
           <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {[
               { icon: Server, title: 'Bare Metal', desc: 'Direct hardware deployment', color: 'blue' },
@@ -941,18 +821,17 @@ export default function Home() {
               { icon: Cloud, title: 'Kubernetes', desc: 'Cloud-native orchestration', color: 'cyan' },
               { icon: Globe, title: 'Cloud', desc: 'AWS, Azure, GCP ready', color: 'green' },
             ].map((option, i) => (
-              <div key={i} className="ap-card text-center p-8 hover:scale-105 transition-transform cursor-pointer">
-                <div className={`w-14 h-14 mx-auto mb-5 rounded-2xl bg-${option.color}-50 flex items-center justify-center`}>
-                  <option.icon className={`w-7 h-7 text-${option.color}-600`} />
+              <div key={i} className="ap-card-dark text-center p-8 hover:scale-105 transition-transform cursor-pointer">
+                <div className={`w-14 h-14 mx-auto mb-5 rounded-2xl bg-${option.color}-900/40 flex items-center justify-center`}>
+                  <option.icon className={`w-7 h-7 text-${option.color}-400`} />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{option.title}</h3>
-                <p className="text-sm text-slate-500">{option.desc}</p>
+                <h3 className="text-lg font-bold text-white mb-2">{option.title}</h3>
+                <p className="text-sm text-slate-400">{option.desc}</p>
               </div>
             ))}
           </div>
-
           <div className="text-center mt-10">
-            <Link href="/deploy" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+            <Link href="/deploy" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium">
               View all deployment methods <ArrowRight size={16} />
             </Link>
           </div>
@@ -963,28 +842,24 @@ export default function Home() {
       <section id="providers" className="ap-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Connect with <span className="gradient-text">top AI providers</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              Integration with the world's leading LLM providers
-            </p>
+            <p className="text-lg text-slate-400">Integration with the world's leading LLM providers</p>
           </div>
-
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {providers.map((provider, i) => (
-              <div key={i} className="ap-card text-center p-6 hover:scale-105 transition-transform cursor-pointer">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-50 flex items-center justify-center">
-                  <Cpu className="w-7 h-7 text-blue-600" />
+              <div key={i} className="ap-card-dark text-center p-6 hover:scale-105 transition-transform cursor-pointer">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-800 flex items-center justify-center">
+                  <Cpu className="w-7 h-7 text-blue-400" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-1">{provider.name}</h3>
-                <p className="text-sm text-slate-500">{provider.model}</p>
+                <h3 className="text-lg font-bold text-white mb-1">{provider.name}</h3>
+                <p className="text-sm text-slate-400">{provider.model}</p>
               </div>
             ))}
           </div>
-
           <div className="text-center mt-10">
-            <Link href="/providers" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+            <Link href="/providers" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium">
               View all 21+ providers <ArrowRight size={16} />
             </Link>
           </div>
@@ -992,16 +867,16 @@ export default function Home() {
       </section>
 
       {/* SECURITY */}
-      <section id="security" className="ap-section bg-slate-50">
+      <section id="security" className="ap-section bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
                 Enterprise-grade{' '}
                 <span className="gradient-text">security</span>
               </h2>
-              <p className="text-slate-500 text-lg mb-8">
-                FreeAI implements defense-in-depth security with encrypted storage, 
+              <p className="text-slate-400 text-lg mb-8">
+                FreeAI implements defense-in-depth security with encrypted storage,
                 RBAC, and compliance-ready logging.
               </p>
               <div className="grid grid-cols-2 gap-3">
@@ -1011,20 +886,20 @@ export default function Home() {
                   { icon: Activity, label: 'Audit Logging' },
                   { icon: Eye, label: 'Threat Detection' },
                 ].map((feat, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100">
-                    <feat.icon className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    <span className="text-sm text-slate-600 font-medium">{feat.label}</span>
+                  <div key={i} className="flex items-center gap-3 p-3 bg-slate-800 rounded-xl border border-slate-700">
+                    <feat.icon className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                    <span className="text-sm text-slate-300 font-medium">{feat.label}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
                 <div className="space-y-4">
                   {['Network Security: Active', 'Threat Detection: Enabled', 'Encryption: AES-256', 'RBAC: Configured'].map((item, i) => (
-                    <div key={i} className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl">
-                      <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-sm text-slate-700 font-medium">{item}</span>
+                    <div key={i} className="flex items-center gap-4 p-4 bg-slate-700/50 rounded-xl border border-slate-600">
+                      <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
+                      <span className="text-sm text-slate-300 font-medium">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -1038,53 +913,75 @@ export default function Home() {
       <section id="agents" className="ap-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Meet your <span className="gradient-text">agent workforce</span>
             </h2>
-            <p className="text-lg text-slate-500">
-              24 specialized AI agents working 24/7 to secure your infrastructure
-            </p>
+            <p className="text-lg text-slate-400">24 specialized AI agents working 24/7 to secure your infrastructure</p>
           </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
             {agents.map((agent, i) => (
-              <div key={i} className="ap-card p-4 hover:scale-105 transition-transform cursor-pointer">
+              <div key={i} className="ap-card-dark p-4 hover:scale-105 transition-transform cursor-pointer">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${
-                  agent.role === 'red' ? 'bg-red-50' :
-                  agent.role === 'blue' ? 'bg-blue-50' :
-                  'bg-purple-50'
+                  agent.role === 'red' ? 'bg-red-900/40' :
+                  agent.role === 'blue' ? 'bg-blue-900/40' :
+                  'bg-purple-900/40'
                 }`}>
                   <agent.icon className={`w-5 h-5 ${
-                    agent.role === 'red' ? 'text-red-500' :
-                    agent.role === 'blue' ? 'text-blue-500' :
-                    'text-purple-500'
+                    agent.role === 'red' ? 'text-red-400' :
+                    agent.role === 'blue' ? 'text-blue-400' :
+                    'text-purple-400'
                   }`} />
                 </div>
-                <h3 className="font-bold text-slate-900 text-sm mb-1">{agent.name}</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">{agent.desc}</p>
+                <h3 className="font-bold text-white text-sm mb-1">{agent.name}</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">{agent.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
+
+      {/* FOOTER */}
+      <footer className="bg-slate-950 border-t border-slate-800 py-12">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <Brain className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="font-bold text-white">FreeAI</div>
+                <div className="text-xs text-slate-500">Unified AI inference workstation</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-400">
+              <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
+              <Link href="/deploy" className="hover:text-white transition-colors">Deploy</Link>
+              <Link href="/security" className="hover:text-white transition-colors">Security</Link>
+              <Link href="/legal/contact" className="hover:text-white transition-colors">Contact</Link>
+            </div>
+            <div className="text-sm text-slate-500">
+              GPL-3.0 · © 2026 Project Zero Days
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+    <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-5 text-left flex justify-between items-center hover:bg-slate-50 transition-colors"
+        className="w-full p-5 text-left flex justify-between items-center hover:bg-slate-700/50 transition-colors"
       >
-        <span className="font-semibold text-slate-900">{question}</span>
+        <span className="font-semibold text-white">{question}</span>
         <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="px-5 pb-5 text-slate-500 leading-relaxed">
+        <div className="px-5 pb-5 text-slate-400 leading-relaxed">
           {answer}
         </div>
       )}

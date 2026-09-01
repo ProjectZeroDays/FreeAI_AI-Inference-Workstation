@@ -5,9 +5,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --foreground-rgb: 15, 23, 42;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 248, 250, 252;
+  --foreground-rgb: 241, 245, 249;
+  --background-start-rgb: 2, 6, 23;
+  --background-end-rgb: 15, 23, 42;
 }
 
 * {
@@ -35,12 +35,12 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #ffffff;
+  background: #0f172a;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
 .gradient-text {
-  background: linear-gradient(108deg, #2563eb 0%, #7c3aed 100%);
+  background: linear-gradient(108deg, #60a5fa 0%, #a78bfa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -79,22 +79,7 @@ body {
   animation: fadeInUp 0.8s ease-out forwards;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.animate-slide-in {
-  animation: slideIn 0.6s ease-out forwards;
-}
-
-/* Applivery-style card */
+/* Card styles */
 .ap-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -109,12 +94,27 @@ body {
   transform: translateY(-2px);
 }
 
-/* Applivery-style section */
+/* Dark card variant */
+.ap-card-dark {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.ap-card-dark:hover {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Section */
 .ap-section {
   padding: 96px 0;
 }
 
-/* Applivery-style hero */
+/* Hero badges */
 .ap-hero-badge {
   display: inline-flex;
   align-items: center;
@@ -129,7 +129,21 @@ body {
   margin-bottom: 32px;
 }
 
-/* Applivery CTA button */
+.ap-hero-badge-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #93c5fd;
+  margin-bottom: 32px;
+}
+
+/* Buttons */
 .ap-btn-primary {
   display: inline-flex;
   align-items: center;
@@ -147,6 +161,25 @@ body {
 .ap-btn-primary:hover {
   background: #1e40af;
   transform: translateY(-1px);
+}
+
+.ap-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: #ffffff;
+  color: #1d4ed8;
+  border: 1.5px solid #1d4ed8;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.ap-btn-secondary:hover {
+  background: #eff6ff;
 }
 
 .ap-btn-secondary-dark {
@@ -169,40 +202,7 @@ body {
   border-color: #64748b;
 }
 
-.ap-hero-badge-dark {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #93c5fd;
-  margin-bottom: 32px;
-}
-
-.ap-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  background: #ffffff;
-  color: #1d4ed8;
-  border: 1.5px solid #1d4ed8;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-
-.ap-btn-secondary:hover {
-  background: #eff6ff;
-}
-
-/* Prompt chip for Ask Agents section */
+/* Prompt chip */
 .ap-prompt-chip {
   display: inline-flex;
   align-items: center;
@@ -223,13 +223,33 @@ body {
   color: #1d4ed8;
 }
 
+.ap-prompt-chip-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #94a3b8;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  cursor: default;
+}
+
+.ap-prompt-chip-dark:hover {
+  background: #1e3a5f;
+  border-color: #3b82f6;
+  color: #93c5fd;
+}
+
 /* Stat counter */
 .ap-stat-number {
   font-size: 56px;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
-  background: linear-gradient(108deg, #1d4ed8 0%, #7c3aed 100%);
+  background: linear-gradient(108deg, #60a5fa 0%, #a78bfa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -237,12 +257,12 @@ body {
 
 .ap-stat-label {
   font-size: 14px;
-  color: #64748b;
+  color: #94a3b8;
   margin-top: 8px;
   font-weight: 500;
 }
 
-/* Logo placeholder for trusted-by */
+/* Logo placeholder */
 .ap-logo {
   display: flex;
   align-items: center;
@@ -254,6 +274,19 @@ body {
 
 .ap-logo:hover {
   filter: grayscale(0) opacity(1);
+}
+
+.ap-logo-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  filter: grayscale(1) opacity(0.4);
+  transition: filter 0.2s ease;
+}
+
+.ap-logo-dark:hover {
+  filter: grayscale(0) opacity(0.8);
 }
 
 /* Step number */
@@ -309,9 +342,22 @@ body {
   line-height: 1;
 }
 
-/* Divider */
-.ap-divider {
-  height: 1px;
-  background: #e2e8f0;
-  margin: 0;
+.ap-quote-dark {
+  position: relative;
+  padding: 32px 32px 32px 48px;
+  background: #1e293b;
+  border-radius: 16px;
+  border-left: 4px solid #3b82f6;
+}
+
+.ap-quote-dark::before {
+  content: '"';
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 64px;
+  font-weight: 800;
+  color: #3b82f6;
+  opacity: 0.15;
+  line-height: 1;
 }
