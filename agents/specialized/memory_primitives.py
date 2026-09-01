@@ -301,7 +301,7 @@ class MemoryPrimitivesAgent:
                     "description": "Writing beyond allocated buffer boundaries to overwrite adjacent memory on stack or heap.",
                     "subtypes": ["stack", "heap"],
                     "exploitation_mechanics": "Overwrite return address, function pointers, or adjacent data to redirect execution flow.",
-                    "real_world_cves": ["CVE-2019-3568", "CVE-2014-0160", "CVE-2003-0252", "CVE-2024-3094", "CVE-2021-34527", "CVE-2023-36884", "CVE-2017-0144", "CVE-2021-31166", "CVE-2020-0796"],
+                    "real_world_cves": ["CVE-2019-3568", "CVE-2014-0160", "CVE-2003-0252", "CVE-2024-3094", "CVE-2021-34527", "CVE-2023-36884", "CVE-2017-0144", "CVE-2021-31166", "CVE-2020-0796", "CVE-2023-21716", "CVE-2023-28252", "CVE-2023-36934", "CVE-2024-3400"],
                     "mitigations": ["ASLR", "DEP/NX", "Stack Canaries", "SafeSEH", "CFG"],
                     "ai_selection_score": 85,
                     "difficulty": "low",
