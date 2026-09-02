@@ -232,14 +232,14 @@ class TestProviderRouting:
 
     def test_providers_list(self):
         """Providers list should return valid response."""
-        from router.providers import load_providers
+        from providers import load_providers
         providers = load_providers()
         assert isinstance(providers, dict)
 
     def test_route_endpoint(self):
         """Route endpoint should accept requests."""
-        from router.router import app
-        app.config["TESTING"] = True
-        client = app.test_client()
+        import router as router_mod
+        router_mod.app.config["TESTING"] = True
+        client = router_mod.app.test_client()
         resp = client.post("/route", json={"prompt": "test"})
         assert resp.status_code == 200
