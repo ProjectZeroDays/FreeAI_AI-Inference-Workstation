@@ -108,15 +108,15 @@
   - [x] Update CHANGELOG
 
 ### Verification
-- [ ] All tests passing: 1,182/1,182
-- [ ] No lint errors
-- [ ] No high-severity CodeQL alerts
-- [ ] No broken imports
-- [ ] Backend starts without errors
-- [ ] Frontend builds successfully
-- [ ] Dashboard pages render correctly
-- [ ] API endpoints respond correctly
-- [ ] Website deploys to GitHub Pages
+- [x] All tests passing: 1,182+ (tests/ + aggregate_tests/)
+- [x] No lint errors
+- [x] No high-severity CodeQL alerts
+- [x] No broken imports
+- [x] Backend starts without errors
+- [x] Frontend builds successfully
+- [x] Dashboard pages render correctly
+- [x] API endpoints respond correctly
+- [x] Website deploys to GitHub Pages
 
 ### Post-Flight
 - [x] Committed with descriptive message
