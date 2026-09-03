@@ -80,6 +80,9 @@ website/.next/
 capture_demo.py  
 "website/out/"
 
+# Runtime alert state (health monitor output)
+config/alerts.json
+
 # AI agent skill directories (managed separately, contain real keys in history)
 .opencode/
 .agents/skills/
