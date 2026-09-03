@@ -1,4 +1,4 @@
-const AGENT_API = "http://localhost:8020";
+const AGENT_API = "http://localhost:8120";
 
 const presets = [
   { id: "qwen3.6-12b", label: "Ultra Coder 12B", description: "Qwen3.6 12B - primary coder, architecture & full projects" },

@@ -33,15 +33,15 @@ metadata:
     tier: backend
   annotations:
     prometheus.io/scrape: "true"
-    prometheus.io/port: "8020"
+    prometheus.io/port: "8120"
 spec:
   type: ClusterIP
   selector:
     app: agents
   ports:
     - name: http
-      port: 8020
-      targetPort: 8020
+      port: 8120
+      targetPort: 8120
       protocol: TCP
 ---
 apiVersion: v1

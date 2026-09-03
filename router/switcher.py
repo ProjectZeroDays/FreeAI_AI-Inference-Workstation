@@ -1,4 +1,7 @@
-from models import MODEL_REGISTRY, FALLBACK_CHAIN, FallbackChain
+try:
+    from .models import MODEL_REGISTRY, FALLBACK_CHAIN, FallbackChain
+except ImportError:
+    from models import MODEL_REGISTRY, FALLBACK_CHAIN, FallbackChain
 
 
 def select_model(task_type: str) -> dict:

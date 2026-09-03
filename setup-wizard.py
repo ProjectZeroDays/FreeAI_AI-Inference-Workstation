@@ -178,7 +178,7 @@ def check_mode():
     print(f"  [{'OK' if gpu_info['cuda'] else 'WARN'}] CUDA: {gpu_info['cuda']} ({gpu_info['gpu_count']} GPU(s))")
 
     # Check key ports
-    for port in [8010, 8020, 8030, 8040, 8050, 8100, 8110, 8120, 8130, 8140, 8150, 8160, 8170, 8180, 8190, 8192]:
+    for port in [8010, 8050, 8080, 8090, 8100, 8110, 8120, 8130, 8140, 8150, 8160, 8170, 8180, 8192, 8196]:
         available = check_port_available(port)
         print(f"  [{'OK' if available else 'BUSY'}] Port {port}")
 

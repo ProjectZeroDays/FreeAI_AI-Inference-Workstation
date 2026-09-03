@@ -8,7 +8,10 @@ from collections import OrderedDict
 
 from flask import request, jsonify, Response
 
-from settings import load_config
+try:
+    from .settings import load_config
+except ImportError:
+    from settings import load_config
 
 CFG = load_config().get("router", {})
 

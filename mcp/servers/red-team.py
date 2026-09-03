@@ -6,7 +6,7 @@ Powered by uncensored heretic models via FreeAI Router 8010.
 """
 import os, sys, json, requests
 
-ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8020")
+ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8120")
 # MCP stdio JSON-RPC
 def reply(id, result):
     sys.stdout.write(json.dumps({"jsonrpc":"2.0","id":id,"result":result})+"\n")

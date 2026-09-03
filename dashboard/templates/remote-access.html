@@ -88,20 +88,26 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Dashboard</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
-        <a href="/network" class="nav-item"><span class="nav-dot"></span> Network</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.overview">Overview</span></a>
+        <a href="/network" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.network">Network</span></a>
         <a href="/remote-access" class="nav-item active"><span class="nav-dot"></span> Remote Access</a>
-        <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
+        <a href="/security" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.security">Security</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
       </div>
       <div class="sidebar-foot">
         <span class="live-dot" aria-hidden="true"></span>
         <span class="muted">Live</span>
       </div>
     </nav>
+  <main>
 
     <div class="main" style="padding:0;overflow:hidden">
-      <div class="ra-layout">
+        <div class="q-card">
+          <div class="card-header"><h3>Status</h3></div>
+          <div class="card-body">
+            <p class="muted">System operational.</p>
+          </div>
+        </div><div class="ra-layout">
         <div class="ra-header">
           <div>
             <h1>Remote Access</h1>
@@ -453,5 +459,8 @@
     loadStatus();
     loadKeys();
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
 </html>

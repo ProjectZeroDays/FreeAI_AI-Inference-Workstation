@@ -65,30 +65,30 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Dashboard</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
-        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
-        <a href="/training" class="nav-item"><span class="nav-dot"></span> Model Training</a>
-        <a href="/memory" class="nav-item"><span class="nav-dot"></span> Persistent Memory</a>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> Gateway</a>
-        <a href="/automations" class="nav-item"><span class="nav-dot"></span> Automations</a>
-        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
-        <a href="/blog" class="nav-item"><span class="nav-dot"></span> Blog</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.overview">Overview</span></a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.subagents">Subagents</span></a>
+        <a href="/training" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.model_training">Model Training</span></a>
+        <a href="/memory" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.persistent_memory">Persistent Memory</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/gateway" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.gateway">Gateway</span></a>
+        <a href="/automations" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.automations">Automations</span></a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.wiki">Wiki</span></a>
+        <a href="/blog" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.blog">Blog</span></a>
         <a href="/forum" class="nav-item active"><span class="nav-dot"></span> Forum</a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Control</span>
-        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> SDLC & Pipelines</a>
-        <a href="#settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sdlc___pipelines">SDLC & Pipelines</span></a>
+        <a href="#settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
       </div>
       <div class="sidebar-foot">
         <span class="live-dot" aria-hidden="true"></span>
         <span class="muted">Live</span>
       </div>
     </nav>
+  <main>
 
-    <div class="main" style="padding:32px;overflow-y:auto">
-      <header class="topbar" style="margin-bottom:24px">
+    <div class="main" style="padding:32px;overflow-y:auto"><header class="topbar" style="margin-bottom:24px">
         <div>
           <h1>FreeAI Forum</h1>
           <p>Community discussions, help, and feature requests</p>
@@ -97,8 +97,12 @@
           <button class="btn-new" style="width:auto" onclick="showNewThread()">+ New Thread</button>
         </div>
       </header>
-
-      <div id="forum-view">
+        <div class="q-card">
+          <div class="card-header"><h3>Status</h3></div>
+          <div class="card-body">
+            <p class="muted">System operational.</p>
+          </div>
+        </div><div id="forum-view">
         <div class="forum-layout">
           <div>
             <div class="thread-list" id="thread-list"></div>
@@ -276,5 +280,8 @@
 
     loadThreads();
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
 </html>

@@ -59,9 +59,33 @@
   </style>
 </head>
 <body>
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">&#9688;</div><div class="brand-text"><strong>FreeAI</strong><span>Unified GPU Stack</span></div></div>
+      <div class="nav-section"><span class="nav-label" data-i18n="nav.stack">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
+      </div>
+      <div class="nav-section"><span class="nav-label" data-i18n="nav.control">Control</span>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar"><span class="toggle-icon">&#9664;</span></button>
+        <button class="theme-toggle" id="sidebar-theme-toggle" title="Toggle theme" aria-label="Toggle theme">&#9680;</button>
+        <span class="live-dot" aria-hidden="true"></span><span class="muted" data-i18n="status.running">Live</span>
+      </div>
+    </nav>
+  <main>
+
   <div class="rbac-layout">
     <div class="rbac-header">
       <h1>RBAC Manager</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div>
       <span class="muted" style="margin-left:auto;font-size:12px">Role-Based Access Control</span>
     </div>
     <div class="rbac-body">
@@ -131,6 +155,7 @@
       </div>
     </div>
   </div>
+    <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme">\u2600</button>
   <script>
     const ROLES = ['superadmin','admin','developer','viewer','readonly'];
     const RESOURCES = ['route','agent','workflow','rbac','config','admin','model','schedule','status','metric','health','log','file','user'];
@@ -242,5 +267,6 @@
     loadMatrix();
     loadUsers();
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+</main></body>
 </html>

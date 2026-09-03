@@ -8,6 +8,7 @@
   <style>
     /* ── Skills-specific overrides ─────────────────────────── */
     .skills-layout { display:grid; grid-template-columns:260px 1fr; min-height:100vh; }
+    .skills-layout:has(.sidebar.collapsed) { grid-template-columns:48px 1fr; }
     .skills-main { padding:22px 24px 32px; min-width:0; }
     .skills-topbar { display:flex; align-items:center; justify-content:space-between;
                      padding:6px 2px 16px; border-bottom:1px solid var(--border);
@@ -138,32 +139,107 @@
         </div>
       </div>
       <div class="nav-section">
-        <span class="nav-label">Navigation</span>
-        <a href="/dashboard" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
-        <a href="/skills" class="nav-item active"><span class="nav-dot"></span> Skills</a>
-        <a href="/skills-catalog" class="nav-item"><span class="nav-dot"></span> Catalog</a>
-        <a href="/agents" class="nav-item"><span class="nav-dot"></span> Agents</a>
-        <a href="/models" class="nav-item"><span class="nav-dot"></span> Models</a>
-        <a href="/plugins" class="nav-item"><span class="nav-dot"></span> Plugins</a>
-        <a href="/rag" class="nav-item"><span class="nav-dot"></span> Knowledge</a>
+        <span class="nav-label" data-i18n="nav.stack">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
+        <a href="/clients" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.clients">Clients</span></a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
+        <a href="/sdlc-runs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.runs">SDLC Runs</span></a>
       </div>
       <div class="nav-section">
-        <span class="nav-label">Tools</span>
-        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
-        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <span class="nav-label" data-i18n="nav.control">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sdlc">SDLC & Pipelines</span></a>
+        <a href="/skills" class="nav-item active"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/hermes" class="nav-item hermes-link" data-hermes-port="8090"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="/files" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.files">Files</span></a>
+        <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.live_logs">Live Logs</span></a>
+        <a href="/todos" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.todos">Todos</span></a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.jobs">Jobs</span></a>
+        <a href="/notifications" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.notifications">Notifications</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label" data-i18n="nav.integrations">Integrations</span>
+        <a href="/salad" class="nav-item" id="salad-nav-link"><span class="nav-dot"></span> <span data-i18n="nav.salad">Salad GPU</span></a>
+        <a href="/aikido" class="nav-item" id="aikido-nav-link"><span class="nav-dot"></span> <span data-i18n="nav.aikido">Aikido</span></a>
+        <a href="/dependency-agent" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dependency_agent">Dependency Agent</span></a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.mcp">MCP Registry</span></a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.scheduler">Scheduler</span></a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.workflows">Workflows</span></a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.browser">Browser</span></a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.subagents">Subagents</span></a>
+        <a href="/ai-training" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.ai_training">AI Training</span></a>
+        <a href="/ddns-manager" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.ddns_manager">DDNS Manager</span></a>
+        <a href="/network-auto" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.network_auto">Network Auto</span></a>
+        <a href="/model-registry" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.model_registry">Model Registry</span></a>
+        <a href="/skills-catalog" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills_catalog">Skills Catalog</span></a>
+        <a href="/remote-access" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.remote_access">Remote Access</span></a>
+        <a href="/external-providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.external_providers">External Providers</span></a>
+        <a href="/shodan" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.shodan">Shodan</span></a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label" data-i18n="nav.security">Security</span>
+        <a href="/vuln-scanner" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.vuln_scanner">Vuln Scanner</span></a>
+        <a href="/identity-mgmt" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.identity_mgmt">Identity</span></a>
+        <a href="/proxy-chain" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.proxy_chain">Proxy Chain</span></a>
+        <a href="/realtime-monitor" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.realtime_monitor">Realtime</span></a>
+        <a href="/threat-intel" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.threat_intel">Threat Intel</span></a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.wireless_exploitation">Wireless Exploitation</span></a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.iot_exploitation">IoT Exploitation</span></a>
+        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.apt_intelligence">APT Intelligence</span></a>
+        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.predictive_analytics">Predictive Analytics</span></a>
+        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.incident_response">Incident Response</span></a>
+        <a href="/ai-red-teaming" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.ai_red_teaming">AI Red Teaming</span></a>
+        <a href="/secrets" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.secrets">Secrets</span></a>
+        <a href="/rbac" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.rbac">RBAC</span></a>
+        <a href="/prompts" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.prompts">Prompts</span></a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.wiki_dashboard">Wiki Dashboard</span></a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.desktop">Desktop</span></a>
+        <a href="/device-fingerprint" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.device_fingerprint">Device Fingerprint</span></a>
+        <span class="nav-label">Exploit Categories</span>
+        <a href="/exploits/memory-corruption" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.memory_corruption">Memory Corruption</span></a>
+        <a href="/exploits/ssrf" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.ssrf">SSRF</span></a>
+        <a href="/exploits/deserialization" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.deserialization">Deserialization</span></a>
+        <a href="/exploits/messaging-rce" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.messaging_rce">Messaging RCE</span></a>
+        <a href="/exploits/media-playback" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.media_playback">Media Playback</span></a>
+        <a href="/exploits/file-parse" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.file_parse__xxe_pdf_email">File Parse (XXE/PDF/Email)</span></a>
+        <a href="/exploits/memory-primitives" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.memory_primitives">Memory Primitives</span></a>
+        <a href="/exploits/chained-zero-day" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.chained_zero_day">Chained Zero-Day</span></a>
+        <a href="/social-engineering" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.social_engineering">Social Engineering</span></a>
+        <a href="/zero-day" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.zero_day">Zero-Day</span></a>
+        <a href="/malware-analysis" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.malware_analysis">Malware Analysis</span></a>
+        <a href="/network-exploitation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.network_exploitation">Network Exploitation</span></a>
+        <a href="/cloud-exploitation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.cloud_exploitation">Cloud Exploitation</span></a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.campaign_manager">Campaign Manager</span></a>
+        <a href="/campaign-settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.campaign_settings">Campaign Settings</span></a>
+        <a href="/evals" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.evals">Evals</span></a>
+        <a href="/godmode" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.godmode">Godmode</span></a>
+        <span class="nav-label">Infrastructure</span>
+        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sandbox">Sandbox</span></a>
       </div>
       <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <span class="toggle-icon">◀</span>
+        </button>
+        <button class="theme-toggle" id="sidebar-theme-toggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
         <span class="live-dot" aria-hidden="true"></span>
         <span class="muted">Live</span>
         <span id="skill-count" class="muted" style="margin-left:auto">0 skills</span>
       </div>
     </nav>
+  <main>
 
     <!-- Main -->
     <div class="skills-main">
       <header class="skills-topbar">
         <div>
           <h1>Skills Manager</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div>
           <p>Browse, edit, and manage AI skills &amp; agent capabilities</p>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
@@ -595,5 +671,7 @@ Content goes here...
     // ── Init ──────────────────────────────────────────────────────
     loadSkills().then(() => renderCategories());
   </script>
-</body>
+  <script src="/static/i18n.js"></script>
+  <script src="/static/dashboard.js"></script>
+</main></body>
 </html>

@@ -37,8 +37,8 @@ bash vllm/launch-vllm.sh >>logs/vllm.log 2>&1 &
 echo "[start] Starting router (:8010)..."
 python3 router/router.py >>logs/router.log 2>&1 &
 
-echo "[start] Starting agent API (:8020)..."
-python3 -m uvicorn agents.api:app --host 0.0.0.0 --port 8020 >>logs/agents.log 2>&1 &
+echo "[start] Starting agent API (:8120)..."
+python3 -m uvicorn agents.api:app --host 0.0.0.0 --port 8120 >>logs/agents.log 2>&1 &
 
 echo "[start] Starting workflow engine (:8040)..."
 python3 -m uvicorn workflow.api:app --host 0.0.0.0 --port 8040 >>logs/workflow.log 2>&1 &

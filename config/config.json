@@ -11,7 +11,7 @@
     "model_overrides": {}
   },
   "agents": {
-    "port": 8020,
+    "port": 8120,
     "default_profile": "balanced",
     "memory_max_turns": 20
   },

@@ -17,7 +17,7 @@ spec:
         - name: agents
           image: your-registry/agents:latest
           ports:
-            - containerPort: 8020
+            - containerPort: 8120
           env:
             - name: ROUTER_URL
               value: http://router:8010/route
@@ -31,5 +31,5 @@ spec:
   selector:
     app: agents
   ports:
-    - port: 8020
-      targetPort: 8020
+    - port: 8120
+      targetPort: 8120

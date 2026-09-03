@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os, sys, json, requests
-ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8020")
+ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8120")
 def reply(id, result):
     sys.stdout.write(json.dumps({"jsonrpc":"2.0","id":id,"result":result})+"\n"); sys.stdout.flush()
 def error(id, code, msg):

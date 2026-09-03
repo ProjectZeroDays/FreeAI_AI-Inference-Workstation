@@ -24,12 +24,12 @@ data:
   # --- Dashboard ---
   DASHBOARD_PORT: "8030"
   ROUTER_URL_DASH: "http://router:8010"
-  AGENTS_URL: "http://agents:8020"
+  AGENTS_URL: "http://agents:8120"
   WORKFLOW_URL: "http://workflow:8040"
 
   # --- Workflow ---
   WORKFLOW_PORT: "8040"
-  AGENT_API: "http://agents:8020"
+  AGENT_API: "http://agents:8120"
   WORKFLOW_AUDIT_LOG: "/workspace/logs/workflow-audit.jsonl"
   WORKFLOW_STEP_RETRIES: "3"
   WORKFLOW_RETRY_DELAY_S: "2"

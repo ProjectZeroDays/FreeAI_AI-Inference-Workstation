@@ -153,7 +153,7 @@ spec:
           image: {{ include "freeai.image" (merge (dict "image" .Values.images.agents) (dict "name" "agents" "tier" "backend")) }}
           imagePullPolicy: {{ .Values.images.agents.pullPolicy }}
           ports:
-            - containerPort: 8020
+            - containerPort: 8120
               protocol: TCP
           envFrom:
             - configMapRef:
@@ -168,7 +168,7 @@ spec:
                   key: agent-api-key
           resources:
             {{- toYaml .Values.deployments.agents.resources | nindent 12 }}
-          {{- include "freeai.probe" (merge (dict "port" 8020 "initialDelaySeconds" 15 "periodSeconds" 15) (dict "name" "agents")) | nindent 10 }}
+          {{- include "freeai.probe" (merge (dict "port" 8120 "initialDelaySeconds" 15 "periodSeconds" 15) (dict "name" "agents")) | nindent 10 }}
 ---
 # dashboard
 apiVersion: apps/v1
@@ -216,7 +216,7 @@ spec:
             - name: ROUTER_URL
               value: "http://router:8010"
             - name: AGENTS_URL
-              value: "http://agents:8020"
+              value: "http://agents:8120"
             - name: WORKFLOW_URL
               value: "http://workflow:8040"
           resources:
@@ -269,7 +269,7 @@ spec:
                 name: freeai-config
           env:
             - name: AGENT_API
-              value: "http://agents:8020"
+              value: "http://agents:8120"
             - name: WORKFLOW_AUDIT_LOG
               value: "/workspace/logs/workflow-audit.jsonl"
           resources:
@@ -327,7 +327,7 @@ spec:
                 name: freeai-config
           env:
             - name: AGENT_API
-              value: "http://agents:8020"
+              value: "http://agents:8120"
             - name: ENABLE_SHELL_TOOLS
               value: {{ .Values.config.enableShellTools | quote }}
             - name: MAX_FIX_ROUNDS

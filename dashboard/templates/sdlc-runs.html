@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — SDLC Runs</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <link rel="stylesheet" href="/static/notifications.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">\u25c8</div><div class="brand-text"><strong>FreeAI</strong><span>Unified GPU Stack</span></div></div>
+      <div class="nav-section"><span class="nav-label" data-i18n="nav.stack">Stack</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.models">Models</span></a>
+        <a href="/clients" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.clients">Clients</span></a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
+        <a href="/sdlc-runs" class="nav-item active"><span class="nav-dot"></span> <span data-i18n="nav.runs">SDLC Runs</span></a>
+      </div>
+      <div class="nav-section"><span class="nav-label" data-i18n="nav.control">Control</span>
+        <a href="/sdlc" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sdlc">SDLC & Pipelines</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="/logs-stream" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.live_logs">Live Logs</span></a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar"><span class="toggle-icon">\u25c0</span></button>
+        <button class="theme-toggle" id="sidebar-theme-toggle" title="Toggle theme" aria-label="Toggle theme">\u25d0</button>
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted" data-i18n="status.running">Live</span>
+      </div>
+    </nav>
+    <div class="main">
+      <header class="topbar">
+        <div><h1 data-i18n="topbar.title">SDLC Runs</h1><p data-i18n="topbar.subtitle">Autonomous SDLC execution history</p></div>
+        <div class="topbar-actions"><button class="theme-toggle" id="theme-toggle" title="Toggle theme">\u2600</button></div>
+      </header>
+      <main>
+        <div class="q-card">
+          <div class="card-header"><h3>Recent SDLC Runs</h3></div>
+          <div class="card-body">
+            <p class="muted">No runs yet. Start an SDLC run from the SDLC & Pipelines page.</p>
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="card-header"><h3>Run Statistics</h3></div>
+          <div class="card-body">
+            <canvas id="runsChart" height="120"></canvas>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="/static/i18n.js"></script>
+  <script src="/static/dashboard.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('sidebar-theme-toggle');
+      if(btn){
+        var KEY='freeai-theme';
+        function apply(dark){document.body.classList.toggle('light',!dark);btn.textContent=dark?'\u25d0':'\u25d1';localStorage.setItem(KEY,dark?'dark':'light');}
+        var saved=localStorage.getItem(KEY);apply(saved!=='light');
+        btn.addEventListener('click',function(){apply(!document.body.classList.contains('light'));});
+      }
+    })();
+  </script>
+</body>
+</html>

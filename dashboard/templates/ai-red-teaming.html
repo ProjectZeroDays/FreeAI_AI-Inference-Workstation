@@ -51,19 +51,26 @@
       <div class="brand"><div class="brand-mark">◈</div><div class="brand-text"><strong>FreeAI</strong><span>Red Team</span></div></div>
       <div class="nav-section">
         <span class="nav-label">Navigation</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
-        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> Wireless Exploitation</a>
-        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> IoT Exploitation</a>
-        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> APT Intelligence</a>
-        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> Predictive Analytics</a>
-        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> Incident Response</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/wireless-exploitation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.wireless_exploitation">Wireless Exploitation</span></a>
+        <a href="/iot-exploitation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.iot_exploitation">IoT Exploitation</span></a>
+        <a href="/apt-intelligence" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.apt_intelligence">APT Intelligence</span></a>
+        <a href="/predictive-analytics" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.predictive_analytics">Predictive Analytics</span></a>
+        <a href="/incident-response" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.incident_response">Incident Response</span></a>
         <a href="/ai-red-teaming" class="nav-item active"><span class="nav-dot"></span> AI Red Teaming</a>
       </div>
       <div class="sidebar-foot"><span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span></div>
     </nav>
+  <main>
     <div class="redteam-main">
       <header class="redteam-topbar">
-        <div><h1>AI Red Teaming</h1><p>AI-driven attack simulation, vuln discovery, and adversarial ML testing</p></div>
+        <div><h1>AI Red Teaming</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div><p>AI-driven attack simulation, vuln discovery, and adversarial ML testing</p></div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-sm btn-primary" onclick="startCampaign()">New Campaign</button>
           <button class="btn btn-sm" onclick="loadResults()">Results</button>
@@ -176,5 +183,8 @@
     loadAll();
     setInterval(loadAll, 20000);
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
 </html>

@@ -98,7 +98,7 @@ def start_service(name):
     env["AGENTS_PORT"] = str(SERVICES.get("agents", {}).get("port", 8120))
     env["REGISTRY_PORT"] = str(SERVICES.get("registry", {}).get("port", 8130))
     env["RAG_PORT"] = str(svc["port"])
-    env["GODMODE_PORT"] = str(SERVICES.get("godmode", {}).get("port", 8190))
+    env["GODMODE_PORT"] = str(SERVICES.get("godmode", {}).get("port", 8196))
     env["CAMPAIGN_PORT"] = str(SERVICES.get("campaign", {}).get("port", 8192))
 
     print(f"[launch] Starting {name} on :{svc['port']}...")

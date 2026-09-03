@@ -1,7 +1,10 @@
 import os
 from typing import Dict, List, Optional
 
-from settings import load_config
+try:
+    from .settings import load_config
+except ImportError:
+    from settings import load_config
 
 _CFG = load_config()
 LLAMA_BASE = _CFG.get("router", {}).get(

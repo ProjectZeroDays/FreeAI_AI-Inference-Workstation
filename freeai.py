@@ -8,7 +8,7 @@ import urllib.error
 import urllib.request
 
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010")
-AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
+AGENT_API = os.environ.get("AGENT_API", "http://localhost:8120")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTONOMOUS_API = os.environ.get("AUTONOMOUS_API", "http://localhost:8050")
 DASH_API = os.environ.get("DASH_API", "http://localhost:8030")

@@ -1,6 +1,6 @@
 {
   "name": "FreeAI Unified AI Stack (llama.cpp CUDA13 + vision + agents + desktop)",
-  "description": "llama.cpp :9001 (vision mmproj ready) + router :8010 + agents :8020 + workflow :8040 + autonomous SDLC :8050 + dashboard :8030 + Jupyter :8888 + OpenCode :3000 + ZCode :5000 + noVNC :6080. Instance Portal + Selkies + Guacamole via PORTAL_CONFIG.",
+  "description": "llama.cpp :9001 (vision mmproj ready) + router :8010 + agents :8120 + workflow :8040 + autonomous SDLC :8050 + dashboard :8080 + Jupyter :8888 + OpenCode :3000 + ZCode :5000 + noVNC :6080. Instance Portal + Selkies + Guacamole via PORTAL_CONFIG.",
   "image": "nvidia/cuda:13.0.1-devel-ubuntu24.04",
   "version_tag": "latest",
   "disk": 250,

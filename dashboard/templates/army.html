@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Army</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand"><div class="brand-mark">\u25c8</div><div class="brand-text"><strong>FreeAI</strong><span>Unified GPU Stack</span></div></div>
+      <div class="nav-section"><span class="nav-label">Security</span>
+        <a href="/godmode" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.godmode">Godmode</span></a>
+        <a href="/army" class="nav-item active"><span class="nav-dot"></span> Army</a>
+      </div>
+      <div class="sidebar-foot">
+        <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar"><span class="toggle-icon">\u25c0</span></button>
+        <button class="theme-toggle" id="sidebar-theme-toggle" title="Toggle theme" aria-label="Toggle theme">\u25d0</button>
+        <span class="live-dot" aria-hidden="true"></span><span class="muted">Live</span>
+      </div>
+    </nav>
+    <div class="main">
+      <header class="topbar">
+        <div><h1>Army</h1><p>Coordinated multi-agent operations</p></div>
+        <div class="topbar-actions"><button class="theme-toggle" id="theme-toggle" title="Toggle theme">\u2600</button></div>
+      </header>
+      <main>
+        <div class="q-card">
+          <div class="card-header"><h3>Agent Army</h3></div>
+          <div class="card-body">
+            <p class="muted">Deploy and coordinate multiple AI agents for parallel operations.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="/static/dashboard.js"></script>
+  <script><script>
+    (function(){
+      var btn = document.getElementById('sidebar-theme-toggle');
+      if (!btn) return;
+      var KEY = 'freeai-theme';
+      function apply(dark) {
+        document.body.classList.toggle('light', !dark);
+        btn.textContent = dark ? '\u25d0' : '\u25d1';
+        localStorage.setItem(KEY, dark ? 'dark' : 'light');
+      }
+      var saved = localStorage.getItem(KEY);
+      apply(saved !== 'light');
+      btn.addEventListener('click', function() {
+        apply(!document.body.classList.contains('light'));
+      });
+    })();
+  </script></script>
+</body>
+</html>

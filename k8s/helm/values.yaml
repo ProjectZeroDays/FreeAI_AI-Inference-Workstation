@@ -73,7 +73,7 @@ persistence:
 config:
   llamaBase: "http://llama:9001"
   routerPort: "8010"
-  agentsPort: "8020"
+  agentsPort: "8120"
   dashboardPort: "8030"
   workflowPort: "8040"
   autonomousPort: "8050"
@@ -135,7 +135,7 @@ ingress:
         - path: /api/agents(/|$)(.*)
           pathType: ImplementationSpecific
           service: agents
-          port: 8020
+          port: 8120
         - path: /api/workflow(/|$)(.*)
           pathType: ImplementationSpecific
           service: workflow

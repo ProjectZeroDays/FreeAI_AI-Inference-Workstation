@@ -17,7 +17,7 @@ from dashboard import backend as dash  # noqa: E402
 @pytest.fixture(autouse=True)
 def _setup_jwt(tmp_path, monkeypatch):
     """Enable JWT auth with a test secret and temp users file."""
-    monkeypatch.setenv("AUTH_JWT_SECRET", "test-jwt-secret-for-unit-tests")
+    monkeypatch.setenv("AUTH_JWT_SECRET", "freeai-test-jwt-secret-32-chars!!")
     # Point users file at tmpdir
     import auth.users as u_mod
     import auth.jwt as jwt_mod
@@ -27,7 +27,7 @@ def _setup_jwt(tmp_path, monkeypatch):
     u_mod.change_password("admin", u_mod.get_default_admin_password(), "admin123")
     jwt_mod._login_attempts.clear()
     # Reinitialize jwt_auth singleton with test secret
-    jwt_mod.jwt_auth = jwt_mod.JWTAuth(secret="test-jwt-secret-for-unit-tests")
+    jwt_mod.jwt_auth = jwt_mod.JWTAuth(secret="freeai-test-jwt-secret-32-chars!!")
     # Also update the dashboard's reference
     dash.jwt_auth = jwt_mod.jwt_auth
     dash._AUTH_MODULE_AVAILABLE = True

@@ -129,14 +129,14 @@ def test_jwt_auth_class_create_returns_bearer():
 
 
 def test_jwt_auth_class_different_secret():
-    auth = JWTAuth(secret="my-custom-secret")
+    auth = JWTAuth(secret="freeai-test-jwt-secret-32-chars!!")
     token = auth.create_token("alice", "admin")
-    other = JWTAuth(secret="my-custom-secret")
+    other = JWTAuth(secret="freeai-test-jwt-secret-32-chars!!")
     payload = other.verify(token["access_token"])
     assert payload is not None
     assert payload["sub"] == "alice"
     # a different secret should fail
-    bad = JWTAuth(secret="wrong-secret")
+    bad = JWTAuth(secret="wrong-secret-for-testing-32ch!!!")
     assert bad.verify(token["access_token"]) is None
 
 

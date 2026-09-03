@@ -73,19 +73,19 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Navigation</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
-        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
-        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
-        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.workflows">Workflows</span></a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.scheduler">Scheduler</span></a>
         <a href="/mcp" class="nav-item active"><span class="nav-dot"></span> MCP Registry</a>
-        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.subagents">Subagents</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Tools</span>
-        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
-        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.logs">Logs</span></a>
       </div>
       <div class="sidebar-foot">
         <span class="live-dot" aria-hidden="true"></span>
@@ -93,11 +93,18 @@
         <span id="mcp-count" class="muted" style="margin-left:auto">0 servers</span>
       </div>
     </nav>
+  <main>
 
     <div class="mcp-main">
       <header class="mcp-topbar">
         <div>
           <h1>MCP Server Registry</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div>
           <p>Model Context Protocol servers — discover, register, and manage tools</p>
         </div>
         <div style="display:flex;gap:10px;align-items:center">
@@ -208,5 +215,8 @@
     load();
     setInterval(load, 60000);
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
 </html>

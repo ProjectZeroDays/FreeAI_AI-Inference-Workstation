@@ -49,7 +49,7 @@ def _fresh_users(tmp_path, monkeypatch):
 
 @pytest.fixture
 def jwt():
-    return JWTAuth(secret="test-secret-for-unit-tests")
+    return JWTAuth(secret="freeai-test-jwt-secret-32-chars!!")
 
 
 # ── JWT token tests ──────────────────────────────────────────────
@@ -88,7 +88,7 @@ def test_decode_invalid_token(jwt):
 def test_decode_expired_token(jwt):
     import jwt as pyjwt_lib
     payload = {"sub": "hacker", "type": "access", "iat": int(time.time()) - 9999, "exp": int(time.time()) - 1}
-    token = pyjwt_lib.encode(payload, "test-secret-for-unit-tests", algorithm="HS256")
+    token = pyjwt_lib.encode(payload, "freeai-test-jwt-secret-32-chars!!", algorithm="HS256")
     assert jwt.verify(token) is None
 
 

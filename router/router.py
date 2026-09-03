@@ -21,22 +21,50 @@ import time
 import requests
 from flask import Flask, Response, request, jsonify, stream_with_context
 
-from classifier import classify_task
-from switcher import select_chain
-from settings import load_config
-from providers import (load_providers, is_keyed, keyed_providers,
-                       fallback_models, call_provider, parse_response,
-                       build_request)
-from middleware import (RateLimiter, AuthMiddleware, CacheMiddleware,
-                          rate_limiter, auth_middleware, cache_middleware,
-                          get_client_api_key)
-from load_balancer import (pick_backend, record_success, record_failure,
-                           connection_start, connection_end,
-                           all_state, get_state, FAILURE_THRESHOLD,
-                           RECOVERY_TIMEOUT_S, ALGO as LB_ALGO)
+try:
+    from .classifier import classify_task
+    from .switcher import select_chain
+    from .settings import load_config
+    from .providers import (load_providers, is_keyed, keyed_providers,
+                           fallback_models, call_provider, parse_response,
+                           build_request)
+    from .middleware import (RateLimiter, AuthMiddleware, CacheMiddleware,
+                             rate_limiter, auth_middleware, cache_middleware,
+                             get_client_api_key)
+    from .load_balancer import (pick_backend, record_success, record_failure,
+                                 connection_start, connection_end,
+                                 all_state, get_state, FAILURE_THRESHOLD,
+                                 RECOVERY_TIMEOUT_S, ALGO as LB_ALGO)
+except ImportError:
+    from classifier import classify_task
+    from switcher import select_chain
+    from settings import load_config
+    from providers import (load_providers, is_keyed, keyed_providers,
+                           fallback_models, call_provider, parse_response,
+                           build_request)
+    from middleware import (RateLimiter, AuthMiddleware, CacheMiddleware,
+                             rate_limiter, auth_middleware, cache_middleware,
+                             get_client_api_key)
+    from load_balancer import (pick_backend, record_success, record_failure,
+                                connection_start, connection_end,
+                                all_state, get_state, FAILURE_THRESHOLD,
+                                RECOVERY_TIMEOUT_S, ALGO as LB_ALGO)
 
 from metrics.prometheus import get_registry, render_metrics
 from metrics.middleware import instrument_app
+
+# Flat-module compatibility: when router.py is loaded as a flat module
+# (not as part of the router/ package), relative imports inside functions
+# fail. Ensure they resolve via absolute names or self-reference.
+try:
+    import models
+    import performance
+    import benchmark
+except ImportError:
+    import sys as _rt_sys
+    for _mod_name in ("models", "performance", "benchmark"):
+        if _mod_name not in _rt_sys.modules:
+            _rt_sys.modules[_mod_name] = type(sys)(_mod_name)
 
 # Tracing integration (no-op fallback if opentelemetry unavailable)
 try:
@@ -269,7 +297,10 @@ def stream_route(prompt, task_type, agent, payload_base=None):
         yield "data: [DONE]\n\n"
         return
 
-    from models import MODEL_REGISTRY
+    try:
+        from .models import MODEL_REGISTRY
+    except ImportError:
+        from models import MODEL_REGISTRY
     started = time.monotonic()
     tokens = 0
     yield _sse_retry(3000)
@@ -335,7 +366,10 @@ def _endpoint_pool(candidate: str):
     When multiple parallel instances exist (e.g. _llama_bases), all are
     included so the load balancer can spread traffic across them.
     """
-    from models import MODEL_REGISTRY, _llama_bases
+    try:
+        from .models import MODEL_REGISTRY, _llama_bases
+    except ImportError:
+        from models import MODEL_REGISTRY, _llama_bases
     meta = MODEL_REGISTRY.get(candidate)
     if meta is None:
         return []
@@ -360,7 +394,10 @@ def _try_candidate(candidate, payload, stream=False):
     On success records a load-balancer success; on failure records a
     failure and returns the last error so the caller can fall through.
     """
-    from models import MODEL_REGISTRY
+    try:
+        from .models import MODEL_REGISTRY
+    except ImportError:
+        from models import MODEL_REGISTRY
     pool = _endpoint_pool(candidate)
     if not pool:
         return None, None, "no endpoints"
@@ -393,7 +430,10 @@ def health():
 
 @app.route("/models")
 def models():
-    from models import MODEL_REGISTRY, ConfidenceScorer
+    try:
+        from .models import MODEL_REGISTRY, ConfidenceScorer
+    except ImportError:
+        from models import MODEL_REGISTRY, ConfidenceScorer
     scorer = ConfidenceScorer()
     out = {}
     for key, m in MODEL_REGISTRY.items():
@@ -449,7 +489,10 @@ def providers():
 @app.route("/router/load-balancers")
 def lb_load_balancers():
     """Show current load-balancer state for all registered backends."""
-    from models import MODEL_REGISTRY, _llama_bases
+    try:
+        from .models import MODEL_REGISTRY, _llama_bases
+    except ImportError:
+        from models import MODEL_REGISTRY, _llama_bases
     rows = []
     endpoints_by_key: dict = {}
     for key, meta in MODEL_REGISTRY.items():
@@ -524,7 +567,10 @@ def model_switch():
 
 @app.route("/admin/hot-models")
 def hot_models():
-    from models import _llama_bases
+    try:
+        from .models import _llama_bases
+    except ImportError:
+        from models import _llama_bases
     out = []
     for base in _llama_bases:
         try:
@@ -679,7 +725,10 @@ def route():
         degenerate_retries = 0
     else:
         import requests
-        from models import MODEL_REGISTRY
+        try:
+            from .models import MODEL_REGISTRY
+        except ImportError:
+            from models import MODEL_REGISTRY
         result = None
         model_used = None
         model_used_prev = None
@@ -713,6 +762,8 @@ def route():
         # parallel hot model: try secondary llama shard
         if result is None:
             try:
+                from .models import _llama_bases
+            except ImportError:
                 from models import _llama_bases
                 hot_payload = dict(payload)
                 first = MODEL_REGISTRY.get(candidates[-1]) if candidates else None
@@ -881,7 +932,10 @@ def route_stream():
 @app.route("/api/models/performance")
 def api_models_performance():
     """Current per-model performance scores."""
-    from models import MODEL_REGISTRY
+    try:
+        from .models import MODEL_REGISTRY
+    except ImportError:
+        from models import MODEL_REGISTRY
     from performance import scorer
     out = {}
     for key in MODEL_REGISTRY:
@@ -900,7 +954,10 @@ def api_models_performance():
 @app.route("/api/models/rankings")
 def api_models_rankings():
     """Models sorted by quality score descending."""
-    from models import MODEL_REGISTRY
+    try:
+        from .models import MODEL_REGISTRY
+    except ImportError:
+        from models import MODEL_REGISTRY
     from performance import scorer
     entries = []
     for key, meta in MODEL_REGISTRY.items():
@@ -930,8 +987,14 @@ def api_models_rankings():
 @app.route("/api/models/benchmark", methods=["POST"])
 def api_models_benchmark():
     """Run benchmark against one or all registered models."""
-    from models import MODEL_REGISTRY
-    from benchmark import run_benchmark, save_report
+    try:
+        from .models import MODEL_REGISTRY
+    except ImportError:
+        from models import MODEL_REGISTRY
+    try:
+        from benchmark import run_benchmark, save_report
+    except ImportError:
+        from .benchmark import run_benchmark, save_report
     data = request.get_json(silent=True) or {}
     target = data.get("model")  # None = all
     results = {}
@@ -956,7 +1019,10 @@ def api_models_benchmark():
 @app.route("/api/models/benchmark/report")
 def api_models_benchmark_report():
     """Return the last saved benchmark report."""
-    from benchmark import load_report
+    try:
+        from benchmark import load_report
+    except ImportError:
+        from .benchmark import load_report
     return jsonify(load_report())
 
 

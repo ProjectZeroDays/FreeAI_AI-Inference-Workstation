@@ -9,4 +9,4 @@ if [ -f venv/bin/activate ]; then
   source venv/bin/activate
 fi
 
-exec python3 -m uvicorn agents.api:app --host 0.0.0.0 --port "${AGENT_API_PORT:-8020}"
+exec python3 -m uvicorn agents.api:app --host 0.0.0.0 --port "${AGENT_API_PORT:-8120}"

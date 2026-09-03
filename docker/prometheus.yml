@@ -11,7 +11,7 @@ scrape_configs:
 
   - job_name: "freeai-agents"
     static_configs:
-      - targets: ["agents:8020"]
+      - targets: ["agents:8120"]
         labels:
           service: freeai-agents
 

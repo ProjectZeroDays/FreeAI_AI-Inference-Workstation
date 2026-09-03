@@ -11,6 +11,7 @@ flask = pytest.importorskip("flask")
 
 from dashboard import backend as dash  # noqa: E402
 from dashboard import secrets as secrets_mod  # noqa: E402
+from dashboard import secrets_helpers  # noqa: E402
 
 
 @pytest.fixture()
@@ -30,6 +31,8 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(dash, "_SCHEDULER_CONFIG_PATH", str(tmp_path / "scheduler.json"))
     monkeypatch.setattr(secrets_mod, "SECRETS_DIR", tmp_path / "secrets.enc")
     monkeypatch.setattr(secrets_mod, "METADATA_PATH", tmp_path / "secrets.enc" / "metadata.json")
+    monkeypatch.setattr(secrets_helpers, "SECRETS_DIR", tmp_path / "secrets.enc")
+    monkeypatch.setattr(secrets_helpers, "METADATA_PATH", tmp_path / "secrets.enc" / "metadata.json")
     dash._SUBAGENTS.clear()
     dash._TRAINING_DATA.update({"datasets": [], "jobs": {"sft": [], "dpo": [], "abr": []}, "models": []})
     dash._MEMORY_STATE["projects"].clear()

@@ -35,12 +35,12 @@ def _fresh_users(tmp_path, monkeypatch):
 @pytest.fixture
 def jwt_client(tmp_path, monkeypatch):
     """Flask test client with JWT auth enabled (gates RBAC middleware)."""
-    monkeypatch.setenv("AUTH_JWT_SECRET", "rbac-test-secret")
+    monkeypatch.setenv("AUTH_JWT_SECRET", "freeai-test-jwt-secret-32-chars!!")
     import dashboard.backend as dash
     import auth.jwt as jwt_mod
     jwt_mod._login_attempts.clear()
     # Reinitialize jwt_auth singleton with test secret
-    test_jwt = jwt_mod.JWTAuth(secret="rbac-test-secret")
+    test_jwt = jwt_mod.JWTAuth(secret="freeai-test-jwt-secret-32-chars!!")
     jwt_mod.jwt_auth = test_jwt
     # Also patch the backend's reference (it imports the module-level name)
     dash.jwt_auth = test_jwt

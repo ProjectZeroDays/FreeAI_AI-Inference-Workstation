@@ -56,7 +56,7 @@ ROOT = Path(__file__).parent.parent
 WORKSPACES_DIR = ROOT / "workspaces" / "builders"
 WORKSPACES_DIR.mkdir(parents=True, exist_ok=True)
 
-AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
+AGENT_API = os.environ.get("AGENT_API", "http://localhost:8120")
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://localhost:8010/route")
 PROXY_URL = os.environ.get("PROXY_URL", "http://localhost:8100/proxy")
 

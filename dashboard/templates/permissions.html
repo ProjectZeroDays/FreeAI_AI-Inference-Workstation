@@ -91,25 +91,25 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Stack</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
-        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> GPU Telemetry</a>
-        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> GPU Workstation</a>
-        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/gpu" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.gpu_telemetry">GPU Telemetry</span></a>
+        <a href="/gpu-workstation" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.gpu_workstation">GPU Workstation</span></a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Control</span>
         <a href="/permissions" class="nav-item active"><span class="nav-dot"></span> Permissions</a>
-        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
-        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> Campaigns</a>
-        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
-        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.jobs">Jobs</span></a>
+        <a href="/campaign-manager" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.campaigns">Campaigns</span></a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.scheduler">Scheduler</span></a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.workflows">Workflows</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Tools</span>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
-        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
-        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> Sandbox</a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.desktop">Desktop</span></a>
+        <a href="/sandbox" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sandbox">Sandbox</span></a>
       </div>
       <div class="sidebar-foot">
         <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">
@@ -119,11 +119,18 @@
         <span class="muted">Live</span>
       </div>
     </nav>
+  <main>
 
     <div class="perm-main">
       <header class="perm-topbar">
         <div>
           <h1>Permissions &amp; Access</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div>
           <p>AI agent permissions, sandbox policies, and tool install controls</p>
         </div>
         <div style="display:flex;gap:8px">
@@ -460,5 +467,8 @@
     async function refreshAll() { renderTools($('tool-filter').value, $('tool-search').value); }
     renderTools();
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
 </html>

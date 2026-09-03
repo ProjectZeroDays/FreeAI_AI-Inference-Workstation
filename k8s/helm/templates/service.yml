@@ -28,7 +28,7 @@ spec:
 ---
 {{- include "freeai.service" (merge (dict "name" "router" "tier" "backend" "type" .Values.services.router.type "ports" (list (dict "name" "http" "port" 8010) (dict "name" "ws" "port" 8011)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8010")) .) }}
 ---
-{{- include "freeai.service" (merge (dict "name" "agents" "tier" "backend" "type" .Values.services.agents.type "ports" (list (dict "name" "http" "port" 8020)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8020")) .) }}
+{{- include "freeai.service" (merge (dict "name" "agents" "tier" "backend" "type" .Values.services.agents.type "ports" (list (dict "name" "http" "port" 8120)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8120")) .) }}
 ---
 {{- include "freeai.service" (merge (dict "name" "dashboard" "tier" "frontend" "type" .Values.services.dashboard.type "ports" (list (dict "name" "http" "port" 8030)) "annotations" (dict "prometheus.io/scrape" "true" "prometheus.io/port" "8030")) .) }}
 ---

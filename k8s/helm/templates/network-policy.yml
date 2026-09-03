@@ -50,7 +50,7 @@ spec:
             matchLabels:
               app: browser
       ports:
-        - port: 8020
+        - port: 8120
 ---
 # Backend isolation: only frontend and backend tiers can reach backend ports
 apiVersion: networking.k8s.io/v1
@@ -77,7 +77,7 @@ spec:
               tier: inference
       ports:
         - port: 8010
-        - port: 8020
+        - port: 8120
         - port: 8040
         - port: 8050
         - port: 8180

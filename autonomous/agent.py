@@ -38,7 +38,7 @@ except ImportError:
                          parse_file_blocks, parse_verdict,
                          static_issues, detect_commands)
 
-AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
+AGENT_API = os.environ.get("AGENT_API", "http://localhost:8120")
 ENABLE_SHELL = os.environ.get("ENABLE_SHELL_TOOLS", "0") == "1"
 SHELL_TIMEOUT_S = int(os.environ.get("SHELL_TIMEOUT_S", "120"))
 MAX_FIX_ROUNDS = int(os.environ.get("MAX_FIX_ROUNDS", "3"))

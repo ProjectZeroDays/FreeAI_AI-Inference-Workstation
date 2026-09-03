@@ -67,23 +67,23 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Navigation</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
-        <a href="/skills" class="nav-item"><span class="nav-dot"></span> Skills</a>
-        <a href="/providers" class="nav-item"><span class="nav-dot"></span> Providers</a>
-        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> Hermes</a>
-        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
-        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
-        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> MCP Registry</a>
-        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> Browser</a>
-        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> Desktop</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
+        <a href="/hermes" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.hermes">Hermes</span></a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.workflows">Workflows</span></a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.scheduler">Scheduler</span></a>
+        <a href="/mcp" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.mcp_registry">MCP Registry</span></a>
+        <a href="/browser-v2" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.browser">Browser</span></a>
+        <a href="/desktop" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.desktop">Desktop</span></a>
         <a href="/gpu" class="nav-item active"><span class="nav-dot"></span> GPU</a>
-        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> Subagents</a>
+        <a href="/subagents" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.subagents">Subagents</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Tools</span>
-        <a href="/settings" class="nav-item"><span class="nav-dot"></span> Settings</a>
-        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
-        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> Wiki</a>
+        <a href="/settings" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.settings">Settings</span></a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.logs">Logs</span></a>
+        <a href="/wiki-dashboard" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.wiki">Wiki</span></a>
       </div>
       <div class="sidebar-foot">
         <span class="live-dot" aria-hidden="true"></span>
@@ -91,11 +91,18 @@
         <span id="refresh-count" class="muted" style="margin-left:auto">0 samples</span>
       </div>
     </nav>
+  <main>
 
     <div class="gpu-main">
       <header class="gpu-topbar">
         <div>
           <h1>GPU Telemetry</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div>
           <p>Real-time GPU monitoring · <span id="gpu-source" class="gpu-source-badge">—</span> · refreshes every 5s</p>
         </div>
         <button class="gpu-refresh-btn" id="btn-refresh">↻ Refresh Now</button>
@@ -317,5 +324,8 @@ document.getElementById('btn-refresh').addEventListener('click', () => {
 fetchGpuData();
 refreshTimer = setInterval(fetchGpuData, REFRESH_MS);
 </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
 </html>

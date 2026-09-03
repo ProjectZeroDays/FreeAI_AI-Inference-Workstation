@@ -95,13 +95,13 @@ spec:
         tier: backend
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8020"
+        prometheus.io/port: "8120"
     spec:
       containers:
         - name: agents
           image: your-registry/agents:latest
           ports:
-            - containerPort: 8020
+            - containerPort: 8120
               protocol: TCP
           envFrom:
             - configMapRef:
@@ -124,7 +124,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8020
+               port: 8120
             initialDelaySeconds: 15
             periodSeconds: 15
             timeoutSeconds: 5
@@ -132,7 +132,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 8020
+               port: 8120
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
@@ -178,7 +178,7 @@ spec:
             - name: ROUTER_URL
               value: "http://router:8010"
             - name: AGENTS_URL
-              value: "http://agents:8020"
+              value: "http://agents:8120"
             - name: WORKFLOW_URL
               value: "http://workflow:8040"
           resources:
@@ -243,7 +243,7 @@ spec:
                 name: freeai-config
           env:
             - name: AGENT_API
-              value: "http://agents:8020"
+              value: "http://agents:8120"
             - name: WORKFLOW_AUDIT_LOG
               value: "/workspace/logs/workflow-audit.jsonl"
           resources:
@@ -315,7 +315,7 @@ spec:
                 name: freeai-config
           env:
             - name: AGENT_API
-              value: "http://agents:8020"
+              value: "http://agents:8120"
             - name: ENABLE_SHELL_TOOLS
               value: "0"
             - name: MAX_FIX_ROUNDS

@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 import requests, os
 app = Flask(__name__)
 ROUTER = os.environ.get("ROUTER_URL", "http://localhost:8010")
-AGENT_API = os.environ.get("AGENT_API", "http://localhost:8020")
+AGENT_API = os.environ.get("AGENT_API", "http://localhost:8120")
 WORKFLOW_API = os.environ.get("WORKFLOW_API", "http://localhost:8040")
 AUTO_API = os.environ.get("AUTO_API", "http://localhost:8050")
 

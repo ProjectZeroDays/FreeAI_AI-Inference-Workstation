@@ -12,7 +12,10 @@ import threading
 import time
 from typing import Dict, List, Optional, Tuple
 
-from settings import load_config
+try:
+    from .settings import load_config
+except ImportError:
+    from settings import load_config
 
 _CFG = load_config().get("router", {})
 ALGO = os.environ.get("LB_ALGO") or _CFG.get("lb_algo", "round_robin")

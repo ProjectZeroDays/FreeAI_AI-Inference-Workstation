@@ -53,21 +53,21 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Overview</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Dashboard</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
         <a href="/metrics" class="nav-item active"><span class="nav-dot"></span> Metrics</a>
-        <a href="/health" class="nav-item"><span class="nav-dot"></span> Health</a>
+        <a href="/health" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.health">Health</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Operations</span>
-        <a href="/logs" class="nav-item"><span class="nav-dot"></span> Logs</a>
-        <a href="/errors" class="nav-item"><span class="nav-dot"></span> Errors</a>
-        <a href="/audit" class="nav-item"><span class="nav-dot"></span> Audit</a>
+        <a href="/logs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.logs">Logs</span></a>
+        <a href="/errors" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.errors">Errors</span></a>
+        <a href="/audit" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.audit">Audit</span></a>
       </div>
       <div class="nav-section">
         <span class="nav-label">Control</span>
-        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> Jobs</a>
-        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> Scheduler</a>
-        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> Workflows</a>
+        <a href="/jobs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.jobs">Jobs</span></a>
+        <a href="/scheduler" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.scheduler">Scheduler</span></a>
+        <a href="/workflows" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.workflows">Workflows</span></a>
       </div>
       <div class="sidebar-foot">
         <button class="refresh-btn" onclick="loadMetrics()" title="Refresh">↻ Refresh</button>
@@ -75,6 +75,7 @@
         <span class="muted">Live</span>
       </div>
     </nav>
+  <main>
 
     <div class="metrics-layout">
       <header class="topbar" style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
@@ -283,5 +284,17 @@
     loadMetrics();
     setInterval(loadMetrics, 30000);
   </script>
-</body>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <div class="q-card">
+          <div class="card-header"><h3>Analytics</h3></div>
+          <div class="card-body">
+            <canvas id="mainChart" height="100"></canvas>
+          </main>
+  </main>
+  </div>
+</main></body>
 </html>

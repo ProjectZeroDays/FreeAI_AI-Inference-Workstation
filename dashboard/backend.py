@@ -15,6 +15,11 @@ import urllib.request
 import urllib.parse
 from pathlib import Path
 
+# Ensure project root is on sys.path for imports
+_ROOT = Path(__file__).parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
 try:
     from flask import Flask, render_template, request, jsonify, send_from_directory, session
 except ImportError:
@@ -88,6 +93,7 @@ OPT_SETTINGS_PATH = CONFIG_DIR / "runtime-settings.json"
 PRESETS_PATH = CONFIG_DIR / "presets.json"
 LLAMA_ENV_PATH = CONFIG_DIR / "llama.env"
 ROOT_DIR = CONFIG_DIR.parent
+SERVICES_CFG = CONFIG_DIR / "services.json"
 
 app = Flask(__name__,
             static_folder=str(STATIC_DIR),
@@ -301,6 +307,27 @@ def api_skills():
                 "content": content,
             })
     return jsonify(skills)
+
+
+@app.route("/api/skills/files")
+def api_skills_files():
+    """Legacy compat: same as /api/skills but keyed as 'files'."""
+    skills_list = []
+    if SKILLS_DIR.exists():
+        for d in sorted(SKILLS_DIR.iterdir()):
+            if not d.is_dir():
+                continue
+            skill_md = d / "SKILL.md"
+            if not skill_md.exists():
+                continue
+            skills_list.append({"name": d.name, "path": str(skill_md)})
+    return jsonify(skills_list)
+
+
+@app.route("/clients")
+def clients_page():
+    locale = get_locale_from_session(session)
+    return render_template("clients.html", i18n_locale=locale)
 
 
 @app.route("/api/skills/save", methods=["POST"])
@@ -1330,7 +1357,7 @@ def api_create_job():
                             "method": "sft",
                             "samples": 1234,
                             "created_at": time.time(),
-                        })
+    })
 
     threading.Thread(target=_run, daemon=True).start()
     return jsonify({"job_id": job_id, "status": "queued"})
@@ -2849,7 +2876,7 @@ def api_metrics():
     ports = {
         "proxy": 8100, "memory": 8110, "agents": 8120,
         "registry": 8130, "rag": 8140, "brain": 8150, "skills": 8160,
-        "pipeline": 8170, "knightshade": 8180, "godmode": 8190, "campaign": 8192,
+        "pipeline": 8170, "knightshade": 8180, "godmode": 8196, "campaign": 8192,
     }
     import urllib.request as _urlopen
     for name, port in ports.items():
@@ -3222,16 +3249,6 @@ def api_logs_loki_label_values(name):
     return jsonify({"values": result.get("data", [])})
 
 
-if __name__ == "__main__":
-    import notifications_ws as _nws
-    _nws.start(host="127.0.0.1", port=8765)
-    import log_stream as _lws
-    _lws.start(host="127.0.0.1", port=8766)
-    port = int(os.environ.get("DASHBOARD_PORT", "8080"))
-    print(f"[dashboard] Serving on :{port}")
-    print(f"[dashboard] Notifications WS on ws://127.0.0.1:8765")
-    print(f"[dashboard] Log stream WS on ws://127.0.0.1:8766")
-    app.run(host="0.0.0.0", port=port, threaded=True)
 
 
 # ── API: Upload ────────────────────────────────────────────────
@@ -4194,7 +4211,8 @@ _workflow_saves_lock = threading.Lock()
 
 @app.route('/workflow-designer')
 def workflow_designer_page():
-    return render_template('../workflow/ui/designer.html')
+    designer_path = ROOT.parent / "workflow" / "ui" / "designer.html"
+    return send_from_directory(str(designer_path.parent), designer_path.name)
 
 
 @app.route('/api/workflow/save', methods=['POST'])
@@ -4558,6 +4576,7 @@ def api_configs_export():
 
 
 @app.route("/config")
+@app.route("/settings")
 def config_page():
     return render_template("config.html")
 
@@ -4630,6 +4649,11 @@ if _AUDIT_AVAILABLE:
 from agents.hot_models import get_manager  # noqa: E402
 
 
+@app.route("/hot-models")
+def hot_models_page():
+    return render_template("hot-models.html")
+
+
 @app.route("/admin/hot-models")
 def admin_hot_models_page():
     return render_template("hot-models.html")
@@ -4679,6 +4703,12 @@ def api_hot_models():
 
 # ── Missing page routes (required by tests) ─────────────────────
 
+@app.route("/sdlc-runs")
+def sdlc_runs_page():
+    locale = get_locale_from_session(session)
+    return render_template("sdlc.html", i18n_locale=locale)
+
+
 @app.route("/providers")
 def providers_page():
     return render_template("providers.html")
@@ -4699,6 +4729,7 @@ def scheduler_page():
 def mcp_page():
     return render_template("mcp.html")
 
+@app.route("/plugins")
 @app.route("/plugins-manage")
 def plugins_manage_page():
     return render_template("plugins-manage.html")
@@ -8570,3 +8601,34 @@ def api_agents_list():
             {"name":"Inference Agent","model":"local/llama3","status":"active"},
         ]
     })
+
+@app.route("/evals")
+def evals_page():
+    locale = get_locale_from_session(session)
+    return render_template("evals.html", i18n_locale=locale)
+
+@app.route("/exploits")
+def exploits_page():
+    locale = get_locale_from_session(session)
+    return render_template("exploits.html", i18n_locale=locale)
+
+@app.route("/notifications")
+def notifications_page():
+    locale = get_locale_from_session(session)
+    return render_template("notifications.html", i18n_locale=locale)
+
+@app.route("/login")
+def login_redirect():
+    from flask import redirect
+    return redirect("/auth/login")
+
+if __name__ == "__main__":
+    import notifications_ws as _nws
+    _nws.start(host="127.0.0.1", port=8765)
+    import log_stream as _lws
+    _lws.start(host="127.0.0.1", port=8766)
+    port = int(os.environ.get("DASHBOARD_PORT", "8080"))
+    print(f"[dashboard] Serving on :{port}")
+    print(f"[dashboard] Notifications WS on ws://127.0.0.1:8765")
+    print(f"[dashboard] Log stream WS on ws://127.0.0.1:8766")
+    app.run(host="0.0.0.0", port=port, threaded=True)

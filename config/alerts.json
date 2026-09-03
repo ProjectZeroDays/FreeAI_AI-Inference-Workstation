@@ -1,188 +1,349 @@
 [
   {
-    "ts": "2026-08-27T00:00:00",
-    "service": "system",
-    "port": 0,
-    "level": "info",
-    "message": "Health alert system initialized"
-  },
-  {
-    "ts": "2026-08-27T13:56:32.311541",
-    "service": "brain",
-    "port": 8150,
-    "level": "warning",
-    "message": "Service 'brain' on port 8150 is DOWN"
-  },
-  {
-    "ts": "2026-08-27T13:56:32.311541",
-    "service": "browser_v2",
-    "port": 8181,
-    "level": "warning",
-    "message": "Service 'browser_v2' on port 8181 is DOWN"
-  },
-  {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "campaign",
     "port": 8090,
     "level": "warning",
     "message": "Service 'campaign' on port 8090 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "gpu",
     "port": 8200,
     "level": "warning",
     "message": "Service 'gpu' on port 8200 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "awesome_registry",
     "port": 8210,
     "level": "warning",
     "message": "Service 'awesome_registry' on port 8210 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "permissions",
     "port": 8220,
     "level": "warning",
     "message": "Service 'permissions' on port 8220 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "scheduler",
     "port": 8230,
     "level": "warning",
     "message": "Service 'scheduler' on port 8230 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "health_monitor",
     "port": 8240,
     "level": "warning",
     "message": "Service 'health_monitor' on port 8240 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "salad",
     "port": 8250,
     "level": "warning",
     "message": "Service 'salad' on port 8250 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "router",
     "port": 8010,
     "level": "critical",
     "message": "Service 'router' on port 8010 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "workflow_engine",
     "port": 8040,
     "level": "warning",
     "message": "Service 'workflow_engine' on port 8040 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "llama",
     "port": 8011,
     "level": "warning",
     "message": "Service 'llama' on port 8011 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:56:32.311541",
+    "ts": "2026-09-02T21:42:17.635410",
     "service": "vllm",
     "port": 8012,
     "level": "warning",
     "message": "Service 'vllm' on port 8012 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "brain",
     "port": 8150,
     "level": "warning",
     "message": "Service 'brain' on port 8150 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "browser_v2",
     "port": 8181,
     "level": "warning",
     "message": "Service 'browser_v2' on port 8181 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "campaign",
     "port": 8090,
     "level": "warning",
     "message": "Service 'campaign' on port 8090 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "gpu",
     "port": 8200,
     "level": "warning",
     "message": "Service 'gpu' on port 8200 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "awesome_registry",
     "port": 8210,
     "level": "warning",
     "message": "Service 'awesome_registry' on port 8210 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "permissions",
     "port": 8220,
     "level": "warning",
     "message": "Service 'permissions' on port 8220 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "scheduler",
     "port": 8230,
     "level": "warning",
     "message": "Service 'scheduler' on port 8230 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "health_monitor",
     "port": 8240,
     "level": "warning",
     "message": "Service 'health_monitor' on port 8240 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "salad",
     "port": 8250,
     "level": "warning",
     "message": "Service 'salad' on port 8250 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "router",
     "port": 8010,
     "level": "critical",
     "message": "Service 'router' on port 8010 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "workflow_engine",
     "port": 8040,
     "level": "warning",
     "message": "Service 'workflow_engine' on port 8040 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
     "service": "llama",
     "port": 8011,
     "level": "warning",
     "message": "Service 'llama' on port 8011 is DOWN"
   },
   {
-    "ts": "2026-08-27T13:57:32.801728",
+    "ts": "2026-09-02T21:44:22.191440",
+    "service": "vllm",
+    "port": 8012,
+    "level": "warning",
+    "message": "Service 'vllm' on port 8012 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "brain",
+    "port": 8150,
+    "level": "warning",
+    "message": "Service 'brain' on port 8150 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "browser_v2",
+    "port": 8181,
+    "level": "warning",
+    "message": "Service 'browser_v2' on port 8181 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "campaign",
+    "port": 8090,
+    "level": "warning",
+    "message": "Service 'campaign' on port 8090 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "gpu",
+    "port": 8200,
+    "level": "warning",
+    "message": "Service 'gpu' on port 8200 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "awesome_registry",
+    "port": 8210,
+    "level": "warning",
+    "message": "Service 'awesome_registry' on port 8210 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "permissions",
+    "port": 8220,
+    "level": "warning",
+    "message": "Service 'permissions' on port 8220 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "scheduler",
+    "port": 8230,
+    "level": "warning",
+    "message": "Service 'scheduler' on port 8230 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "health_monitor",
+    "port": 8240,
+    "level": "warning",
+    "message": "Service 'health_monitor' on port 8240 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "salad",
+    "port": 8250,
+    "level": "warning",
+    "message": "Service 'salad' on port 8250 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "router",
+    "port": 8010,
+    "level": "critical",
+    "message": "Service 'router' on port 8010 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "workflow_engine",
+    "port": 8040,
+    "level": "warning",
+    "message": "Service 'workflow_engine' on port 8040 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "llama",
+    "port": 8011,
+    "level": "warning",
+    "message": "Service 'llama' on port 8011 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:46:24.626508",
+    "service": "vllm",
+    "port": 8012,
+    "level": "warning",
+    "message": "Service 'vllm' on port 8012 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "brain",
+    "port": 8150,
+    "level": "warning",
+    "message": "Service 'brain' on port 8150 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "browser_v2",
+    "port": 8181,
+    "level": "warning",
+    "message": "Service 'browser_v2' on port 8181 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "campaign",
+    "port": 8090,
+    "level": "warning",
+    "message": "Service 'campaign' on port 8090 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "gpu",
+    "port": 8200,
+    "level": "warning",
+    "message": "Service 'gpu' on port 8200 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "awesome_registry",
+    "port": 8210,
+    "level": "warning",
+    "message": "Service 'awesome_registry' on port 8210 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "permissions",
+    "port": 8220,
+    "level": "warning",
+    "message": "Service 'permissions' on port 8220 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "scheduler",
+    "port": 8230,
+    "level": "warning",
+    "message": "Service 'scheduler' on port 8230 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "health_monitor",
+    "port": 8240,
+    "level": "warning",
+    "message": "Service 'health_monitor' on port 8240 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "salad",
+    "port": 8250,
+    "level": "warning",
+    "message": "Service 'salad' on port 8250 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "router",
+    "port": 8010,
+    "level": "critical",
+    "message": "Service 'router' on port 8010 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "workflow_engine",
+    "port": 8040,
+    "level": "warning",
+    "message": "Service 'workflow_engine' on port 8040 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
+    "service": "llama",
+    "port": 8011,
+    "level": "warning",
+    "message": "Service 'llama' on port 8011 is DOWN"
+  },
+  {
+    "ts": "2026-09-02T21:48:51.242014",
     "service": "vllm",
     "port": 8012,
     "level": "warning",

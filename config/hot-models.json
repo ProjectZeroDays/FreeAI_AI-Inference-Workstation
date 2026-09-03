@@ -13,7 +13,9 @@
       "loaded": false,
       "health": "unknown",
       "last_health_check": null,
-      "active": false
+      "active": false,
+      "error_count": 0,
+      "load_time_s": null
     },
     {
       "id": "deepseek-v3",
@@ -28,7 +30,9 @@
       "loaded": false,
       "health": "unknown",
       "last_health_check": null,
-      "active": false
+      "active": false,
+      "error_count": 0,
+      "load_time_s": null
     },
     {
       "id": "thinking-i1",
@@ -43,7 +47,9 @@
       "loaded": false,
       "health": "unknown",
       "last_health_check": null,
-      "active": false
+      "active": false,
+      "error_count": 0,
+      "load_time_s": null
     },
     {
       "id": "freetoken-290b",
@@ -58,7 +64,9 @@
       "loaded": false,
       "health": "unknown",
       "last_health_check": null,
-      "active": false
+      "active": false,
+      "error_count": 0,
+      "load_time_s": null
     },
     {
       "id": "llama3.1-70b",
@@ -73,7 +81,9 @@
       "loaded": false,
       "health": "unknown",
       "last_health_check": null,
-      "active": false
+      "active": false,
+      "error_count": 0,
+      "load_time_s": null
     }
   ],
   "active_model_id": null,

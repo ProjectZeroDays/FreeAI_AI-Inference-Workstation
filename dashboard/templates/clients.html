@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FreeAI — Clients</title>
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    .clients-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+    .clients-main { padding:22px 24px 32px; min-width:0; }
+    .clients-topbar { display:flex; align-items:center; justify-content:space-between;
+                      padding:6px 2px 16px; border-bottom:1px solid var(--border);
+                      margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+    .clients-topbar h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .clients-topbar p { margin:4px 0 0; color:var(--muted); font-size:13px; }
+    .clients-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:18px; }
+    .c-stat { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+    .c-stat .c-val { font-size:22px; font-weight:700; color:var(--accent); }
+    .c-stat .c-lbl { font-size:11px; color:var(--muted-2); margin-top:2px; }
+    .clients-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .clients-table th { text-align:left; padding:8px 12px; color:var(--muted); font-weight:500;
+                        border-bottom:1px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+    .clients-table td { padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.04); vertical-align:middle; }
+    .clients-table tr:hover td { background:rgba(255,255,255,.02); }
+    .c-enabled { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:600; }
+    .c-enabled.yes { background:rgba(34,197,94,.15); color:#BBF7D0; }
+    .c-enabled.no { background:rgba(239,68,68,.15); color:#FCA5A5; }
+    .c-url { font-family:monospace; font-size:12px; color:var(--muted); max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .c-port { font-size:12px; color:var(--muted-2); }
+    .search-box { background:rgba(2,6,23,.55); color:var(--text); border:1px solid var(--border); border-radius:10px;
+                  padding:7px 12px; font-size:13px; width:240px; font-family:Inter,system-ui,sans-serif; }
+    .search-box:focus { outline:none; border-color:rgba(56,189,248,.45); box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="clients-layout">
+    <nav class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark">◈</div>
+        <div class="brand-text"><strong>FreeAI</strong><span>Clients</span></div>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Navigation</span>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+        <a href="/skills" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.skills">Skills</span></a>
+        <a href="/clients" class="nav-item active"><span class="nav-dot"></span> Clients</a>
+        <a href="/providers" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.providers">Providers</span></a>
+        <a href="/hot-models" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.hot_models">Hot Models</span></a>
+        <a href="/sdlc-runs" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.sdlc">SDLC</span></a>
+      </div>
+      <div class="sidebar-foot">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="muted">Live</span>
+      </div>
+    </nav>
+  <main>
+    <div class="clients-main">
+      <header class="clients-topbar">
+        <div>
+          <h1>Clients</h1>
+        <div class="q-card">
+          <div class="card-header"><h3>Overview</h3></div>
+          <div class="card-body">
+            <p class="muted">Page content.</p>
+          </div>
+        </div>
+          <p>Connected client applications and their configurations</p>
+        </div>
+        <input type="text" class="search-box" id="search" placeholder="Search clients..." />
+      </header>
+      <div class="clients-stats" id="stats">
+        <div class="c-stat"><span class="c-val" id="s-total">—</span><span class="c-lbl">Total</span></div>
+        <div class="c-stat"><span class="c-val" id="s-enabled">—</span><span class="c-lbl">Enabled</span></div>
+        <div class="c-stat"><span class="c-val" id="s-disabled">—</span><span class="c-lbl">Disabled</span></div>
+      </div>
+      <div id="table-wrap">
+        <table class="clients-table">
+          <thead><tr><th>ID</th><th>Name</th><th>URL</th><th>Port</th><th>Status</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="empty" style="display:none">
+        <div style="font-size:32px;margin-bottom:8px;opacity:.4">⬡</div>
+        <p>No clients configured.</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    let clients = [];
+    async function load() {
+      try {
+        const r = await fetch('/api/clients');
+        clients = await r.json();
+        render();
+      } catch(e) { console.error(e); }
+    }
+    function render(filter='') {
+      const filtered = filter ? clients.filter(c =>
+        (c.id||'').toLowerCase().includes(filter) ||
+        (c.name||'').toLowerCase().includes(filter) ||
+        (c.url||'').toLowerCase().includes(filter)) : clients;
+      $('s-total').textContent = clients.length;
+      $('s-enabled').textContent = clients.filter(c => c.enabled !== false).length;
+      $('s-disabled').textContent = clients.filter(c => c.enabled === false).length;
+      const tb = $('tbody');
+      if (!filtered.length) { $('empty').style.display=''; tb.parentElement.style.display='none'; return; }
+      $('empty').style.display='none'; tb.parentElement.style.display='';
+      tb.innerHTML = filtered.map(c => `<tr>
+        <td><strong>${c.id}</strong></td>
+        <td>${c.name || '—'}</td>
+        <td class="c-url">${c.url || '—'}</td>
+        <td class="c-port">${c.port || '—'}</td>
+        <td><span class="c-enabled ${c.enabled !== false ? 'yes' : 'no'}">${c.enabled !== false ? 'Active' : 'Inactive'}</span></td>
+      </tr>`).join('');
+    }
+    $('search').addEventListener('input', e => render(e.target.value));
+    load();
+  </script>
+  <script src="/static/dashboard.js"></script>
+  <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">☀</button>
+<script>(function(){var b=document.getElementById('theme-toggle')||document.getElementById('sidebar-theme-toggle');if(!b)return;var K='freeai-theme';function a(d){document.body.classList.toggle('light',!d);b.textContent=d?String.fromCharCode(9680):String.fromCharCode(9681);localStorage.setItem(K,d?'dark':'light');}var s=localStorage.getItem(K);a(s!=='light');b.addEventListener('click',function(){a(!document.body.classList.contains('light'));});})();</script>
+</main></body>
+</html>

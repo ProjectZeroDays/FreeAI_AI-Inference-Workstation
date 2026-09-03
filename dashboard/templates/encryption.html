@@ -84,16 +84,21 @@
       </div>
       <div class="nav-section">
         <span class="nav-label">Dashboard</span>
-        <a href="/" class="nav-item"><span class="nav-dot"></span> Overview</a>
-        <a href="/security" class="nav-item"><span class="nav-dot"></span> Security</a>
+        <a href="/" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.overview">Overview</span></a>
+        <a href="/security" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.security">Security</span></a>
         <a href="/encryption" class="nav-item active"><span class="nav-dot"></span> Encryption</a>
-        <a href="/hardware" class="nav-item"><span class="nav-dot"></span> Hardware</a>
-        <a href="/config" class="nav-item"><span class="nav-dot"></span> Config</a>
+        <a href="/hardware" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.hardware">Hardware</span></a>
+        <a href="/config" class="nav-item"><span class="nav-dot"></span> <span data-i18n="nav.config">Config</span></a>
       </div>
     </nav>
 
     <main class="main-content">
-      <div class="encryption-layout">
+        <div class="q-card">
+          <div class="card-header"><h3>Status</h3></div>
+          <div class="card-body">
+            <p class="muted">System operational.</p>
+          </div>
+        </div><div class="encryption-layout">
 
         <!-- Header -->
         <div class="enc-header">
@@ -214,6 +219,7 @@
     </div>
   </div>
 
+    <button class="theme-toggle fixed-theme-toggle" id="theme-toggle" title="Toggle theme">\u2600</button>
   <script>
     let disks = [];
     let recoveryKey = null;
@@ -415,5 +421,6 @@
     scanDisks();
     setInterval(scanDisks, 60000);
   </script>
+  <script src="/static/dashboard.js"></script>
 </body>
 </html>

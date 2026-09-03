@@ -11,7 +11,10 @@ from collections import deque
 from pathlib import Path
 from typing import Dict, Optional
 
-from settings import load_config
+try:
+    from .settings import load_config
+except ImportError:
+    from settings import load_config
 
 ROOT = Path(__file__).parent.parent
 PERF_CONFIG_PATH = ROOT / "config" / "model-performance.json"

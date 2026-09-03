@@ -59,6 +59,24 @@ if (sidebarToggle && sidebar) {
   });
 }
 
+// ── Sidebar Theme Toggle ──
+const THEME_KEY = 'freeai-theme';
+const sidebarThemeBtn = document.getElementById('sidebar-theme-toggle');
+const sidebarFoot = document.querySelector('.sidebar-foot');
+if (sidebarThemeBtn) {
+  function applyTheme(dark) {
+    document.body.classList.toggle('light', !dark);
+    sidebarThemeBtn.textContent = dark ? '◐' : '◑';
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+  }
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  applyTheme(savedTheme !== 'light');
+  sidebarThemeBtn.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('light');
+    applyTheme(!isLight);
+  });
+}
+
 /* ---------------- settings panel ---------------- */
 
 const $ = id => document.getElementById(id);

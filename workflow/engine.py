@@ -24,7 +24,7 @@ except ImportError:
     _CFG = {}
 
 AGENT_API = _CFG.get("agent_api",
-                      os.environ.get("AGENT_API", "http://localhost:8020"))
+                      os.environ.get("AGENT_API", "http://localhost:8120"))
 STEP_RETRIES = int(_CFG.get("step_retries", 3))
 RETRY_DELAY_S = float(_CFG.get("retry_delay_s", 2))
 _VERSIONING_ENABLED = bool(_CFG.get("versioning", {}).get("enabled", True))

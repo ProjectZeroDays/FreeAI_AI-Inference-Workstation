@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os, sys, json, requests
 AUTO_API = os.environ.get("AUTO_API", "http://localhost:8050")
-ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8020")
+ROUTER_API = os.environ.get("AGENT_API", "http://localhost:8120")
 AUTONOMOUS_API_KEY = os.environ.get("AUTONOMOUS_API_KEY", "")
 AGENT_API_KEY = os.environ.get("AGENT_API_KEY", "")
 

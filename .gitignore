@@ -78,4 +78,9 @@ website/node_modules/
 website/.next/
 *.pack.gz
 capture_demo.py  
-"website/out/"  
+"website/out/"
+
+# AI agent skill directories (managed separately, contain real keys in history)
+.opencode/
+.agents/skills/
+skills/autonomous-ai-agents/  

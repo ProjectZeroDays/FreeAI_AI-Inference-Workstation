@@ -11,7 +11,10 @@ import threading
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from settings import load_config
+try:
+    from .settings import load_config
+except ImportError:
+    from settings import load_config
 
 ROOT = Path(__file__).parent.parent
 REPORT_PATH = ROOT / "config" / "models-benchmark.json"
