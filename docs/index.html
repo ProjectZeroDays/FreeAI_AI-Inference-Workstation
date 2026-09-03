@@ -206,7 +206,7 @@
     .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(2,65,227,.5); }
     .chat-launcher:active { transform: scale(.95); }
     .chat-launcher svg { width: 20px; height: 20px; }
-    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 42px; height: 42px; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 600px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 42px; height: 42px; } }
 
     /* ── Chat Panel ── */
     .chat-panel {
@@ -863,7 +863,7 @@
       display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
       align-items: start;
     }
-    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 600px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
     .footer-brand-area { display: flex; flex-direction: column; align-items: flex-start; }
     .footer-brand { font-size: 22px; font-weight: 700; color: #f1f6ff; margin-bottom: 10px; letter-spacing: -.02em; }
@@ -980,7 +980,7 @@
     .mobile-actions .btn--primary { width: 100%; justify-content: center; }
 
     /* ── Responsive ── */
-    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) {
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 600px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) {
       .menu-toggle { display: flex; }
       .nav-links { display: none; }
       .nav-inner { padding: 0 var(--space-4); }
@@ -1073,10 +1073,10 @@
       cursor: pointer; transition: all .15s;
       text-align: left; width: 100%;
     }
-    .messenger-btn:hover { background: rgba(92,139,255,.1); border-color: rgba(92,139,255,.3); }
-    .messenger-btn-icon { font-size: 20px; }
-    .messenger-btn-title { font-size: 13px; font-weight: 600; color: #f1f6ff; }
-    .messenger-btn-desc { font-size: 11px; color: rgba(241,246,255,.45); margin-top: 2px; }
+    .messenger-btn:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
+    .messenger-btn-icon { font-size: 14px; }
+    .messenger-btn-title { font-size: 13px; font-weight: 600; color: inherit; }
+    .messenger-btn-desc { font-size: 11px; color: rgba(241,246,255,.4); margin-top: 1px; }
     .messenger-status {
       display: flex; align-items: center; gap: 8px;
       padding: 10px 12px;
@@ -1106,7 +1106,7 @@
       border: none; font-size: 12px; font-weight: 600;
       cursor: pointer; transition: background .15s;
     }
-    .copy-code-btn:hover { background: #033ad1; }
+    .copy-code-btn:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
     .code-input-area { display: flex; gap: 8px; }
     .code-input {
       flex: 1; padding: 10px 12px;
@@ -1124,7 +1124,7 @@
       border: none; font-size: 13px; font-weight: 600;
       cursor: pointer; transition: background .15s;
     }
-    .join-btn:hover { background: #033ad1; }
+    .join-btn:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
 
     /* ── Bot Training Settings Modal ── */
@@ -1163,7 +1163,7 @@
     .prompt-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; text-align: left; cursor: pointer; transition: all .2s; font-size: 14px; color: var(--text-secondary); line-height: 1.4; }
     .prompt-card:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--text-primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .prompt-card svg { width: 14px; height: 14px; float: right; opacity: .4; margin-top: 2px; }
-    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 600px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 480px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr; } }
 
     /* ── Applivery-style: Artifacts ── */
@@ -1221,7 +1221,7 @@
     .qa-answer-panel p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
     .qa-artifact-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
     .qa-artifact-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: var(--bg-elev-3); color: var(--text-tertiary); border: 1px solid var(--border); }
-    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .qa-layout { grid-template-columns: 1fr; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 600px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .qa-layout { grid-template-columns: 1fr; } }
 
     /* ── Deploy Paths ── */
     .deploy-section { padding: 80px 0; background: var(--bg-canvas); border-top: 1px solid var(--border); }
@@ -1272,7 +1272,7 @@
     .os-steps { list-style: none; padding: 0; margin: 0; }
     .os-steps li { font-size: 12px; color: var(--text-tertiary); padding: 4px 0; padding-left: 16px; position: relative; }
     .os-steps li::before { content: '→'; position: absolute; left: 0; color: var(--primary); }
-    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 600px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
 
     /* ── Updated CTA ── */
     .cta-applivery { padding: 100px 0; background: linear-gradient(135deg, #0b1530 0%, #1a1f3a 50%, #0b1530 100%); text-align: center; position: relative; overflow: hidden; }
@@ -2484,7 +2484,7 @@ docker compose --profile allinone up -d
     </div>
   </div>
 
-  <div class="container" data-v-f3beba39=""><div class="panel glow-panel reveal is-visible" data-v-f3beba39="" style="--mx: 705.1428909301758px; --my: 291.1875457763672px;"><span class="bb-bloom" aria-hidden="true" data-v-f3beba39=""></span><span class="bb-plate" aria-hidden="true" data-v-f3beba39=""></span><span class="bb-ring" aria-hidden="true" data-v-f3beba39=""></span><div class="panel-inner" data-v-f3beba39=""><p class="panel-eyebrow" data-v-f3beba39=""><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" style="" width="14" height="14" viewBox="115 0 91 91" data-v-f3beba39="" class="iconify iconify--applivery"><path fill="currentColor" d="M164 25C164 25 165.821 41.9948 172.913 49.087C180.005 56.1792 197 58 197 58C197 58 180.005 59.8208 172.913 66.913C165.821 74.0052 164 91 164 91C164 91 162.179 74.0052 155.087 66.913C147.995 59.8208 131 58 131 58C131 58 147.995 56.1792 155.087 49.087C162.179 41.9948 164 25 164 25Z"></path><path fill="currentColor" d="M143 4C143 4 144.048 13.7849 148.132 17.8683C152.215 21.9517 162 23 162 23C162 23 152.215 24.0483 148.132 28.1317C144.048 32.2151 143 42 143 42C143 42 141.952 32.2151 137.868 28.1317C133.785 24.0483 124 23 124 23C124 23 133.785 21.9517 137.868 17.8683C141.952 13.7849 143 4 143 4Z"></path><path fill="currentColor" d="M178 0C178 0 178.662 6.17992 181.241 8.75891C183.82 11.3379 190 12 190 12C190 12 183.82 12.6621 181.241 15.2411C178.662 17.8201 178 24 178 24C178 24 177.338 17.8201 174.759 15.2411C172.18 12.6621 166 12 166 12C166 12 172.18 11.3379 174.759 8.75891C177.338 6.17992 178 0 178 0Z"></path></svg> Launching Europe Summer</p><h2 class="panel-title" data-v-f3beba39="">Step into the autonomous workplace.</h2><p class="panel-sub" data-v-f3beba39="">Rolling out to early-access teams now.</p><div class="panel-ctas" data-v-f3beba39=""><button type="button" class="btn btn--inverse" data-v-f3beba39="">Get early access <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" style="" width="18" height="18" viewBox="0 0 24 24" class="iconify iconify--solar btn-icon btn-icon--go" data-v-f3beba39=""><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 12h16m0 0l-6-6m6 6l-6 6"></path></svg></button><button type="button" class="btn btn--ghost-dark" data-v-f3beba39="">Talk to a specialist</button></div><p class="panel-note" data-v-f3beba39=""><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" style="" width="14" height="14" viewBox="0 0 24 24" data-v-f3beba39="" class="iconify iconify--solar"><path fill="currentColor" fill-rule="evenodd" d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0" clip-rule="evenodd"></path></svg> Fully integrated — works with the Applivery workspace you already run</p></div></div></div>
+  <div class="container"><div class="panel glow-panel reveal is-visible" style="--mx: 705.1428909301758px; --my: 291.1875457763672px;"><span class="bb-bloom" aria-hidden="true"></span><span class="bb-plate" aria-hidden="true"></span><span class="bb-ring" aria-hidden="true"></span><div class="panel-inner"><p class="panel-eyebrow"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" style="" width="14" height="14" viewBox="115 0 91 91" class="iconify"><path fill="currentColor" d="M164 25C164 25 165.821 41.9948 172.913 49.087C180.005 56.1792 197 58 197 58C197 58 180.005 59.8208 172.913 66.913C165.821 74.0052 164 91 164 91C164 91 162.179 74.0052 155.087 66.913C147.995 59.8208 131 58 131 58C131 58 147.995 56.1792 155.087 49.087C162.179 41.9948 164 25 164 25Z"></path><path fill="currentColor" d="M143 4C143 4 144.048 13.7849 148.132 17.8683C152.215 21.9517 162 23 162 23C162 23 152.215 24.0483 148.132 28.1317C144.048 32.2151 143 42 143 42C143 42 141.952 32.2151 137.868 28.1317C133.785 24.0483 124 23 124 23C124 23 133.785 21.9517 137.868 17.8683C141.952 13.7849 143 4 143 4Z"></path><path fill="currentColor" d="M178 0C178 0 178.662 6.17992 181.241 8.75891C183.82 11.3379 190 12 190 12C190 12 183.82 12.6621 181.241 15.2411C178.662 17.8201 178 24 178 24C178 24 177.338 17.8201 174.759 15.2411C172.18 12.6621 166 12 166 12C166 12 172.18 11.3379 174.759 8.75891C177.338 6.17992 178 0 178 0Z"></path></svg> v1.2.0 — Autonomous SDLC Agents</p><h2 class="panel-title">Step into the autonomous workplace.</h2><p class="panel-sub">FreeAI agents plan, code, test, and ship full projects — from a single prompt.</p><div class="panel-ctas"><button type="button" class="btn btn--inverse">Get Started <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" style="" width="18" height="18" viewBox="0 0 24 24" class="iconify iconify--solar btn-icon btn-icon--go"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 12h16m0 0l-6-6m6 6l-6 6"></path></svg></button><button type="button" class="btn btn--ghost-dark" data-v-f3beba39="">Learn More</button></div><p class="panel-note" data-v-f3beba39=""><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" style="" width="14" height="14" viewBox="0 0 24 24" data-v-f3beba39="" class="iconify iconify--solar"><path fill="currentColor" fill-rule="evenodd" d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2s10 4.477 10 10m-5.97-3.03a.75.75 0 0 1 0 1.06l-5 5a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l1.47 1.47l2.235-2.235L14.97 8.97a.75.75 0 0 1 1.06 0" clip-rule="evenodd"></path></svg> Fully integrated — works with the stack you already run</p></div></div></div>
 
   <footer class="footer">
     <div class="footer-inner">
