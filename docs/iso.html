@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live ISO — FreeAI</title>
+  <meta name="description" content="Bootable FreeAI ISO with Ubuntu, Kodachi, Kali, and NixOS variants. Try before you install.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0241e3; --primary-hover: #0137c4; --primary-soft: rgba(2,65,227,.1);
+      --secondary: #010258; --secondary-soft: rgba(1,2,88,.08);
+      --canvas: #F1F6FF; --bg: #FFFFFF; --bg-canvas: #F1F6FF;
+      --bg-elev-1: #FFFFFF; --bg-elev-2: #F6F9FF; --bg-elev-3: #ECF1FB;
+      --text-primary: #010258; --text-secondary: #2A3866;
+      --text-tertiary: #5A6A95; --text-muted: #8A98BA;
+      --border: #E2E8F4; --border-strong: #C9D3E8;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --radius-xl: 18px; --radius-2xl: 24px;
+      --shadow-sm: 0 1px 2px rgba(1,2,88,.06);
+      --shadow-lg: 0 16px 40px rgba(1,2,88,.12);
+      --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-6: 24px; --space-8: 32px; --space-12: 48px;
+      --font-sans: "Outfit", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --fs-body: 15px; --fs-small: 13px; --fs-h1: 44px; --fs-h2: 28px; --fs-h3: 20px;
+      --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+      --lh-normal: 1.55;
+      --ease-out: cubic-bezier(.23,1,.32,1);
+      --ai-grad: linear-gradient(100deg, #0241e3 8%, #7c5cf0 92%);
+    }
+    [data-theme="dark"] {
+      --bg: #060a18; --bg-canvas: #04070f; --bg-elev-1: #0e1630; --bg-elev-2: #121b3a; --bg-elev-3: #1b2750;
+      --text-primary: #f1f6ff; --text-secondary: #c9d3e8; --text-tertiary: #a5b4dc; --text-muted: #8a98ba;
+      --border: rgba(150,170,255,.13); --border-strong: rgba(150,170,255,.26);
+      --primary: #5c8bff; --primary-hover: #7da2ff; --primary-soft: rgba(92,139,255,.13);
+      --secondary-soft: rgba(255,255,255,.06);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 24px 60px rgba(0,0,0,.55);
+      --header-glass: rgba(5,8,20,.88);
+      --ai-grad: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-secondary); font: var(--fw-medium) var(--fs-body)/var(--lh-normal) var(--font-sans); }
+    a { color: inherit; text-decoration: none; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--header-glass); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-8); height: 64px; }
+    .nav-logo { display: flex; align-items: center; gap: var(--space-2); font-weight: 700; font-size: 18px; color: var(--text-primary); }
+    .nav-links { display: flex; gap: 2px; margin-left: auto; flex-wrap: wrap; }
+    .nav-link { padding: 6px 12px; border-radius: var(--radius-md); font-size: var(--fs-small); font-weight: 500; color: var(--text-tertiary); transition: all .15s; }
+    .nav-link:hover, .nav-link.active { color: var(--primary); background: var(--secondary-soft); }
+    .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
+    .theme-toggle { width: 36px; height: 36px; border-radius: var(--radius-pill); display: grid; place-items: center; color: var(--text-muted); cursor: pointer; border: none; background: transparent; transition: background .15s, color .15s; }
+    .theme-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .theme-toggle svg { width: 18px; height: 18px; }
+    .icon-moon { display: none; } .icon-sun { display: block; }
+    [data-theme="dark"] .icon-moon { display: block; } [data-theme="dark"] .icon-sun { display: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: 44px; padding: 0 var(--space-6); border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: var(--fw-semibold); cursor: pointer; border: 1px solid transparent; transition: all .15s var(--ease-out); }
+    .btn--primary { background: var(--primary); color: #fff; }
+    .btn--primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn--secondary { background: var(--bg-elev-1); color: var(--text-primary); border: 1px solid var(--border-strong); }
+    .btn--sm { height: 36px; padding: 0 var(--space-5); border-radius: var(--radius-md); font-size: var(--fs-small); }
+    .container { max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px,4vw,32px); }
+    .section { padding: clamp(64px,8vw,100px) 0; }
+    .page-hero { padding: 140px 0 60px; background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(92,139,255,.10) 0%, transparent 70%), var(--bg-canvas); }
+    .page-hero h1 { font-size: clamp(32px,5vw,56px); font-weight: 700; letter-spacing: -.03em; color: var(--text-primary); margin-bottom: var(--space-4); }
+    .page-hero p { font-size: 17px; color: var(--text-secondary); max-width: 560px; line-height: 1.6; }
+    .grad { background: var(--ai-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--primary); margin-bottom: 12px; }
+    .section-title { font-size: clamp(24px,3.5vw,40px); font-weight: 700; letter-spacing: -.025em; color: var(--text-primary); margin-bottom: var(--space-3); }
+    .section-sub { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin-bottom: var(--space-8); }
+    .iso-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .iso-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 24px; transition: border-color .25s, transform .25s; }
+    .iso-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .iso-card-icon { font-size: 28px; margin-bottom: 14px; }
+    .iso-card h3 { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .iso-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
+    .iso-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--primary-soft); color: var(--primary); margin-right: 6px; margin-bottom: 6px; }
+    .code-block { background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); overflow-x: auto; line-height: 1.6; }
+    .footer { padding: 64px 0 32px; background: var(--bg-elev-2); border-top: 1px solid var(--border); }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px); }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-brand { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .footer-brand-sub { font-size: 12px; color: var(--text-muted); }
+    .footer-col h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 16px; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a { font-size: var(--fs-small); color: var(--text-secondary); transition: color .15s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--primary); color: #fff; border-radius: var(--radius-lg); font-size: var(--fs-small); font-weight: 600; margin-top: 16px; transition: background .15s; }
+    .footer-cta-btn:hover { background: var(--primary-hover); }
+    .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: var(--fs-small); color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo"><span class="nav-brand">FreeAI</span><span class="nav-brand-sub">AI Intelligence</span></a>
+      <div class="nav-links">
+        <a href="product.html" class="nav-link">Product</a>
+        <a href="agents.html" class="nav-link">Agents</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="integrations.html" class="nav-link">Integrations</a>
+        <a href="deploy.html" class="nav-link">Deploy</a>
+        <a href="iso.html" class="nav-link active">Live ISO</a>
+        <a href="resources.html" class="nav-link">Resources</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <div class="container">
+      <div class="eyebrow">Live Bootable Media</div>
+      <h1>FreeAI <span class="grad">Live ISO</span></h1>
+      <p>Boot from USB and try FreeAI without touching your disk. Four OS variants with auto-detection and one-click install.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">ISO Variants</div>
+      <h2 class="section-title">Choose Your Base</h2>
+      <p class="section-sub">All variants include the full FreeAI stack — they differ only in base OS and pre-installed tools.</p>
+      <div class="iso-grid">
+        <div class="iso-card">
+          <div class="iso-card-icon">&#128099;</div>
+          <h3>FreeAI Ubuntu</h3>
+          <p>Standard Ubuntu 24.04 base. Best for general development and production deployment.</p>
+          <span class="iso-tag">recommended</span><span class="iso-tag">stable</span>
+        </div>
+        <div class="iso-card">
+          <div class="iso-card-icon">&#128170;</div>
+          <h3>Kodachi</h3>
+          <p>Security-focused Debian variant with 200+ pentesting tools pre-installed.</p>
+          <span class="iso-tag">pentesting</span><span class="iso-tag">privacy</span>
+        </div>
+        <div class="iso-card">
+          <div class="iso-card-icon">&#127919;</div>
+          <h3>Kali Linux</h3>
+          <p>Industry-standard penetration testing distro. Full Metasploit, Burp, Aircrack suite.</p>
+          <span class="iso-tag">red team</span><span class="iso-tag">proven</span>
+        </div>
+        <div class="iso-card">
+          <div class="iso-card-icon">&#9830;</div>
+          <h3>NixOS</h3>
+          <p>Functional package management with atomic rollbacks. Reproducible builds.</p>
+          <span class="iso-tag">declarative</span><span class="iso-tag">immutable</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--bg-canvas);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="eyebrow">Boot Options</div>
+      <h2 class="section-title">Three Ways to Start</h2>
+      <div class="iso-grid">
+        <div class="iso-card">
+          <div class="iso-card-icon">&#128260;</div>
+          <h3>Try Before Install</h3>
+          <p>Boot into live session — full FreeAI desktop, no installation required. Tests run on temporary filesystem.</p>
+        </div>
+        <div class="iso-card">
+          <div class="iso-card-icon">&#128736;</div>
+          <h3>Install to Disk</h3>
+          <p>Unattended installer with auto-detection of GPU, drivers, and network. Default login: freeai/freeai.</p>
+        </div>
+        <div class="iso-card">
+          <div class="iso-card-icon">&#128295;</div>
+          <h3>Rescue Mode</h3>
+          <p>Single-user recovery shell. Chroot into existing installs, repair boot loaders, restore from backup.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">Build &amp; Flash</div>
+      <h2 class="section-title">Create Your USB</h2>
+      <p class="section-sub">Download the ISO from GitHub Releases and flash to USB with any standard tool.</p>
+      <div class="code-block">
+# Download the latest release<br>
+curl -LO https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/releases/latest/download/FreeAI.iso<br><br>
+# Flash to USB (replace sdX with your device)<br>
+sudo dd if=FreeAI.iso of=/dev/sdX bs=4M status=progress conv=fsync<br><br>
+# Or use BalenaEtcher / Rufus for GUI flashing
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align:center;">
+    <div class="container">
+      <h2 class="section-title" style="margin-bottom:16px;">Ready to boot?</h2>
+      <p class="section-sub" style="margin:0 auto 32px;">Get the ISO and run FreeAI on any hardware — no install required.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/releases" class="btn btn--primary" target="_blank">Download ISO</a>
+        <a href="deploy.html" class="btn btn--secondary">Deployment Guide</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">FreeAI</div>
+          <div class="footer-brand-sub">Unified AI Workstation</div>
+          <a href="deploy.html" class="footer-cta-btn">Deploy FreeAI <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+        </div>
+        <div class="footer-col"><h4>Product</h4><ul class="footer-links"><li><a href="product.html">Overview</a></li><li><a href="agents.html">Agents</a></li><li><a href="features.html">Features</a></li><li><a href="deploy.html">Deploy</a></li><li><a href="iso.html">Live ISO</a></li></ul></div>
+        <div class="footer-col"><h4>Resources</h4><ul class="footer-links"><li><a href="https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/">Documentation</a></li><li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" target="_blank">GitHub</a></li><li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/discussions" target="_blank">Forum</a></li><li><a href="pages/about.html">About</a></li><li><a href="legal/contact.html">Contact</a></li></ul></div>
+        <div class="footer-col"><h4>Legal</h4><ul class="footer-links"><li><a href="legal/privacy.html">Privacy</a></li><li><a href="legal/terms.html">Terms</a></li><li><a href="legal/security.html">Security</a></li><li><a href="legal/compliance.html">Compliance</a></li><li><a href="legal/careers.html">Careers</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><span>&copy; 2026 FreeAI &middot; Unified AI Workstation &middot; MIT License</span><span style="color:rgba(241,246,255,.25)">AI is not just a chatbot &mdash; it's an operational layer.</span></div>
+    </div>
+  </footer>
+
+  <script>
+    const html = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('theme');
+    if (saved) html.dataset.theme = saved;
+    toggle.addEventListener('click', () => {
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+    });
+  </script>
+</body>
+</html>

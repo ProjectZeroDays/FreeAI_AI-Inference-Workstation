@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agents — FreeAI</title>
+  <meta name="description" content="22+ autonomous AI agents for SDLC, security, exploration, and automation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0241e3; --primary-hover: #0137c4; --primary-soft: rgba(2,65,227,.1);
+      --secondary: #010258; --secondary-soft: rgba(1,2,88,.08);
+      --navy-50: #F1F6FF; --navy-100: #E2E8F4; --navy-400: #8A98BA;
+      --canvas: #F1F6FF; --bg: #FFFFFF; --bg-canvas: #F1F6FF;
+      --bg-elev-1: #FFFFFF; --bg-elev-2: #F6F9FF; --bg-elev-3: #ECF1FB;
+      --text-primary: #010258; --text-secondary: #2A3866;
+      --text-tertiary: #5A6A95; --text-muted: #8A98BA;
+      --border: #E2E8F4; --border-strong: #C9D3E8;
+      --success: #16A34A; --success-soft: #DCFCE7;
+      --warning: #D97706; --warning-soft: #FEF3C7;
+      --danger: #DC2626; --danger-soft: #FEE2E2;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --radius-xl: 18px; --radius-2xl: 24px; --radius-pill: 9999px;
+      --shadow-sm: 0 1px 2px rgba(1,2,88,.06);
+      --shadow-lg: 0 16px 40px rgba(1,2,88,.12);
+      --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-6: 24px; --space-8: 32px; --space-12: 48px;
+      --font-sans: "Outfit", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --fs-body: 15px; --fs-small: 13px; --fs-h1: 44px; --fs-h2: 28px; --fs-h3: 20px;
+      --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+      --lh-normal: 1.55; --lh-tight: 1.15;
+      --ease-out: cubic-bezier(.23,1,.32,1);
+      --ai-grad: linear-gradient(100deg, #0241e3 8%, #7c5cf0 92%);
+    }
+    [data-theme="dark"] {
+      --bg: #060a18; --bg-canvas: #04070f; --bg-elev-1: #0e1630; --bg-elev-2: #121b3a; --bg-elev-3: #1b2750;
+      --text-primary: #f1f6ff; --text-secondary: #c9d3e8; --text-tertiary: #a5b4dc; --text-muted: #8a98ba;
+      --border: rgba(150,170,255,.13); --border-strong: rgba(150,170,255,.26);
+      --primary: #5c8bff; --primary-hover: #7da2ff; --primary-soft: rgba(92,139,255,.13);
+      --secondary-soft: rgba(255,255,255,.06);
+      --success: #4ade80; --success-soft: rgba(74,222,128,.14);
+      --warning: #fbbf24; --warning-soft: rgba(251,191,36,.12);
+      --danger: #f87171; --danger-soft: rgba(248,113,113,.12);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 24px 60px rgba(0,0,0,.55);
+      --header-glass: rgba(5,8,20,.88); --glass-border: rgba(150,170,255,.13);
+      --ai-grad: linear-gradient(108deg, #6bd5ff 0%, #5c8bff 42%, #8a70f6 100%);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text-secondary); font: var(--fw-medium) var(--fs-body)/var(--lh-normal) var(--font-sans); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--primary-soft); color: var(--text-primary); }
+
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: var(--header-glass); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-8); height: 64px; }
+    .nav-logo { display: flex; align-items: center; gap: var(--space-2); font-weight: 700; font-size: 18px; color: var(--text-primary); }
+    .nav-links { display: flex; gap: 2px; margin-left: auto; flex-wrap: wrap; }
+    .nav-link { padding: 6px 12px; border-radius: var(--radius-md); font-size: var(--fs-small); font-weight: 500; color: var(--text-tertiary); transition: all .15s; }
+    .nav-link:hover, .nav-link.active { color: var(--primary); background: var(--secondary-soft); }
+    .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
+    .theme-toggle { width: 36px; height: 36px; border-radius: var(--radius-pill); display: grid; place-items: center; color: var(--text-muted); cursor: pointer; border: none; background: transparent; transition: background .15s, color .15s; }
+    .theme-toggle:hover { background: var(--secondary-soft); color: var(--text-primary); }
+    .theme-toggle svg { width: 18px; height: 18px; }
+    .icon-moon { display: none; } .icon-sun { display: block; }
+    [data-theme="dark"] .icon-moon { display: block; } [data-theme="dark"] .icon-sun { display: none; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: 44px; padding: 0 var(--space-6); border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: var(--fw-semibold); cursor: pointer; border: 1px solid transparent; transition: all .15s var(--ease-out); }
+    .btn--primary { background: var(--primary); color: #fff; }
+    .btn--primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn--secondary { background: var(--bg-elev-1); color: var(--text-primary); border: 1px solid var(--border-strong); }
+    .btn--sm { height: 36px; padding: 0 var(--space-5); border-radius: var(--radius-md); font-size: var(--fs-small); }
+    .menu-toggle { display: none; width: 36px; height: 36px; border-radius: var(--radius-md); border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; }
+    @media (max-width: 900px) { .nav-links, .nav-actions .btn { display: none; } .menu-toggle { display: flex; align-items: center; justify-content: center; } }
+
+    .container { max-width: 1200px; margin-inline: auto; padding-inline: clamp(20px,4vw,32px); }
+    .section { padding: clamp(64px,8vw,100px) 0; }
+    .page-hero { padding: 140px 0 60px; background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(92,139,255,.10) 0%, transparent 70%), var(--bg-canvas); }
+    .page-hero h1 { font-size: clamp(32px,5vw,56px); font-weight: 700; letter-spacing: -.03em; color: var(--text-primary); margin-bottom: var(--space-4); }
+    .page-hero p { font-size: 17px; color: var(--text-secondary); max-width: 560px; line-height: 1.6; }
+    .grad { background: var(--ai-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--primary); margin-bottom: 12px; }
+    .section-title { font-size: clamp(24px,3.5vw,40px); font-weight: 700; letter-spacing: -.025em; color: var(--text-primary); margin-bottom: var(--space-3); }
+    .section-sub { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin-bottom: var(--space-8); }
+
+    .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .agent-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 24px; transition: border-color .15s, transform .15s; }
+    .agent-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .agent-code { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--primary); margin-bottom: 8px; }
+    .agent-card h3 { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .agent-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+    .agent-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .agent-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--primary-soft); color: var(--primary); font-weight: 500; }
+    .agent-tag.red { background: var(--danger-soft); color: var(--danger); }
+    .agent-tag.blue { background: var(--success-soft); color: var(--success); }
+    .agent-tag.purple { background: rgba(138,112,246,.12); color: #8a70f6; }
+
+    .footer { padding: 64px 0 32px; background: var(--bg-elev-2); border-top: 1px solid var(--border); }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px); }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-brand { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .footer-brand-sub { font-size: 12px; color: var(--text-muted); }
+    .footer-col h4 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 16px; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a { font-size: var(--fs-small); color: var(--text-secondary); transition: color .15s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--primary); color: #fff; border-radius: var(--radius-lg); font-size: var(--fs-small); font-weight: 600; margin-top: 16px; transition: background .15s; }
+    .footer-cta-btn:hover { background: var(--primary-hover); }
+    .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: var(--fs-small); color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo"><span class="nav-brand">FreeAI</span><span class="nav-brand-sub">AI Intelligence</span></a>
+      <div class="nav-links">
+        <a href="product.html" class="nav-link">Product</a>
+        <a href="agents.html" class="nav-link active">Agents</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="deploy.html" class="nav-link">Deploy</a>
+        <a href="iso.html" class="nav-link">Live ISO</a>
+        <a href="resources.html" class="nav-link">Resources</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank">GitHub</a>
+      </div>
+    </div>
+    <button class="menu-toggle" aria-label="Toggle navigation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+
+  <div class="page-hero">
+    <div class="container">
+      <div class="eyebrow">Autonomous Agents</div>
+      <h1>The <span class="grad">Agent Fleet</span></h1>
+      <p>22+ specialized agents that plan, code, test, secure, and deploy software — autonomously. Each agent runs in a sandboxed workspace with real compilers and test suites.</p>
+    </div>
+  </div>
+
+  <!-- SDLC Agents -->
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">SDLC Pipeline</div>
+      <h2 class="section-title">7-Phase Auto-Execution</h2>
+      <p class="section-sub">From natural language spec to packaged artifact. Every phase verified with real tools.</p>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-code">PLAN</div>
+          <h3>Project Agent</h3>
+          <p>Analyses requirements, generates structured plan JSON with phase breakdown and acceptance criteria.</p>
+          <div class="agent-tags"><span class="agent-tag purple">planning</span><span class="agent-tag">spec</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">CODE</div>
+          <h3>Builder Agent</h3>
+          <p>Generates production code across 20+ languages. Creates full directory trees with tests, configs, and docs.</p>
+          <div class="agent-tags"><span class="agent-tag blue">coding</span><span class="agent-tag">fullstack</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">VERIFY</div>
+          <h3>Verifier Agent</h3>
+          <p>Runs pytest, node --check, go test, cargo test — real compilation and execution in isolated workspaces.</p>
+          <div class="agent-tags"><span class="agent-tag blue">testing</span><span class="agent-tag">compile</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">FIX</div>
+          <h3>Debug Agent</h3>
+          <p>3-round self-healing loop. Reads test failures, patches code, re-runs until green.</p>
+          <div class="agent-tags"><span class="agent-tag">debug</span><span class="agent-tag blue">self-heal</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">REVIEW</div>
+          <h3>Reviewer Agent</h3>
+          <p>Multi-dimensional code review: correctness, security, performance, style. Verdict: pass / request changes.</p>
+          <div class="agent-tags"><span class="agent-tag purple">review</span><span class="agent-tag">quality</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">DOC</div>
+          <h3>Documenter</h3>
+          <p>Generates README, API reference, architecture diagrams, inline comments, and deployment guides.</p>
+          <div class="agent-tags"><span class="agent-tag">docs</span><span class="agent-tag blue">auto-gen</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">PACKAGE</div>
+          <h3>Package Agent</h3>
+          <p>Tarballs the complete project: source, tests, configs, docker files. Ready to deploy on first boot.</p>
+          <div class="agent-tags"><span class="agent-tag purple">release</span><span class="agent-tag">artifact</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Agents -->
+  <section class="section" style="background:var(--bg-canvas);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="eyebrow">Security Operations</div>
+      <h2 class="section-title">Red, Blue & Purple Team</h2>
+      <p class="section-sub">33 security skills across 14 Red Team, 12 Blue Team, and 7 Purple Team specialisations.</p>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--danger);">ORCH</div>
+          <h3>Orchestrator</h3>
+          <p>Coordinates multi-agent campaigns. Assigns sub-tasks, merges results, tracks progress across the fleet.</p>
+          <div class="agent-tags"><span class="agent-tag red">command</span><span class="agent-tag">coordination</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--danger);">RECON</div>
+          <h3>Reconnaissance</h3>
+          <p>Network scanning, port discovery, service fingerprinting, CVE correlation, passive OSINT gathering.</p>
+          <div class="agent-tags"><span class="agent-tag red">nmap</span><span class="agent-tag">enumeration</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--danger);">EXPLOIT</div>
+          <h3>Exploitation</h3>
+          <p>Metasploit API integration, privilege escalation paths, lateral movement, persistence mechanisms.</p>
+          <div class="agent-tags"><span class="agent-tag red">exploit</span><span class="agent-tag">privilege</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--danger);">POSTEX</div>
+          <h3>Post-Exploitation</h3>
+          <p>Credential dumping, screenshot capture, keylogging, data exfiltration, session persistence.</p>
+          <div class="agent-tags"><span class="agent-tag red">creds</span><span class="agent-tag">surveil</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--success);">HUNT</div>
+          <h3>Threat Hunting</h3>
+          <p>ATT&CK framework mapping, IoC hunting, persistence detection, behavioral anomaly analysis.</p>
+          <div class="agent-tags"><span class="agent-tag blue">hunt</span><span class="agent-tag">ioc</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--success);">FORENSIC</div>
+          <h3>Forensics</h3>
+          <p>Memory dump analysis, timeline reconstruction, artifact extraction, disk image parsing.</p>
+          <div class="agent-tags"><span class="agent-tag blue">forensic</span><span class="agent-tag">analysis</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--success);">HARDEN</div>
+          <h3>Hardening</h3>
+          <p>CIS benchmark auditing, vulnerability remediation, config hardening, security patch management.</p>
+          <div class="agent-tags"><span class="agent-tag blue">patch</span><span class="agent-tag">cis</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:var(--success);">DECEPT</div>
+          <h3>Deception</h3>
+          <p>Honeypot deployment, canary token management, trap triggering, attacker distraction.</p>
+          <div class="agent-tags"><span class="agent-tag purple">honeypot</span><span class="agent-tag blue">trap</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Builder Agents -->
+  <section class="section">
+    <div class="container">
+      <div class="eyebrow">Builder & Automation</div>
+      <h2 class="section-title">Application Agents</h2>
+      <p class="section-sub">Domain-specific agents for common development and operations tasks.</p>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-code" style="color:#8a70f6;">BUILDER</div>
+          <h3>App Builder</h3>
+          <p>Fullstack application generation — CRMs, chatbots, sales pipelines, dashboards from natural language specs.</p>
+          <div class="agent-tags"><span class="agent-tag purple">fullstack</span><span class="agent-tag blue">rapid</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:#8a70f6;">IR</div>
+          <h3>Incident Response</h3>
+          <p>Automated containment, evidence preservation, runbook execution, post-incident report generation.</p>
+          <div class="agent-tags"><span class="agent-tag blue">ir</span><span class="agent-tag">runbook</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:#8a70f6;">PATCH</div>
+          <h3>Auto-Patch</h3>
+          <p>Auto-generates and applies safe fixes for critical/high vulnerabilities. Validates before applying.</p>
+          <div class="agent-tags"><span class="agent-tag blue">patch</span><span class="agent-tag">auto</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:#8a70f6;">SIM</div>
+          <h3>Simulation</h3>
+          <p>Attack simulation, detection validation, gap analysis. Generates report comparing expected vs actual detection.</p>
+          <div class="agent-tags"><span class="agent-tag red">sim</span><span class="agent-tag blue">validate</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:#8a70f6;">IMPACT</div>
+          <h3>Impact Analyzer</h3>
+          <p>Pre-deployment impact assessment. Analyzes change scope, dependency risks, rollback complexity.</p>
+          <div class="agent-tags"><span class="agent-tag purple">analysis</span><span class="agent-tag blue">risk</span></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code" style="color:#8a70f6;">QUALITY</div>
+          <h3>Quality Gate</h3>
+          <p>Pre-merge checks: lint, typecheck, test coverage, security scan. Blocks low-quality commits.</p>
+          <div class="agent-tags"><span class="agent-tag blue">ci</span><span class="agent-tag">gate</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="text-align:center;">
+    <div class="container">
+      <h2 class="section-title" style="margin-bottom:16px;">See agents in action</h2>
+      <p class="section-sub" style="margin:0 auto 32px;">Run a real project from a single command line.</p>
+      <code style="display:inline-block;padding:14px 24px;background:var(--bg-elev-2);border-radius:12px;font-size:14px;font-family:var(--font-mono);color:var(--text-secondary);border:1px solid var(--border);">python freeai.py auto-start "Build a FastAPI notes service with auth and tests" --watch</code>
+      <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="product.html" class="btn btn--primary">Explore Product</a>
+        <a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" class="btn btn--secondary" target="_blank">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">FreeAI</div>
+          <div class="footer-brand-sub">Unified AI Workstation</div>
+          <a href="deploy.html" class="footer-cta-btn">Deploy FreeAI <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+        </div>
+        <div class="footer-col"><h4>Product</h4><ul class="footer-links"><li><a href="product.html">Overview</a></li><li><a href="agents.html">Agents</a></li><li><a href="features.html">Features</a></li><li><a href="deploy.html">Deploy</a></li><li><a href="iso.html">Live ISO</a></li></ul></div>
+        <div class="footer-col"><h4>Resources</h4><ul class="footer-links"><li><a href="https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/">Documentation</a></li><li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" target="_blank">GitHub</a></li><li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/discussions" target="_blank">Forum</a></li><li><a href="pages/about.html">About</a></li><li><a href="legal/contact.html">Contact</a></li></ul></div>
+        <div class="footer-col"><h4>Legal</h4><ul class="footer-links"><li><a href="legal/privacy.html">Privacy</a></li><li><a href="legal/terms.html">Terms</a></li><li><a href="legal/security.html">Security</a></li><li><a href="legal/compliance.html">Compliance</a></li><li><a href="legal/careers.html">Careers</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><span>&copy; 2026 FreeAI &middot; Unified AI Workstation &middot; MIT License</span><span style="color:rgba(241,246,255,.25)">AI is not just a chatbot &mdash; it's an operational layer.</span></div>
+    </div>
+  </footer>
+
+  <script>
+    const html = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('theme');
+    if (saved) html.dataset.theme = saved;
+    toggle.addEventListener('click', () => {
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', html.dataset.theme);
+    });
+  </script>
+</body>
+</html>
