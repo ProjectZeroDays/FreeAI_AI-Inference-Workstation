@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'website/**'
+      - 'docs/**'
+      - '.github/workflows/website-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -28,6 +30,7 @@ jobs:
           cache-dependency-path: website/package-lock.json
       - run: cd website && npm ci
       - run: cd website && npm run build
+      - run: cp -r docs/* website/out/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: website/out
