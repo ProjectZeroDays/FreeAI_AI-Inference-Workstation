@@ -803,6 +803,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* COMPLIANCE */}
+      <section className="ap-section scroll-reveal">
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">
+              Compliance <span className="gradient-text">by design</span>
+            </h2>
+            <p className="text-lg text-slate-400">Self-hosting means you control the data. No third-party processing, no vendor lock-in.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            {[
+              { name: 'NIST 800-53', href: '/security#compliance', desc: 'Security & privacy controls' },
+              { name: 'DOD IL4', href: '/security#compliance', desc: 'Defense industrial base' },
+              { name: 'FedRAMP', href: '/security#compliance', desc: 'Cloud security baseline' },
+              { name: 'SOC 2', href: '/security#compliance', desc: 'Trust services criteria' },
+              { name: 'ISO 27001', href: '/security#compliance', desc: 'Information security mgmt' },
+              { name: 'CMMC L2', href: '/security#compliance', desc: 'Cybersecurity maturity' },
+            ].map((badge, i) => (
+              <a
+                key={badge.name}
+                href={badge.href}
+                className="ap-card-dark px-6 py-4 hover:border-blue-500/50 transition-colors cursor-pointer block group"
+              >
+                <div className="font-semibold text-white text-sm group-hover:text-blue-400 transition-colors">{badge.name}</div>
+                <div className="text-xs text-slate-500 mt-1">{badge.desc}</div>
+              </a>
+            ))}
+          </div>
+          <p className="text-center text-sm text-slate-500">
+            All compliance mappings are documented in <Link href="/security#compliance" className="text-blue-400 hover:text-blue-300 underline">SECURITY.md</Link> and <Link href="/security" className="text-blue-400 hover:text-blue-300 underline">/security</Link>.
+          </p>
+        </div>
+      </section>
+
       {/* LIVE ISO */}
       <section id="live-iso" className="ap-section scroll-reveal">
         <div className="container mx-auto px-6">

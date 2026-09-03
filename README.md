@@ -142,6 +142,33 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
                     └───────────────────────────────────────────────────────┘
 ```
 
+**Request flow:** `Client → Router (classify + confidence score) → Best backend → Fallback chain on failure → LRU cache → Response with X-Cache header`
+
+**SDLC flow:** `Spec → Plan JSON → Per-task code blocks → Sandboxed writes → Verifier (pytest/node --check) → Fix loop (3 rounds) → Reviewer verdict → Docs → Artifact tarball`
+
+---
+
+## Agent Capabilities
+
+What can you delegate to FreeAI's 24 agents right now?
+
+| Agent | Role | Out-of-the-box tasks |
+|---|---|---|
+| **ORCH** (Orchestrator) | Red team lead | Coordinates multi-agent campaigns, assigns sub-tasks, merges results |
+| **RECON** (Reconnaissance) | Blue team | Network scanning, port discovery, service fingerprinting, CVE correlation |
+| **EXPLOIT** (Exploitation) | Red team | Metasploit API, privilege escalation, lateral movement, persistence setup |
+| **POSTEX** (Post-exploitation) | Red team | Credential dumping, screenshot capture, keylogging, data exfiltration |
+| **HUNT** (Threat Hunter) | Blue team | ATT&CK mapping, IoC hunting, persistence detection, behavioral analysis |
+| **FORENSIC** | Blue team | Memory dump analysis, timeline reconstruction, artifact extraction |
+| **HARDEN** | Blue team | CIS benchmark auditing, vulnerability remediation, config hardening |
+| **IR** (Incident Responder) | Blue team | Automated containment, evidence preservation, runbook execution |
+| **DECEPT** (Deception) | Blue team | Honeypot deployment, canary token management, trap triggering |
+| **SIM** (Simulator) | Purple team | Attack simulation, detection validation, gap analysis |
+| **PATCH** | Blue team | Auto-generate and apply safe fixes for critical/high vulnerabilities |
+| **BUILDER** | General | Generate fullstack apps, CRMs, chatbots, sales pipelines from specs |
+
+Full agent catalog: [agents/](agents/) · Security skills: [skills/red_teaming/](skills/red_teaming/), [skills/blue_team/](skills/blue_team/), [skills/purple_team/](skills/purple_team/)
+
 ---
 
 ## Security Defaults

@@ -402,3 +402,11 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .chat-launcher-fixed:hover { transform: scale(1.08); box-shadow: 0 8px 40px rgba(37,99,235,0.55); }
+
+/* ── Mobile responsiveness ── */
+@media (max-width: 640px) {
+  .ap-section { padding: 64px 0; }
+  .ap-stat-number { font-size: 40px !important; }
+  .page-pre { padding: 14px; font-size: 12px; }
+  .page-table th, .page-table td { padding: 10px 12px; font-size: 13px; }
+}
