@@ -206,7 +206,7 @@
     .chat-launcher:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(2,65,227,.5); }
     .chat-launcher:active { transform: scale(.95); }
     .chat-launcher svg { width: 20px; height: 20px; }
-    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 42px; height: 42px; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .chat-launcher { bottom: 16px; right: 16px; width: 42px; height: 42px; } }
 
     /* ── Chat Panel ── */
     .chat-panel {
@@ -863,14 +863,14 @@
       display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
       align-items: start;
     }
-    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
-    .footer-brand-area { display: flex; flex-direction: column; }
-    .footer-brand { font-size: 22px; font-weight: 700; color: #f1f6ff; margin-bottom: 12px; letter-spacing: -.02em; }
-    .footer-tagline { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 20px; max-width: 260px; }
+    .footer-brand-area { display: flex; flex-direction: column; align-items: flex-start; }
+    .footer-brand { font-size: 22px; font-weight: 700; color: #f1f6ff; margin-bottom: 10px; letter-spacing: -.02em; }
+    .footer-tagline { font-size: 13px; color: rgba(241,246,255,.45); line-height: 1.65; margin-bottom: 16px; max-width: 300px; text-align: left; }
     .footer-cta-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 10px 20px; border-radius: 10px;
+      padding: 8px 16px; border-radius: 8px;
       background: #0241e3; color: #fff; font-size: 13px; font-weight: 600;
       text-decoration: none; transition: background .15s, transform .15s;
       border: none; cursor: pointer; font-family: inherit;
@@ -902,9 +902,9 @@
       color: rgba(241,246,255,.55); font-size: 13px; text-decoration: none;
       transition: color .15s;
     }
-    .footer-links a:hover { color: #f1f6ff; }
+    .footer-links a:hover { color: #5c8bff; }
     .footer-bottom {
-      margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.06);
+      margin-top: 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.06);
       display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 24px;
     }
     .footer-trust { display: flex; align-items: center; gap: 10px; }
@@ -980,7 +980,7 @@
     .mobile-actions .btn--primary { width: 100%; justify-content: center; }
 
     /* ── Responsive ── */
-    @media (max-width: 768px) {
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) {
       .menu-toggle { display: flex; }
       .nav-links { display: none; }
       .nav-inner { padding: 0 var(--space-4); }
@@ -1163,7 +1163,7 @@
     .prompt-card { background: var(--bg-elev-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; text-align: left; cursor: pointer; transition: all .2s; font-size: 14px; color: var(--text-secondary); line-height: 1.4; }
     .prompt-card:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--text-primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .prompt-card svg { width: 14px; height: 14px; float: right; opacity: .4; margin-top: 2px; }
-    @media (max-width: 768px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 480px) { .prompt-grid, .prompt-grid-secondary { grid-template-columns: 1fr; } }
 
     /* ── Applivery-style: Artifacts ── */
@@ -1221,7 +1221,7 @@
     .qa-answer-panel p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
     .qa-artifact-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
     .qa-artifact-tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: var(--bg-elev-3); color: var(--text-tertiary); border: 1px solid var(--border); }
-    @media (max-width: 768px) { .qa-layout { grid-template-columns: 1fr; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .qa-layout { grid-template-columns: 1fr; } }
 
     /* ── Deploy Paths ── */
     .deploy-section { padding: 80px 0; background: var(--bg-canvas); border-top: 1px solid var(--border); }
@@ -1272,7 +1272,7 @@
     .os-steps { list-style: none; padding: 0; margin: 0; }
     .os-steps li { font-size: 12px; color: var(--text-tertiary); padding: 4px 0; padding-left: 16px; position: relative; }
     .os-steps li::before { content: '→'; position: absolute; left: 0; color: var(--primary); }
-    @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
+    @media (min-width: 769px) { .chat-panel { bottom: 80px; right: 80px; left: auto; width: 400px; max-width: 400px; border-radius: 20px; height: 520px; max-height: calc(100vh - 120px); } }`n    @media (max-width: 768px) { .os-grid { grid-template-columns: 1fr; } }
 
     /* ── Updated CTA ── */
     .cta-applivery { padding: 100px 0; background: linear-gradient(135deg, #0b1530 0%, #1a1f3a 50%, #0b1530 100%); text-align: center; position: relative; overflow: hidden; }
@@ -1285,8 +1285,7 @@
     .cta-applivery .btn--ghost:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); }
 
     /* ── Updated Footer ── */
-    .footer-tagline { font-size: 15px; color: rgba(241,246,255,.4); text-align: center; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.5; }
-    .footer-badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .footer-badges { display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap; margin-top: 48px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,.06); }
     .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
     .footer-badge:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
     .footer-badge:active { background: rgba(92,139,255,.25); color: #5c8bff; border-color: rgba(92,139,255,.5); }
@@ -2480,11 +2479,11 @@ docker compose --profile allinone up -d
 
   <footer class="footer">
     <div class="footer-inner">
-      <p class="footer-tagline">Unified AI inference workstation with a brain. Manage, secure, and automate every model — automatically.</p>
       <div class="footer-grid">
         <!-- Brand column -->
         <div class="footer-brand-area">
           <div class="footer-brand">FreeAI</div>
+          <p class="footer-tagline">Unified AI inference workstation with a brain. Manage, secure, and automate every model — automatically.</p>
           <a href="#install" class="footer-cta-btn">
             Deploy FreeAI
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
@@ -2521,7 +2520,7 @@ docker compose --profile allinone up -d
             <li><a href="legal/terms.html">Terms</a></li>
             <li><a href="legal/security.html">Security</a></li>
             <li><a href="legal/compliance.html">Compliance</a></li>
-            <li><a href="legal/careers.html">Careers</a></li>
+
           </ul>
         </div>
       </div>
