@@ -2579,6 +2579,10 @@ docker compose --profile allinone up -d
     (function(){var saved=localStorage.getItem('lang')||'en';document.querySelectorAll('.lang-menu-item').forEach(function(item){if(item.dataset.lang===saved){item.classList.add('active');var label=document.getElementById('langLabel')||document.getElementById('langLabelMobile');if(label)label.textContent=saved.toUpperCase();applyTranslation(saved);}})})();
     // Footer badge active state
     document.querySelectorAll('.footer-badge').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();document.querySelectorAll('.footer-badge').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');});});
+    // Chat panel toggle
+    (function(){var p=document.getElementById('chatPanel');var l=document.getElementById('chatLauncher');var cb=document.getElementById('chatPanelClose');if(!p||!l)return;l.addEventListener('click',function(){p.classList.toggle('open');l.style.display=p.classList.contains('open')?'none':'flex';});if(cb)cb.addEventListener('click',function(){p.classList.remove('open');l.style.display='flex';});})();
+    document.querySelectorAll('.quick-reply-chip').forEach(function(btn){btn.addEventListener('click',function(){var i=document.getElementById('chatInputField');if(i){i.value=btn.getAttribute('data-msg');i.focus();}});});
+    (function(){var g=document.getElementById('generateCodeBtn');var cd=document.getElementById('codeDisplay');var st=document.getElementById('messengerStatus');var cv=document.getElementById('generatedCode');var cp=document.getElementById('copyCodeBtn');if(g){g.addEventListener('click',function(){var x='FREEAI-'+Math.random().toString(36).substr(2,4).toUpperCase()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();cv.textContent=x;cd.style.display='block';st.innerHTML='<div class="status-dot"></div><span>Code generated — share with your team</span>';});}if(cp){cp.addEventListener('click',function(){navigator.clipboard.writeText(cv.textContent).then(function(){cp.textContent='Copied!';setTimeout(function(){cp.textContent='Copy';},2000);});});}})();
   </script>
 
 </body></html>
