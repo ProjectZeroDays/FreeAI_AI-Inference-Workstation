@@ -49,7 +49,6 @@
     .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-8); height: 64px; }
     .nav-logo { display: flex; align-items: center; gap: var(--space-2); font-weight: 700; font-size: 18px; color: var(--text-primary); }
     .nav-links { display: flex; gap: 2px; margin-left: auto; flex-wrap: wrap; }
-    .nav-link { padding: 6px 12px; border-radius: var(--radius-md); font-size: var(--fs-small); font-weight: 500; color: var(--text-tertiary); transition: all .15s; }
     .nav-link:hover, .nav-link.active { color: var(--primary); background: var(--secondary-soft); }
     .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
     .theme-toggle { width: 36px; height: 36px; border-radius: var(--radius-pill); display: grid; place-items: center; color: var(--text-muted); cursor: pointer; border: none; background: transparent; transition: background .15s, color .15s; }
@@ -79,9 +78,79 @@
     .iso-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px; }
     .iso-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--primary-soft); color: var(--primary); margin-right: 6px; margin-bottom: 6px; }
     .code-block { background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); overflow-x: auto; line-height: 1.6; }
+    /* Footer */
     .footer { padding: 64px 0 32px; background: var(--bg-elev-2); border-top: 1px solid var(--border); }
     .footer-inner { max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px); }
-    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }    .nav-link { padding: 6px 12px; border-radius: var(--radius-md); font-size: var(--fs-small); font-weight: 500; color: rgba(241,246,255,.55); transition: color .15s, background .15s; text-decoration: none; }
+    .nav-link:hover { color: #5c8bff; background: rgba(92,139,255,.12); text-decoration: none; }
+    .nav-link:active { color: #3d7aff; }
+    .nav-link.active { color: #5c8bff; font-weight: 600; }
+
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 10px; letter-spacing: -.02em; text-align: left; }
+    .footer-brand-sub { font-size: 12px; color: rgba(241,246,255,.45); margin-bottom: 16px; text-align: left; line-height: 1.6; max-width: 320px; }
+    .footer-brand-area { display: flex; flex-direction: column; align-items: flex-start; }
+    .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; background: #0241e3; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; transition: background .15s, transform .15s; border: none; cursor: pointer; font-family: inherit; align-self: flex-start; }
+    .footer-cta-btn:hover { background: #033ad1; transform: translateY(-1px); }
+    .footer-cta-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .footer-col { text-align: left; }
+    .footer-col h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(241,246,255,.35); margin-bottom: 16px; }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(241,246,255,.55); text-decoration: none; transition: color .15s; }
+    .footer-links a:hover { color: #5c8bff; }
+    .footer-badges { display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
+    .footer-badge:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
+    .footer-badge:active { background: rgba(92,139,255,.25); color: #5c8bff; border-color: rgba(92,139,255,.5); }
+    .footer-badge.active { background: rgba(92,139,255,.2); color: #5c8bff; border-color: rgba(92,139,255,.4); }
+    .footer-badge:focus-visible { outline: 2px solid #5c8bff; outline-offset: 2px; }
+    .footer-badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .footer-bottom { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.06); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12px; color: rgba(241,246,255,.3); }
+
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 10px; letter-spacing: -.02em; text-align: left; }
+    .footer-brand-sub { font-size: 12px; color: rgba(241,246,255,.45); margin-bottom: 16px; text-align: left; line-height: 1.6; max-width: 320px; }
+    .footer-brand-area { display: flex; flex-direction: column; align-items: flex-start; }
+    .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; background: #0241e3; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; transition: background .15s, transform .15s; border: none; cursor: pointer; font-family: inherit; align-self: flex-start; }
+    .footer-cta-btn:hover { background: #033ad1; transform: translateY(-1px); }
+    .footer-cta-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .footer-col { text-align: left; }
+    .footer-col h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(241,246,255,.35); margin-bottom: 16px; }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(241,246,255,.55); text-decoration: none; transition: color .15s; }
+    .footer-links a:hover { color: #5c8bff; }
+    .footer-badges { display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
+    .footer-badge:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
+    .footer-badge:active { background: rgba(92,139,255,.25); color: #5c8bff; border-color: rgba(92,139,255,.5); }
+    .footer-badge.active { background: rgba(92,139,255,.2); color: #5c8bff; border-color: rgba(92,139,255,.4); }
+    .footer-badge:focus-visible { outline: 2px solid #5c8bff; outline-offset: 2px; }
+    .footer-badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .footer-bottom { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.06); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12px; color: rgba(241,246,255,.3); }
+    @media (max-width: 900px) { .nav-links, .nav-actions .btn { display: none; } .menu-toggle { display: flex; align-items: center; justify-content: center; } }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 10px; letter-spacing: -.02em; text-align: left; }
+    .footer-brand-sub { font-size: 12px; color: rgba(241,246,255,.35); margin-bottom: 16px; text-align: left; line-height: 1.5; }
+    .footer-brand-area { display: flex; flex-direction: column; align-items: flex-start; }
+    .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 10px; background: #0241e3; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; transition: background .15s, transform .15s; border: none; cursor: pointer; font-family: inherit; align-self: flex-start; }
+    .footer-cta-btn:hover { background: #033ad1; transform: translateY(-1px); }
+    .footer-cta-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .footer-col { text-align: left; }
+    .footer-col h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(241,246,255,.35); margin-bottom: 16px; }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(241,246,255,.55); text-decoration: none; transition: color .15s; }
+    .footer-links a:hover { color: #5c8bff; }
+    .footer-badges { display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
+    .footer-badge:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
+    .footer-badge:active { background: rgba(92,139,255,.25); color: #5c8bff; border-color: rgba(92,139,255,.5); }
+    .footer-badge.active { background: rgba(92,139,255,.2); color: #5c8bff; border-color: rgba(92,139,255,.4); }
+    .footer-badge:focus-visible { outline: 2px solid #5c8bff; outline-offset: 2px; }
+    .footer-badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .footer-bottom { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.06); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12px; color: rgba(241,246,255,.3); }
     @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
     .footer-brand { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
     .footer-brand-sub { font-size: 12px; color: var(--text-muted); }
@@ -93,31 +162,169 @@
     .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--primary); color: #fff; border-radius: var(--radius-lg); font-size: var(--fs-small); font-weight: 600; margin-top: 16px; transition: background .15s; }
     .footer-cta-btn:hover { background: var(--primary-hover); }
     .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: var(--fs-small); color: var(--text-muted); }
+    /* Logo Marquee */
+    .logo-marquee-wrap { overflow: hidden; padding: 16px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+    [data-theme="dark"] .logo-marquee-wrap { background: var(--bg-canvas); }
+    .logo-marquee { display: flex; gap: 56px; animation: logo-marquee 60s linear infinite; white-space: nowrap; align-items: center; }
+    .logo-marquee-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); opacity: .6; transition: opacity .2s, color .2s; text-decoration: none; flex-shrink: 0; }
+    .logo-marquee-item:hover { opacity: 1; color: var(--text-primary); text-decoration: none; }
+    .logo-marquee-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    @keyframes logo-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
   </style>
 </head>
 <body>
 
   <nav class="nav">
     <div class="nav-inner">
-      <a href="/" class="nav-logo"><span class="nav-brand">FreeAI</span><span class="nav-brand-sub">AI Intelligence</span></a>
-      <div class="nav-links">
-        <a href="product.html" class="nav-link">Product</a>
-        <a href="agents.html" class="nav-link">Agents</a>
-        <a href="features.html" class="nav-link">Features</a>
-        <a href="integrations.html" class="nav-link">Integrations</a>
-        <a href="deploy.html" class="nav-link">Deploy</a>
-        <a href="iso.html" class="nav-link active">Live ISO</a>
-        <a href="resources.html" class="nav-link">Resources</a>
-      </div>
+      <a href="index.html" class="nav-logo">
+        <span class="nav-brand">FreeAI</span>
+        <span class="nav-brand-sub">AI Intelligence</span>
+      </a>
+        <div class="nav-links">
+           <a href="product.html" class="nav-link">Product</a>
+           <a href="agents.html" class="nav-link">Ask Agents</a>
+           <a href="artifacts.html" class="nav-link">Artifacts</a>
+           <a href="features.html" class="nav-link">Features</a>
+           <a href="integrations.html" class="nav-link">Integrations</a>
+           <a href="deploy.html" class="nav-link">Deploy</a>
+           <a href="iso.html" class="nav-link">Live ISO</a>
+           <a href="resources.html" class="nav-link">Resources</a>
+        </div>
       <div class="nav-actions">
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <!-- Language dropdown -->
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-btn" id="langBtn" aria-label="Select language">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span id="langLabel">EN</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="lang-menu" id="langMenu">
+            <div class="lang-menu-item active" data-lang="en"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>English</div>
+            <div class="lang-menu-item" data-lang="es"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Español</div>
+            <div class="lang-menu-item" data-lang="de"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Deutsch</div>
+            <div class="lang-menu-item" data-lang="fr"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Français</div>
+            <div class="lang-menu-item" data-lang="it"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Italiano</div>
+            <div class="lang-menu-item" data-lang="pt"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Português</div>
+            <div class="lang-menu-item" data-lang="ja"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>日本語</div>
+            <div class="lang-menu-item" data-lang="ko"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>한국어</div>
+            <div class="lang-menu-item" data-lang="zh"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>中文</div>
+            <div class="lang-menu-divider"></div>
+            <div class="lang-menu-item" data-lang="ar"><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>العربية</div>
+          </div>
+        </div>
+        <!-- Theme toggle --><button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
         </button>
-        <a href="https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation" class="btn btn--primary btn--sm" target="_blank">GitHub</a>
+        <!-- GitHub button --><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" class="btn btn--primary btn--sm" target="_blank" style="background:#0241e3;box-shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(2,65,227,.25);height:40px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+          GitHub
+        </a>
       </div>
     </div>
+    <!-- Mobile menu toggle -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
   </nav>
+
+  <!-- ── Provider Logo Marquee ── -->
+  <div class="logo-marquee-wrap">
+    <div class="logo-marquee" id="logoMarquee">
+      <a href="https://openai.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#10a37f"><path d="M23.982 7.023a.899.899 0 0 0-.775-.598l-5.754-.554-1.434-5.7A.901.901 0 0 0 15.17.5L8.832 3.323a.95.95 0 0 0-.107.04L2.702 6.13a.902.902 0 0 0-.54.624L.122 13.06a.95.95 0 0 0 .03.764l2.673 5.988a.904.904 0 0 0 .624.54l6.327 1.595 6.55-2.954a.904.904 0 0 0 .483-.54l2.673-5.988.03-.063z"></path></svg>
+        <span>OpenAI</span>
+      </a>
+      <a href="https://anthropic.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#FF4B5C"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+        <span>Anthropic</span>
+      </a>
+      <a href="https://github.com/ggerganov/llama.cpp" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#FCD34D"><circle cx="12" cy="12" r="10"></circle><path d="M8 12l2-4 2 4-2 4z" fill="#060606"></path></svg>
+        <span>llama.cpp</span>
+      </a>
+      <a href="https://vllm.ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#7C5CFC"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"></path></svg>
+        <span>vLLM</span>
+      </a>
+      <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#000"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8M12 8v8" stroke="#fff" stroke-width="2"></path></svg>
+        <span>OpenRouter</span>
+      </a>
+      <a href="https://github.com/NousResearch" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#0EA5E9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14l-4-4 1.41-1.41L10 13.17l4.59-4.59L16 10l-6 6z"></path></svg>
+        <span>Hermes</span>
+      </a>
+      <a href="https://github.com/steipete/openclaw" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#8B5CF6"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <span>OpenClaw</span>
+      </a>
+      <a href="https://github.com/opencode-ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#22C55E"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 8l-3 4 3 4M15 8l3 4-3 4" stroke="#fff" stroke-width="2" fill="none"></path></svg>
+        <span>OpenCode</span>
+      </a>
+      <a href="https://mimocode.ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+        <span>MimoCode</span>
+      </a>
+      <a href="https://jcode.ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#EC4899"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8" stroke="#fff" stroke-width="2"></path></svg>
+        <span>JCode</span>
+      </a>
+      <a href="https://zcode.ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#06B6D4"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2"></path></svg>
+        <span>ZCode</span>
+      </a>
+      <a href="https://nvidia.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#76B900"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2"></path></svg>
+        <span>NVIDIA</span>
+      </a>
+      <a href="https://salad.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#6366F1"><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 1 8 0" stroke="#fff" stroke-width="2" fill="none"></path></svg>
+        <span>Salad</span>
+      </a>
+      <a href="https://vast.ai" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#F97316"><path d="M12 2l-5 5v5l5 5 5-5V7l-5-5z"></path></svg>
+        <span>Vast.ai</span>
+      </a>
+      <a href="https://runpod.io" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#FBBF24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+        <span>RunPod</span>
+      </a>
+      <a href="https://hostinger.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#673DE6"><circle cx="12" cy="12" r="10"></circle></svg>
+        <span>Hostinger</span>
+      </a>
+      <a href="https://digitalocean.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#0080FF"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle></svg>
+        <span>DigitalOcean</span>
+      </a>
+      <a href="https://docker.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#2496ED"><path d="M13 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM7.5 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM19.5 14.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM6 10.5h12a1.5 1.5 0 0 1 0 3H6a1.5 1.5 0 0 1 0-3zM3 8.5h3a1.5 1.5 0 0 1 0 3H3a1.5 1.5 0 0 1 0-3zM18 8.5h3a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 1 0-3z"></path></svg>
+        <span>Docker</span>
+      </a>
+      <a href="https://kubernetes.io" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#326CE5"><path d="M12 2l-3 6h6l-3 6-3-6H12z"></path><circle cx="12" cy="20" r="2"></circle></svg>
+        <span>Kubernetes</span>
+      </a>
+      <a href="https://ubuntu.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#E95420"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle></svg>
+        <span>Ubuntu</span>
+      </a>
+      <a href="https://kali.org" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#557C9C"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path></svg>
+        <span>Kali</span>
+      </a>
+      <a href="https://nixos.org" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#5277C3"><polygon points="12,2 22,20 2,20" fill="none" stroke="currentColor" stroke-width="2"></polygon></svg>
+        <span>NixOS</span>
+      </a>
+      <a href="https://www.kodachi.com" target="_blank" rel="noopener noreferrer" class="logo-marquee-item">
+        <svg viewBox="0 0 24 24" fill="#00FF88"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+        <span>Kodachi</span>
+      </a>
+    </div>
+  </div>
 
   <div class="page-hero">
     <div class="container">
@@ -214,16 +421,86 @@ sudo dd if=FreeAI.iso of=/dev/sdX bs=4M status=progress conv=fsync<br><br>
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-grid">
-        <div>
+        <!-- Brand column -->
+        <div class="footer-brand-area">
           <div class="footer-brand">FreeAI</div>
-          <div class="footer-brand-sub">Unified AI Workstation</div>
-          <a href="deploy.html" class="footer-cta-btn">Deploy FreeAI <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"></path></svg></a>
+          <div class="footer-brand-sub">Unified AI inference workstation with a brain. Manage, secure, and automate every model — automatically.</div>
+          <a href="deploy.html" class="footer-cta-btn">
+            Deploy FreeAI
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+          </a>
         </div>
-        <div class="footer-col"><h4>Product</h4><ul class="footer-links"><li><a href="product.html">Overview</a></li><li><a href="agents.html">Agents</a></li><li><a href="features.html">Features</a></li><li><a href="deploy.html">Deploy</a></li><li><a href="iso.html">Live ISO</a></li></ul></div>
-        <div class="footer-col"><h4>Resources</h4><ul class="footer-links"><li><a href="https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/">Documentation</a></li><li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" target="_blank">GitHub</a></li><li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/discussions" target="_blank">Forum</a></li><li><a href="pages/about.html">About</a></li><li><a href="legal/contact.html">Contact</a></li></ul></div>
-        <div class="footer-col"><h4>Legal</h4><ul class="footer-links"><li><a href="legal/privacy.html">Privacy</a></li><li><a href="legal/terms.html">Terms</a></li><li><a href="legal/security.html">Security</a></li><li><a href="legal/compliance.html">Compliance</a></li><li><a href="legal/careers.html">Careers</a></li></ul></div>
+        <!-- Product -->
+        <div class="footer-col">
+          <h2>Product</h2>
+          <ul class="footer-links">
+            <li><a href="product.html">Overview</a></li>
+            <li><a href="agents.html">Ask Agents</a></li>
+            <li><a href="artifacts.html">Artifacts</a></li>
+            <li><a href="features.html">Features</a></li>
+            <li><a href="integrations.html">Integrations</a></li>
+            <li><a href="deploy.html">Deploy</a></li>
+            <li><a href="iso.html">Live ISO</a></li>
+          </ul>
+        </div>
+        <!-- Resources -->
+        <div class="footer-col">
+          <h2>Resources</h2>
+          <ul class="footer-links">
+            <li><a href="https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/">Documentation</a></li>
+            <li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation" target="_blank">GitHub</a></li>
+            <li><a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/discussions" target="_blank">Forum</a></li>
+            <li><a href="pages/about.html">About</a></li>
+            <li><a href="legal/contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <!-- Legal -->
+        <div class="footer-col">
+          <h2>Legal</h2>
+          <ul class="footer-links">
+            <li><a href="legal/privacy.html">Privacy</a></li>
+            <li><a href="legal/terms.html">Terms</a></li>
+            <li><a href="legal/security.html">Security</a></li>
+            <li><a href="legal/compliance.html">Compliance</a></li>
+            <li><a href="legal/iso27001.html">ISO 27001</a></li>
+            <li><a href="legal/gdpr.html">GDPR</a></li>
+            <li><a href="legal/dodil4.html">DOD IL4</a></li>
+            <li><a href="legal/fedramp.html">FedRAMP</a></li>
+            <li><a href="legal/nist80053.html">NIST 800-53</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="footer-bottom"><span>&copy; 2026 FreeAI &middot; Unified AI Workstation &middot; MIT License</span><span style="color:rgba(241,246,255,.25)">AI is not just a chatbot &mdash; it's an operational layer.</span></div>
+      <div class="footer-badges">
+        <a href="legal/iso27001.html" class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          ISO 27001
+        </a>
+        <a href="legal/gdpr.html" class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          GDPR-ready
+        </a>
+        <a href="legal/dodil4.html" class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          DOD IL4
+        </a>
+        <a href="legal/fedramp.html" class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          FedRAMP-ready
+        </a>
+        <a href="legal/nist80053.html" class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          NIST 800-53
+        </a>
+        <a href="legal/compliance.html" class="footer-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          CMMC Level 2 &amp; 3
+        </a>
+      </div>
+      <!-- Bottom bar -->
+      <div class="footer-bottom">
+        <span>&#169; 2026 FreeAI &#183; Unified AI Workstation &#183; MIT License</span>
+        <span style="color:rgba(241,246,255,.25)">AI is not just a chatbot — it's an operational layer.</span>
+      </div>
     </div>
   </footer>
 
@@ -237,5 +514,72 @@ sudo dd if=FreeAI.iso of=/dev/sdX bs=4M status=progress conv=fsync<br><br>
       localStorage.setItem('theme', html.dataset.theme);
     });
   </script>
-</body>
+
+  <script>
+    document.querySelectorAll('.lang-dropdown').forEach(dd => {
+      const btn = dd.querySelector('.lang-btn');
+      const menu = dd.querySelector('.lang-menu');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', e => { e.stopPropagation(); dd.classList.toggle('open'); });
+      menu.querySelectorAll('.lang-menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const lang = item.dataset.lang;
+          const label = dd.querySelector('#langLabel, #langLabelMobile');
+          if (label) label.textContent = lang.toUpperCase();
+          menu.querySelectorAll('.lang-menu-item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          dd.classList.remove('open');
+          applyTranslation(lang);
+        });
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.lang-dropdown').forEach(dd => dd.classList.remove('open'));
+    });
+    const translations = {
+      en: { 'hero-btn-install': 'Install FreeAI', 'hero-btn-docs': 'Deploy Guide', 'trusted-label': 'Powered by leading AI infra' },
+      es: { 'hero-btn-install': 'Instalar FreeAI', 'hero-btn-docs': 'Guía de Despliegue', 'trusted-label': 'Potenciado por infraestructura AI líder' },
+      de: { 'hero-btn-install': 'FreeAI Installieren', 'hero-btn-docs': 'Deploy-Leitfaden', 'trusted-label': 'Angetrieben von führender KI-Infrastruktur' },
+      fr: { 'hero-btn-install': 'Installer FreeAI', 'hero-btn-docs': 'Guide de Déploiement', 'trusted-label': 'Propulsé par une infra IA de pointe' },
+      it: { 'hero-btn-install': 'Installa FreeAI', 'hero-btn-docs': 'Guida alla Deployment', 'trusted-label': 'Powered da infrastruttura AI leader' },
+      pt: { 'hero-btn-install': 'Instalar FreeAI', 'hero-btn-docs': 'Guia de Implantação', 'trusted-label': 'Powered por infra de IA líder' },
+      ja: { 'hero-btn-install': 'FreeAIをインストール', 'hero-btn-docs': 'デプロイガイド', 'trusted-label': '主要AIインフラ powering' },
+      ko: { 'hero-btn-install': 'FreeAI 설치', 'hero-btn-docs': '배포 가이드', 'trusted-label': '최고 AI 인프라 제공' },
+      zh: { 'hero-btn-install': '安装 FreeAI', 'hero-btn-docs': '部署指南', 'trusted-label': '由领先AI基础设施驱动' },
+      ar: { 'hero-btn-install': 'تثبيت FreeAI', 'hero-btn-docs': 'دليل النشر', 'trusted-label': 'مدعوم من البنية التحتية الرائدة للذكاء الاصطناعي' }
+    };
+    function applyTranslation(lang) {
+      const dict = translations[lang] || translations['en'];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.textContent = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (dict[key]) el.placeholder = dict[key];
+      });
+      localStorage.setItem('lang', lang);
+    }
+    (function() {
+      const saved = localStorage.getItem('lang') || 'en';
+      document.querySelectorAll('.lang-menu-item').forEach(item => {
+        if (item.dataset.lang === saved) {
+          item.classList.add('active');
+          const label = document.getElementById('langLabel') || document.getElementById('langLabelMobile');
+          if (label) label.textContent = saved.toUpperCase();
+          applyTranslation(saved);
+        }
+      });
+    })();
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mq = document.getElementById('logoMarquee');
+      if (mq) {
+        mq.addEventListener('mouseenter', () => mq.style.animationPlayState = 'paused');
+        mq.addEventListener('mouseleave', () => mq.style.animationPlayState = 'running');
+      }
+    });
+  </script>
+  </body>
 </html>

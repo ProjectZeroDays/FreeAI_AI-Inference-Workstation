@@ -288,6 +288,14 @@
     .back-link svg { width: 14px; height: 14px; }
 
     /* ── Responsive ── */
+    .nav-brand { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
+    .nav-brand-sub { font-size: 13px; font-weight: 400; color: var(--primary); margin-left: 6px; }
+    .menu-toggle { display: none; width: 36px; height: 36px; border-radius: var(--radius-md); border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; }    .nav-link { padding: 6px 12px; border-radius: var(--radius-md); font-size: var(--fs-small); font-weight: 500; color: rgba(241,246,255,.55); transition: color .15s, background .15s; text-decoration: none; }
+    .nav-link:hover { color: #5c8bff; background: rgba(92,139,255,.12); text-decoration: none; }
+    .nav-link:active { color: #3d7aff; }
+    .nav-link.active { color: #5c8bff; font-weight: 600; }
+
+    @media (max-width: 900px) { .nav-links, .nav-actions .btn { display: none; } .menu-toggle { display: flex; align-items: center; justify-content: center; } }
     @media (max-width: 480px) {
       .chat-container {
         max-width: 100%;
@@ -298,6 +306,32 @@
       }
       body { background: var(--bg-elev); }
     }
+
+    /* Footer */
+    .footer { padding: 64px 0 32px; background: var(--bg-elev-2); border-top: 1px solid var(--border); }
+    .footer-inner { max-width: 1200px; margin: 0 auto; padding-inline: clamp(20px,4vw,32px); }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-brand { font-size: 20px; font-weight: 700; color: #f1f6ff; margin-bottom: 10px; letter-spacing: -.02em; text-align: left; }
+    .footer-brand-sub { font-size: 12px; color: rgba(241,246,255,.45); margin-bottom: 16px; text-align: left; line-height: 1.6; max-width: 320px; }
+    .footer-brand-area { display: flex; flex-direction: column; align-items: flex-start; }
+    .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; background: #0241e3; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; transition: background .15s, transform .15s; border: none; cursor: pointer; font-family: inherit; align-self: flex-start; }
+    .footer-cta-btn:hover { background: #033ad1; transform: translateY(-1px); }
+    .footer-cta-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .footer-col { text-align: left; }
+    .footer-col h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(241,246,255,.35); margin-bottom: 16px; }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(241,246,255,.55); text-decoration: none; transition: color .15s; }
+    .footer-links a:hover { color: #5c8bff; }
+    .footer-badges { display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
+    .footer-badge:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
+    .footer-badge:active { background: rgba(92,139,255,.25); color: #5c8bff; border-color: rgba(92,139,255,.5); }
+    .footer-badge.active { background: rgba(92,139,255,.2); color: #5c8bff; border-color: rgba(92,139,255,.4); }
+    .footer-badge:focus-visible { outline: 2px solid #5c8bff; outline-offset: 2px; }
+    .footer-badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .footer-bottom { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.06); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12px; color: rgba(241,246,255,.3); }
   </style>
 </head>
 <body>

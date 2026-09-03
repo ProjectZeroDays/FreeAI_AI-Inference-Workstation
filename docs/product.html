@@ -121,13 +121,21 @@
     .footer-cta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--primary); color: #fff; border-radius: var(--radius-lg); font-size: var(--fs-small); font-weight: 600; margin-top: 16px; transition: background .15s; }
     .footer-cta-btn:hover { background: var(--primary-hover); }
     .footer-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: var(--fs-small); color: var(--text-muted); }
+    /* Logo Marquee */
+    .logo-marquee-wrap { overflow: hidden; padding: 16px 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+    [data-theme="dark"] .logo-marquee-wrap { background: var(--bg-canvas); }
+    .logo-marquee { display: flex; gap: 56px; animation: logo-marquee 60s linear infinite; white-space: nowrap; align-items: center; }
+    .logo-marquee-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-muted); opacity: .6; transition: opacity .2s, color .2s; text-decoration: none; flex-shrink: 0; }
+    .logo-marquee-item:hover { opacity: 1; color: var(--text-primary); text-decoration: none; }
+    .logo-marquee-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    @keyframes logo-marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
   </style>
 </head>
 <body>
 
   <nav class="nav">
     <div class="nav-inner">
-      <a href="/" class="nav-logo">
+      <a href="index.html" class="nav-logo">
         <span class="nav-brand">FreeAI</span>
         <span class="nav-brand-sub">AI Intelligence</span>
       </a>
@@ -383,6 +391,15 @@
     toggle.addEventListener('click', () => {
       html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', html.dataset.theme);
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mq = document.getElementById('logoMarquee');
+      if (mq) {
+        mq.addEventListener('mouseenter', () => mq.style.animationPlayState = 'paused');
+        mq.addEventListener('mouseleave', () => mq.style.animationPlayState = 'running');
+      }
     });
   </script>
 </body>

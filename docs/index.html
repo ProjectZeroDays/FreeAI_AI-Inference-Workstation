@@ -184,7 +184,7 @@
       color: var(--text-tertiary); transition: all .15s;
       white-space: nowrap;
     }
-    .nav-link:hover { color: var(--text-primary); background: var(--secondary-soft); text-decoration: none; }
+    .nav-link:hover { color: #5c8bff; background: rgba(92,139,255,.12); text-decoration: none; }
     .nav-actions { display: flex; gap: var(--space-2); align-items: center; }
     .menu-toggle {
       display: none; background: none; border: none; cursor: pointer;
@@ -648,34 +648,13 @@
     }
     .feature-card code { font-family: var(--font-mono); }
 
-    /* ── Glow Panel — Applivery exact ── */
     .glow-panel {
-      --bb-border: conic-gradient(from var(--bb-angle), #1ed6ff 0deg, #5c8bff 120deg, #8a70f6 240deg, #1ed6ff 360deg);
-      --gp-radius: var(--radius-3xl);
-      position: relative; isolation: isolate;
-      border-radius: var(--gp-radius);
-      animation: bb-turn 3.5s linear infinite;
-      overflow: hidden;
-    }
-    .glow-panel::before {
-      content: '';
-      position: absolute; inset: -9px; z-index: 0;
-      border-radius: calc(var(--gp-radius) + 9px);
-      background: var(--bb-border);
-      filter: blur(24px);
-      opacity: .37;
-      pointer-events: none;
-    }
-    .glow-panel::after {
-      content: '';
-      position: absolute; inset: 0; z-index: 1;
-      border-radius: inherit;
       background: var(--bg-elev-1);
-      pointer-events: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-3xl);
+      position: relative;
     }
-    .glow-panel > * { position: relative; z-index: 2; }
-    @property --bb-angle { syntax: "<angle>"; initial-value: 0deg; inherits: true; }
-    @keyframes bb-turn { to { --bb-angle: 360deg; } }
+    .glow-panel > * { position: relative; z-index: 1; }
 
     /* ── Reveal Animation ── */
     .reveal {
@@ -744,21 +723,15 @@
 
     /* ── Applivery-style SDLC Diagram ── */
     .sdlc-diagram {
-      background: linear-gradient(135deg, rgba(14,22,48,.95) 0%, rgba(6,10,24,.98) 100%);
-      border: 1px solid rgba(92,139,255,.2);
+      background: var(--bg-elev-1);
+      border: 1px solid var(--border);
       border-radius: var(--radius-3xl);
       padding: clamp(24px,4vw,48px);
-      position: relative; overflow: hidden;
+      position: relative;
     }
     [data-theme="light"] .sdlc-diagram {
-      background: linear-gradient(135deg, var(--bg-elev-2) 0%, var(--bg-elev-1) 100%);
+      background: var(--bg-elev-1);
       border-color: var(--border);
-    }
-    .sdlc-diagram::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 50% 60% at 50% 30%, rgba(92,139,255,.1) 0%, transparent 70%);
-      pointer-events: none;
     }
     .sdlc-diagram > * { position: relative; z-index: 1; }
 
@@ -799,11 +772,12 @@
     .sdlc-orchestrator { text-align: center; margin-bottom: 24px; }
     .orch-node {
       display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, #5c8bff 0%, #8a70f6 100%);
+      background: var(--primary-soft);
+      border: 1px solid var(--primary);
       border-radius: 100px;
       padding: 10px 24px;
-      font-size: 14px; font-weight: 600; color: #fff;
-      box-shadow: 0 4px 20px rgba(92,139,255,.3);
+      font-size: 14px; font-weight: 600; color: var(--primary);
+      box-shadow: none;
     }
     .orch-icon { font-size: 16px; }
 
@@ -867,12 +841,6 @@
     }
     [data-theme="light"] .cta-section {
       background: linear-gradient(135deg, var(--primary-600) 0%, #5b21b6 100%);
-    }
-    .cta-section::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,139,255,.08) 0%, transparent 70%);
-      pointer-events: none;
     }
     .cta-section > * { position: relative; z-index: 1; }
     .cta-section h2 { font-size: clamp(28px,4vw,48px); font-weight: 700; margin-bottom: var(--space-4); letter-spacing: -.02em; color: #fff; }
@@ -1069,20 +1037,15 @@
     .hero-stat:hover .num::after { width:80%; }
 
     /* ── Polish: Active Nav Link ── */
-    .nav-link.active { color:var(--primary); font-weight:600; }
+    .nav-link.active { color: #5c8bff; font-weight: 600; }
 
     /* ── Polish: Button Glow ── */
     [data-theme="dark"] .btn--primary { box-shadow:0 0 20px rgba(92,139,255,.25),0 4px 12px rgba(0,0,0,.3); }
     [data-theme="dark"] .btn--primary:hover { box-shadow:0 0 32px rgba(92,139,255,.4),0 6px 20px rgba(0,0,0,.4); }
 
-    /* ── Polish: SDLC Diagram Connection Line ── */
     .sdlc-agents { position:relative; }
-    .sdlc-agents::before { content:''; position:absolute; top:24px; left:10%; right:10%; height:2px; background:linear-gradient(90deg,transparent,rgba(92,139,255,.3),rgba(138,112,246,.3),transparent); z-index:0; }
-    [data-theme="light"] .sdlc-agents::before { background:linear-gradient(90deg,transparent,rgba(2,65,227,.15),rgba(124,92,240,.15),transparent); }
     .agent-node { position:relative; z-index:1; }
 
-    /* ── Polish: CTA Section Gradient Overlay ── */
-    .cta-section::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 50% 80% at 20% 50%,rgba(92,139,255,.12) 0%,transparent 60%),radial-gradient(ellipse 50% 80% at 80% 50%,rgba(138,112,246,.10) 0%,transparent 60%); pointer-events:none; }
     .cta-section > * { position:relative; z-index:1; }
 
     /* ── Chat Section Styles ── */
@@ -1313,7 +1276,6 @@
 
     /* ── Updated CTA ── */
     .cta-applivery { padding: 100px 0; background: linear-gradient(135deg, #0b1530 0%, #1a1f3a 50%, #0b1530 100%); text-align: center; position: relative; overflow: hidden; }
-    .cta-applivery::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,139,255,.08) 0%, transparent 70%); pointer-events: none; }
     .cta-applivery > * { position: relative; z-index: 1; }
     .cta-applivery h2 { font-size: clamp(28px,4vw,48px); font-weight: 700; color: #f1f6ff; margin-bottom: 16px; letter-spacing: -.02em; }
     .cta-applivery p { font-size: 17px; color: rgba(241,246,255,.6); max-width: 500px; margin: 0 auto 36px; line-height: 1.6; }
@@ -1325,8 +1287,10 @@
     /* ── Updated Footer ── */
     .footer-tagline { font-size: 15px; color: rgba(241,246,255,.4); text-align: center; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.5; }
     .footer-badges { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
-    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); }
-    .footer-badge svg { width: 12px; height: 12px; }
+    .footer-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: rgba(241,246,255,.5); cursor: pointer; transition: background .15s, color .15s; text-decoration: none; }
+    .footer-badge:hover { background: rgba(92,139,255,.12); color: #5c8bff; border-color: rgba(92,139,255,.25); }
+    .footer-badge:active { background: rgba(92,139,255,.25); color: #5c8bff; border-color: rgba(92,139,255,.5); }
+    .footer-badge.active { background: rgba(92,139,255,.2); color: #5c8bff; border-color: rgba(92,139,255,.4); }
   </style>
 </head>
 <body>
@@ -1334,7 +1298,7 @@
   <!-- ── Navigation ── -->
   <nav class="nav">
     <div class="nav-inner">
-      <a href="/" class="nav-logo">
+      <a href="index.html" class="nav-logo">
         <span class="nav-brand">FreeAI</span>
         <span class="nav-brand-sub">AI Intelligence</span>
       </a>
@@ -2018,32 +1982,32 @@ REPO_TARBALL=../dist/unified-ai-stack-v1.2.0.tar.gz ./live/build-live.sh
       <p class="section-sub">Plugin system with 6+ core plugins and a marketplace. Zero-downtime updates, version-pinned, and sandboxed.</p>
     </div>
     <div class="feature-grid centered">
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:0ms;">
         <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
         <h3>CI/CD Plugin</h3>
         <p>GitHub Actions, Docker publish, release bundling — triggered on push or schedule. Zero-downtime deployments.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:50ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:50ms;">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
         <h3>Watcher Plugin</h3>
         <p>File-system watcher for config changes, model downloads, and RAG document ingestion.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:100ms;">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>Backup Plugin</h3>
         <p>Config snapshot, registry export, weekly retention (keep 10). One-command restore.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:150ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:150ms;">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
         <h3>Watchdog Plugin</h3>
         <p>Supervisor loop (10s), health agent (30s), recovery agent (15s). systemd units with auto-restart.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:200ms;">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
         <h3>Marketplace</h3>
         <p>Browse, install, and share plugins. Version-pinned installs with rollback support.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:250ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:250ms;">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
         <h3>Scheduler</h3>
         <p>Cron-driven daily cleanup, weekly backup, timed idle windows with auto-restore on activity.</p>
@@ -2113,32 +2077,32 @@ REPO_TARBALL=../dist/unified-ai-stack-v1.2.0.tar.gz ./live/build-live.sh
       <p class="section-sub">Visual workflow designer with validation, templates, audit logs, and export/import. From one-shot prompts to scheduled automation.</p>
     </div>
     <div class="feature-grid centered">
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:0ms;">
         <div class="feature-icon" style="background:var(--primary-soft)">◈</div>
         <h3>Visual Designer</h3>
         <p>Drag-and-drop pipeline builder. Sequential + parallel steps, conditional branching, error handling.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:50ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:50ms;">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">✓</div>
         <h3>Templates</h3>
         <p>4 shipped templates: code review, deployment, security scan, RAG ingestion. Create your own.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:100ms;">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">◉</div>
         <h3>Audit Log</h3>
         <p>JSONL audit trail for every run. Re-run, replay, and export pipeline history.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:150ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:150ms;">
         <div class="feature-icon" style="background:rgba(6,182,212,.12)">⬡</div>
         <h3>SDLC Pipeline</h3>
         <p>plan → code → verify (real compilers/tests) → fix → review → document → package. One spec, full project.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:200ms;">
         <div class="feature-icon" style="background:rgba(245,158,11,.12)">⟳</div>
         <h3>Security Pipeline</h3>
         <p>Semgrep → Bandit → Safety → Trivy → auto-patch → verify. CI-ready with pass/fail gates.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:250ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:250ms;">
         <div class="feature-icon" style="background:rgba(239,68,68,.12)">⚠</div>
         <h3>Cron Automation</h3>
         <p>Scheduled runs: daily reports, nightly backups, weekly audits, morning briefings. Delivery to any platform.</p>
@@ -2212,7 +2176,7 @@ REPO_TARBALL=../dist/unified-ai-stack-v1.2.0.tar.gz ./live/build-live.sh
       <p class="section-sub">Local, Docker, or cloud — same stack, different runtime. <a href="deploy.html" style="color:var(--primary)">View all deploy options →</a></p>
     </div>
     <div class="feature-grid centered">
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:0ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:0ms;">
         <div class="feature-icon" style="background:var(--primary-soft)">🐧</div>
         <h3>Bare Metal</h3>
         <div class="code-chrome"><div class="code-chrome-bar"><span class="code-dot code-dot--red"></span><span class="code-dot code-dot--yellow"></span><span class="code-dot code-dot--green"></span><span class="code-chrome-title">install.sh</span></div><pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
@@ -2221,7 +2185,7 @@ sudo ./hardware/install-stack.sh
 bash models/auto-download-models.sh</code></pre></div>
         <p style="margin-top:12px">Drivers → CUDA → Docker → stack → systemd → UFW. Auto-detects GPU and configures everything.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:100ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:100ms;">
         <div class="feature-icon" style="background:rgba(34,197,94,.12)">🐳</div>
         <h3>Docker Compose</h3>
         <div class="code-chrome"><div class="code-chrome-bar"><span class="code-dot code-dot--red"></span><span class="code-dot code-dot--yellow"></span><span class="code-dot code-dot--green"></span><span class="code-chrome-title">docker-compose.yml</span></div><pre><code>git clone https://github.com/ProjectZeroDays/FreeAI_AI-Inference-Workstation.git
@@ -2230,7 +2194,7 @@ docker compose --profile allinone up -d
 # Open http://localhost:8030</code></pre></div>
         <p style="margin-top:12px">Any host with NVIDIA Docker. Split or all-in-one profiles.</p>
       </div>
-      <div class="feature-card glow-panel reveal is-visible" style="--reveal-delay:200ms; --gp-plate-bg: var(--bg-elev-1);">
+      <div class="feature-card reveal is-visible" style="--reveal-delay:200ms;">
         <div class="feature-icon" style="background:rgba(168,85,247,.12)">☁️</div>
         <h3>Cloud &amp; Live ISO</h3>
         <p>Kubernetes manifests, Vast.ai templates, RunPod kits, Hetzner bare-metal. Also bootable as a Live ISO — Ubuntu/Kodachi/Kali/NixOS with install, live, and rescue modes.</p>
@@ -2595,5 +2559,18 @@ docker compose --profile allinone up -d
     </div>
   </footer>
 
+
+  <script>
+    // SDLC Lifecycle Tabs
+    (function(){var data={"Fullstack App":{"prompt":"Build a FastAPI notes service with auth, tests, and docs","orch":"IT Lead","agents":[{"icon":"\U0001f4cb","label":"COMPLIANCE","status":"Spec validated \u2014 FastAPI + SQLAlchemy","v":true},{"icon":"\U0001f512","label":"SECURITY","status":"JWT auth, CSRF tokens, input sanitization","v":true},{"icon":"\U0001f9ea","label":"VERIFY","status":"14 tests pass, coverage 92%","v":true},{"icon":"\U0001f50d","label":"IMPACT","status":"standing by","v":false},{"icon":"\U0001f4dd","label":"DOCUMENT","status":"README + API docs generated","v":true},{"icon":"\U0001f4e6","label":"PACKAGE","status":"tarball ready \u2014 3.2MB","v":true}],"footer":"Day-one kit ready \u2014 project shipped sealed"},"Website":{"prompt":"Build a responsive marketing website with animations and SEO","orch":"Frontend Lead","agents":[{"icon":"\U0001f3a8","label":"DESIGN","status":"Figma \u2192 Tailwind tokens mapped","v":true},{"icon":"\U0001f3d7\ufe0f","label":"STRUCTURE","status":"Semantic HTML5, ARIA roles set","v":true},{"icon":"\u2728","label":"ANIMATE","status":"Scroll reveals, hover states active","v":true},{"icon":"\U0001f50d","label":"OPTIMIZE","status":"Lighthouse 97, lazy loads in place","v":true},{"icon":"\U0001f441\ufe0f","label":"REVIEW","status":"Cross-browser QA passed","v":true},{"icon":"\U0001f680","label":"DEPLOY","status":"GitHub Pages CDN live","v":true}],"footer":"Responsive site live \u2014 optimized and accessible"},"CRM":{"prompt":"Build a customer relationship management system with pipelines","orch":"Backend Lead","agents":[{"icon":"\U0001f5c4\ufe0f","label":"MODEL","status":"PostgreSQL schema seeded","v":true},{"icon":"\U0001f50c","label":"API","status":"REST endpoints for leads/opps","v":true},{"icon":"\U0001f510","label":"AUTH","status":"Role-based access control active","v":true},{"icon":"\U0001f4be","label":"STORAGE","status":"Redis cache warmed, 2ms avg","v":true},{"icon":"\u2699\ufe0f","label":"WORKFLOW","status":"Pipeline automation rules loaded","v":true},{"icon":"\U0001f9ea","label":"TEST","status":"86 test cases green","v":true}],"footer":"CRM scaffolded \u2014 pipeline ready for data import"},"Chatbot":{"prompt":"Build an AI-powered chatbot with context awareness and tool use","orch":"ML Lead","agents":[{"icon":"\U0001f9e0","label":"MODEL","status":"LLM router configured, fallback chain set","v":true},{"icon":"\U0001f4ac","label":"CONTEXT","status":"Session memory loaded, 128K window","v":true},{"icon":"\U0001f527","label":"INTEGRATE","status":"Tools registered: search, db, email","v":true},{"icon":"\U0001f9ea","label":"TEST","status":"12 dialog flows validated","v":true},{"icon":"\U0001f4ca","label":"MONITOR","status":"Latency <400ms, error rate 0.3%","v":true},{"icon":"\U0001f680","label":"DEPLOY","status":"WebSocket endpoint live","v":true}],"footer":"Chatbot deployed \u2014 context-aware and tool-ready"},"Sales Pipeline":{"prompt":"Build a sales pipeline tracker with automation and reporting","orch":"Product Lead","agents":[{"icon":"\U0001f4ca","label":"PIPELINE","status":"Funnel stages configured: lead\u2192close","v":true},{"icon":"\u26a1","label":"AUTOMATE","status":"Lead scoring rules active","v":true},{"icon":"\U0001f4f8","label":"REPORT","status":"Dashboard with conversion metrics","v":true},{"icon":"\U0001f4e7","label":"NOTIFY","status":"Slack/email alerts wired up","v":true},{"icon":"\U0001f52e","label":"ANALYZE","status":"Forecasting model predicting 87% close","v":true},{"icon":"\U0001f680","label":"DEPLOY","status":"Live on production with analytics","v":true}],"footer":"Sales pipeline operational \u2014 automation and insights live"}};var tabs=document.querySelectorAll('.sdlc-tab'),promptEl=document.querySelector('.sdlc-prompt'),orchSpan=document.querySelector('.sdlc-orchestrator .orch-node span:last-child'),agentsEl=document.querySelector('.sdlc-agents'),footerSpan=document.querySelector('.sdlc-footer-left span:last-child');function render(name){var lc=data[name];if(!lc)return;var icon=promptEl.querySelector('.sdlc-prompt-icon'),ih=icon?icon.outerHTML:'';promptEl.innerHTML=ih+' '+lc.prompt;if(orchSpan)orchSpan.textContent=lc.orch;agentsEl.innerHTML='';lc.agents.forEach(function(a){var n=document.createElement('div');n.className='agent-node';var chk=a.v?'<span class=\"agent-check\">\u2713</span>':'';n.innerHTML='<div class=\"agent-icon'+(a.v?' verified':'')+'\"><span>'+a.icon+'</span>'+chk+'</div><div class=\"agent-label\">'+a.label+'</div><div class=\"agent-status\">'+a.status+'</div>';agentsEl.appendChild(n);});if(footerSpan)footerSpan.textContent=' '+lc.footer;}tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(x){x.classList.remove('active');});t.classList.add('active');render(t.textContent.trim());});});})();
+    // Language dropdown
+    document.querySelectorAll('.lang-dropdown').forEach(function(dd){var btn=dd.querySelector('.lang-btn'),menu=dd.querySelector('.lang-menu');if(!btn||!menu)return;btn.addEventListener('click',function(e){e.stopPropagation();dd.classList.toggle('open');});menu.querySelectorAll('.lang-menu-item').forEach(function(item){item.addEventListener('click',function(){var lang=item.dataset.lang,label=dd.querySelector('#langLabel,#langLabelMobile');if(label)label.textContent=lang.toUpperCase();menu.querySelectorAll('.lang-menu-item').forEach(function(i){i.classList.remove('active');});item.classList.add('active');dd.classList.remove('open');applyTranslation(lang);});});});
+    document.addEventListener('click',function(){document.querySelectorAll('.lang-dropdown').forEach(function(dd){dd.classList.remove('open');});});
+    var translations={"en":{"hero-btn-install":"Install FreeAI","hero-btn-docs":"Deploy Guide","trusted-label":"Powered by leading AI infra"},"es":{"hero-btn-install":"Instalar FreeAI","hero-btn-docs":"Guia de Despliegue","trusted-label":"Potenciado por infraestructura AI líder"},"de":{"hero-btn-install":"FreeAI Installieren","hero-btn-docs":"Deploy-Leitfaden","trusted-label":"Angetrieben von führender KI-Infrastruktur"},"fr":{"hero-btn-install":"Installer FreeAI","hero-btn-docs":"Guide de Déploiement","trusted-label":"Propulsé par une infra IA de pointe"},"it":{"hero-btn-install":"Installa FreeAI","hero-btn-docs":"Guida alla Deployment","trusted-label":"Powered da infrastruttura AI leader"},"pt":{"hero-btn-install":"Instalar FreeAI","hero-btn-docs":"Guia de Implantação","trusted-label":"Powered por infra de IA líder"},"ja":{"hero-btn-install":"FreeAIをインストール","hero-btn-docs":"デプロイガイド","trusted-label":"主要AIインフラ powering"},"ko":{"hero-btn-install":"FreeAI 설치","hero-btn-docs":"배포 가이드","trusted-label":"최고 AI 인프라 제공"},"zh":{"hero-btn-install":"安装 FreeAI","hero-btn-docs":"部署指南","trusted-label":"由领先AI基础设施驱动"},"ar":{"hero-btn-install":"تثبيت FreeAI","hero-btn-docs":"دليل النشر","trusted-label":"مدعوم من البنية التحتية الرائدة للذكاء الاصطناعي"}};
+    function applyTranslation(lang){var dict=translations[lang]||translations['en'];document.querySelectorAll('[data-i18n]').forEach(function(el){var key=el.dataset.i18n;if(dict[key])el.textContent=dict[key];});document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){var key=el.dataset.i18nPlaceholder;if(dict[key])el.placeholder=dict[key];});localStorage.setItem('lang',lang);}
+    (function(){var saved=localStorage.getItem('lang')||'en';document.querySelectorAll('.lang-menu-item').forEach(function(item){if(item.dataset.lang===saved){item.classList.add('active');var label=document.getElementById('langLabel')||document.getElementById('langLabelMobile');if(label)label.textContent=saved.toUpperCase();applyTranslation(saved);}})})();
+    // Footer badge active state
+    document.querySelectorAll('.footer-badge').forEach(function(btn){btn.addEventListener('click',function(e){e.preventDefault();document.querySelectorAll('.footer-badge').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');});});
+  </script>
+
 </body></html>
-""  
