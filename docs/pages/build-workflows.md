@@ -22,6 +22,33 @@ curl -X POST localhost:8040/workflow/run \
   -d '{"workflow": "full_build", "context": {"spec": "Build a FastAPI app"}}'
 ```
 
+### Copy-Paste Examples
+
+```bash
+# Create a custom workflow
+cat > my-workflow.json << 'EOF'
+{
+  "name": "full-build-pipeline",
+  "steps": [
+    {"name": "plan", "agent": "project", "input": "Build a REST API"},
+    {"name": "code", "agent": "builder", "input": "Write the implementation"},
+    {"name": "test", "agent": "debug", "input": "Run tests and fix failures"},
+    {"name": "package", "agent": "analyze", "input": "Package for deployment"}
+  ]
+}
+EOF
+
+# Validate before running
+curl -X POST localhost:8040/workflow/validate \
+  -H "Content-Type: application/json" \
+  -d @my-workflow.json
+
+# Run it
+curl -X POST localhost:8040/workflow/run-inline \
+  -H "Content-Type: application/json" \
+  -d @my-workflow.json
+```
+
 ## Built-in Templates
 
 | Template | Purpose |

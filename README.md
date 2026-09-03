@@ -28,6 +28,18 @@
 
 ---
 
+## Screenshots
+
+| Dashboard | GPU Telemetry | Workflow Designer | SDLC Runs |
+|---|---|---|---|
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Dashboard Full](docs/screenshots/dashboard-full.png) | ![Workflow](docs/screenshots/workflow-designer.png) | ![SDLC Runs](docs/screenshots/dashboard-runs.png) |
+
+| CLI | Provider Config | Docs Site | API Reference |
+|---|---|---|---|
+| ![CLI](docs/screenshots/cli.png) | ![Providers](docs/screenshots/cli-providers.png) | ![Docs](docs/screenshots/docs-site.png) | ![API](docs/screenshots/docs-api.png) |
+
+---
+
 ## Who Is FreeAI For?
 
 | You are... | FreeAI helps you... |
@@ -160,23 +172,11 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
 ## Architecture
 
 ```
-                    ┌───────────────────────────────────────────────────────┐
-                    │              FreeAI Dashboard (:8030)                 │
-                    │        Flask + Chart.js + SSE + Authentication        │
-                    ├───────────────────────────┬────────────────┬──────────┤
-                    │  Router  │ Agents    │ Workflow │      Autonomous     │
-                    │  :8010   │ :8020     │  :8040   │       :8050         │
-                    │          │           │          │                     │
-                    │ classify │ plan→code │ chain    │   7-phase SDLC      │
-                    │ fallback │ verify    │ validate │   real compilation  │
-                    │ cache    │ fix       │ template │   auto-package      │
-                    ├───────────────────────────┴────────────────┴──────────┤
-                    │              MCP Registry (40+ servers)               │
-                    │    Aikido · SendGrid · Twilio · Telegram · WhatsApp   │
-                    ├───────────────────────────────────────────────────────┤
-                    │                  GPU Inference Layer                  │
-                    │ llama.cpp  (:9001) · vLLM (:9002) · FreeToken (:9100) │
-                    └───────────────────────────────────────────────────────┘
+Client ──► Router (:8010) ──► Agents (:8020/8050) ──► GPU Inference
+                │
+    classify → route → cache → fallback
+                │
+         MCP Registry (40+ servers)
 ```
 
 **Request flow:** `Client → Router (classify + confidence score) → Best backend → Fallback chain on failure → LRU cache → Response with X-Cache header`

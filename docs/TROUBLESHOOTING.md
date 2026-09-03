@@ -4,6 +4,33 @@ Common errors, log locations, health checks, and debug procedures.
 
 ---
 
+## Symptom Quick-Reference
+
+| Symptom | Likely Cause | Fix |
+|---|---|---|
+| **GPU not detected** | Missing NVIDIA driver or CUDA toolkit | `nvidia-smi` — if missing, `sudo apt install nvidia-driver-570-server` |
+| **CUDA OOM (out of memory)** | Model too large for VRAM | Reduce `N_GPU_LAYERS` or use a smaller model; set `LLAMA_CTX=32768` |
+| **Port 8010 already in use** | Another process holding the port | `lsof -i :8010` to find it; override with `ROUTER_PORT=8110` |
+| **Router 502 Bad Gateway** | llama.cpp backend is down | `curl localhost:9001/health` — check `logs/llama.log` for model load errors |
+| **401 Unauthorized from Router** | Missing or wrong API key | Set `ROUTER_API_KEY` env var; include `X-API-Key` header in requests |
+| **429 Rate Limited** | Token bucket exhausted | Increase `RATE_LIMIT_CAPACITY` in config; restart router |
+| **Model download stalls** | Network interruption | Re-run `bash models/auto-download-models.sh` — it resumes with `wget -c` |
+| **Model download disk full** | Insufficient free space | Set `MODEL_DIR=/data/models` to redirect; preflight requires +10 GB |
+| **llama-server not found** | Binary not built | Re-run `./install.sh` to build llama.cpp; ensure `nvcc` for CUDA build |
+| **CUDA build skipped** | `nvcc` not on PATH | Install NVIDIA CUDA Toolkit; verify with `nvcc --version` |
+| **Cache returning stale answers** | LRU cache not invalidated | `freeai stop && freeai start`; or set `cache_enabled: false` in config |
+| **Workflow step fails 3x** | Agent error or bad prompt | Check `logs/workflow-audit.jsonl` for failure details |
+| **Dashboard shows GPU as zeros** | nvidia-smi not visible in container | Ensure `--gpus all` flag; verify NVIDIA Container Toolkit |
+| **Settings not applying** | Router reads settings at startup | Run `freeai stop && freeai start` after config changes |
+| **SOPS decryption fails** | Missing age key | Set `SOPS_AGE_KEY_FILE`; regenerate with `age-keygen -o age.key` |
+| **Docker healthcheck fails** | Service not ready yet | `docker compose logs --tail=50 <service>`; retry after 30s |
+| **No GPU detected in Docker** | Missing NVIDIA runtime | `docker run --gpus all --rm nvidia/cuda:12.0-base nvidia-smi` |
+| **ISO build fails** | Missing build tools | Install `xorriso`, `isolinux`, `genisoimage`; need 4GB+ RAM |
+| **Agent API 502** | Router supervisor down | `systemctl status freeai-supervisor`; check `logs/agents.log` |
+| **Idle window never restores** | Resource optimizer down | `systemctl status resource-optimizer`; check `ps aux | grep resource_optimizer` |
+
+---
+
 ## Log Locations
 
 | Log File | Content |

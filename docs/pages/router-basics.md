@@ -32,6 +32,23 @@ curl -X POST localhost:8010/route \
 curl localhost:8010/metrics
 ```
 
+### Copy-Paste Examples
+
+```bash
+# Route with explicit model
+curl -X POST localhost:8010/route \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Explain dependency injection","model":"qwen3.6-12b"}'
+
+# Stream a response (SSE)
+curl -N -X POST localhost:8010/route/stream \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Write a Python function"}'
+
+# WebSocket streaming
+ws://localhost:8011/ws/route
+```
+
 ## Response Format
 
 ```json

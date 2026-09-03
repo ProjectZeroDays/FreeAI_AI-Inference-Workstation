@@ -21,6 +21,36 @@ docker compose --profile allinone up -d
 
 > **No GPU?** Set `MOCK_LLM=1` — the full stack runs on CPU for development and testing.
 
+### Copy-Paste: First Route
+
+```bash
+# Check router health
+curl localhost:8010/health
+
+# Route a prompt to the model router
+curl -X POST localhost:8010/route \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Design a rate limiter"}'
+
+# Run an autonomous SDLC project
+python freeai.py auto-start "Build a FastAPI notes service with auth and tests" --watch
+
+# Check full stack status
+freeai status
+```
+
+### Architecture at a Glance
+
+```
+Client ──► Router (:8010) ──► Agents (:8020 / :8050) ──► GPU Inference
+                │
+     classify → route → cache → fallback
+                │
+         MCP Registry (40+ servers)
+```
+
+The **Router** classifies every prompt (confidence score), routes to the best backend, falls back automatically, caches repeats, and blocks repetition loops. **Agents** execute real work — code generation, security scanning, workflow orchestration. **GPU Inference** runs local models via llama.cpp, vLLM, or FreeToken.
+
 ## Learning Paths
 
 Choose your path based on your experience level:

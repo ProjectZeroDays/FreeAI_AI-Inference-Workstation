@@ -57,6 +57,9 @@ nvidia-smi --query-gpu=power.draw,temperature.gpu,clocks.current --format=csv -l
 
 # Utilization history
 nvidia-smi pmon -c 1
+
+# Copy-paste: one-liner GPU monitor
+nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,power.draw --format=csv,noheader
 ```
 
 ## Next Steps

@@ -6,7 +6,13 @@ repo_name: ProjectZeroDays/FreeAI_AI_Inference_Workstation
 
 nav:
   - Start Here: INDEX.md
+  - What's New: WHATSNEW.md
   - Quick Start: FIRST-BOOT-GUIDE.md
+  - Screenshots:
+      - Dashboard: screenshots/dashboard.png
+      - CLI: screenshots/cli.png
+      - Workflow: screenshots/workflow-designer.png
+      - SDLC Runs: screenshots/dashboard-runs.png
   - Learning Paths:
       - Beginner: pages/beginner-path.md
       - Intermediate: pages/intermediate-path.md
