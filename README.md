@@ -475,7 +475,7 @@ MOCK_LLM=1 python3 router/router.py
 ## Documentation
 
 - **Full docs**: [projectzerodays.github.io/FreeAI_AI_Inference_Workstation](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation)
-- **API Reference**: [docs/api-reference.md](docs/api-reference.md)
+- **API Reference**: [API Reference](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/api/)
 - **Providers**: [docs/PROVIDERS.md](docs/PROVIDERS.md)
 - **Wiki**: http://localhost:8030/wiki-dashboard
 - **Blog**: http://localhost:8030/blog
