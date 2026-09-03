@@ -60,16 +60,18 @@ export default function Footer() {
               <li>
                 <a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation"
                    className="hover:text-white transition-colors flex items-center gap-1.5"
-                   target="_blank" rel="noopener noreferrer">
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="GitHub repository">
                   <Github size={14} /> GitHub
                 </a>
               </li>
               <li>
                 <a href="https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation/discussions"
                    className="hover:text-white transition-colors"
-                   target="_blank" rel="noopener noreferrer">Forum</a>
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="GitHub discussions">Forum</a>
               </li>
-              <li><Link href="/legal/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <li><Link href="/#ask-agents" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -77,11 +79,11 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Legal</h3>
             <ul className="space-y-2.5 text-sm text-slate-400">
-              <li><Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
-              <li><Link href="/legal/terms" className="hover:text-white transition-colors">Terms</Link></li>
+              <li><Link href="/security" className="hover:text-white transition-colors">Security Policy</Link></li>
+              <li><Link href="/#ask-agents" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li><Link href="/security" className="hover:text-white transition-colors">Security</Link></li>
               <li><Link href="/security#compliance" className="hover:text-white transition-colors">Compliance</Link></li>
-              <li><Link href="/legal/careers" className="hover:text-white transition-colors">Careers</Link></li>
+              <li><Link href="/#ask-agents" className="hover:text-white transition-colors">Careers</Link></li>
             </ul>
           </div>
         </div>

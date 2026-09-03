@@ -20,9 +20,9 @@ const bootMenu = [
 
 export default function ISO() {
   return (
-    <div className="min-h-screen bg-navy-900 pt-20">
+    <div className="min-h-screen bg-[#020617] pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
+        <Link href="/" className="page-nav-link mb-8 inline-flex" aria-label="Back to home">
           <ArrowLeft size={16} />
           Back to Home
         </Link>
@@ -31,25 +31,25 @@ export default function ISO() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             FreeAIOS — <span className="gradient-text">Live ISO</span>
           </h1>
-          <p className="text-gray-400 text-lg">
-            Bootable workstations for Ubuntu, Kali, Kodachi, Debian, and NixOS.
+          <p className="text-slate-400 text-lg max-w-2xl">
+            Bootable workstations for Ubuntu, Kali, Kodachi, Debian, and NixOS. No install required — try before you commit.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {isoVariants.map((iso) => (
-            <div key={iso.name} className="p-6 rounded-xl bg-white/5 border border-white/10">
+            <div key={iso.name} className="page-card">
               <h3 className="text-lg font-semibold text-white mb-2">{iso.name}</h3>
-              <p className="text-gray-400 text-sm mb-4">{iso.desc}</p>
-              <code className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded">{iso.command}</code>
+              <p className="text-slate-400 text-sm mb-4 leading-relaxed">{iso.desc}</p>
+              <code className="page-code">{iso.command}</code>
             </div>
           ))}
         </div>
 
         <section className="mb-16">
           <h2 className="text-2xl font-semibold text-white mb-6">Build Your Own ISO</h2>
-          <pre className="bg-black/50 rounded-lg p-6 text-sm text-green-400 overflow-x-auto font-mono">
-{`# Requirements
+          <div className="page-card">
+            <pre className="page-pre">{`# Requirements
 sudo apt-get install -y xorriso isolinux
 
 # Build from Ubuntu ISO
@@ -58,25 +58,25 @@ UBUNTU_ISO=ubuntu-24.04.2-live-server-amd64.iso \\
 
 # Optional: bake repo into ISO for offline install
 REPO_TARBALL=../dist/freeai-v1.2.0.tar.gz \\
-./live/build-live.sh`}
-          </pre>
+./live/build-live.sh`}</pre>
+          </div>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold text-white mb-6">GRUB Boot Menu</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="page-table">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="pb-4 text-gray-400 font-medium">Entry</th>
-                  <th className="pb-4 text-gray-400 font-medium">What it does</th>
+                <tr>
+                  <th>Entry</th>
+                  <th>What it does</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody>
                 {bootMenu.map((entry, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-colors">
-                    <td className="py-4 text-white font-medium">{entry.entry}</td>
-                    <td className="py-4 text-gray-400">{entry.action}</td>
+                  <tr key={i}>
+                    <td className="text-white font-medium">{entry.entry}</td>
+                    <td className="text-slate-400">{entry.action}</td>
                   </tr>
                 ))}
               </tbody>

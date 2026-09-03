@@ -11,6 +11,15 @@ import {
   AlertTriangle, Mic, ArrowUpRight
 } from 'lucide-react';
 
+const FAQ_DATA = [
+  { q: 'How do I get started with FreeAI?', a: 'Download any Live ISO from our ISO page and boot it. The automated installer configures all services in under 10 minutes.' },
+  { q: 'Does FreeAI support GPU acceleration?', a: 'Yes! FreeAI supports CUDA, ROCm, and oneAPI for GPU-accelerated inference and analysis.' },
+  { q: 'Can I use FreeAI for commercial purposes?', a: 'FreeAI is GPL-3.0 licensed. Commercial use is permitted under the same terms.' },
+  { q: 'How often are CVE databases updated?', a: 'Our CVE feeds update automatically every 6 hours from NVD, MITRE, and GitHub advisory APIs.' },
+  { q: 'What hardware do I need?', a: 'Minimum: 8GB RAM, 4 CPU cores. Recommended: 16GB RAM, 8+ cores, NVIDIA GPU for ML workloads.' },
+  { q: 'How does the AI fleet orchestration work?', a: '24 autonomous agents are routed through a central orchestrator that coordinates red/blue/purple team operations in real-time.' },
+];
+
 export default function Home() {
   const [counters, setCounters] = useState({ downloads: 0, agents: 0, countries: 0, vulns: 0 });
   const statsRef = useRef<HTMLDivElement>(null);
@@ -129,14 +138,7 @@ export default function Home() {
     { name: 'Alpine Linux', icon: Activity, version: '3.20', size: '0.8 GB' },
   ];
 
-  const faqs = [
-    { q: 'How do I get started with FreeAI?', a: 'Download any Live ISO from our ISO page and boot it. The automated installer configures all services in under 10 minutes.' },
-    { q: 'Does FreeAI support GPU acceleration?', a: 'Yes! FreeAI supports CUDA, ROCm, and oneAPI for GPU-accelerated inference and analysis.' },
-    { q: 'Can I use FreeAI for commercial purposes?', a: 'FreeAI is GPL-3.0 licensed. Commercial use is permitted under the same terms.' },
-    { q: 'How often are CVE databases updated?', a: 'Our CVE feeds update automatically every 6 hours from NVD, MITRE, and GitHub advisory APIs.' },
-    { q: 'What hardware do I need?', a: 'Minimum: 8GB RAM, 4 CPU cores. Recommended: 16GB RAM, 8+ cores, NVIDIA GPU for ML workloads.' },
-    { q: 'How does the AI fleet orchestration work?', a: '24 autonomous agents are routed through a central orchestrator that coordinates red/blue/purple team operations in real-time.' },
-  ];
+  const faqs = FAQ_DATA;
 
   const providers = [
     { name: 'Meta', model: 'Llama 3.1' },
@@ -158,9 +160,9 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-[#020617]">
       {/* HERO */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-slate-900">
+      <section className="relative pt-32 pb-20 overflow-hidden bg-[#0a0f1e]">
         <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle, #60a5fa 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-500/10 rounded-full blur-3xl" />
 
@@ -172,18 +174,16 @@ export default function Home() {
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black mb-6 leading-[1.08] tracking-tight animate-fade-in-up text-white" style={{ animationDelay: '0.1s' }}>
-              Endpoint management
+              Your own AI
               <br />
-              <span className="gradient-text">that thinks ahead.</span>
+              <span className="gradient-text">inference stack.</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <strong className="text-white">FreeAI.</strong> The AI operational layer for your entire fleet.
-              Deploy <strong className="text-white">24 autonomous agents</strong> for offensive security,
-              vulnerability research, and AI-powered attack simulation.
+              <strong className="text-white">FreeAI.</strong> Self-hosted GPU inference with 24 autonomous agents, multi-model routing, and full security tooling — deploy anywhere.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <Link href="/deploy" className="ap-btn-primary">
                 Get FreeAI <ArrowRight size={18} />
               </Link>
@@ -193,9 +193,26 @@ export default function Home() {
               </Link>
             </div>
 
+            {/* One-click install */}
+            <div className="max-w-xl mx-auto mb-16 animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText('docker compose --profile allinone up -d');
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-[#0f172a] border border-white/10 rounded-xl hover:border-blue-500/50 transition-colors group text-left"
+                aria-label="Copy install command"
+              >
+                <code className="flex-1 text-sm text-slate-300 font-mono">docker compose --profile allinone up -d</code>
+                <span className="text-xs text-slate-500 group-hover:text-blue-400 transition-colors flex items-center gap-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy
+                </span>
+              </button>
+            </div>
+
             <div className="flex flex-wrap justify-center gap-3 mb-16 text-sm animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
-              {['GPL-3.0', 'SOC 2 Ready', 'ISO 27001', 'NIST 800-53', 'CMMC L2', 'G2 High Performer'].map((b) => (
-                <span key={b} className="px-3 py-1.5 bg-slate-800/80 rounded-full text-xs font-medium text-slate-300 border border-slate-700">
+              {['GPL-3.0', 'Self-hosted', '24+ Providers', 'Multi-GPU', 'Live ISO', 'Docker & K8s'].map((b) => (
+                <span key={b} className="px-3 py-1.5 bg-[#0f172a]/80 rounded-full text-xs font-medium text-slate-300 border border-white/10">
                   {b}
                 </span>
               ))}
@@ -204,23 +221,23 @@ export default function Home() {
             <div className="relative max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
               {/* Animated gradient border glow */}
               <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-blue-500/30 rounded-3xl blur opacity-50 animate-pulse-glow" />
-              <div className="relative bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
+              <div className="relative bg-[#0f172a] border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#0a0f1e] border-b border-slate-700">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <div className="flex-1 mx-4 h-7 bg-slate-800 rounded-md border border-slate-700 flex items-center px-3">
+                  <div className="flex-1 mx-4 h-7 bg-[#0f172a] rounded-md border border-slate-700 flex items-center px-3">
                     <span className="text-xs text-slate-500">freeai.projectzerodays.com/dashboard</span>
                   </div>
                 </div>
-                <div className="p-6 bg-slate-900/50">
+                <div className="p-6 bg-[#0a0f1e]/50">
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     {[
-                      { label: 'Red Team Active', value: '8', sub: 'agents online', color: '#ef4444' },
-                      { label: 'Blue Team', value: '11', sub: 'monitors running', color: '#3b82f6' },
-                      { label: 'Purple Coord', value: '5', sub: 'joint ops', color: '#8b5cf6' },
+                      { label: 'Models Loaded', value: '8', sub: 'active in router', color: '#3b82f6' },
+                      { label: 'GPU Utilization', value: '87%', sub: 'RTX 4090', color: '#22c55e' },
+                      { label: 'Agents Online', value: '24', sub: 'red/blue/purple', color: '#a78bfa' },
                     ].map((kpi, i) => (
-                      <div key={i} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                      <div key={i} className="bg-[#0f172a] rounded-xl p-4 border border-slate-700">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 rounded-full" style={{ background: kpi.color }} />
                           <span className="text-xs text-slate-400 font-medium">{kpi.label}</span>
@@ -230,7 +247,7 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  <div className="bg-slate-800 rounded-xl border border-slate-700 p-4">
+                  <div className="bg-[#0f172a] rounded-xl border border-slate-700 p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span className="text-white font-bold text-xs">F</span>
@@ -262,7 +279,7 @@ export default function Home() {
       </section>
 
       {/* STATS */}
-      <section ref={statsRef} className="py-20 bg-slate-900 border-y border-slate-800 scroll-reveal">
+      <section ref={statsRef} className="py-20 bg-[#0a0f1e] border-y border-slate-700 scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -302,7 +319,7 @@ export default function Home() {
       </section>
 
       {/* ARTIFACTS */}
-      <section id="artifacts" className="ap-section bg-slate-900 scroll-reveal">
+      <section id="artifacts" className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -358,7 +375,7 @@ export default function Home() {
               <div className="space-y-3">
                 <div className="text-sm">
                   <div className="font-semibold text-white">Patch rollout #241</div>
-                  <div className="text-slate-500 text-xs mt-1">approved by cesar@projectzerodays.com · logged 02:14 · reversible</div>
+                  <div className="text-slate-500 text-xs mt-1">approved by admin@org.local · logged 02:14 · reversible</div>
                 </div>
                 <div className="space-y-1.5 text-sm">
                   {['24/24 devices patched', '0 regressions detected', '3 held for Sun 02:00'].map((item, i) => (
@@ -378,11 +395,11 @@ export default function Home() {
       </section>
 
       {/* TRUSTED BY */}
-      <section className="ap-section border-y border-slate-800 scroll-reveal">
+      <section className="ap-section border-y border-white/10 scroll-reveal">
         <div className="container mx-auto px-6">
-          <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Trusted by security teams at</p>
+          <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Built for security researchers, developers &amp; operators</p>
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 items-center">
-            {['Netflix', 'BMW', "McDonald's", 'Michelin', 'Snapchat', 'Starbucks', 'Bosch', 'Lidl', 'Supercell', 'Mercedes-Benz', 'Lloyds Bank', 'Repsol'].map((name) => (
+            {['Red Team', 'Blue Team', 'Bug Bounty Hunters', 'Pentesters', 'ML Engineers', 'Sysadmins'].map((name) => (
               <div key={name} className="ap-logo-dark"><span className="text-xl font-bold text-slate-500 tracking-tight">{name}</span></div>
             ))}
           </div>
@@ -390,19 +407,19 @@ export default function Home() {
       </section>
 
       {/* RATINGS */}
-      <section className="ap-section bg-slate-900 scroll-reveal">
+      <section className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
-          <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Rated by the people who run IT</p>
+          <p className="text-center text-sm text-slate-500 font-medium uppercase tracking-widest mb-10">Built with modern tooling</p>
           <div className="flex flex-wrap justify-center gap-4">
             {[
-              { label: 'G2 High Performer', icon: Award },
-              { label: 'G2 Best Support', icon: Star },
-              { label: 'G2 Easiest To Use', icon: Zap },
-              { label: 'Capterra 4.8', icon: Check },
-              { label: 'Great Place to Work', icon: Users },
-              { label: 'ISO 27001 Certified', icon: Shield },
+              { label: 'GPL-3.0 Open Source', icon: Shield },
+              { label: '21+ AI Providers', icon: Globe },
+              { label: 'CUDA & ROCm', icon: Cpu },
+              { label: 'Docker & K8s', icon: Layers },
+              { label: 'Self-hosted', icon: Server },
+              { label: '1156+ Tests', icon: Check },
             ].map((badge, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-3 bg-slate-800 rounded-xl border border-slate-700">
+              <div key={i} className="flex items-center gap-3 px-5 py-3 bg-[#0f172a] rounded-xl border border-white/10">
                 <badge.icon className="w-5 h-5 text-blue-400" />
                 <span className="text-sm font-medium text-slate-300">{badge.label}</span>
               </div>
@@ -416,21 +433,21 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
-              The workplace became digital.
-              <br /><span className="text-slate-500">Operations stayed manual.</span>
+              Running AI models is expensive.
+              <br /><span className="text-slate-500">Running them securely is harder.</span>
             </h2>
             <div className="flex flex-wrap justify-center gap-3 mt-8">
-              {['Too many tools', 'Too many policies', 'Too many manual workflows', 'Too much reactive IT', 'Too little operational intelligence'].map((p, i) => (
+              {['Cloud API costs add up', 'Data leaves your control', 'No fallback when APIs fail', 'Hard to verify outputs', 'Multi-model coordination is manual'].map((p, i) => (
                 <span key={i} className="px-4 py-2 bg-red-900/30 text-red-400 rounded-full text-sm font-medium border border-red-800/50">{p}</span>
               ))}
             </div>
             <p className="text-lg text-slate-400 mt-8">
-              The next step: the <strong className="text-white">Autonomous Workplace</strong>.
+              The solution: <strong className="text-white">FreeAI</strong> — a self-hosted inference stack that routes, verifies, and secures every request.
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
-            {['Context-aware', 'Policy-driven', 'AI-assisted', 'Security-integrated', 'Continuously optimized'].map((item, i) => (
-              <div key={i} className="text-center p-4 bg-slate-800 rounded-xl border border-slate-700">
+            {['Multi-model routing', 'Automatic fallback', 'Real-time verification', 'Zero data leakage', 'Full audit trails'].map((item, i) => (
+              <div key={i} className="text-center p-4 bg-[#0f172a] rounded-xl border border-white/10">
                 <div className="text-sm font-semibold text-slate-300">{item}</div>
               </div>
             ))}
@@ -439,16 +456,21 @@ export default function Home() {
       </section>
 
       {/* FOUR PILLARS */}
-      <section id="capabilities" className="ap-section bg-slate-900 scroll-reveal">
+      <section id="capabilities" className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
-              One platform, <span className="gradient-text">four pillars.</span>
+              One stack, <span className="gradient-text">four pillars.</span>
             </h2>
-            <p className="text-lg text-slate-400">Built on what FreeAI already delivers today.</p>
+            <p className="text-lg text-slate-400">Everything you need for production AI inference.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {pillars.map((p, i) => (
+            {[
+              { icon: Cpu, title: 'Model Router', desc: 'Classifies prompts, routes to the best backend, falls back automatically, caches repeats, blocks repetition loops.' },
+              { icon: Bot, title: 'Autonomous Agents', desc: 'Plan → code → verify with real compilers → fix → review → document → package. 7-phase SDLC with session memory.' },
+              { icon: Shield, title: 'Security Suite', desc: '33 security skills across Red, Blue, and Purple teams. Aikido integration, pentest agents, auto-patching.' },
+              { icon: Layers, title: 'Deploy Anywhere', desc: 'Bare metal, Docker Compose, Kubernetes, Vast.ai, or Live ISO. Same code, any environment.' },
+            ].map((p, i) => (
               <div key={i} className="ap-card-dark flex gap-4">
                 <div className="w-12 h-12 rounded-xl bg-blue-900/40 flex items-center justify-center flex-shrink-0">
                   <p.icon className="w-6 h-6 text-blue-400" />
@@ -469,16 +491,16 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
-                One brain.<br /><span className="gradient-text">Your whole fleet.</span>
+                Ask anything.<br /><span className="gradient-text">Get verified answers.</span>
               </h2>
-              <p className="text-lg text-slate-400 mb-8">It sees. It simulates. It acts. You approve.</p>
+              <p className="text-lg text-slate-400 mb-8">Every response is routed through classification, fallback chains, and real verification.</p>
               <div className="space-y-4">
                 {[
-                  { q: 'Which devices are non-compliant right now?', a: '60 devices, mostly outdated OS. Want a breakdown — or a workflow to fix it?' },
-                  { q: 'What-if: move device → Logistics / Madrid', a: '3 survive · 0 drop · 1 new · No loss of coverage — safe to move' },
-                  { q: 'Alert trigger: classify severity', a: 'LLM · Require approval · Notify Slack · Auto-remediate' },
+                  { q: 'Route this prompt to the best model', a: 'Classified as full_project (0.94 confidence) → routed to qwen3.6-12b. Cache HIT in 12ms.' },
+                  { q: 'Fallback chain when GPU is busy', a: 'Local 9B → Venice uncensored → OpenRouter → Agnes AI. Each with retry logic and timeout.' },
+                  { q: 'Verify output quality', a: 'Degenerate output detection catches repetition loops. Real compiler/tests in SDLC sandboxes.' },
                 ].map((item, i) => (
-                  <div key={i} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                  <div key={i} className="bg-[#0f172a] rounded-xl p-4 border border-slate-700">
                     <div className="flex items-start gap-3 mb-2">
                       <div className="w-6 h-6 rounded-full bg-blue-900/60 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <span className="text-xs font-bold text-blue-400">{i + 1}</span>
@@ -493,26 +515,26 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-700">
+              <div className="bg-[#0f172a] border border-slate-700 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.4)] overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#0a0f1e] border-b border-slate-700">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="flex-1 text-center text-xs text-slate-500">FreeAI Intelligence — Ask AI</span>
+              <span className="flex-1 text-center text-xs text-slate-500">FreeAI Router — Model Routing</span>
                 </div>
                 <div className="p-4 space-y-4 min-h-[400px]">
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-xs font-bold">F</span>
                     </div>
-                    <div className="bg-slate-700 rounded-xl rounded-tl-none px-4 py-3 text-sm text-slate-300 max-w-xs">
-                      Which devices are still on macOS 13?
-                    </div>
+                  <div className="bg-[#1e293b] rounded-xl rounded-tl-none px-4 py-3 text-sm text-slate-300 max-w-xs">
+                    Route "design a rate limiter" to best available backend
+                  </div>
                   </div>
                   <div className="flex gap-3 justify-end">
                     <div className="bg-blue-600 rounded-xl rounded-tr-none px-4 py-3 text-sm text-white max-w-sm">
-                      <div className="font-semibold mb-1">ThreatHunter</div>
-                      Found <strong className="text-blue-200">14 MacBooks</strong> still on macOS 13.6. All are in the Engineering segment. Want me to draft an upgrade workflow?
+                      <div className="font-semibold mb-1">qwen3.6-12b (local)</div>
+                      Routed via confidence 0.94 · 342ms · Cache MISS · <strong className="text-blue-200">Response ready</strong>
                     </div>
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-xs font-bold">F</span>
@@ -523,8 +545,8 @@ export default function Home() {
                       <span className="text-white text-xs font-bold">F</span>
                     </div>
                     <div className="space-y-2">
-                      <div className="bg-slate-700 rounded-lg px-3 py-2 text-xs text-slate-400">
-                        📊 <strong className="text-slate-300">Impact analysis</strong> — 14 devices, 3 segments
+                      <div className="bg-[#1e293b] rounded-lg px-3 py-2 text-xs text-slate-400">
+                        📊 <strong className="text-slate-300">Verification</strong> — compile passed, tests green
                       </div>
                       <div className="flex gap-2">
                         <button className="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg font-medium">Draft upgrade</button>
@@ -533,7 +555,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex gap-2 mt-4">
-                    <input className="flex-1 px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm text-slate-300 placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Ask anything about your fleet..." disabled />
+                    <input className="flex-1 px-4 py-2.5 bg-[#1e293b] border border-white/10 rounded-xl text-sm text-slate-300 placeholder-slate-500 focus:outline-none focus:border-blue-500" placeholder="Ask FreeAI anything..." disabled />
                     <button className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
                       <ArrowRight size={16} />
                     </button>
@@ -546,16 +568,25 @@ export default function Home() {
       </section>
 
       {/* SEVEN MINDS */}
-      <section className="ap-section bg-slate-900 scroll-reveal">
+      <section className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
-              Seven minds.<br /><span className="gradient-text">One plan.</span>
+              24 minds.<br /><span className="gradient-text">One workflow.</span>
             </h2>
-            <p className="text-lg text-slate-400">Every request is routed, researched and verified — before it reaches you.</p>
+            <p className="text-lg text-slate-400">Every prompt is classified, routed, verified, and documented — autonomously.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {sevenMinds.map((m, i) => (
+            {[
+              { name: 'Classify', desc: 'Task type + confidence' },
+              { name: 'Route', desc: 'Best backend selection' },
+              { name: 'Verify', desc: 'Compiler + test gates' },
+              { name: 'Fallback', desc: 'Automatic chain recovery' },
+              { name: 'Cache', desc: 'LRU response store' },
+              { name: 'Rate Limit', desc: 'Per-client token bucket' },
+              { name: 'Log', desc: 'Full audit trail' },
+              { name: 'Package', desc: 'Artifact tarball output' },
+            ].map((m, i) => (
               <div key={i} className="ap-card-dark text-center p-5">
                 <div className="w-10 h-10 rounded-xl bg-blue-900/40 flex items-center justify-center mx-auto mb-3">
                   <span className="text-sm font-bold text-blue-400">{i + 1}</span>
@@ -566,29 +597,27 @@ export default function Home() {
             ))}
           </div>
           <div className="max-w-2xl mx-auto mt-10">
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+            <div className="bg-[#1e293b] border border-white/10 rounded-2xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">F</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-white text-sm">New hire starts Monday — provision a MacBook + iPhone</div>
-                  <div className="text-xs text-slate-500">Coordinated by Red Orchestrator</div>
+                  <div className="font-semibold text-white text-sm">Autonomous SDLC Pipeline</div>
+                  <div className="text-xs text-slate-500">7-phase lifecycle · real verification · auto-package</div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                {['IT Lead', 'Compliance', 'Security'].map((role, i) => (
-                  <div key={i} className="bg-slate-700/50 rounded-lg p-3 text-center border border-slate-600">
-                    <div className="text-xs font-semibold text-slate-300">{role}</div>
-                    <div className="text-xs text-green-400 mt-1">✓ standing by</div>
+              <div className="grid grid-cols-4 gap-2">
+                {['Plan', 'Code', 'Verify', 'Package'].map((stage, i) => (
+                  <div key={i} className="bg-white/5 rounded-lg p-3 text-center border border-white/10">
+                    <div className="text-xs font-semibold text-slate-300">{stage}</div>
+                    <div className="text-xs text-green-400 mt-1">✓ done</div>
                   </div>
                 ))}
-                {['Insights', 'Impact', 'Policy', 'Scripts'].slice(0, 3).map((role, i) => (
-                  <div key={i} className="bg-slate-700/50 rounded-lg p-3 text-center border border-slate-600">
-                    <div className="text-xs font-semibold text-slate-300">{role}</div>
-                    <div className="text-xs text-green-400 mt-1">✓ standing by</div>
-                  </div>
-                ))}
+                <div className="bg-blue-500/20 rounded-lg p-3 text-center border border-blue-500/30">
+                  <div className="text-xs font-semibold text-blue-300">Running</div>
+                  <div className="text-xs text-blue-400 mt-1">● testing</div>
+                </div>
               </div>
             </div>
           </div>
@@ -603,34 +632,34 @@ export default function Home() {
               Live in minutes.<br /><span className="gradient-text">Smarter every week.</span>
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              { step: '01', title: 'Intelligence enabled', desc: 'Flip the switch. Runs on the workspace you already use. Nothing to deploy.' },
-              { step: '02', title: 'It learns your business logic', desc: 'Policies, segments, apps, frameworks — modeled deeply enough to predict.' },
-              { step: '03', title: 'It acts with guardrails', desc: 'Approved · cesar@projectzerodays.com · logged 02:14 · audit trail.' },
-            ].map((item, i) => (
-              <div key={i} className="text-center">
-                <div className="ap-step-num mx-auto">{item.step}</div>
-                <h3 className="font-bold text-white text-lg mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+             {[
+               { step: '01', title: 'Clone & configure', desc: 'git clone, set your API keys, go. No cloud account needed.' },
+               { step: '02', title: 'Model router classifies', desc: 'Every prompt is scored, routed, cached, and rate-limited automatically.' },
+               { step: '03', title: 'Agents verify & ship', desc: 'Real compilers, real tests, real artifacts — in sandboxed workspaces.' },
+             ].map((item, i) => (
+               <div key={i} className="text-center">
+                 <div className="ap-step-num mx-auto">{item.step}</div>
+                 <h3 className="font-bold text-white text-lg mb-2">{item.title}</h3>
+                 <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+               </div>
+             ))}
+           </div>
         </div>
       </section>
 
       {/* OPERATIONAL LAYER IN NUMBERS */}
-      <section className="ap-section bg-slate-900 scroll-reveal">
+      <section className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">The operational layer, in numbers.</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">Built for production.</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
-              { value: '200+', label: 'Platform actions exposed to AI — via MCP' },
-              { value: '7', label: 'Agents on every request: one IT Lead, six specialists' },
-              { value: '100%', label: 'Of automated actions logged, gated, reversible' },
-              { value: '0', label: 'New switches to flip — nothing to deploy' },
+              { value: '21+', label: 'AI providers routed' },
+              { value: '24', label: 'Autonomous agents' },
+              { value: '33', label: 'Security skills' },
+              { value: '1156+', label: 'Tests passing' },
             ].map((stat, i) => (
               <div key={i} className="text-center">
                 <div className="text-4xl md:text-5xl font-black gradient-text mb-2">{stat.value}</div>
@@ -641,15 +670,15 @@ export default function Home() {
           <div className="max-w-2xl mx-auto mt-16">
             <div className="ap-quote-dark">
               <p className="text-lg text-slate-300 italic leading-relaxed mb-4">
-                AI is not just a chatbot — it's an operational layer.
+                FreeAI is the only stack that unifies model routing, autonomous SDLC, GPU inference, and security tooling in one self-hosted package.
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">CT</span>
+                  <span className="text-white font-bold text-sm">PZ</span>
                 </div>
                 <div>
-                  <div className="font-semibold text-white">César Trigo</div>
-                  <div className="text-sm text-slate-400">Founder & CEO · Applivery</div>
+                  <div className="font-semibold text-white">ProjectZeroDays</div>
+                  <div className="text-sm text-slate-400">Open Source · GPL-3.0</div>
                 </div>
               </div>
             </div>
@@ -694,7 +723,7 @@ export default function Home() {
             <p className="text-sm text-slate-400 mb-6">Autonomy is a dial, not a switch.</p>
             <div className="flex items-center justify-center gap-4">
               {['Suggest', 'Approve', 'Auto'].map((mode, i) => (
-                <div key={mode} className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${i === 1 ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
+                <div key={mode} className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${i === 1 ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'bg-[#0f172a] text-slate-400 border border-white/10'}`}>
                   {mode}
                 </div>
               ))}
@@ -705,15 +734,15 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="ap-section bg-slate-900 scroll-reveal">
+      <section id="pricing" className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
-              Simple, <span className="gradient-text">transparent pricing</span>
+              Free forever.<br /><span className="gradient-text">Pay only for your hardware.</span>
             </h2>
-            <p className="text-lg text-slate-400">Start free. Scale when you're ready. No hidden fees.</p>
+            <p className="text-lg text-slate-400">GPL-3.0 licensed. No subscriptions, no cloud lock-in, no hidden fees.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <div className="ap-card-dark flex flex-col">
               <div className="mb-6">
                 <div className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Self-Hosted</div>
@@ -730,58 +759,36 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <Link href="/deploy" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-600 text-slate-300 font-semibold hover:border-blue-500 hover:text-blue-400 transition-all">
-                Get started free
-              </Link>
-            </div>
-            <div className="ap-card-dark flex flex-col relative border-blue-500 shadow-lg">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">MOST POPULAR</div>
-              <div className="mb-6">
-                <div className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-2">Enterprise Support</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-white">$299</span>
-                  <span className="text-slate-400 text-sm">/month</span>
-                </div>
-                <p className="text-sm text-slate-400 mt-2">Per workspace · priority support · SLA</p>
-              </div>
-              <ul className="space-y-3 mb-8 flex-1">
-                {['Everything in Self-Hosted', '99.9% uptime SLA', 'Priority email & chat support', 'Custom integrations', 'Dedicated account manager', 'Compliance reporting (SOC 2, ISO 27001)', 'Training & onboarding'].map((feat) => (
-                  <li key={feat} className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-blue-400 flex-shrink-0" />{feat}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all">
-                Contact sales
+              <Link href="/deploy" className="w-full text-center px-6 py-3 rounded-xl border-2 border-blue-500 text-blue-400 font-semibold hover:bg-blue-500 hover:text-white transition-all">
+                Deploy Now
               </Link>
             </div>
             <div className="ap-card-dark flex flex-col">
               <div className="mb-6">
-                <div className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-2">Cloud Managed</div>
+                <div className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-2">Enterprise Support</div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-white">$499</span>
-                  <span className="text-slate-400 text-sm">/month</span>
+                  <span className="text-5xl font-black text-white">Custom</span>
                 </div>
-                <p className="text-sm text-slate-400 mt-2">Fully hosted · zero infrastructure</p>
+                <p className="text-sm text-slate-400 mt-2">Priority support · SLA · custom integrations</p>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
-                {['Everything in Enterprise Support', 'Hosted on AWS / Azure / GCP', 'Auto-scaling & HA', 'Automated backups', 'Managed model updates', 'Multi-region deployment', 'Custom compliance certs'].map((feat) => (
+                {['Everything in Self-Hosted', '99.9% uptime SLA', 'Priority email & chat support', 'Custom integrations', 'Dedicated account manager', 'Compliance reporting', 'Training & onboarding'].map((feat) => (
                   <li key={feat} className="flex items-center gap-2 text-sm text-slate-300">
-                    <Check className="w-4 h-4 text-green-400 flex-shrink-0" />{feat}
+                    <Check className="w-4 h-4 text-purple-400 flex-shrink-0" />{feat}
                   </li>
                 ))}
               </ul>
-              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl border-2 border-slate-600 text-slate-300 font-semibold hover:border-blue-500 hover:text-blue-400 transition-all">
-                Request demo
+              <Link href="/legal/contact" className="w-full text-center px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold transition-all">
+                Contact Sales
               </Link>
             </div>
           </div>
-          <p className="text-center text-sm text-slate-500 mt-8">All plans include a 14-day free trial. No credit card required.</p>
+          <p className="text-center text-sm text-slate-500 mt-8">No credit card required. All source code is public on GitHub.</p>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="ap-section bg-slate-900 scroll-reveal">
+      <section id="faq" className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6 max-w-3xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-white">
@@ -789,7 +796,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="space-y-3">
-            {faqs.map((faq, i) => (
+            {FAQ_DATA.map((faq, i) => (
               <FAQItem key={i} question={faq.q} answer={faq.a} />
             ))}
           </div>
@@ -824,7 +831,7 @@ export default function Home() {
       </section>
 
       {/* DEPLOY */}
-      <section className="ap-section bg-slate-900 scroll-reveal">
+      <section className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
@@ -868,7 +875,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {providers.map((provider, i) => (
               <div key={i} className="ap-card-dark text-center p-6 hover:scale-105 transition-transform cursor-pointer">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-800 flex items-center justify-center">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#0f172a] flex items-center justify-center">
                   <Cpu className="w-7 h-7 text-blue-400" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-1">{provider.name}</h3>
@@ -885,17 +892,16 @@ export default function Home() {
       </section>
 
       {/* SECURITY */}
-      <section id="security" className="ap-section bg-slate-900 scroll-reveal">
+      <section id="security" className="ap-section bg-[#0a0f1e] scroll-reveal">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">
-                Enterprise-grade{' '}
-                <span className="gradient-text">security</span>
+                Security-first{' '}
+                <span className="gradient-text">by design</span>
               </h2>
               <p className="text-slate-400 text-lg mb-8">
-                FreeAI implements defense-in-depth security with encrypted storage,
-                RBAC, and compliance-ready logging.
+                Router & model servers are LAN-only by default. UFW opens only ports 22/8030/8050. Autonomous sandboxes reject traversal, absolute paths, and oversized files.
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {[
@@ -904,7 +910,7 @@ export default function Home() {
                   { icon: Activity, label: 'Audit Logging' },
                   { icon: Eye, label: 'Threat Detection' },
                 ].map((feat, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-slate-800 rounded-xl border border-slate-700">
+                  <div key={i} className="flex items-center gap-3 p-3 bg-[#0f172a] rounded-xl border border-slate-700">
                     <feat.icon className="w-5 h-5 text-blue-400 flex-shrink-0" />
                     <span className="text-sm text-slate-300 font-medium">{feat.label}</span>
                   </div>
@@ -912,7 +918,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+              <div className="bg-[#0f172a] border border-slate-700 rounded-2xl p-6">
                 <div className="space-y-4">
                   {['Network Security: Active', 'Threat Detection: Enabled', 'Encryption: AES-256', 'RBAC: Configured'].map((item, i) => (
                     <div key={i} className="flex items-center gap-4 p-4 bg-slate-700/50 rounded-xl border border-slate-600">
@@ -934,7 +940,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight text-white">
               Meet your <span className="gradient-text">agent workforce</span>
             </h2>
-            <p className="text-lg text-slate-400">24 specialized AI agents working 24/7 to secure your infrastructure</p>
+            <p className="text-lg text-slate-400">24 specialized AI agents for red team, blue team, and purple team operations.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-6xl mx-auto">
             {agents.map((agent, i) => (
@@ -966,13 +972,14 @@ export default function Home() {
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+    <div className="bg-[#1e293b] border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-colors">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-5 text-left flex justify-between items-center hover:bg-slate-700/50 transition-colors"
+        className="w-full p-5 text-left flex justify-between items-center hover:bg-white/5 transition-colors"
+        aria-expanded={isOpen}
       >
         <span className="font-semibold text-white">{question}</span>
-        <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ml-4 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
         <div className="px-5 pb-5 text-slate-400 leading-relaxed">

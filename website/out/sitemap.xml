@@ -1,58 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://freeai.projectzerodays.com/</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/agents</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/agents</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/features</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/features</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/deploy</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/deploy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/docs</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/docs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/providers</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/providers</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/iso</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/iso</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/security</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/security</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/blog</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/api</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/api</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://freeai.projectzerodays.com/dashboard</loc>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/dashboard</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/legal/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/legal/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/legal/careers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation/legal/contact</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

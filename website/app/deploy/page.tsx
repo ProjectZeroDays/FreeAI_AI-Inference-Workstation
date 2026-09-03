@@ -68,15 +68,13 @@ const servicePorts = [
   { port: ':9001', service: 'llama.cpp', desc: 'Local GGUF inference' },
   { port: ':9002', service: 'vLLM', desc: 'High-throughput serving' },
   { port: ':9100', service: 'FreeToken', desc: 'Edge MoE engine' },
-  { port: ':8888', service: 'JupyterLab', desc: 'Interactive Python' },
-  { port: ':6080', service: 'Desktop (VNC)', desc: 'XFCE remote desktop' },
 ]
 
 export default function Deploy() {
   return (
-    <div className="min-h-screen bg-navy-900 pt-20">
+    <div className="min-h-screen bg-[#020617] pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
+        <Link href="/" className="page-nav-link mb-8 inline-flex" aria-label="Back to home">
           <ArrowLeft size={16} />
           Back to Home
         </Link>
@@ -85,43 +83,41 @@ export default function Deploy() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Deployment <span className="gradient-text">Guide</span>
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-slate-400 text-lg max-w-2xl">
             Deploy anywhere — bare metal, Docker, Kubernetes, cloud, or Live ISO.
           </p>
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-8 mb-16">
           {deployMethods.map((method, i) => (
-            <div key={i} className="p-6 rounded-xl bg-white/5 border border-white/10">
-              <h2 className="text-2xl font-semibold text-white mb-2">{method.title}</h2>
-              <p className="text-gray-400 mb-4">{method.description}</p>
-              <pre className="bg-black/50 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono">
-                {method.command}
-              </pre>
+            <div key={i} className="page-card">
+              <h2 className="text-xl font-semibold text-white mb-2">{method.title}</h2>
+              <p className="text-slate-400 mb-4 text-sm">{method.description}</p>
+              <pre className="page-pre">{method.command}</pre>
             </div>
           ))}
         </div>
 
         {/* Hardware Requirements */}
-        <section className="mt-16">
+        <section className="mb-16">
           <h2 className="text-2xl font-semibold text-white mb-6">Hardware Requirements</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="page-table">
               <thead>
-                <tr className="border-b border-white/10">
+                <tr>
                   {['Tier', 'GPU VRAM', 'RAM', 'Storage', 'What Runs'].map((h) => (
-                    <th key={h} className="pb-4 text-gray-400 font-medium">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody>
                 {hardwareReqs.map((req, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-colors">
-                    <td className="py-4 text-white font-medium">{req.tier}</td>
-                    <td className="py-4 text-gray-300">{req.vram}</td>
-                    <td className="py-4 text-gray-300">{req.ram}</td>
-                    <td className="py-4 text-gray-300">{req.storage}</td>
-                    <td className="py-4 text-gray-400 text-sm">{req.runs}</td>
+                  <tr key={i}>
+                    <td className="text-white font-medium">{req.tier}</td>
+                    <td className="text-slate-300">{req.vram}</td>
+                    <td className="text-slate-300">{req.ram}</td>
+                    <td className="text-slate-300">{req.storage}</td>
+                    <td className="text-slate-400 text-sm">{req.runs}</td>
                   </tr>
                 ))}
               </tbody>
@@ -130,23 +126,23 @@ export default function Deploy() {
         </section>
 
         {/* Service Ports */}
-        <section className="mt-16">
+        <section>
           <h2 className="text-2xl font-semibold text-white mb-6">Service Ports</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="page-table">
               <thead>
-                <tr className="border-b border-white/10">
+                <tr>
                   {['Port', 'Service', 'Description'].map((h) => (
-                    <th key={h} className="pb-4 text-gray-400 font-medium">{h}</th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody>
                 {servicePorts.map((port, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-colors">
-                    <td className="py-4 text-blue-400 font-mono">{port.port}</td>
-                    <td className="py-4 text-white font-medium">{port.service}</td>
-                    <td className="py-4 text-gray-400">{port.desc}</td>
+                  <tr key={i}>
+                    <td className="text-blue-400 font-mono">{port.port}</td>
+                    <td className="text-white font-medium">{port.service}</td>
+                    <td className="text-slate-400">{port.desc}</td>
                   </tr>
                 ))}
               </tbody>

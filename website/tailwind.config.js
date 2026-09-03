@@ -8,21 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#0241e3',
-        'primary-hover': '#0137c4',
-        success: '#16A34A',
-        warning: '#D97706',
-        danger: '#DC2626',
-        navy: {
-          50: '#F1F6FF',
-          100: '#E2E8F4',
-          400: '#8A98BA',
-          800: '#0B1638',
-          900: '#010258',
-        },
+        primary: '#2563eb',
+        'primary-hover': '#1d4ed8',
+        success: '#16a34a',
+        warning: '#d97706',
+        danger: '#dc2626',
       },
       fontFamily: {
-        sans: ['Outfit', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       animation: {

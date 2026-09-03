@@ -43,11 +43,17 @@ const purpleTeamAgents = [
   { name: 'Threat Emulation', desc: 'Adversary behavior simulation' },
 ]
 
+const teamConfig = [
+  { name: 'Red', color: 'red', count: redTeamAgents.length, hex: '#ef4444' },
+  { name: 'Blue', color: 'blue', count: blueTeamAgents.length, hex: '#3b82f6' },
+  { name: 'Purple', color: 'purple', count: purpleTeamAgents.length, hex: '#8b5cf6' },
+]
+
 export default function Agents() {
   return (
-    <div className="min-h-screen bg-navy-900 pt-20">
+    <div className="min-h-screen bg-[#020617] pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
+        <Link href="/" className="page-nav-link mb-8 inline-flex" aria-label="Back to home">
           <ArrowLeft size={16} />
           Back to Home
         </Link>
@@ -56,42 +62,53 @@ export default function Agents() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             24 <span className="gradient-text">Autonomous Agents</span>
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-slate-400 text-lg max-w-2xl">
             Red Team, Blue Team, and Purple Team agents for complete security operations.
           </p>
         </div>
 
+        {/* Team summary */}
+        <div className="flex flex-wrap gap-4 mb-12">
+          {teamConfig.map((t) => (
+            <div key={t.name} className="page-card flex items-center gap-3 px-5 py-3">
+              <div className="w-3 h-3 rounded-full" style={{ background: t.hex }} />
+              <span className="text-white font-semibold">{t.name} Team</span>
+              <span className="text-slate-400 text-sm">{t.count} agents</span>
+            </div>
+          ))}
+        </div>
+
         {/* Red Team */}
-        <section className="mb-16">
+        <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-              <span className="text-red-500 font-bold">R</span>
+              <span className="text-red-400 font-bold">R</span>
             </div>
-            <h2 className="text-2xl font-semibold text-white">Red Team ({redTeamAgents.length})</h2>
+            <h2 className="text-xl font-semibold text-white">Red Team — Offensive Security</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {redTeamAgents.map((agent, i) => (
-              <div key={i} className="p-4 rounded-lg bg-white/5 border border-white/10">
+            {redTeamAgents.map((agent) => (
+              <div key={agent.name} className="page-card p-4">
                 <h3 className="text-white font-medium mb-1">{agent.name}</h3>
-                <p className="text-gray-400 text-sm">{agent.desc}</p>
+                <p className="text-slate-400 text-sm leading-relaxed">{agent.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Blue Team */}
-        <section className="mb-16">
+        <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <span className="text-blue-500 font-bold">B</span>
+              <span className="text-blue-400 font-bold">B</span>
             </div>
-            <h2 className="text-2xl font-semibold text-white">Blue Team ({blueTeamAgents.length})</h2>
+            <h2 className="text-xl font-semibold text-white">Blue Team — Defensive Operations</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {blueTeamAgents.map((agent, i) => (
-              <div key={i} className="p-4 rounded-lg bg-white/5 border border-white/10">
+            {blueTeamAgents.map((agent) => (
+              <div key={agent.name} className="page-card p-4">
                 <h3 className="text-white font-medium mb-1">{agent.name}</h3>
-                <p className="text-gray-400 text-sm">{agent.desc}</p>
+                <p className="text-slate-400 text-sm leading-relaxed">{agent.desc}</p>
               </div>
             ))}
           </div>
@@ -101,15 +118,15 @@ export default function Agents() {
         <section>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-              <span className="text-purple-500 font-bold">P</span>
+              <span className="text-purple-400 font-bold">P</span>
             </div>
-            <h2 className="text-2xl font-semibold text-white">Purple Team ({purpleTeamAgents.length})</h2>
+            <h2 className="text-xl font-semibold text-white">Purple Team — Collaboration</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {purpleTeamAgents.map((agent, i) => (
-              <div key={i} className="p-4 rounded-lg bg-white/5 border border-white/10">
+            {purpleTeamAgents.map((agent) => (
+              <div key={agent.name} className="page-card p-4">
                 <h3 className="text-white font-medium mb-1">{agent.name}</h3>
-                <p className="text-gray-400 text-sm">{agent.desc}</p>
+                <p className="text-slate-400 text-sm leading-relaxed">{agent.desc}</p>
               </div>
             ))}
           </div>

@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 const features = [
   {
     category: 'Router',
+    icon: '⬡',
     items: [
       'Keyword classifier with confidence score',
       'Fallback chain across roster',
@@ -16,6 +17,7 @@ const features = [
   },
   {
     category: 'Agent API',
+    icon: '◉',
     items: [
       'project / refactor / debug / analyze endpoints',
       'Profiles: strict, balanced, creative, verbose, minimal',
@@ -26,6 +28,7 @@ const features = [
   },
   {
     category: 'Workflow Engine',
+    icon: '⟁',
     items: [
       'Registry-based pipelines',
       'Sequential + parallel steps',
@@ -38,6 +41,7 @@ const features = [
   },
   {
     category: 'Autonomous SDLC',
+    icon: '⟿',
     items: [
       '7-phase lifecycle: plan→code→test→fix→review→doc→package',
       'Real verification: compileall, pytest, node --check',
@@ -49,6 +53,7 @@ const features = [
   },
   {
     category: 'Security',
+    icon: '◈',
     items: [
       'Aikido integration',
       'Pentest agents',
@@ -60,6 +65,7 @@ const features = [
   },
   {
     category: 'GPU Inference',
+    icon: '⬢',
     items: [
       'llama.cpp (:9001) — GGUF CUDA',
       'vLLM (:9002) — high throughput',
@@ -71,6 +77,7 @@ const features = [
   },
   {
     category: 'Dashboard',
+    icon: '◫',
     items: [
       'GPU stats with Chart.js history',
       'Alerts panel (services, thermal, util)',
@@ -82,6 +89,7 @@ const features = [
   },
   {
     category: 'Optimizer',
+    icon: '⚡',
     items: [
       'performance/balanced/eco power modes',
       'Hysteresis + 10-min cooldown',
@@ -91,6 +99,7 @@ const features = [
   },
   {
     category: 'Desktop',
+    icon: '🖥',
     items: [
       'XFCE + TigerVNC',
       'noVNC (:6080)',
@@ -99,6 +108,7 @@ const features = [
   },
   {
     category: 'Integration',
+    icon: '⊞',
     items: [
       'SendGrid, Gmail, Proton (email)',
       'Twilio (SMS)',
@@ -111,9 +121,9 @@ const features = [
 
 export default function Features() {
   return (
-    <div className="min-h-screen bg-navy-900 pt-20">
+    <div className="min-h-screen bg-[#020617] pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
+        <Link href="/" className="page-nav-link mb-8 inline-flex" aria-label="Back to home">
           <ArrowLeft size={16} />
           Back to Home
         </Link>
@@ -122,19 +132,23 @@ export default function Features() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             174 <span className="gradient-text">Features</span>
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-slate-400 text-lg max-w-2xl">
             Everything you need for a production-grade AI inference workstation.
           </p>
         </div>
 
-        <div className="space-y-12">
-          {features.map((category, i) => (
-            <div key={category.category} className="p-6 rounded-xl bg-white/5 border border-white/10">
-              <h2 className="text-xl font-semibold text-white mb-4">{category.category}</h2>
+        <div className="space-y-8">
+          {features.map((category) => (
+            <div key={category.category} className="page-card">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl leading-none">{category.icon}</span>
+                <h2 className="text-lg font-semibold text-white">{category.category}</h2>
+                <span className="ml-auto page-badge page-badge-blue text-xs">{category.items.length}</span>
+              </div>
               <ul className="space-y-2">
-                {category.items.map((item, j) => (
-                  <li key={j} className="flex items-start gap-3 text-gray-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                {category.items.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-slate-300 text-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
                     {item}
                   </li>
                 ))}

@@ -22,7 +22,6 @@ const apiSections = [
       { method: 'POST', path: '/agent/analyze', desc: 'Code analysis' },
       { method: 'POST', path: '/agent/orchestrate', desc: 'Multi-agent orchestration' },
       { method: 'POST', path: '/agent/chat', desc: 'Chat with session memory' },
-      { method: 'GET/DELETE', path: '/memory/{session_id}', desc: 'Session memory management' },
     ],
   },
   {
@@ -33,7 +32,6 @@ const apiSections = [
       { method: 'POST', path: '/workflow/run', desc: 'Execute workflow' },
       { method: 'POST', path: '/workflow/run-inline', desc: 'Run inline definition' },
       { method: 'GET', path: '/workflow/export/{name}', desc: 'Export workflow' },
-      { method: 'POST', path: '/workflow/validate', desc: 'Validate workflow steps' },
     ],
   },
   {
@@ -45,16 +43,15 @@ const apiSections = [
       { method: 'GET', path: '/auto/runs/{id}', desc: 'Get run status' },
       { method: 'POST', path: '/auto/runs/{id}/cancel', desc: 'Cancel run' },
       { method: 'GET', path: '/auto/runs/{id}/artifact', desc: 'Download artifact' },
-      { method: 'POST', path: '/auto/runs/{id}/shell', desc: 'Execute shell command' },
     ],
   },
 ]
 
 export default function API() {
   return (
-    <div className="min-h-screen bg-navy-900 pt-20">
+    <div className="min-h-screen bg-[#020617] pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
+        <Link href="/" className="page-nav-link mb-8 inline-flex" aria-label="Back to home">
           <ArrowLeft size={16} />
           Back to Home
         </Link>
@@ -63,48 +60,45 @@ export default function API() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             REST <span className="gradient-text">API Reference</span>
           </h1>
-          <p className="text-gray-400 text-lg">
-            Complete API documentation for all FreeAI services.
+          <p className="text-slate-400 text-lg max-w-2xl">
+            Complete API documentation for all FreeAI services. All endpoints require <code className="page-code">X-Auth-Token</code> header when auth is enabled.
           </p>
         </div>
 
-        <div className="space-y-12">
-          {apiSections.map((section, i) => (
-            <div
-              key={section.title}
-              className="p-6 rounded-xl bg-white/5 border border-white/10"
-            >
+        <div className="space-y-8">
+          {apiSections.map((section) => (
+            <div key={section.title} className="page-card">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                <div className="w-10 h-10 rounded-lg bg-blue-500/15 flex items-center justify-center text-blue-400">
                   {section.icon}
                 </div>
-                <h2 className="text-xl font-semibold text-white">{section.title}</h2>
+                <h2 className="text-lg font-semibold text-white">{section.title}</h2>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left">
+                <table className="page-table">
                   <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="pb-3 text-gray-400 font-medium w-24">Method</th>
-                      <th className="pb-3 text-gray-400 font-medium">Path</th>
-                      <th className="pb-3 text-gray-400 font-medium">Description</th>
+                    <tr>
+                      <th className="w-24">Method</th>
+                      <th>Path</th>
+                      <th>Description</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {section.endpoints.map((ep, j) => (
-                      <tr key={j} className="hover:bg-white/5 transition-colors">
-                        <td className="py-3">
+                  <tbody>
+                    {section.endpoints.map((ep) => (
+                      <tr key={ep.path}>
+                        <td>
                           <span className={`inline-flex px-2 py-1 rounded text-xs font-mono ${
                             ep.method.includes('GET') ? 'bg-green-500/20 text-green-400' :
                             ep.method.includes('POST') ? 'bg-blue-500/20 text-blue-400' :
                             ep.method.includes('DELETE') ? 'bg-red-500/20 text-red-400' :
-                            'bg-gray-500/20 text-gray-400'
+                            'bg-slate-500/20 text-slate-400'
                           }`}>
                             {ep.method}
                           </span>
                         </td>
-                        <td className="py-3 text-blue-400 font-mono text-sm">{ep.path}</td>
-                        <td className="py-3 text-gray-400 text-sm">{ep.desc}</td>
+                        <td className="text-blue-400 font-mono text-sm">{ep.path}</td>
+                        <td className="text-slate-400 text-sm">{ep.desc}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -113,9 +107,8 @@ export default function API() {
 
               {section.title === 'Router API (:8010)' && (
                 <div className="mt-6">
-                  <h3 className="text-white font-medium mb-3">Example Request</h3>
-                  <pre className="bg-black/50 rounded-lg p-4 text-sm text-green-400 overflow-x-auto font-mono">
-{`curl -X POST localhost:8010/route \\
+                  <h3 className="text-white font-medium mb-3 text-sm">Example Request</h3>
+                  <pre className="page-pre">{`curl -X POST localhost:8010/route \\
   -H "Content-Type: application/json" \\
   -d '{"prompt":"Design a rate limiter","model":"openai/gpt-4o-mini"}'
 
@@ -126,12 +119,18 @@ export default function API() {
   "confidence": 0.87,
   "elapsed_ms": 342,
   "response": "..."
-}`}
-                  </pre>
+}`}</pre>
                 </div>
               )}
             </div>
           ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link href="/docs" className="page-nav-link inline-flex">
+            <ArrowLeft size={16} />
+            Back to Documentation
+          </Link>
         </div>
       </div>
     </div>
