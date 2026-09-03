@@ -5,15 +5,25 @@ repo_url: https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation
 repo_name: ProjectZeroDays/FreeAI_AI_Inference_Workstation
 
 nav:
-  - Home: INDEX.md
+  - Start Here: INDEX.md
   - Quick Start: FIRST-BOOT-GUIDE.md
+  - Learning Paths:
+      - Beginner: pages/beginner-path.md
+      - Intermediate: pages/intermediate-path.md
+      - Advanced: pages/advanced-path.md
+  - Task Guides:
+      - Router Basics: pages/router-basics.md
+      - Build Workflows: pages/build-workflows.md
+      - First Project: pages/build-first-project.md
+      - GPU Tuning: pages/gpu-tuning.md
+      - Secure Deployment: pages/secure-deployment.md
   - Architecture:
       - Overview: ARCHITECTURE.md
       - Build Sheet: BUILD-SHEET.md
+      - Diagrams: ARCHITECTURE-DIAGRAM.md
   - Core Services:
       - Router: API.md
       - API Reference: API-GUIDE.md
-      - Endpoints: API-ENDPOINTS.md
       - Model Switching: MODEL-SWITCHING.md
       - Providers: PROVIDERS.md
       - Provider Integration: PROVIDER-INTEGRATION.md
@@ -22,6 +32,7 @@ nav:
       - SDLC Tutorial: SDLC-TUTORIAL.md
       - Function Calling: FUNCTION_CALLING.md
       - Log Streaming: LOG_STREAMING.md
+      - Agent Capabilities: pages/agent-capabilities.md
   - AI Infrastructure:
       - MCP Registry: MCP.md
       - MCP Security: MCP-SECURITY.md
@@ -42,6 +53,7 @@ nav:
   - Performance:
       - Optimization Audit: OPTIMIZATION-AUDIT.md
       - Advanced Performance: PERFORMANCE_ADVANCED.md
+      - GPU Performance: gpu-performance.md
   - Planning:
       - Enhancement Plan: ENHANCEMENT-PLAN.md
       - Gap Analysis: GAP-ANALYSIS-CODEX.md

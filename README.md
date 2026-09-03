@@ -1,6 +1,7 @@
 # FreeAI — Self-Hosted AI Inference Workstation
 
 > **Your own AI inference stack.** Local models, autonomous agents, full SDLC automation — one self-hosted stack.
+> **Start here:** [Deploy in 5 minutes](#-five-minute-demo) · [Read the docs](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation) · [Dashboard demo](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation)
 
 <div align="center">
 
@@ -14,6 +15,16 @@
 **Website:** [projectzerodays.github.io/FreeAI_AI_Inference_Workstation](https://projectzerodays.github.io/FreeAI_AI_Inference_Workstation) · **Dashboard:** `http://localhost:8030`
 
 </div>
+
+## Quick Reference
+
+| What | Command |
+|---|---|
+| **Run first model** | `MOCK_LLM=1 python3 router/router.py` |
+| **Full stack** | `docker compose --profile allinone up -d` |
+| **Build a project** | `python freeai.py auto-start "Build a FastAPI notes service" --watch` |
+| **Route a prompt** | `curl -X POST localhost:8010/route -H "Content-Type: application/json" -d '{"prompt":"Design a rate limiter"}'` |
+| **Check health** | `python freeai.py status` |
 
 ---
 
@@ -75,30 +86,39 @@ Full architecture: see [Section 4](#4-architecture)
 - Python 3.10+ (for bare-metal installs)
 - NVIDIA GPU with 8GB+ VRAM recommended (not required — MOCK_LLM=1 works on CPU)
 
-### Option 1: Docker (Recommended)
+### Developer Track
+
 ```bash
+# 1. Clone and run the router (no GPU needed for dev)
+git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
+cd FreeAI_AI_Inference_Workstation
+MOCK_LLM=1 python3 router/router.py
+
+# 2. Route your first prompt
+curl -X POST localhost:8010/route \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Explain dependency injection"}'
+
+# 3. Generate a project with autonomous SDLC
+python freeai.py auto-start "Build a FastAPI notes API with SQLite" --watch
+```
+
+### Operator Track
+
+```bash
+# 1. Deploy the full stack
 git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
 cd FreeAI_AI_Inference_Workstation
 docker compose --profile allinone up -d
-```
-Open http://localhost:8030
 
-### Option 2: Bare Metal
-```bash
-git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
-cd FreeAI_AI_Inference_Workstation
-sudo ./hardware/install-stack.sh
-bash models/auto-download-models.sh
+# 2. Open the dashboard
+open http://localhost:8030
+
+# 3. Configure providers and models via the Settings panel
+# 4. Set up security keys (ROUTER_API_KEY, AGENT_API_KEY, etc.)
 ```
 
-### Option 3: No GPU — Dev Mode
-```bash
-git clone https://github.com/ProjectZeroDays/FreeAI_AI_Inference_Workstation.git
-cd FreeAI_AI_Inference_Workstation
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-MOCK_LLM=1 python3 router/router.py
-```
+**Bare metal:** `sudo ./hardware/install-stack.sh` · **Kubernetes:** `kubectl apply -f k8s/` · **Live ISO:** Boot `freeaios-amd64.iso`
 
 ---
 
@@ -117,6 +137,23 @@ FreeAI is a **production-grade, self-hosted AI inference workstation** that unif
 | **Hermes CLI** | CLI agent orchestrator, 100+ ext provider SDKs, proxy forwarding |
 | **Desktop** | XFCE + TigerVNC/noVNC (:6080) — full remote desktop |
 | **Live ISO** | FreeAIOS — Ubuntu/Kodachi/Kali/NixOS bootable workstations |
+
+---
+
+## Local Model Comparison
+
+| Model | Size | Role | Context | Best For |
+|---|---|---|---|---|
+| **qwen3.6-12b** | ~7 GB | Primary coder | 4K | Full projects, architecture, CI/CD, deep reasoning |
+| **claude-code-9b** | ~5 GB | Code specialist | 4K | Tool calling, multi-file edits, production code |
+| **qwythos-v2** | ~5 GB | Reasoning primary | **1M** | Deep analysis, planning, math, vision, function calling |
+| **qwythos-9b** | ~5 GB | Reasoning fallback | **1M** | Long-context reasoning, logic, decomposition |
+| **qwable-9b** | ~5 GB | General assistant | 4K | General chat, vision, creative coding, terminal agent |
+| **qwen3.5-thinking** | ~5 GB | Reasoning fallback | 4K | Step-by-step thinking, planning, logic |
+| **qwen3.5-9b** | ~5 GB | Legacy fallback | 4K | Analysis, explanation, general tasks |
+| **moe-13b** | ~8 GB | Fast coder | 4K | Refactor, debug, patch, optimize, fast completion |
+
+> Reasoning models clamp temperature to 0.6 automatically. 1M-context models (qwythos-*) require `LLAMA_CTX=1048576`. For MTP speculative decoding: set `DOWNLOAD_MTP=1` and `LLAMA_EXTRA_ARGS="--spec-type draft-mtp --spec-draft-n-max 6"`.
 
 ---
 
@@ -249,6 +286,28 @@ The dashboard serves 19 pages at `http://localhost:8030`:
 - **Automatic fallback chains** — if the primary fails, tries the next in line
 - **Degenerate output detection** — catches repetition loops before they waste tokens
 - **LRU response cache** — `X-Cache: HIT/MISS` headers, per-model TTL
+
+```bash
+# Route a prompt to the model router
+curl -X POST localhost:8010/route \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Design a rate limiter","model":"openai/gpt-4o-mini"}'
+
+# Response:
+# {
+#   "model_used": "openai/gpt-4o-mini",
+#   "task_type": "general_code",
+#   "confidence": 0.87,
+#   "elapsed_ms": 342,
+#   "response": "..."
+# }
+
+# Check router health
+curl localhost:8010/health
+
+# View router metrics
+curl localhost:8010/metrics
+```
 
 ### Autonomous SDLC Agents
 ```bash
