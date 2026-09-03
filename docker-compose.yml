@@ -13,16 +13,14 @@ services:
       - LLAMA_MMPROJ_PATH=/models/mmproj-Qwen3.5-9B-Uncensored-HauhauCS-Aggressive-BF16.gguf
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-    volumes:
-      - ./models:/models
     deploy:
       resources:
+        limits:
+          memory: 32G
+          cpus: "8"
         reservations:
           devices:
             - capabilities: [gpu]
-    ports:
-      - "9001:9001"
-    restart: always
     healthcheck:
       test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:9001/health', timeout=5)\""]
       interval: 30s
@@ -90,12 +88,21 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     deploy:
       resources:
+        limits:
+          memory: 32G
+          cpus: "8"
         reservations:
           devices:
             - capabilities: [gpu]
     ports:
       - "9002:9002"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request as u; u.urlopen('http://127.0.0.1:9002/health', timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
 
   router:
     container_name: freeai_router
@@ -109,6 +116,9 @@ services:
       - MOCK_LLM=${MOCK_LLM:-0}
       - RATE_LIMIT_CAPACITY=${RATE_LIMIT_CAPACITY:-60}
       - CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - CIRCUIT_BREAKER_WINDOW=${CIRCUIT_BREAKER_WINDOW:-5}
+      - CIRCUIT_BREAKER_RATIO=${CIRCUIT_BREAKER_RATIO:-0.5}
+      - CIRCUIT_BREAKER_MIN_REQUESTS=${CIRCUIT_BREAKER_MIN_REQUESTS:-3}
     ports:
       - "8010:8010"
       - "8011:8011"
@@ -133,6 +143,9 @@ services:
       # Without a key, the service will reject all requests with HTTP 503.
       # Example: - AGENT_API_KEY=${AGENT_API_KEY:-your-secret-key-here}
       - AGENT_API_KEY=${AGENT_API_KEY:-}
+      - MAX_CONCURRENT_TASKS=${MAX_CONCURRENT_TASKS:-5}
+      - TASK_QUEUE_CAPACITY=${TASK_QUEUE_CAPACITY:-20}
+      - APPROVAL_REQUIRED=${APPROVAL_REQUIRED:-1}
     ports:
       - "8120:8120"
     depends_on:
@@ -144,6 +157,14 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          cpus: '2.0'
+        reservations:
+          memory: 1g
+          cpus: '0.5'
 
   workflow:
     container_name: workflow_engine
@@ -176,6 +197,8 @@ services:
       - AGENT_API=http://agents:8120
       - ENABLE_SHELL_TOOLS=${ENABLE_SHELL_TOOLS:-0}
       - MAX_FIX_ROUNDS=3
+      - HITL_ENABLED=${HITL_ENABLED:-1}
+      - HITL_APPROVAL_TIMEOUT_S=${HITL_APPROVAL_TIMEOUT_S:-300}
     volumes:
       - workspaces:/stack/workspaces
     ports:
@@ -184,6 +207,14 @@ services:
       agents:
         condition: service_healthy
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: '1.0'
+        reservations:
+          memory: 512m
+          cpus: '0.25'
 
   dashboard:
     container_name: freeai_dashboard
@@ -203,13 +234,25 @@ services:
     image: dorowu/ubuntu-desktop-lxde-vnc
     profiles: ["desktop"]
     environment:
-      - USER=root
-      - PASSWORD=pass
-      - RESOLUTION=1920x1080
+      - USER=${DESKTOP_USER:-freeai}
+      - PASSWORD=${DESKTOP_VNC_PASSWORD:?DESKTOP_VNC_PASSWORD is required for desktop profile}
+      - RESOLUTION=${DESKTOP_RESOLUTION:-1920x1080}
+      - TZ=${TZ:-UTC}
     ports:
       - "5901:5901"
       - "6080:6080"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import socket; socket.create_connection(('127.0.0.1', 6080), timeout=5)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=100M
 
   allinone:
     container_name: freeai_allinone
@@ -279,8 +322,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3000}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
     depends_on:
       - prometheus
     restart: always

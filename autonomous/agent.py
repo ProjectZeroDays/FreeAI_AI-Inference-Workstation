@@ -42,6 +42,8 @@ AGENT_API = os.environ.get("AGENT_API", "http://localhost:8120")
 ENABLE_SHELL = os.environ.get("ENABLE_SHELL_TOOLS", "0") == "1"
 SHELL_TIMEOUT_S = int(os.environ.get("SHELL_TIMEOUT_S", "120"))
 MAX_FIX_ROUNDS = int(os.environ.get("MAX_FIX_ROUNDS", "3"))
+HITL_ENABLED = os.environ.get("HITL_ENABLED", "1") == "1"
+HITL_APPROVAL_TIMEOUT_S = int(os.environ.get("HITL_APPROVAL_TIMEOUT_S", "300"))
 
 _LOCK = threading.Lock()
 RUNS = {}
@@ -95,6 +97,22 @@ def run_verification(workspace) -> dict:
     if not commands:
         issues = static_issues(files, lambda p: workspace.read_file(p))
         return {"ran": False, "results": [], "issues": issues}
+
+    # HITL check for dangerous commands before execution
+    if HITL_ENABLED:
+        try:
+            from autonomous.approval import check_approval_required
+            for label, command in commands:
+                req = check_approval_required(command, f"autonomous:{workspace.run_id}")
+                if req is not None and req["status"] == "pending":
+                    return {
+                        "ran": False,
+                        "results": [],
+                        "issues": [f"HITL approval required for dangerous command: {command[:100]}"],
+                        "approval_request": req,
+                    }
+        except ImportError:
+            pass
 
     results = []
     for label, command in commands:

@@ -251,3 +251,87 @@ def test_default_algo_is_round_robin():
     _setup_backends(["a@http://x", "b@http://y"])
     picks = [pick_backend(["a@http://x", "b@http://y"]) for _ in range(4)]
     assert len(set(picks)) <= 2  # at most two backends
+
+
+# ── Sliding-window circuit breaker ──────────────────────────────────
+
+def test_sliding_window_ratio_trips_circuit(monkeypatch):
+    """When failure ratio in window exceeds threshold, circuit opens."""
+    monkeypatch.setattr("load_balancer.FAILURE_THRESHOLD", 999)
+    monkeypatch.setattr("load_balancer.CB_RATIO_THRESHOLD", 0.5)
+    monkeypatch.setattr("load_balancer.CB_MIN_REQUESTS", 3)
+    monkeypatch.setattr("load_balancer.CB_WINDOW_SIZE", 10)
+    reset_state()
+    _setup_backends(["a@http://x"])
+    # 3 failures out of 3 = 100% ratio >= 0.5
+    for _ in range(3):
+        record_failure("a@http://x")
+    state = get_state("a@http://x")
+    assert state["healthy"] is False
+    assert state["circuit_open_until"] > 0
+
+
+def test_sliding_window_allows_recovery_after_successes(monkeypatch):
+    """A healthy window after prior failures resets the circuit."""
+    monkeypatch.setattr("load_balancer.FAILURE_THRESHOLD", 999)
+    monkeypatch.setattr("load_balancer.CB_RATIO_THRESHOLD", 0.5)
+    monkeypatch.setattr("load_balancer.CB_MIN_REQUESTS", 3)
+    monkeypatch.setattr("load_balancer.CB_WINDOW_SIZE", 10)
+    reset_state()
+    _setup_backends(["a@http://x"])
+    # Trip the circuit
+    for _ in range(3):
+        record_failure("a@http://x")
+    assert get_state("a@http://x")["healthy"] is False
+    # A success clears the window and resets
+    record_success("a@http://x")
+    state = get_state("a@http://x")
+    assert state["healthy"] is True
+    assert state["circuit_open_until"] == 0.0
+
+
+def test_sliding_window_below_threshold_keeps_healthy(monkeypatch):
+    """Failure ratio below threshold does not trip the circuit."""
+    monkeypatch.setattr("load_balancer.FAILURE_THRESHOLD", 999)
+    monkeypatch.setattr("load_balancer.CB_RATIO_THRESHOLD", 0.9)
+    monkeypatch.setattr("load_balancer.CB_MIN_REQUESTS", 5)
+    monkeypatch.setattr("load_balancer.CB_WINDOW_SIZE", 10)
+    reset_state()
+    _setup_backends(["a@http://x"])
+    # 2 failures out of 5 = 40% < 90%
+    for _ in range(2):
+        record_failure("a@http://x")
+    for _ in range(3):
+        record_success("a@http://x")
+    state = get_state("a@http://x")
+    assert state["healthy"] is True
+
+
+def test_sliding_window_min_requests_not_yet_reached(monkeypatch):
+    """Circuit does not open on ratio before min requests met."""
+    monkeypatch.setattr("load_balancer.FAILURE_THRESHOLD", 999)
+    monkeypatch.setattr("load_balancer.CB_RATIO_THRESHOLD", 0.5)
+    monkeypatch.setattr("load_balancer.CB_MIN_REQUESTS", 5)
+    monkeypatch.setattr("load_balancer.CB_WINDOW_SIZE", 10)
+    reset_state()
+    _setup_backends(["a@http://x"])
+    # 2 failures out of 2 = 100% but < min_requests (5)
+    for _ in range(2):
+        record_failure("a@http://x")
+    state = get_state("a@http://x")
+    assert state["healthy"] is True
+
+
+def test_consecutive_and_ratio_both_can_trip(monkeypatch):
+    """Both consecutive and sliding-window conditions are checked."""
+    monkeypatch.setattr("load_balancer.FAILURE_THRESHOLD", 2)
+    monkeypatch.setattr("load_balancer.CB_RATIO_THRESHOLD", 0.5)
+    monkeypatch.setattr("load_balancer.CB_MIN_REQUESTS", 3)
+    reset_state()
+    _setup_backends(["a@http://x"])
+    # 2 consecutive failures trip via consecutive condition
+    record_failure("a@http://x")
+    record_failure("a@http://x")
+    state = get_state("a@http://x")
+    assert state["healthy"] is False
+    assert state["consecutive_failures"] == 2

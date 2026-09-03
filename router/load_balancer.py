@@ -5,7 +5,16 @@ Health checking probes each model endpoint; marks unhealthy after
 `failure_threshold` consecutive failures.
 Circuit breaker opens after the same threshold and stays open for
 `recovery_timeout_s` before allowing a probe to re-test.
+
+Sliding-window circuit breaker (enhanced):
+  Tracks a fixed-size window of recent outcomes (default 20).
+  Circuit opens when:
+    - consecutive_failures >= FAILURE_THRESHOLD, OR
+    - failure_ratio >= CIRCUIT_BREAKER_RATIO within the window, AND
+      total_requests_in_window >= CIRCUIT_BREAKER_MIN_REQUESTS
+  Provides graceful degradation under sustained provider rate limits.
 """
+import collections
 import json
 import os
 import threading
@@ -25,10 +34,18 @@ RECOVERY_TIMEOUT_S = int(os.environ.get("LB_RECOVERY_TIMEOUT")
                          or _CFG.get("lb_recovery_timeout_s", 30))
 HEALTH_CHECK_INTERVAL_S = float(os.environ.get("LB_HEALTH_CHECK_INTERVAL")
                                 or _CFG.get("lb_health_check_interval_s", 10))
+# Sliding-window circuit breaker settings
+CB_WINDOW_SIZE = int(os.environ.get("CIRCUIT_BREAKER_WINDOW")
+                     or _CFG.get("cb_window_size", 20))
+CB_RATIO_THRESHOLD = float(os.environ.get("CIRCUIT_BREAKER_RATIO")
+                            or _CFG.get("cb_ratio_threshold", 0.5))
+CB_MIN_REQUESTS = int(os.environ.get("CIRCUIT_BREAKER_MIN_REQUESTS")
+                      or _CFG.get("cb_min_requests", 3))
 
 # Per-backend state
 _lock = threading.Lock()
 _state: Dict[str, Dict] = {}
+_outcomes: Dict[str, collections.deque] = {}
 # _state[backend_key] = {
 #   "healthy": bool,
 #   "consecutive_failures": int,
@@ -37,6 +54,7 @@ _state: Dict[str, Dict] = {}
 #   "total_requests": int,
 #   "total_failures": int,
 # }
+# _outcomes[backend_key] = deque of 1/0 (success/failure), maxlen=CB_WINDOW_SIZE
 
 
 def _backend_key(name: str, endpoint: str) -> str:
@@ -53,6 +71,8 @@ def _ensure(key: str):
             "total_requests": 0,
             "total_failures": 0,
         }
+    if key not in _outcomes:
+        _outcomes[key] = collections.deque(maxlen=CB_WINDOW_SIZE)
 
 
 def _tick_health():
@@ -64,6 +84,9 @@ def _tick_health():
                 # Attempt recovery probe
                 s["circuit_open_until"] = 0.0
                 s["consecutive_failures"] = 0
+                # Clear the sliding window on recovery to start fresh
+                if key in _outcomes:
+                    _outcomes[key].clear()
                 # We assume recovery (mark healthy) — real probe would
                 # need an endpoint URL, which we track separately.
                 s["healthy"] = True
@@ -78,6 +101,11 @@ def record_success(backend_key: str):
         s["consecutive_failures"] = 0
         s["healthy"] = True
         s["circuit_open_until"] = 0.0
+        # Clear the sliding window on recovery so a single success
+        # doesn't get drowned out by old failure entries.
+        if backend_key in _outcomes:
+            _outcomes[backend_key].clear()
+        _outcomes[backend_key].append(1)
 
 
 def record_failure(backend_key: str):
@@ -88,10 +116,26 @@ def record_failure(backend_key: str):
         s["total_requests"] += 1
         s["total_failures"] += 1
         s["consecutive_failures"] += 1
-        if s["consecutive_failures"] >= FAILURE_THRESHOLD:
+        _outcomes[backend_key].append(0)
+        _check_circuit(backend_key)
+
+
+def _check_circuit(backend_key: str):
+    """Check sliding-window and consecutive-failure circuit breaker conditions."""
+    s = _state[backend_key]
+    outcomes = _outcomes.get(backend_key, collections.deque())
+    # Condition 1: consecutive failures
+    if s["consecutive_failures"] >= FAILURE_THRESHOLD:
+        s["healthy"] = False
+        s["circuit_open_until"] = time.monotonic() + RECOVERY_TIMEOUT_S
+        return
+    # Condition 2: sliding-window failure ratio
+    if len(outcomes) >= CB_MIN_REQUESTS:
+        fail_count = sum(1 for o in outcomes if o == 0)
+        ratio = fail_count / len(outcomes)
+        if ratio >= CB_RATIO_THRESHOLD:
             s["healthy"] = False
-            s["circuit_open_until"] = (
-                time.monotonic() + RECOVERY_TIMEOUT_S)
+            s["circuit_open_until"] = time.monotonic() + RECOVERY_TIMEOUT_S
 
 
 def connection_start(backend_key: str):
@@ -185,3 +229,4 @@ def all_state() -> Dict[str, Dict]:
 def reset_state():
     with _lock:
         _state.clear()
+        _outcomes.clear()

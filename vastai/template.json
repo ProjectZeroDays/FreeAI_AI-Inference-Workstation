@@ -25,7 +25,7 @@
     "AUTO_START_XFCE": "TRUE",
     "AUTO_START_VNC": "TRUE",
     "AUTO_START_NOVNC": "TRUE",
-    "VNC_PASSWORD": "changeme",
+    "VNC_PASSWORD": "${VNC_PASSWORD:?(set VNC_PASSWORD environment variable)}",
     "MOCK_LLM": "0",
     "INSTALL_DOCKER": "TRUE"
   },

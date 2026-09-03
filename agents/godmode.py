@@ -6,6 +6,7 @@ Features:
   - Campaign/permissions integration via RBAC
   - Skill loader that copies skill to ai-workstation
   - Override safety filters on selected providers
+  - HITL (Human-in-the-Loop) approval gates for destructive operations
 """
 import json
 import os
@@ -117,6 +118,28 @@ def toggle_godmode(agent: str = None, model: str = None, enable: bool = True):
     return s
 
 
+def check_approval_for_action(action: str, command: str = "", context: str = "") -> dict:
+    """Check HITL approval before allowing a destructive GODMODE action.
+    Returns {approved: bool, request_id: str|None, danger_patterns: list}."""
+    try:
+        from autonomous.approval import (check_approval_required, is_approved,
+                                          request_approval)
+    except ImportError:
+        return {"approved": True, "request_id": None,
+                "danger_patterns": [], "reason": "approval module unavailable"}
+
+    req = check_approval_required(command, context)
+    if req is None:
+        return {"approved": True, "request_id": None,
+                "danger_patterns": [], "reason": "no danger patterns matched"}
+    return {
+        "approved": is_approved(req["request_id"]),
+        "request_id": req["request_id"],
+        "danger_patterns": req["danger_patterns"],
+        "status": req["status"],
+    }
+
+
 def set_campaign(campaign_name: str, enable: bool = True):
     with _lock:
         s = _load_state()
@@ -213,6 +236,17 @@ if HAS_FASTAPI:
         with _lock:
             s = _load_state()
         return {"status": "ok", "godmode": s.get("enabled", False)}
+
+    @app.post("/api/godmode/check-approval")
+    def check_approval(req: dict = None):
+        """Check HITL approval for a proposed GODMODE action."""
+        data = req or {}
+        result = check_approval_for_action(
+            action=data.get("action", ""),
+            command=data.get("command", ""),
+            context=data.get("context", ""),
+        )
+        return result
 
 
 if __name__ == "__main__":

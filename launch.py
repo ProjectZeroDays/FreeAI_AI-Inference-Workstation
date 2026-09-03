@@ -52,6 +52,7 @@ SERVICES = {
     "unified_catalog": {"port": 8195, "module": "skills.catalog_api",        "cmd": "python"},
     "godmode":    {"port": 8196, "module": "agents.godmode",                  "cmd": "python"},
     "campaign":   {"port": 8192, "module": "agents.campaign_manager",         "cmd": "python"},
+    "hitl":       {"port": 8197, "module": "autonomous.approval",             "cmd": "python"},
 }
 
 
@@ -100,6 +101,7 @@ def start_service(name):
     env["RAG_PORT"] = str(svc["port"])
     env["GODMODE_PORT"] = str(SERVICES.get("godmode", {}).get("port", 8196))
     env["CAMPAIGN_PORT"] = str(SERVICES.get("campaign", {}).get("port", 8192))
+    env["HITL_PORT"] = str(SERVICES.get("hitl", {}).get("port", 8197))
 
     print(f"[launch] Starting {name} on :{svc['port']}...")
     try:
@@ -195,7 +197,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="FreeAI Service Launcher")
     parser.add_argument("service", nargs="?",
-                        help="Service to start (proxy|memory|agents|registry|rag|brain|skills|pipeline|knightshade|godmode|campaign|all)")
+                        help="Service to start (proxy|memory|agents|registry|rag|brain|skills|pipeline|knightshade|godmode|campaign|hitl|all)")
     parser.add_argument("--stop", nargs="?", const="all",
                         help="Stop a service or all services")
     parser.add_argument("--status", action="store_true",

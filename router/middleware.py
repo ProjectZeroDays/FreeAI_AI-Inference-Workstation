@@ -99,7 +99,10 @@ class AuthMiddleware:
         skip_paths = {"/health", "/models", "/docs",
                       "/auth/login", "/auth/refresh", "/auth/me",
                       "/api/models/performance", "/api/models/benchmark",
-                      "/api/models/rankings", "/api/models/benchmark/report"}
+                      "/api/models/rankings", "/api/models/benchmark/report",
+                      "/api/hitl/pending", "/api/hitl/{request_id}/approve",
+                      "/api/hitl/{request_id}/reject", "/api/hitl/purge",
+                      "/health"}
         if request.path in skip_paths:
             return None
 
