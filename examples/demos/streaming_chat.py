@@ -1,1 +1,46 @@
-﻿import sys`nimport json`nimport urllib.request`n`nAPI = "https://api.agnes-ai.com/v1/chat/completions"`nTOKEN = "sk-gE940pJBd02SRt3c8hBZPvQ3RsnM2gM14EuWJO3DkXeSbtb4"`nMODEL = "agnes.2.0-flash"`n`ndef stream_chat(message):`n    payload = json.dumps({`n        "model": MODEL,`n        "messages": [{"role": "user", "content": message}],`n        "stream": True`n    }).encode("utf-8")`n    req = urllib.request.Request(API,`n        data=payload,`n        headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"})`n    response = urllib.request.urlopen(req)`n    for line in response:`n        line = line.decode("utf-8").strip()`n        if line.startswith("data: "):`n            data = line[6:]`n            try:`n                json_data = json.loads(data)`n                if "choices" in json_data:`n                    delta = json_data["choices"][0].get("delta", {})`n                    if "content" in delta:`n                        print(delta["content"], end="", flush=True)`n                if json_data.get("finish_reason") == "stop":`n                    print("")`n                    break`n            except:`n                pass`n`nif __name__ == "__main__":`n    msg = sys.stdin.read().strip()`n    print("-" * 40)`n    print("FreeAI Chat")`n    print("-" * 40)`n    stream_chat(msg)
+import sys
+import json
+import os
+import urllib.request
+
+API = "https://api.agnes-ai.com/v1/chat/completions"
+TOKEN = os.environ.get("AGNES_API_KEY", "")
+MODEL = "agnes.2.0-flash"
+
+
+def stream_chat(message):
+    if not TOKEN:
+        print("Error: AGNES_API_KEY environment variable not set", file=sys.stderr)
+        sys.exit(1)
+    payload = json.dumps({
+        "model": MODEL,
+        "messages": [{"role": "user", "content": message}],
+        "stream": True
+    }).encode("utf-8")
+    req = urllib.request.Request(API,
+        data=payload,
+        headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"})
+    response = urllib.request.urlopen(req)
+    for line in response:
+        line = line.decode("utf-8").strip()
+        if line.startswith("data: "):
+            data = line[6:]
+            try:
+                json_data = json.loads(data)
+                if "choices" in json_data:
+                    delta = json_data["choices"][0].get("delta", {})
+                    if "content" in delta:
+                        print(delta["content"], end="", flush=True)
+                if json_data.get("finish_reason") == "stop":
+                    print("")
+                    break
+            except:
+                pass
+
+
+if __name__ == "__main__":
+    msg = sys.stdin.read().strip()
+    print("-" * 40)
+    print("FreeAI Chat")
+    print("-" * 40)
+    stream_chat(msg)
