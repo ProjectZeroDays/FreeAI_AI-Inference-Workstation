@@ -87,3 +87,5 @@ config/alerts.json
 .opencode/
 .agents/skills/
 skills/autonomous-ai-agents/  
+.pages-test/
+.pages-test/  
